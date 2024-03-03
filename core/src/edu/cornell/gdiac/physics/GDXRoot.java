@@ -16,8 +16,6 @@
 import com.badlogic.gdx.*;
 import edu.cornell.gdiac.util.*;
 import edu.cornell.gdiac.assets.*;
-import edu.cornell.gdiac.physics.rocket.*;
-import edu.cornell.gdiac.physics.ragdoll.*;
 import edu.cornell.gdiac.physics.platform.*;
 
 /**
