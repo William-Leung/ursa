@@ -96,6 +96,7 @@ public class InputController {
 	public float getHorizontal() {
 		return horizontal;
 	}
+
 	
 	/**
 	 * Returns the amount of vertical movement. 

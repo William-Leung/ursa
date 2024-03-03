@@ -19,6 +19,8 @@ import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
 
 import edu.cornell.gdiac.assets.AssetDirectory;
+
+import edu.cornell.gdiac.physics.player.UrsaModel;
 import edu.cornell.gdiac.util.*;
 import edu.cornell.gdiac.physics.*;
 import edu.cornell.gdiac.physics.obstacle.*;
@@ -58,7 +60,7 @@ public class PlatformController extends WorldController implements ContactListen
 	/** Physics constants for initialization */
 	private JsonValue constants;
 	/** Reference to the character avatar */
-	private DudeModel avatar;
+	private UrsaModel avatar;
 	/** Reference to the goalDoor (for collision detection) */
 	private BoxObstacle goalDoor;
 
@@ -107,7 +109,7 @@ public class PlatformController extends WorldController implements ContactListen
 	 * This method disposes of the world and creates a new one.
 	 */
 	public void reset() {
-		Vector2 gravity = new Vector2(world.getGravity() );
+		Vector2 gravity = new Vector2(0,0 );
 		
 		for(Obstacle obj : objects) {
 			obj.deactivatePhysics(world);
@@ -176,12 +178,12 @@ public class PlatformController extends WorldController implements ContactListen
 	    }
 
 	    // This world is heavier
-		world.setGravity( new Vector2(0,0));
+		//world.setGravity( new Vector2(0,defaults.getFloat("gravity",0)) );
 
 		// Create dude
 		dwidth  = avatarTexture.getRegionWidth()/scale.x;
 		dheight = avatarTexture.getRegionHeight()/scale.y;
-		avatar = new DudeModel(constants.get("dude"), dwidth, dheight);
+		avatar = new UrsaModel(constants.get("dude"), dwidth, dheight);
 		avatar.setDrawScale(scale);
 		avatar.setTexture(avatarTexture);
 		addObject(avatar);
@@ -241,7 +243,9 @@ public class PlatformController extends WorldController implements ContactListen
 	 */
 	public void update(float dt) {
 		// Process actions in object model
-		avatar.setMovement(InputController.getInstance().getHorizontal() *avatar.getForce());
+		float xVal = InputController.getInstance().getHorizontal() *avatar.getForce();
+		float yVal = InputController.getInstance().getVertical() *avatar.getForce();
+		avatar.setMovement(xVal,yVal);
 		avatar.setJumping(InputController.getInstance().didPrimary());
 		avatar.setShooting(InputController.getInstance().didSecondary());
 		
