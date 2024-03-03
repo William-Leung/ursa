@@ -15,6 +15,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.physics.enemy.EnemyModel;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.physics.obstacle.PolygonObstacle;
@@ -50,6 +51,8 @@ public class SceneModel extends WorldController implements ContactListener {
     private JsonValue constants;
     /** Reference to the character avatar */
     private UrsaModel avatar;
+    /** List of references to enemies */
+    private EnemyModel[] enemy = new EnemyModel[20];
     /** Reference to the goalDoor (for collision detection) */
     private BoxObstacle goalDoor;
 
@@ -168,13 +171,21 @@ public class SceneModel extends WorldController implements ContactListener {
         // This world is heavier
         //world.setGravity( new Vector2(0,defaults.getFloat("gravity",0)) );
 
-        // Create dude
+        // Create ursa
         dwidth  = avatarTexture.getRegionWidth()/scale.x;
         dheight = avatarTexture.getRegionHeight()/scale.y;
         avatar = new UrsaModel(constants.get("dude"), dwidth, dheight);
         avatar.setDrawScale(scale);
         avatar.setTexture(avatarTexture);
         addObject(avatar);
+
+        //create enemy
+        dwidth  = avatarTexture.getRegionWidth()/scale.x;
+        dheight = avatarTexture.getRegionHeight()/scale.y;
+        enemy[0] = new EnemyModel(constants.get("dude"), dwidth, dheight);
+        enemy[0].setDrawScale(scale);
+        enemy[0].setTexture(avatarTexture);
+        addObject(enemy[0]);
 
         // Create rope bridge
         dwidth  = bridgeTexture.getRegionWidth()/scale.x;
