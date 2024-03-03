@@ -177,7 +177,7 @@ public class PlatformController extends WorldController implements ContactListen
 	    }
 
 	    // This world is heavier
-		world.setGravity( new Vector2(0,defaults.getFloat("gravity",0)) );
+		world.setGravity( new Vector2(0,0));
 
 		// Create dude
 		dwidth  = avatarTexture.getRegionWidth()/scale.x;
