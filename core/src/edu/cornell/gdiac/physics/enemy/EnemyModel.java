@@ -30,7 +30,9 @@ public class EnemyModel extends CapsuleObstacle {
     private final int shotLimit;
 
     /** The current horizontal movement of the character */
-    private float   movement;
+    private float   xMovement;
+    /** The current vertical movement of the character */
+    private float   yMovement;
     /** Which direction is the character facing */
     private boolean faceRight;
 
@@ -49,8 +51,18 @@ public class EnemyModel extends CapsuleObstacle {
      *
      * @return left/right movement of this character.
      */
-    public float getMovement() {
-        return movement;
+    public float getXMovement() {
+        return xMovement;
+    }
+    /**
+     * Returns up/down movement of this character.
+     *
+     * This is the result of input times dude force.
+     *
+     * @return up/down movement of this character.
+     */
+    public float getYMovement() {
+        return yMovement;
     }
 
     /**
@@ -58,14 +70,15 @@ public class EnemyModel extends CapsuleObstacle {
      *
      * This is the result of input times dude force.
      *
-     * @param value left/right movement of this character.
+     * @param xValue left/right movement of this character.
      */
-    public void setMovement(float value) {
-        movement = value;
+    public void setMovement(float xValue,float yValue) {
+        xMovement = xValue;
+        yMovement = yValue;
         // Change facing if appropriate
-        if (movement < 0) {
+        if (xMovement < 0) {
             faceRight = false;
-        } else if (movement > 0) {
+        } else if (xMovement > 0) {
             faceRight = true;
         }
     }
@@ -87,11 +100,6 @@ public class EnemyModel extends CapsuleObstacle {
     public void setShooting(boolean value) {
         isShooting = value;
     }
-
-
-
-
-
 
 
 
@@ -196,27 +204,7 @@ public class EnemyModel extends CapsuleObstacle {
             return false;
         }
 
-        // Ground Sensor
-        // -------------
-        // We only allow the dude to jump when he's on the ground.
-        // Double jumping is not allowed.
-        //
-        // To determine whether or not the dude is on the ground,
-        // we create a thin sensor under his feet, which reports
-        // collisions with the world but has no collision response.
-        Vector2 sensorCenter = new Vector2(0, -getHeight() / 2);
-        FixtureDef sensorDef = new FixtureDef();
-        sensorDef.density = data.getFloat("density",0);
-        sensorDef.isSensor = true;
-        sensorShape = new PolygonShape();
-        JsonValue sensorjv = data.get("sensor");
-        sensorShape.setAsBox(sensorjv.getFloat("shrink",0)*getWidth()/2.0f,
-                sensorjv.getFloat("height",0), sensorCenter, 0.0f);
-        sensorDef.shape = sensorShape;
 
-        // Ground sensor to represent our feet
-        Fixture sensorFixture = body.createFixture( sensorDef );
-        sensorFixture.setUserData(getSensorName());
 
         return true;
     }
@@ -233,20 +221,28 @@ public class EnemyModel extends CapsuleObstacle {
         }
 
         // Don't want to be moving. Damp out player motion
-        if (getMovement() == 0f) {
-            forceCache.set(-getDamping()*getVX(),0);
-            body.applyForce(forceCache,getPosition(),true);
+        if (getXMovement() == 0f) {
+            forceCache.set(-getDamping() * getVX(), 0);
+            body.applyForce(forceCache, getPosition(), true);
+        }
+        if (getYMovement() == 0f) {
+            forceCache.set(0, -getDamping() * getVY());
+            body.applyForce(forceCache, getPosition(), true);
         }
 
         // Velocity too high, clamp it
         if (Math.abs(getVX()) >= getMaxSpeed()) {
-            setVX(Math.signum(getVX())*getMaxSpeed());
+            setVX(Math.signum(getVX()) * getMaxSpeed());
         } else {
-            forceCache.set(getMovement(),0);
-            body.applyForce(forceCache,getPosition(),true);
+            forceCache.set(getXMovement(), 0);
+            body.applyForce(forceCache, getPosition(), true);
         }
-
-
+        if (Math.abs(getVY()) >= getMaxSpeed()) {
+            setVY(Math.signum(getVY()) * getMaxSpeed()); // Set y-velocity, not x-velocity
+        } else {
+            forceCache.set(0, getYMovement()); // Set y-movement
+            body.applyForce(forceCache, getPosition(), true);
+        }
     }
 
     /**

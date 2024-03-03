@@ -59,7 +59,7 @@ public class GDXRoot extends Game implements ScreenListener {
 
 		// Initialize the three game worlds
 		controllers = new WorldController[1];
-		controllers[0] = new PlatformController();
+		controllers[0] = new SceneModel();
 		//controllers[1] = new PlatformController();
 		//controllers[2] = new RagdollController();
 		current = 0;
