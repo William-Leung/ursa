@@ -27,6 +27,8 @@ import edu.cornell.gdiac.physics.player.UrsaModel;
 public class SceneModel extends WorldController implements ContactListener {
     /** Texture asset for character avatar */
     private TextureRegion avatarTexture;
+    private TextureRegion ursaTexture;
+    private TextureRegion enemyTexture;
     /** Texture asset for the spinning barrier */
     private TextureRegion barrierTexture;
     /** Texture asset for the bullet */
@@ -82,6 +84,8 @@ public class SceneModel extends WorldController implements ContactListener {
      */
     public void gatherAssets(AssetDirectory directory) {
         avatarTexture  = new TextureRegion(directory.getEntry("platform:dude", Texture.class));
+        ursaTexture = new TextureRegion(directory.getEntry("platform:ursa", Texture.class));
+        enemyTexture = new TextureRegion(directory.getEntry("platform:enemy", Texture.class));
         barrierTexture = new TextureRegion(directory.getEntry("platform:barrier",Texture.class));
         bulletTexture = new TextureRegion(directory.getEntry("platform:bullet",Texture.class));
         bridgeTexture = new TextureRegion(directory.getEntry("platform:rope",Texture.class));
