@@ -130,13 +130,13 @@ public class GDXRoot extends Game implements ScreenListener {
 			loading.dispose();
 			loading = null;
 		} else if (exitCode == WorldController.EXIT_NEXT) {
-			current = (current+1) % controllers.length;
-			controllers[current].reset();
-			setScreen(controllers[current]);
+			//current = (current+1) % controllers.length;
+			//controllers[current].reset();
+			//setScreen(controllers[current]);
 		} else if (exitCode == WorldController.EXIT_PREV) {
-			current = (current+controllers.length-1) % controllers.length;
-			controllers[current].reset();
-			setScreen(controllers[current]);
+			//current = (current+controllers.length-1) % controllers.length;
+			//controllers[current].reset();
+			//setScreen(controllers[current]);
 		} else if (exitCode == WorldController.EXIT_QUIT) {
 			// We quit the main application
 			Gdx.app.exit();
