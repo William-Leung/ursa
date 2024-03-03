@@ -11,16 +11,32 @@ import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import edu.cornell.gdiac.physics.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
+import edu.cornell.gdiac.physics.obstacle.SimpleObstacle;
 import edu.cornell.gdiac.physics.platform.DudeModel;
 
 public class Enemy extends BoxObstacle {
 
+	/**
+	 * The callback class for the enemy line-of-sight raycast towards the targeted body. This is used to detect whether or not there are any obstacles
+	 * between the body position and the enemy position. If so, it will cancel the raycast callback and report that we could
+	 * not hit the body (If we were able to hit the player then there wouldn't be any obstacles in between the body and the enemy)
+	 */
 	private static class EnemyLoSCallback implements RayCastCallback {
 
+		/**
+		 * The targeted body by the line-of-sight raycast
+		 */
 		private final Body target;
 
+		/**
+		 * The indication if the body was hit or not.
+		 */
 		private boolean hitPlayer = false;
 
+		/**
+		 * Constructs a new EnemyLoSCallback object used for raycasting.
+		 * @param target
+		 */
 		private EnemyLoSCallback(Body target) {
 			this.target = target;
 		}
@@ -28,11 +44,13 @@ public class Enemy extends BoxObstacle {
 		@Override
 		public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
 			Body body = fixture.getBody();
-			if (body.getType() == BodyDef.BodyType.StaticBody) { // For simplicity's sake, we're considering all static bodies to be obstacles.
+
+			if (body.getType() == BodyDef.BodyType.StaticBody) { // For simplicity's sake, we're considering all static bodies to be obstacles
+				hitPlayer = false;
 				return 0;
 			} else if (body.equals(target)) { // The body is not static? Might be our target. Let's check to see if it is.
 				hitPlayer = true;
-				return 0;
+				return -1;
 			}
 			return -1; // Otherwise, ignore the fixture and continue
 		}
@@ -81,7 +99,7 @@ public class Enemy extends BoxObstacle {
 	 * @param player The given player object
 	 * @return true if this player is visible to the enemy, false otherwise.
 	 */
-	public boolean isPlayerInLineOfSight(World world, DudeModel player) {
+	public boolean isPlayerInLineOfSight(World world, SimpleObstacle player) {
 
 		/*
 		 * First let's check to see if the player is near the enemy at all.
@@ -95,11 +113,8 @@ public class Enemy extends BoxObstacle {
 		Vector2 pos = new Vector2(getPosition());
 		Vector2 playerPos = new Vector2(player.getPosition());
 		double dst = playerPos.dst(pos);
-		Vector2 direction = new Vector2(0, -1); // Dummy direction vector. Represents the enemy looking south
+		Vector2 direction = new Vector2(1, 0); // Dummy direction vector. Represents the enemy looking East
 		Vector2 dirToVector = new Vector2(player.getPosition()).sub(pos).nor();
-//		Gdx.app.log("los", "poses: " + new Vector2(player.getPosition()) + " - " + pos);
-//		Gdx.app.log("los", "dirto: " + dirToVector);
-//		Gdx.app.log("los", "angle: " + direction.angleDeg(dirToVector));
 		float angle = direction.angleDeg(dirToVector);
 		boolean possiblyVisible = dst <= ENEMY_DETECTION_RANGE_NOISE
 			                          || dst <= ENEMY_DETECTION_RANGE_SIGHT

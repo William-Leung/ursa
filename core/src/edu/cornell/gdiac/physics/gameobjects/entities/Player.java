@@ -15,7 +15,9 @@ public class Player extends BoxObstacle {
 		/*
 		 * Dummy drawing code for now. Uses the drawDebug code to draw the outline of the player.
 		 */
+		canvas.beginDebug();
 		canvas.drawPhysics(shape,Color.BLUE,getX(),getY(),getAngle(),drawScale.x,drawScale.y);
+		canvas.endDebug();
 	}
 
 }
