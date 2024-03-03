@@ -19,6 +19,7 @@ import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
 
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.physics.gameobjects.entities.Enemy;
 import edu.cornell.gdiac.util.*;
 import edu.cornell.gdiac.physics.*;
 import edu.cornell.gdiac.physics.obstacle.*;
@@ -61,6 +62,8 @@ public class PlatformController extends WorldController implements ContactListen
 	private DudeModel avatar;
 	/** Reference to the goalDoor (for collision detection) */
 	private BoxObstacle goalDoor;
+
+	private Enemy enemy;
 
 	/** Mark set to handle more sophisticated collision callbacks */
 	protected ObjectSet<Fixture> sensorFixtures;
@@ -202,6 +205,10 @@ public class PlatformController extends WorldController implements ContactListen
 		spinPlatform.setTexture(barrierTexture);
 		addObject(spinPlatform);
 
+		enemy = new Enemy(15, 8);
+		enemy.setDrawScale(scale);
+		addObject(enemy);
+
 		volume = constants.getFloat("volume", 1.0f);
 	}
 	
@@ -254,6 +261,8 @@ public class PlatformController extends WorldController implements ContactListen
 	    if (avatar.isJumping()) {
 	    	jumpId = playSound( jumpSound, jumpId, volume );
 	    }
+
+		enemy.setAlerted(enemy.isPlayerInLineOfSight(world, avatar));
 	}
 
 	/**
