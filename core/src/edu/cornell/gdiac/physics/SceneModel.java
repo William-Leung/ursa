@@ -15,6 +15,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.physics.enemy.Enemy;
 import edu.cornell.gdiac.physics.enemy.EnemyModel;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
@@ -54,7 +55,7 @@ public class SceneModel extends WorldController implements ContactListener {
     /** Reference to the character avatar */
     private UrsaModel avatar;
     /** List of references to enemies */
-    private EnemyModel[] enemy = new EnemyModel[20];
+    private Enemy[] enemies = new Enemy[20];
     /** Reference to the goalDoor (for collision detection) */
     private BoxObstacle goalDoor;
 
@@ -186,10 +187,10 @@ public class SceneModel extends WorldController implements ContactListener {
         //create enemy
         dwidth  = avatarTexture.getRegionWidth()/scale.x;
         dheight = avatarTexture.getRegionHeight()/scale.y;
-        enemy[0] = new EnemyModel(constants.get("enemy"), dwidth, dheight);
-        enemy[0].setDrawScale(scale);
-        enemy[0].setTexture(avatarTexture);
-        addObject(enemy[0]);
+        enemies[0] = new Enemy(constants.get("enemy"), dwidth, dheight);
+        enemies[0].setDrawScale(scale);
+        enemies[0].setTexture(avatarTexture);
+        addObject(enemies[0]);
 
         // Create rope bridge
         dwidth  = bridgeTexture.getRegionWidth()/scale.x;
@@ -261,6 +262,7 @@ public class SceneModel extends WorldController implements ContactListener {
         if (avatar.isJumping()) {
             jumpId = playSound( jumpSound, jumpId, volume );
         }
+        enemies[0].setAlerted(enemies[0].isPlayerInLineOfSight(world, avatar));
     }
 
     /**

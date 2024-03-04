@@ -179,14 +179,14 @@ public class EnemyModel extends CapsuleObstacle {
         damping = data.getFloat("damping", 0);
         force = data.getFloat("force", 0);
         shotLimit = data.getInt( "shot_cool", 0 );
-        sensorName = "DudeGroundSensor";
+        sensorName = "enemyGroundSensor";
         this.data = data;
 
         // Gameplay attributes
         isShooting = false;
         faceRight = true;
         shootCooldown = 0;
-        setName("dude");
+        setName("enemy");
     }
 
     /**

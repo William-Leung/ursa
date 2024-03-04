@@ -643,6 +643,7 @@ public class GameCanvas {
 	public void draw(TextureRegion region, Color tint, float ox, float oy, 
 					 float x, float y, float angle, float sx, float sy) {
 		if (active != DrawPass.STANDARD) {
+
 			Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
 			return;
 		}
