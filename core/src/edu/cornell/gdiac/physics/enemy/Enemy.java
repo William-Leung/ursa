@@ -66,7 +66,7 @@ public class Enemy extends BoxObstacle {
 	 */
 	private static final float ENEMY_DETECTION_RANGE_NOISE = 3;
 
-	private static final float ENEMY_DETECTION_RANGE_SIGHT = 100;
+	private static final float ENEMY_DETECTION_RANGE_SIGHT = 5;
 
 	private static final float ENEMY_DETECTION_RANGE_SHADOW = 20;
 
@@ -128,7 +128,7 @@ public class Enemy extends BoxObstacle {
 		Vector2 pos = new Vector2(getPosition());
 		Vector2 playerPos = new Vector2(player.getPosition());
 		double dst = playerPos.dst(pos);
-		System.out.println("Position" + playerPos);
+		//System.out.println("Position" + playerPos);
 
 		Vector2 direction = new Vector2(1, 0); // Dummy direction vector. Represents the enemy looking East
 		Vector2 dirToVector = new Vector2(player.getPosition()).sub(pos).nor();
@@ -154,37 +154,54 @@ public class Enemy extends BoxObstacle {
 		Color color = alerted ? Color.RED : Color.GREEN;
 		canvas.draw(texture, color,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),1.0f,1.0f);
 
-		drawSightCones(canvas);
+		drawSightCone(canvas, 8, new Vector2(1,0));
 	}
 
-	public void drawSightCones(GameCanvas canvas) {
-		// Create the texture for the sight cones
+	/**
+	 * drawSightCones(canvas, num_vertices) uses PolygonRegion to
+	 * @param canvas This is the canvas you can draw with.
+	 * @param num_vertices Number of vertices in PolygonRegion. Higher values increase smoothness.
+	 * @param direction direction in which cone faces
+	 * Invariant: num_vertices must be even and >= 4.
+	 */
+	public void drawSightCone(GameCanvas canvas, int num_vertices, Vector2 direction) {
+		// Create the texture for the sight cone
 		Pixmap pixmap = new Pixmap(1,1, Format.RGBA8888);
-		pixmap.setColor(new Color(1,1,1,0.5f));
+		if(alerted) {
+			pixmap.setColor(new Color(1,0,0,0.5f));
+		} else {
+			pixmap.setColor(new Color(0,1,0,0.5f));
+		}
 		pixmap.fill();
 		Texture cone_texture = new Texture(pixmap);
-		TextureRegion cone_textureregion = new TextureRegion(cone_texture);
+		TextureRegion cone_texture_region = new TextureRegion(cone_texture);
 
 		// Create the vertices to form the cone
-		float[] vertices = new float[8];
+		float[] vertices = new float[num_vertices * 2];
 		vertices[0] = 0f;
 		vertices[1] = 0f;
-
-		float curr_angle = ENEMY_DETECTION_ANGLE_SIGHT;
+		float curr_angle = ENEMY_DETECTION_ANGLE_SIGHT + direction.angleDeg();
+		float angle_scale_factor =  (ENEMY_DETECTION_ANGLE_SIGHT)/ ((num_vertices - 2 ) / 2);
 		for(int i = 2; i < vertices.length - 1; i += 2) {
-			vertices[i] = ENEMY_DETECTION_RANGE_SIGHT * (float) Math.cos(Math.toRadians(curr_angle));
-			vertices[i+1] = ENEMY_DETECTION_RANGE_SIGHT * (float) Math.sin(Math.toRadians(curr_angle));
-			curr_angle -= ENEMY_DETECTION_ANGLE_SIGHT;
+			/** FIX: this 30 is super hard-coded. find out the world-local scaling*/
+			vertices[i] = 30 * ENEMY_DETECTION_RANGE_SIGHT * (float) Math.cos(Math.toRadians(curr_angle));
+			vertices[i+1] = 30 * ENEMY_DETECTION_RANGE_SIGHT * (float) Math.sin(Math.toRadians(curr_angle));
+			curr_angle -= angle_scale_factor;
 		}
 
-		/**for(int i = 0; i < vertices.length - 1; i += 2) {
-			System.out.println("X: " + vertices[i] + ", Y:" + vertices[i+1]);
+		// Specify triangles to draw our texture region.
+		// For example, triangles = {0,1,2} draws a triangle between vertices 0, 1, and 2
+		short[] triangles = new short[3 * (num_vertices - 2)];
+		short triangle_counter = 1;
+		for(int i = 0; i < triangles.length - 2; i += 3) {
+			triangles[i] = 0;
+			triangles[i+1] = triangle_counter;
+			triangle_counter++;
+			triangles[i+2] = triangle_counter;
 		}
-		System.out.println("-----");*/
-		short[] triangles = {0, 1, 2, 0, 2, 3};
-		PolygonRegion polygonRegion = new PolygonRegion(cone_textureregion,vertices, triangles);
 
-		canvas.draw(polygonRegion, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),1.0f,1.0f);
+		PolygonRegion polygonRegion = new PolygonRegion(cone_texture_region,vertices, triangles);
+		canvas.draw(polygonRegion, Color.WHITE, origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),1.0f,1.0f);
 	}
 
 }
