@@ -2,12 +2,18 @@ package edu.cornell.gdiac.physics.enemy;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Pixmap.Format;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.PolygonRegion;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.RayCastCallback;
+import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.physics.GameCanvas;
@@ -16,7 +22,6 @@ import edu.cornell.gdiac.physics.obstacle.SimpleObstacle;
 import edu.cornell.gdiac.physics.platform.DudeModel;
 
 public class Enemy extends BoxObstacle {
-
 	/**
 	 * The callback class for the enemy line-of-sight raycast towards the targeted body. This is used to detect whether or not there are any obstacles
 	 * between the body position and the enemy position. If so, it will cancel the raycast callback and report that we could
@@ -61,7 +66,7 @@ public class Enemy extends BoxObstacle {
 	 */
 	private static final float ENEMY_DETECTION_RANGE_NOISE = 3;
 
-	private static final float ENEMY_DETECTION_RANGE_SIGHT = 1000;
+	private static final float ENEMY_DETECTION_RANGE_SIGHT = 100;
 
 	private static final float ENEMY_DETECTION_RANGE_SHADOW = 20;
 
@@ -123,11 +128,14 @@ public class Enemy extends BoxObstacle {
 		Vector2 pos = new Vector2(getPosition());
 		Vector2 playerPos = new Vector2(player.getPosition());
 		double dst = playerPos.dst(pos);
+		System.out.println("Position" + playerPos);
+
 		Vector2 direction = new Vector2(1, 0); // Dummy direction vector. Represents the enemy looking East
 		Vector2 dirToVector = new Vector2(player.getPosition()).sub(pos).nor();
 		float angle = direction.angleDeg(dirToVector);
-		boolean possiblyVisible = dst <= ENEMY_DETECTION_RANGE_NOISE
-				|| dst <= ENEMY_DETECTION_RANGE_SIGHT
+		System.out.println("Distance: " + dst);
+		boolean possiblyVisible = (dst <= ENEMY_DETECTION_RANGE_NOISE
+				|| dst <= ENEMY_DETECTION_RANGE_SIGHT)
 				&& (angle <= ENEMY_DETECTION_ANGLE_SIGHT || angle >= 360 - ENEMY_DETECTION_ANGLE_SIGHT);
 
 		if (possiblyVisible) {
@@ -146,6 +154,37 @@ public class Enemy extends BoxObstacle {
 		Color color = alerted ? Color.RED : Color.GREEN;
 		canvas.draw(texture, color,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),1.0f,1.0f);
 
+		drawSightCones(canvas);
+	}
+
+	public void drawSightCones(GameCanvas canvas) {
+		// Create the texture for the sight cones
+		Pixmap pixmap = new Pixmap(1,1, Format.RGBA8888);
+		pixmap.setColor(new Color(1,1,1,0.5f));
+		pixmap.fill();
+		Texture cone_texture = new Texture(pixmap);
+		TextureRegion cone_textureregion = new TextureRegion(cone_texture);
+
+		// Create the vertices to form the cone
+		float[] vertices = new float[8];
+		vertices[0] = 0f;
+		vertices[1] = 0f;
+
+		float curr_angle = ENEMY_DETECTION_ANGLE_SIGHT;
+		for(int i = 2; i < vertices.length - 1; i += 2) {
+			vertices[i] = ENEMY_DETECTION_RANGE_SIGHT * (float) Math.cos(Math.toRadians(curr_angle));
+			vertices[i+1] = ENEMY_DETECTION_RANGE_SIGHT * (float) Math.sin(Math.toRadians(curr_angle));
+			curr_angle -= ENEMY_DETECTION_ANGLE_SIGHT;
+		}
+
+		/**for(int i = 0; i < vertices.length - 1; i += 2) {
+			System.out.println("X: " + vertices[i] + ", Y:" + vertices[i+1]);
+		}
+		System.out.println("-----");*/
+		short[] triangles = {0, 1, 2, 0, 2, 3};
+		PolygonRegion polygonRegion = new PolygonRegion(cone_textureregion,vertices, triangles);
+
+		canvas.draw(polygonRegion, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),1.0f,1.0f);
 	}
 
 }
