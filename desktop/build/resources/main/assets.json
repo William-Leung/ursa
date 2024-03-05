@@ -39,7 +39,7 @@
         "platform:dude":  "platform/dude.png",
         "platform:enemy":  "platform/salmon.png",
         "platform:enemy2":  "platform/salmon2.png",
-        "platform:snowback": "platform/snow_background.png",
+        "platform:snowback": "platform/snow.png",
         "platform:ursa":  "platform/ursa2.png",
         "platform:rope":  "platform/ropebridge.png",
         "platform:barrier": "platform/barrier.png",
