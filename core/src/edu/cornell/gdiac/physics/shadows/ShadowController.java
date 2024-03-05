@@ -62,7 +62,7 @@ public class ShadowController {
         } else {
             sh.setWidth(0 + (time * (1/(TICKS_PER_DAY / 2))));
         }
-        System.out.println("Ticks: " + time);
+        //System.out.println("Ticks: " + time);
     }
 
     public void update() {

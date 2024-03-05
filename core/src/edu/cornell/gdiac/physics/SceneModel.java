@@ -138,18 +138,18 @@ public class SceneModel extends WorldController implements ContactListener {
         float dwidth  = goalTile.getRegionWidth()/scale.x;
         float dheight = goalTile.getRegionHeight()/scale.y;
 
-        JsonValue goal = constants.get("goal");
-        JsonValue goalpos = goal.get("pos");
-        goalDoor = new BoxObstacle(goalpos.getFloat(0),goalpos.getFloat(1),dwidth,dheight);
-        goalDoor.setBodyType(BodyDef.BodyType.StaticBody);
-        goalDoor.setDensity(goal.getFloat("density", 0));
-        goalDoor.setFriction(goal.getFloat("friction", 0));
-        goalDoor.setRestitution(goal.getFloat("restitution", 0));
-        goalDoor.setSensor(true);
-        goalDoor.setDrawScale(scale);
-        goalDoor.setTexture(goalTile);
-        goalDoor.setName("goal");
-        addObject(goalDoor);
+//        JsonValue goal = constants.get("goal");
+//        JsonValue goalpos = goal.get("pos");
+//        goalDoor = new BoxObstacle(goalpos.getFloat(0),goalpos.getFloat(1),dwidth,dheight);
+//        goalDoor.setBodyType(BodyDef.BodyType.StaticBody);
+//        goalDoor.setDensity(goal.getFloat("density", 0));
+//        goalDoor.setFriction(goal.getFloat("friction", 0));
+//        goalDoor.setRestitution(goal.getFloat("restitution", 0));
+//        goalDoor.setSensor(true);
+//        goalDoor.setDrawScale(scale);
+//        goalDoor.setTexture(goalTile);
+//        goalDoor.setName("goal");
+//        addObject(goalDoor);
 
         String wname = "wall";
         JsonValue walljv = constants.get("walls");
@@ -167,20 +167,20 @@ public class SceneModel extends WorldController implements ContactListener {
             addObject(obj);
         }
 
-        String pname = "platform";
-        JsonValue platjv = constants.get("platforms");
-        for (int ii = 0; ii < platjv.size; ii++) {
-            PolygonObstacle obj;
-            obj = new PolygonObstacle(platjv.get(ii).asFloatArray(), 0, 0);
-            obj.setBodyType(BodyDef.BodyType.StaticBody);
-            obj.setDensity(defaults.getFloat( "density", 0.0f ));
-            obj.setFriction(defaults.getFloat( "friction", 0.0f ));
-            obj.setRestitution(defaults.getFloat( "restitution", 0.0f ));
-            obj.setDrawScale(scale);
-            obj.setTexture(earthTile);
-            obj.setName(pname+ii);
-            addObject(obj);
-        }
+//        String pname = "platform";
+//        JsonValue platjv = constants.get("platforms");
+//        for (int ii = 0; ii < platjv.size; ii++) {
+//            PolygonObstacle obj;
+//            obj = new PolygonObstacle(platjv.get(ii).asFloatArray(), 0, 0);
+//            obj.setBodyType(BodyDef.BodyType.StaticBody);
+//            obj.setDensity(defaults.getFloat( "density", 0.0f ));
+//            obj.setFriction(defaults.getFloat( "friction", 0.0f ));
+//            obj.setRestitution(defaults.getFloat( "restitution", 0.0f ));
+//            obj.setDrawScale(scale);
+//            obj.setTexture(earthTile);
+//            obj.setName(pname+ii);
+//            addObject(obj);
+//        }
 
         // This world is heavier
         //world.setGravity( new Vector2(0,defaults.getFloat("gravity",0)) );
@@ -201,6 +201,7 @@ public class SceneModel extends WorldController implements ContactListener {
         enemies[0].setTexture(avatarTexture);
         addObject(enemies[0]);
 
+<<<<<<< HEAD
         // create shadow (idk if this does anything even)
         shadows = new ShadowController();
         shadows.setTexture(shadowTexture);
@@ -221,6 +222,23 @@ public class SceneModel extends WorldController implements ContactListener {
         spinPlatform.setDrawScale(scale);
         spinPlatform.setTexture(barrierTexture);
         addObject(spinPlatform);
+=======
+//        // Create rope bridge
+//        dwidth  = bridgeTexture.getRegionWidth()/scale.x;
+//        dheight = bridgeTexture.getRegionHeight()/scale.y;
+//        RopeBridge bridge = new RopeBridge(constants.get("bridge"), dwidth, dheight);
+//        bridge.setTexture(bridgeTexture);
+//        bridge.setDrawScale(scale);
+//        addObject(bridge);
+//
+//        // Create spinning platform
+//        dwidth  = barrierTexture.getRegionWidth()/scale.x;
+//        dheight = barrierTexture.getRegionHeight()/scale.y;
+//        Spinner spinPlatform = new Spinner(constants.get("spinner"),dwidth,dheight);
+//        spinPlatform.setDrawScale(scale);
+//        spinPlatform.setTexture(barrierTexture);
+//        addObject(spinPlatform);
+>>>>>>> c862c2b7c64457da7434b43c7dca17ca31f9e2b0
 
         volume = constants.getFloat("volume", 1.0f);
     }
