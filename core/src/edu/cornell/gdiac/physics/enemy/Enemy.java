@@ -27,6 +27,7 @@ public class Enemy extends BoxObstacle {
 	 * between the body position and the enemy position. If so, it will cancel the raycast callback and report that we could
 	 * not hit the body (If we were able to hit the player then there wouldn't be any obstacles in between the body and the enemy)
 	 */
+	private float direc;
 	private static class EnemyLoSCallback implements RayCastCallback {
 
 		/**
@@ -86,7 +87,7 @@ public class Enemy extends BoxObstacle {
 		setDensity(data.getFloat("density", 0));
 		setFriction(data.getFloat("friction", 0));  /// HE WILL STICK TO WALLS IF YOU FORGET
 		setFixedRotation(true);
-
+		direc = dire;
 
 		setName("ursa");
 	}
@@ -130,7 +131,7 @@ public class Enemy extends BoxObstacle {
 		double dst = playerPos.dst(pos);
 		//System.out.println("Position" + playerPos);
 
-		Vector2 direction = new Vector2(1, 0); // Dummy direction vector. Represents the enemy looking East
+		Vector2 direction = new Vector2(direc * 1, 0); // Dummy direction vector. Represents the enemy looking East
 		Vector2 dirToVector = new Vector2(player.getPosition()).sub(pos).nor();
 		float angle = direction.angleDeg(dirToVector);
 		//System.out.println("Distance: " + dst);
@@ -152,9 +153,9 @@ public class Enemy extends BoxObstacle {
 
 	public void draw(GameCanvas canvas) {
 		Color color = alerted ? Color.RED : Color.GREEN;
-		canvas.draw(texture, color,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),-1* .1f,.1f);
+		canvas.draw(texture, color,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),direc* .1f,.1f);
 
-		drawSightCone(canvas, 8, new Vector2(1,0));
+		drawSightCone(canvas, 8, new Vector2(direc * 1,0));
 	}
 
 	/**
