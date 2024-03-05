@@ -2,12 +2,18 @@ package edu.cornell.gdiac.physics.enemy;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Pixmap.Format;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.PolygonRegion;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.RayCastCallback;
+import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.physics.GameCanvas;
@@ -16,7 +22,6 @@ import edu.cornell.gdiac.physics.obstacle.SimpleObstacle;
 import edu.cornell.gdiac.physics.platform.DudeModel;
 
 public class Enemy extends BoxObstacle {
-
 	/**
 	 * The callback class for the enemy line-of-sight raycast towards the targeted body. This is used to detect whether or not there are any obstacles
 	 * between the body position and the enemy position. If so, it will cancel the raycast callback and report that we could
@@ -61,7 +66,7 @@ public class Enemy extends BoxObstacle {
 	 */
 	private static final float ENEMY_DETECTION_RANGE_NOISE = 3;
 
-	private static final float ENEMY_DETECTION_RANGE_SIGHT = 1000;
+	private static final float ENEMY_DETECTION_RANGE_SIGHT = 5;
 
 	private static final float ENEMY_DETECTION_RANGE_SHADOW = 20;
 
@@ -123,11 +128,14 @@ public class Enemy extends BoxObstacle {
 		Vector2 pos = new Vector2(getPosition());
 		Vector2 playerPos = new Vector2(player.getPosition());
 		double dst = playerPos.dst(pos);
+		//System.out.println("Position" + playerPos);
+
 		Vector2 direction = new Vector2(1, 0); // Dummy direction vector. Represents the enemy looking East
 		Vector2 dirToVector = new Vector2(player.getPosition()).sub(pos).nor();
 		float angle = direction.angleDeg(dirToVector);
-		boolean possiblyVisible = dst <= ENEMY_DETECTION_RANGE_NOISE
-				|| dst <= ENEMY_DETECTION_RANGE_SIGHT
+		System.out.println("Distance: " + dst);
+		boolean possiblyVisible = (dst <= ENEMY_DETECTION_RANGE_NOISE
+				|| dst <= ENEMY_DETECTION_RANGE_SIGHT)
 				&& (angle <= ENEMY_DETECTION_ANGLE_SIGHT || angle >= 360 - ENEMY_DETECTION_ANGLE_SIGHT);
 
 		if (possiblyVisible) {
@@ -146,6 +154,54 @@ public class Enemy extends BoxObstacle {
 		Color color = alerted ? Color.RED : Color.GREEN;
 		canvas.draw(texture, color,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),1.0f,1.0f);
 
+		drawSightCone(canvas, 8, new Vector2(1,0));
+	}
+
+	/**
+	 * drawSightCones(canvas, num_vertices) uses PolygonRegion to
+	 * @param canvas This is the canvas you can draw with.
+	 * @param num_vertices Number of vertices in PolygonRegion. Higher values increase smoothness.
+	 * @param direction direction in which cone faces
+	 * Invariant: num_vertices must be even and >= 4.
+	 */
+	public void drawSightCone(GameCanvas canvas, int num_vertices, Vector2 direction) {
+		// Create the texture for the sight cone
+		Pixmap pixmap = new Pixmap(1,1, Format.RGBA8888);
+		if(alerted) {
+			pixmap.setColor(new Color(1,0,0,0.5f));
+		} else {
+			pixmap.setColor(new Color(0,1,0,0.5f));
+		}
+		pixmap.fill();
+		Texture cone_texture = new Texture(pixmap);
+		TextureRegion cone_texture_region = new TextureRegion(cone_texture);
+
+		// Create the vertices to form the cone
+		float[] vertices = new float[num_vertices * 2];
+		vertices[0] = 0f;
+		vertices[1] = 0f;
+		float curr_angle = ENEMY_DETECTION_ANGLE_SIGHT + direction.angleDeg();
+		float angle_scale_factor =  (ENEMY_DETECTION_ANGLE_SIGHT)/ ((num_vertices - 2 ) / 2);
+		for(int i = 2; i < vertices.length - 1; i += 2) {
+			/** FIX: this 30 is super hard-coded. find out the world-local scaling*/
+			vertices[i] = 30 * ENEMY_DETECTION_RANGE_SIGHT * (float) Math.cos(Math.toRadians(curr_angle));
+			vertices[i+1] = 30 * ENEMY_DETECTION_RANGE_SIGHT * (float) Math.sin(Math.toRadians(curr_angle));
+			curr_angle -= angle_scale_factor;
+		}
+
+		// Specify triangles to draw our texture region.
+		// For example, triangles = {0,1,2} draws a triangle between vertices 0, 1, and 2
+		short[] triangles = new short[3 * (num_vertices - 2)];
+		short triangle_counter = 1;
+		for(int i = 0; i < triangles.length - 2; i += 3) {
+			triangles[i] = 0;
+			triangles[i+1] = triangle_counter;
+			triangle_counter++;
+			triangles[i+2] = triangle_counter;
+		}
+
+		PolygonRegion polygonRegion = new PolygonRegion(cone_texture_region,vertices, triangles);
+		canvas.draw(polygonRegion, Color.WHITE, origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),1.0f,1.0f);
 	}
 
 }
