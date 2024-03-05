@@ -104,7 +104,7 @@ public abstract class WorldController implements Screen {
 	private int countdown;
 
 	private TextureRegion backGround;
-	private float snowFall;
+	private float snowFall = 450.0f;
 
 	/**
 	 * Returns true if debug mode is active.
