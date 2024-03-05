@@ -201,7 +201,6 @@ public class SceneModel extends WorldController implements ContactListener {
         enemies[0].setTexture(avatarTexture);
         addObject(enemies[0]);
 
-<<<<<<< HEAD
         // create shadow (idk if this does anything even)
         shadows = new ShadowController();
         shadows.setTexture(shadowTexture);
@@ -222,7 +221,7 @@ public class SceneModel extends WorldController implements ContactListener {
         spinPlatform.setDrawScale(scale);
         spinPlatform.setTexture(barrierTexture);
         addObject(spinPlatform);
-=======
+
 //        // Create rope bridge
 //        dwidth  = bridgeTexture.getRegionWidth()/scale.x;
 //        dheight = bridgeTexture.getRegionHeight()/scale.y;
@@ -238,7 +237,6 @@ public class SceneModel extends WorldController implements ContactListener {
 //        spinPlatform.setDrawScale(scale);
 //        spinPlatform.setTexture(barrierTexture);
 //        addObject(spinPlatform);
->>>>>>> c862c2b7c64457da7434b43c7dca17ca31f9e2b0
 
         volume = constants.getFloat("volume", 1.0f);
     }
