@@ -104,6 +104,7 @@ public abstract class WorldController implements Screen {
 	private int countdown;
 
 	private TextureRegion backGround;
+	private float snowFall;
 
 	/**
 	 * Returns true if debug mode is active.
@@ -457,7 +458,13 @@ public abstract class WorldController implements Screen {
 		
 		canvas.begin();
 
-		canvas.draw(backGround, 0 ,0);
+		if (snowFall == 0 || snowFall > 100) {
+			snowFall = 0.0f;
+		}
+		canvas.draw(backGround, Color.SKY, snowFall, snowFall, canvas.getWidth(), canvas.getHeight());
+		canvas.draw(backGround, Color.SKY, snowFall*1.3f - 150f, snowFall*1.3f - 50f, canvas.getWidth(), canvas.getHeight());
+
+		snowFall += 1.0f;
 
 		for(Obstacle obj : objects) {
 			obj.draw(canvas);
