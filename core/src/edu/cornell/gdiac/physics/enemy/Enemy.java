@@ -30,6 +30,7 @@ public class Enemy extends BoxObstacle {
 	private float direc;
 	private final Vector2 forceCache = new Vector2();
 	private float maxSpeed;
+	private float damping;
 	private static class EnemyLoSCallback implements RayCastCallback {
 
 		/**
@@ -91,6 +92,7 @@ public class Enemy extends BoxObstacle {
 		setFixedRotation(true);
 		direc = dire;
 		maxSpeed = data.getFloat("maxspeed", 0);
+		damping = data.getFloat("damping", 0);
 		setName("ursa");
 	}
 
@@ -110,14 +112,17 @@ public class Enemy extends BoxObstacle {
 				if (Math.abs(getVX()) >= maxSpeed) {
 					setVX(Math.signum(getVX()) * maxSpeed);
 				} else {
-					forceCache.set(direc * 20, 0);
+					forceCache.set(direc * 30, 0);
 					body.applyForce(forceCache, getPosition(), true);
+
 				}
 
 			}
 			else {
-				setVX(0);
+
 				direc = 1;
+
+
 			}
 		}
 		else {
@@ -125,17 +130,20 @@ public class Enemy extends BoxObstacle {
 				if (Math.abs(getVX()) >= maxSpeed) {
 					setVX(Math.signum(getVX()) * maxSpeed);
 				} else {
-					forceCache.set(direc * 20, 0);
+					forceCache.set(direc * 30, 0);
 					body.applyForce(forceCache, getPosition(), true);
 				}
 
 			}
 			else {
-				setVX(0);
-				direc = -1;
+
+
+					direc = -1;
+				}
+
 			}
 		}
-	}
+
 	/**
 	 * Sets whether or not the enemy is alerted by the player
 	 * @param alerted True if the enemy should be alerted, false otherwise.
