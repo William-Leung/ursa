@@ -133,7 +133,7 @@ public class Enemy extends BoxObstacle {
 		Vector2 direction = new Vector2(1, 0); // Dummy direction vector. Represents the enemy looking East
 		Vector2 dirToVector = new Vector2(player.getPosition()).sub(pos).nor();
 		float angle = direction.angleDeg(dirToVector);
-		System.out.println("Distance: " + dst);
+		//System.out.println("Distance: " + dst);
 		boolean possiblyVisible = (dst <= ENEMY_DETECTION_RANGE_NOISE
 				|| dst <= ENEMY_DETECTION_RANGE_SIGHT)
 				&& (angle <= ENEMY_DETECTION_ANGLE_SIGHT || angle >= 360 - ENEMY_DETECTION_ANGLE_SIGHT);
@@ -152,7 +152,7 @@ public class Enemy extends BoxObstacle {
 
 	public void draw(GameCanvas canvas) {
 		Color color = alerted ? Color.RED : Color.GREEN;
-		canvas.draw(texture, color,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),1.0f,1.0f);
+		canvas.draw(texture, color,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),.1f,.1f);
 
 		drawSightCone(canvas, 8, new Vector2(1,0));
 	}

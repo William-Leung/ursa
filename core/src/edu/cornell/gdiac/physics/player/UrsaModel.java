@@ -362,9 +362,15 @@ public class UrsaModel extends CapsuleObstacle {
      * @param canvas Drawing context
      */
     public void draw(GameCanvas canvas) {
-
+        float scaleX;
         float effect = faceRight ? 1.0f : -1.0f;
-        canvas.draw(texture, isShaded ? Color.BLUE : Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),effect,1.0f);
+        if(effect == 1f){
+            scaleX = 0.02f;
+        }
+        else {
+            scaleX = -.02f;
+        }
+        canvas.draw(texture, isShaded ? Color.BLUE : Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),scaleX,0.02f);
 
     }
 

@@ -186,11 +186,12 @@ public class SceneModel extends WorldController implements ContactListener {
         //world.setGravity( new Vector2(0,defaults.getFloat("gravity",0)) );
 
         // Create ursa
-        dwidth  = avatarTexture.getRegionWidth()/scale.x;
-        dheight = avatarTexture.getRegionHeight()/scale.y;
+        dwidth  = ursaTexture.getRegionWidth()/750f;
+        dheight = ursaTexture.getRegionHeight()/750f;
         avatar = new UrsaModel(constants.get("dude"), dwidth, dheight);
         avatar.setDrawScale(scale);
-        avatar.setTexture(avatarTexture);
+
+        avatar.setTexture(ursaTexture);
         addObject(avatar);
 
         //create enemy
@@ -198,7 +199,8 @@ public class SceneModel extends WorldController implements ContactListener {
         dheight = avatarTexture.getRegionHeight()/scale.y;
         enemies[0] = new Enemy(constants.get("enemy"), dwidth, dheight);
         enemies[0].setDrawScale(scale);
-        enemies[0].setTexture(avatarTexture);
+
+        enemies[0].setTexture(enemyTexture);
         addObject(enemies[0]);
 
         // create shadow (idk if this does anything even)
