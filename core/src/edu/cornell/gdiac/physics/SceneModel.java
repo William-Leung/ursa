@@ -260,6 +260,7 @@ public class SceneModel extends WorldController implements ContactListener {
         // Process actions in object model
         float xVal = InputController.getInstance().getHorizontal() *avatar.getForce();
         float yVal = InputController.getInstance().getVertical() *avatar.getForce();
+
         avatar.setMovement(xVal,yVal);
         avatar.setJumping(InputController.getInstance().didPrimary());
         avatar.setShooting(InputController.getInstance().didSecondary());
@@ -270,6 +271,9 @@ public class SceneModel extends WorldController implements ContactListener {
         }
 
         avatar.applyForce();
+        enemies[0].applyForce();
+        enemies[1].applyForce();
+
         if (avatar.isJumping()) {
             jumpId = playSound( jumpSound, jumpId, volume );
         }

@@ -28,6 +28,8 @@ public class Enemy extends BoxObstacle {
 	 * not hit the body (If we were able to hit the player then there wouldn't be any obstacles in between the body and the enemy)
 	 */
 	private float direc;
+	private final Vector2 forceCache = new Vector2();
+	private float maxSpeed;
 	private static class EnemyLoSCallback implements RayCastCallback {
 
 		/**
@@ -88,7 +90,7 @@ public class Enemy extends BoxObstacle {
 		setFriction(data.getFloat("friction", 0));  /// HE WILL STICK TO WALLS IF YOU FORGET
 		setFixedRotation(true);
 		direc = dire;
-
+		maxSpeed = data.getFloat("maxspeed", 0);
 		setName("ursa");
 	}
 
@@ -99,11 +101,46 @@ public class Enemy extends BoxObstacle {
 	public boolean isAlerted() {
 		return alerted;
 	}
+	public void applyForce() {
+		if (!isActive()) {
+			return;
+		}
+		if (direc == -1) {
+			if (this.getPosition().x > 5) {
+				if (Math.abs(getVX()) >= maxSpeed) {
+					setVX(Math.signum(getVX()) * maxSpeed);
+				} else {
+					forceCache.set(direc * 20, 0);
+					body.applyForce(forceCache, getPosition(), true);
+				}
 
+			}
+			else {
+				setVX(0);
+				direc = 1;
+			}
+		}
+		else {
+			if (this.getPosition().x < 12) {
+				if (Math.abs(getVX()) >= maxSpeed) {
+					setVX(Math.signum(getVX()) * maxSpeed);
+				} else {
+					forceCache.set(direc * 20, 0);
+					body.applyForce(forceCache, getPosition(), true);
+				}
+
+			}
+			else {
+				setVX(0);
+				direc = -1;
+			}
+		}
+	}
 	/**
 	 * Sets whether or not the enemy is alerted by the player
 	 * @param alerted True if the enemy should be alerted, false otherwise.
 	 */
+
 	public void setAlerted(boolean alerted) {
 		this.alerted = alerted;
 	}
