@@ -167,20 +167,20 @@ public class SceneModel extends WorldController implements ContactListener {
             addObject(obj);
         }
 
-//        String pname = "platform";
-//        JsonValue platjv = constants.get("platforms");
-//        for (int ii = 0; ii < platjv.size; ii++) {
-//            PolygonObstacle obj;
-//            obj = new PolygonObstacle(platjv.get(ii).asFloatArray(), 0, 0);
-//            obj.setBodyType(BodyDef.BodyType.StaticBody);
-//            obj.setDensity(defaults.getFloat( "density", 0.0f ));
-//            obj.setFriction(defaults.getFloat( "friction", 0.0f ));
-//            obj.setRestitution(defaults.getFloat( "restitution", 0.0f ));
-//            obj.setDrawScale(scale);
-//            obj.setTexture(earthTile);
-//            obj.setName(pname+ii);
-//            addObject(obj);
-//        }
+        String pname = "platform";
+        JsonValue platjv = constants.get("platforms");
+        for (int ii = 0; ii < platjv.size; ii++) {
+            PolygonObstacle obj;
+            obj = new PolygonObstacle(platjv.get(ii).asFloatArray(), 0, 0);
+            obj.setBodyType(BodyDef.BodyType.StaticBody);
+            obj.setDensity(defaults.getFloat( "density", 0.0f ));
+            obj.setFriction(defaults.getFloat( "friction", 0.0f ));
+            obj.setRestitution(defaults.getFloat( "restitution", 0.0f ));
+            obj.setDrawScale(scale);
+            obj.setTexture(earthTile);
+            obj.setName(pname+ii);
+            addObject(obj);
+        }
 
         // This world is heavier
         //world.setGravity( new Vector2(0,defaults.getFloat("gravity",0)) );
