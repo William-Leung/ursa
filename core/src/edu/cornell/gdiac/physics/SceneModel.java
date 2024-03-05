@@ -40,6 +40,7 @@ public class SceneModel extends WorldController implements ContactListener {
     private TextureRegion bridgeTexture;
     /** Texture asset for the shadows */
     private TextureRegion shadowTexture;
+    private TextureRegion backGround;
 
     /** The jump sound.  We only want to play once. */
     private Sound jumpSound;
@@ -98,6 +99,7 @@ public class SceneModel extends WorldController implements ContactListener {
         bulletTexture = new TextureRegion(directory.getEntry("platform:bullet",Texture.class));
         bridgeTexture = new TextureRegion(directory.getEntry("platform:rope",Texture.class));
         shadowTexture = new TextureRegion(directory.getEntry("platform:shadow",Texture.class));
+        backGround = new TextureRegion(directory.getEntry("platform:snowback",Texture.class));
 
 
 
