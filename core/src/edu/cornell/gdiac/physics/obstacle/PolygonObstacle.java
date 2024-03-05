@@ -15,6 +15,7 @@
  */
 package edu.cornell.gdiac.physics.obstacle;
 
+import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
@@ -170,7 +171,7 @@ public class PolygonObstacle extends SimpleObstacle {
 		float maxx = vertices[0];
 		float miny = vertices[1];
 		float maxy = vertices[1];
-		
+
 		for(int ii = 2; ii < vertices.length; ii += 2) {
 			if (vertices[ii] < minx) {
 				minx = vertices[ii];
@@ -179,7 +180,7 @@ public class PolygonObstacle extends SimpleObstacle {
 			}
 			if (vertices[ii+1] < miny) {
 				miny = vertices[ii+1];
-			} else if (vertices[ii] > maxy) {
+			} else if (vertices[ii+1] > maxy) {
 				maxy = vertices[ii+1];
 			}
 		}
@@ -367,6 +368,29 @@ public class PolygonObstacle extends SimpleObstacle {
 		if (region != null) {
 			canvas.draw(region,Color.WHITE,0,0,getX()*drawScale.x,getY()*drawScale.y,getAngle(),1,1);
 		}
+
+		/** SUPER HARD CODE SHADOW DO NOT REPLICATE!!! */
+		float middleX = canvas.getWidth() / 2.0f;
+
+		// Define vertices for the line segment at the middle of the screen
+		float lineHeight = canvas.getHeight(); // Line spans the height of the screen
+		float lineWidth = 200.0f; // Line width is 5 pixels (thicker)
+		float[] lineVertices = {middleX - lineWidth / 2, 0, middleX - lineWidth / 2, lineHeight,
+				middleX + lineWidth / 2, lineHeight, middleX + lineWidth / 2, 0};
+
+		// Create a TextureRegion for the line
+		Pixmap linePixmap = new Pixmap(1, 1, Format.RGBA8888);
+		linePixmap.setColor(new Color(0,0,0,0.1f));
+		linePixmap.fill();
+		Texture lineTexture = new Texture(linePixmap);
+		TextureRegion lineTextureRegion = new TextureRegion(lineTexture);
+
+		// Create a PolygonRegion for the line segment
+		short[] lineIndices = {0, 1, 2, 0, 2, 3};
+		PolygonRegion lineRegion = new PolygonRegion(lineTextureRegion, lineVertices, lineIndices);
+
+		// Draw the line segment at the middle of the screen
+		canvas.draw(lineRegion, Color.BLACK, 0, 0, 0, 0, 0, 1, 1);
 	}
 
 	/**
@@ -380,6 +404,47 @@ public class PolygonObstacle extends SimpleObstacle {
 		for(PolygonShape tri : shapes) {
 			canvas.drawPhysics(tri,Color.YELLOW,getX(),getY(),getAngle(),drawScale.x,drawScale.y);
 		}
+	}
+
+	public void drawSightCone(GameCanvas canvas, int num_vertices, Vector2 direction) {
+		float ENEMY_DETECTION_ANGLE_SIGHT = 30;
+		float ENEMY_DETECTION_RANGE_SIGHT = 100;
+		// Create the texture for the sight cone
+		Pixmap pixmap = new Pixmap(1,1, Format.RGBA8888);
+		pixmap.setColor(new Color(1,1,1,0.5f));
+		pixmap.fill();
+		Texture cone_texture = new Texture(pixmap);
+		TextureRegion cone_texture_region = new TextureRegion(cone_texture);
+
+		// Create the vertices to form the cone
+		/**float[] vertices = new float[num_vertices * 2];
+		vertices[0] = 0f;
+		vertices[1] = 0f;
+		float curr_angle = ENEMY_DETECTION_ANGLE_SIGHT + direction.angleDeg();
+		float angle_scale_factor =  (ENEMY_DETECTION_ANGLE_SIGHT)/ ((num_vertices - 2 ) / 2);
+		for(int i = 2; i < vertices.length - 1; i += 2) {
+			/** FIX: this 30 is super hard-coded. find out the world-local scaling*/
+			/**vertices[i] = 30 * ENEMY_DETECTION_RANGE_SIGHT * (float) Math.cos(Math.toRadians(curr_angle));
+			vertices[i+1] = 30 * ENEMY_DETECTION_RANGE_SIGHT * (float) Math.sin(Math.toRadians(curr_angle));
+			curr_angle -= angle_scale_factor;
+		}
+
+		// Specify triangles to draw our texture region.
+		// For example, triangles = {0,1,2} draws a triangle between vertices 0, 1, and 2
+		short[] triangles = new short[3 * (num_vertices - 2)];
+		short triangle_counter = 1;
+		for(int i = 0; i < triangles.length - 2; i += 3) {
+			triangles[i] = 0;
+			triangles[i+1] = triangle_counter;
+			triangle_counter++;
+			triangles[i+2] = triangle_counter;
+		}*/
+
+		float[] vertices = {100f,100f,0f,200f,200f,200f};
+		short[] triangles = {0,1,2};
+
+		PolygonRegion polygonRegion = new PolygonRegion(cone_texture_region,vertices, triangles);
+		canvas.draw(polygonRegion, Color.WHITE, origin.x,origin.y,getX()*drawScale.x + 200,getY()*drawScale.y,getAngle(),1.0f,1.0f);
 	}
 	
 }
