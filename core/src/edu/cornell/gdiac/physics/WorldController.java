@@ -103,6 +103,9 @@ public abstract class WorldController implements Screen {
 	/** Countdown active for winning or losing */
 	private int countdown;
 
+	private TextureRegion backGround;
+	private float snowFall;
+
 	/**
 	 * Returns true if debug mode is active.
 	 *
@@ -287,6 +290,7 @@ public abstract class WorldController implements Screen {
 		// Allocate the tiles
 		earthTile = new TextureRegion(directory.getEntry( "shared:earth", Texture.class ));
 		goalTile  = new TextureRegion(directory.getEntry( "shared:goal", Texture.class ));
+		backGround = new TextureRegion(directory.getEntry("platform:snowback",Texture.class));
 		displayFont = directory.getEntry( "shared:retro" ,BitmapFont.class);
 	}
 
@@ -453,6 +457,15 @@ public abstract class WorldController implements Screen {
 		canvas.clear();
 		
 		canvas.begin();
+
+		if (snowFall == 0 || snowFall > 100) {
+			snowFall = 0.0f;
+		}
+		canvas.draw(backGround, Color.SKY, snowFall, snowFall, canvas.getWidth(), canvas.getHeight());
+		canvas.draw(backGround, Color.SKY, snowFall*1.3f - 150f, snowFall*1.3f - 50f, canvas.getWidth(), canvas.getHeight());
+
+		snowFall += 1.0f;
+
 		for(Obstacle obj : objects) {
 			obj.draw(canvas);
 		}
