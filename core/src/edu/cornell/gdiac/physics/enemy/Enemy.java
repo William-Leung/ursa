@@ -31,6 +31,8 @@ public class Enemy extends BoxObstacle {
 	private final Vector2 forceCache = new Vector2();
 	private float maxSpeed;
 	private float damping;
+
+	private boolean playerInShadow = false;
 	private static class EnemyLoSCallback implements RayCastCallback {
 
 		/**
@@ -70,7 +72,7 @@ public class Enemy extends BoxObstacle {
 	 */
 	private static final float ENEMY_DETECTION_RANGE_NOISE = 3;
 
-	private static final float ENEMY_DETECTION_RANGE_SIGHT = 5;
+	private static final float ENEMY_DETECTION_RANGE_SIGHT = 3f;
 
 	private static final float ENEMY_DETECTION_RANGE_SHADOW = 20;
 
@@ -160,7 +162,7 @@ public class Enemy extends BoxObstacle {
 	 * @param player The given player object
 	 * @return true if this player is visible to the enemy, false otherwise.
 	 */
-	public boolean isPlayerInLineOfSight(World world, SimpleObstacle player) {
+	public boolean isPlayerInLineOfSight(GameCanvas canvas, World world, SimpleObstacle player) {
 
 		/*
 		 * First let's check to see if the player is near the enemy at all.
@@ -174,15 +176,20 @@ public class Enemy extends BoxObstacle {
 		Vector2 pos = new Vector2(getPosition());
 		Vector2 playerPos = new Vector2(player.getPosition());
 		double dst = playerPos.dst(pos);
-		//System.out.println("Position" + playerPos);
 
 		Vector2 direction = new Vector2(direc * 1, 0); // Dummy direction vector. Represents the enemy looking East
 		Vector2 dirToVector = new Vector2(player.getPosition()).sub(pos).nor();
 		float angle = direction.angleDeg(dirToVector);
-		//System.out.println("Distance: " + dst);
-		boolean possiblyVisible = (dst <= ENEMY_DETECTION_RANGE_NOISE
-				|| dst <= ENEMY_DETECTION_RANGE_SIGHT)
-				&& (angle <= ENEMY_DETECTION_ANGLE_SIGHT || angle >= 360 - ENEMY_DETECTION_ANGLE_SIGHT);
+		// HARD CODE TO REMOVE (also remove canvas argument)
+		boolean possiblyVisible;
+		if(isInShadow(canvas, playerPos.x * drawScale.x)) {
+			//dst <= ENEMY_DETECTION_RANGE_NOISE || (dst <= ENEMY_DETECTION_RANGE_SIGHT && (angle <= ENEMY_DETECTION_ANGLE_SIGHT || angle >= 360 - ENEMY_DETECTION_ANGLE_SIGHT));
+			possiblyVisible = dst <= 2 * ENEMY_DETECTION_RANGE_SIGHT && (angle <= ENEMY_DETECTION_ANGLE_SIGHT || angle >= 360 - ENEMY_DETECTION_ANGLE_SIGHT);
+		} else {
+			possiblyVisible = dst <= ENEMY_DETECTION_RANGE_SIGHT && (angle <= ENEMY_DETECTION_ANGLE_SIGHT || angle >= 360 - ENEMY_DETECTION_ANGLE_SIGHT);
+		}
+		/** ------ */
+
 
 		if (possiblyVisible) {
 			EnemyLoSCallback callback = new EnemyLoSCallback(player.getBody());
@@ -196,11 +203,15 @@ public class Enemy extends BoxObstacle {
 	}
 
 
+	// REMOVE player argument
 	public void draw(GameCanvas canvas) {
 		Color color = alerted ? Color.RED : Color.GREEN;
 		canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),direc* .1f,.1f);
 
 		drawSightCone(canvas, 8, new Vector2(direc * 1,0));
+		if(playerInShadow) {
+			drawOuterSightCone(canvas, 8, new Vector2(direc * 1, 0));
+		}
 	}
 
 	/**
@@ -229,9 +240,8 @@ public class Enemy extends BoxObstacle {
 		float curr_angle = ENEMY_DETECTION_ANGLE_SIGHT + direction.angleDeg();
 		float angle_scale_factor =  (ENEMY_DETECTION_ANGLE_SIGHT)/ ((num_vertices - 2 ) / 2);
 		for(int i = 2; i < vertices.length - 1; i += 2) {
-			/** FIX: this 30 is super hard-coded. find out the world-local scaling*/
-			vertices[i] = 30 * ENEMY_DETECTION_RANGE_SIGHT * (float) Math.cos(Math.toRadians(curr_angle));
-			vertices[i+1] = 30 * ENEMY_DETECTION_RANGE_SIGHT * (float) Math.sin(Math.toRadians(curr_angle));
+			vertices[i] = drawScale.x * ENEMY_DETECTION_RANGE_SIGHT * (float) Math.cos(Math.toRadians(curr_angle));
+			vertices[i+1] = drawScale.y * ENEMY_DETECTION_RANGE_SIGHT * (float) Math.sin(Math.toRadians(curr_angle));
 			curr_angle -= angle_scale_factor;
 		}
 
@@ -250,4 +260,52 @@ public class Enemy extends BoxObstacle {
 		canvas.draw(polygonRegion, Color.WHITE, origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),1.0f,1.0f);
 	}
 
+	public void drawOuterSightCone(GameCanvas canvas, int num_vertices, Vector2 direction) {
+		// Create the texture for the sight cone
+		Pixmap pixmap = new Pixmap(1,1, Format.RGBA8888);
+		if(alerted) {
+			pixmap.setColor(new Color(1,0,0,0.5f));
+		} else {
+			pixmap.setColor(new Color(0,1,0,0.5f));
+		}
+		pixmap.fill();
+		Texture cone_texture = new Texture(pixmap);
+		TextureRegion cone_texture_region = new TextureRegion(cone_texture);
+
+		// Create the vertices to form the cone
+		float[] vertices = new float[num_vertices * 2];
+		vertices[0] = 0f;
+		vertices[1] = 0f;
+		float curr_angle = ENEMY_DETECTION_ANGLE_SIGHT + direction.angleDeg();
+		float angle_scale_factor =  (ENEMY_DETECTION_ANGLE_SIGHT)/ ((num_vertices - 2 ) / 2);
+		float range = ENEMY_DETECTION_RANGE_SIGHT * 2 ;
+		for(int i = 2; i < vertices.length - 1; i += 2) {
+			/** FIX: this 30 is super hard-coded. find out the world-local scaling*/
+			vertices[i] = drawScale.x * range * (float) Math.cos(Math.toRadians(curr_angle));
+			vertices[i+1] = drawScale.y * range * (float) Math.sin(Math.toRadians(curr_angle));
+			curr_angle -= angle_scale_factor;
+		}
+
+		// Specify triangles to draw our texture region.
+		// For example, triangles = {0,1,2} draws a triangle between vertices 0, 1, and 2
+		short[] triangles = new short[3 * (num_vertices - 2)];
+		short triangle_counter = 1;
+		for(int i = 0; i < triangles.length - 2; i += 3) {
+			triangles[i] = 0;
+			triangles[i+1] = triangle_counter;
+			triangle_counter++;
+			triangles[i+2] = triangle_counter;
+		}
+
+		PolygonRegion polygonRegion = new PolygonRegion(cone_texture_region,vertices, triangles);
+		canvas.draw(polygonRegion, Color.WHITE, origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),1.0f,1.0f);
+	}
+
+	public boolean isInShadow(GameCanvas canvas, float x) {
+		float middleX = canvas.getWidth() / 2.0f;
+		float lineWidth = 200.0f;
+
+		playerInShadow = x >= (middleX - lineWidth / 2) && x <= (middleX + lineWidth / 2);
+		return playerInShadow;
+	}
 }
