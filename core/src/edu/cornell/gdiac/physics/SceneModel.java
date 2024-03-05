@@ -262,7 +262,7 @@ public class SceneModel extends WorldController implements ContactListener {
         float yVal = InputController.getInstance().getVertical() *avatar.getForce();
 
         avatar.setMovement(xVal,yVal);
-        avatar.setJumping(InputController.getInstance().didPrimary());
+        // avatar.setJumping(InputController.getInstance().didPrimary());
         avatar.setShooting(InputController.getInstance().didSecondary());
 
         // Add a bullet if we fire
@@ -279,6 +279,9 @@ public class SceneModel extends WorldController implements ContactListener {
         }
         enemies[0].setAlerted(enemies[0].isPlayerInLineOfSight(canvas, world, avatar));
         enemies[1].setAlerted(enemies[1].isPlayerInLineOfSight(canvas, world, avatar));
+//        if (avatar.isJumping()) {
+//            jumpId = playSound( jumpSound, jumpId, volume );
+//        }
 
         canvas.clear();
         canvas.begin();
@@ -415,7 +418,7 @@ public class SceneModel extends WorldController implements ContactListener {
      * Pausing happens when we switch game modes.
      */
     public void pause() {
-        jumpSound.stop(jumpId);
+        // jumpSound.stop(jumpId);
         plopSound.stop(plopId);
         fireSound.stop(fireId);
     }
