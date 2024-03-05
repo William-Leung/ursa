@@ -31,6 +31,7 @@ public class SceneModel extends WorldController implements ContactListener {
     private TextureRegion avatarTexture;
     private TextureRegion ursaTexture;
     private TextureRegion enemyTexture;
+    private TextureRegion enemyTexture2;
     /** Texture asset for the spinning barrier */
     private TextureRegion barrierTexture;
     /** Texture asset for the bullet */
@@ -92,6 +93,7 @@ public class SceneModel extends WorldController implements ContactListener {
         avatarTexture  = new TextureRegion(directory.getEntry("platform:dude", Texture.class));
         ursaTexture = new TextureRegion(directory.getEntry("platform:ursa", Texture.class));
         enemyTexture = new TextureRegion(directory.getEntry("platform:enemy", Texture.class));
+        enemyTexture2 = new TextureRegion(directory.getEntry("platform:enemy2", Texture.class));
         barrierTexture = new TextureRegion(directory.getEntry("platform:barrier",Texture.class));
         bulletTexture = new TextureRegion(directory.getEntry("platform:bullet",Texture.class));
         bridgeTexture = new TextureRegion(directory.getEntry("platform:rope",Texture.class));
@@ -188,20 +190,27 @@ public class SceneModel extends WorldController implements ContactListener {
         // Create ursa
         dwidth  = ursaTexture.getRegionWidth()/750f;
         dheight = ursaTexture.getRegionHeight()/750f;
-        avatar = new UrsaModel(constants.get("dude"), dwidth, dheight);
+        avatar = new UrsaModel(constants.get("ursa"), dwidth, dheight);
         avatar.setDrawScale(scale);
 
         avatar.setTexture(ursaTexture);
         addObject(avatar);
 
         //create enemy
-        dwidth  = avatarTexture.getRegionWidth()/scale.x;
-        dheight = avatarTexture.getRegionHeight()/scale.y;
-        enemies[0] = new Enemy(constants.get("enemy"), dwidth, dheight);
+        dwidth  = enemyTexture.getRegionWidth()/scale.x;
+        dheight = enemyTexture.getRegionHeight()/scale.y;
+        enemies[0] = new Enemy(constants.get("enemy"), dwidth, dheight,1);
         enemies[0].setDrawScale(scale);
-
         enemies[0].setTexture(enemyTexture);
         addObject(enemies[0]);
+
+        dwidth  = enemyTexture2.getRegionWidth()/30;
+        dheight = enemyTexture2.getRegionHeight()/30;
+        enemies[1] = new Enemy(constants.get("enemy2"), dwidth, dheight,-1);
+        enemies[1].setDrawScale(scale);
+        enemies[1].setTexture(enemyTexture2);
+        addObject(enemies[1]);
+
 
         // create shadow (idk if this does anything even)
         shadows = new ShadowController();
@@ -263,6 +272,7 @@ public class SceneModel extends WorldController implements ContactListener {
             jumpId = playSound( jumpSound, jumpId, volume );
         }
         enemies[0].setAlerted(enemies[0].isPlayerInLineOfSight(world, avatar));
+        enemies[1].setAlerted(enemies[1].isPlayerInLineOfSight(world, avatar));
 
         canvas.clear();
         canvas.begin();

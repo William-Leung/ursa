@@ -77,7 +77,7 @@ public class Enemy extends BoxObstacle {
 	 */
 	private boolean alerted = false;
 
-	public Enemy(JsonValue data, float width, float height) {
+	public Enemy(JsonValue data, float width, float height,float dire) {
 		// The shrink factors fit the image to a tigher hitbox
 		super(	data.get("pos").getFloat(0),
 				data.get("pos").getFloat(1),
@@ -152,7 +152,7 @@ public class Enemy extends BoxObstacle {
 
 	public void draw(GameCanvas canvas) {
 		Color color = alerted ? Color.RED : Color.GREEN;
-		canvas.draw(texture, color,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),.1f,.1f);
+		canvas.draw(texture, color,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),-1* .1f,.1f);
 
 		drawSightCone(canvas, 8, new Vector2(1,0));
 	}
