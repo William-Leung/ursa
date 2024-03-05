@@ -4,6 +4,7 @@ import edu.cornell.gdiac.physics.gameobjects.entities.Enemy;
 import edu.cornell.gdiac.physics.gameobjects.entities.Player;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.util.PooledList;
+import edu.cornell.gdiac.physics.shadows.ShadowController;
 
 /**
  * The class collection of all existing GameObjects, used for various controllers and to be rendered to the scene
@@ -26,6 +27,11 @@ public class GameScene {
 	private PooledList<Obstacle> objects = new PooledList<>();
 
 	/**
+	 * The collection of shadows in this GameScene
+	 */
+	private ShadowController shadows = null;
+
+	/**
 	 * Draws all of the existing scene objects to the provided GameCanvas
 	 * @param canvas The GameCanvas to draw to
 	 */
@@ -41,6 +47,8 @@ public class GameScene {
 		for (Obstacle object : objects) {
 			object.draw(canvas);
 		}
+
+		if (shadows != null) shadows.drawAllShadows(canvas);
 	}
 
 //	/**

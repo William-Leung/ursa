@@ -47,6 +47,8 @@ public class UrsaModel extends CapsuleObstacle {
     private boolean isShooting;
     /** The physics shape of this object */
     private PolygonShape sensorShape;
+    /** Whether we are currently "shaded" */
+    private boolean isShaded;
 
     /** Cache for internal force calculations */
     private final Vector2 forceCache = new Vector2();
@@ -187,6 +189,24 @@ public class UrsaModel extends CapsuleObstacle {
      */
     public boolean isFacingRight() {
         return faceRight;
+    }
+
+    /**
+     * Returns true if this character is in the shade
+     *
+     * @return true if this character is in the shade
+     */
+    public boolean shaded() {
+        return isShaded;
+    }
+
+    /**
+     * Sets whether the character is in the shade.
+     *
+     * @param value whether the character is in the shade.
+     */
+    public void setShaded(boolean value) {
+        isShaded = value;
     }
 
     /**
@@ -344,7 +364,7 @@ public class UrsaModel extends CapsuleObstacle {
     public void draw(GameCanvas canvas) {
 
         float effect = faceRight ? 1.0f : -1.0f;
-        canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),effect,1.0f);
+        canvas.draw(texture, isShaded ? Color.BLUE : Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),effect,1.0f);
 
     }
 

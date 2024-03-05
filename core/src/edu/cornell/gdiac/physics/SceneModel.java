@@ -24,6 +24,7 @@ import edu.cornell.gdiac.physics.obstacle.WheelObstacle;
 import edu.cornell.gdiac.physics.platform.RopeBridge;
 import edu.cornell.gdiac.physics.platform.Spinner;
 import edu.cornell.gdiac.physics.player.UrsaModel;
+import edu.cornell.gdiac.physics.shadows.ShadowController;
 
 public class SceneModel extends WorldController implements ContactListener {
     /** Texture asset for character avatar */
@@ -36,6 +37,8 @@ public class SceneModel extends WorldController implements ContactListener {
     private TextureRegion bulletTexture;
     /** Texture asset for the bridge plank */
     private TextureRegion bridgeTexture;
+    /** Texture asset for the shadows */
+    private TextureRegion shadowTexture;
 
     /** The jump sound.  We only want to play once. */
     private Sound jumpSound;
@@ -58,6 +61,8 @@ public class SceneModel extends WorldController implements ContactListener {
     private Enemy[] enemies = new Enemy[20];
     /** Reference to the goalDoor (for collision detection) */
     private BoxObstacle goalDoor;
+    /** Controller for all dynamic shadows */
+    private ShadowController shadows;
 
     /** Mark set to handle more sophisticated collision callbacks */
     protected ObjectSet<Fixture> sensorFixtures;
@@ -90,6 +95,10 @@ public class SceneModel extends WorldController implements ContactListener {
         barrierTexture = new TextureRegion(directory.getEntry("platform:barrier",Texture.class));
         bulletTexture = new TextureRegion(directory.getEntry("platform:bullet",Texture.class));
         bridgeTexture = new TextureRegion(directory.getEntry("platform:rope",Texture.class));
+        shadowTexture = new TextureRegion(directory.getEntry("platform:shadow",Texture.class));
+
+
+
 
         jumpSound = directory.getEntry( "platform:jump", Sound.class );
         fireSound = directory.getEntry( "platform:pew", Sound.class );
@@ -192,6 +201,11 @@ public class SceneModel extends WorldController implements ContactListener {
         enemies[0].setTexture(avatarTexture);
         addObject(enemies[0]);
 
+        // create shadow (idk if this does anything even)
+        shadows = new ShadowController();
+        shadows.setTexture(shadowTexture);
+        shadows.initAllShadows();
+
         // Create rope bridge
         dwidth  = bridgeTexture.getRegionWidth()/scale.x;
         dheight = bridgeTexture.getRegionHeight()/scale.y;
@@ -263,6 +277,12 @@ public class SceneModel extends WorldController implements ContactListener {
             jumpId = playSound( jumpSound, jumpId, volume );
         }
         enemies[0].setAlerted(enemies[0].isPlayerInLineOfSight(world, avatar));
+
+        canvas.clear();
+        canvas.begin();
+        shadows.update();
+        shadows.drawAllShadows(canvas);
+        canvas.end();
     }
 
     /**
