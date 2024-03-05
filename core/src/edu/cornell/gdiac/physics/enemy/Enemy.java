@@ -33,6 +33,7 @@ public class Enemy extends BoxObstacle {
 	private float damping;
 
 	private boolean playerInShadow = false;
+	private float screenWidth = 1280f;
 	private static class EnemyLoSCallback implements RayCastCallback {
 
 		/**
@@ -162,7 +163,7 @@ public class Enemy extends BoxObstacle {
 	 * @param player The given player object
 	 * @return true if this player is visible to the enemy, false otherwise.
 	 */
-	public boolean isPlayerInLineOfSight(GameCanvas canvas, World world, SimpleObstacle player) {
+	public boolean isPlayerInLineOfSight(World world, SimpleObstacle player) {
 
 		/*
 		 * First let's check to see if the player is near the enemy at all.
@@ -182,7 +183,7 @@ public class Enemy extends BoxObstacle {
 		float angle = direction.angleDeg(dirToVector);
 		// HARD CODE TO REMOVE (also remove canvas argument)
 		boolean possiblyVisible;
-		if(isInShadow(canvas, playerPos.x * drawScale.x)) {
+		if(isInShadow(playerPos.x * drawScale.x)) {
 			//dst <= ENEMY_DETECTION_RANGE_NOISE || (dst <= ENEMY_DETECTION_RANGE_SIGHT && (angle <= ENEMY_DETECTION_ANGLE_SIGHT || angle >= 360 - ENEMY_DETECTION_ANGLE_SIGHT));
 			possiblyVisible = dst <= 2 * ENEMY_DETECTION_RANGE_SIGHT && (angle <= ENEMY_DETECTION_ANGLE_SIGHT || angle >= 360 - ENEMY_DETECTION_ANGLE_SIGHT);
 		} else {
@@ -212,6 +213,8 @@ public class Enemy extends BoxObstacle {
 		if(playerInShadow) {
 			drawOuterSightCone(canvas, 8, new Vector2(direc * 1, 0));
 		}
+
+		screenWidth = canvas.getWidth();
 	}
 
 	/**
@@ -301,8 +304,8 @@ public class Enemy extends BoxObstacle {
 		canvas.draw(polygonRegion, Color.WHITE, origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),1.0f,1.0f);
 	}
 
-	public boolean isInShadow(GameCanvas canvas, float x) {
-		float middleX = canvas.getWidth() / 2.0f;
+	public boolean isInShadow(float x) {
+		float middleX = screenWidth / 2.0f;
 		float lineWidth = 200.0f;
 
 		playerInShadow = x >= (middleX - lineWidth / 2) && x <= (middleX + lineWidth / 2);
