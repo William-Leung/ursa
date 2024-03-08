@@ -28,6 +28,7 @@ public class Enemy extends BoxObstacle {
 	 * not hit the body (If we were able to hit the player then there wouldn't be any obstacles in between the body and the enemy)
 	 */
 	private float direc;
+	private Pixmap pixmap;
 	private final Vector2 forceCache = new Vector2();
 	private float maxSpeed;
 	private float damping;
@@ -97,6 +98,7 @@ public class Enemy extends BoxObstacle {
 		maxSpeed = data.getFloat("maxspeed", 0);
 		damping = data.getFloat("damping", 0);
 		setName("ursa");
+		pixmap = new Pixmap(1,1, Format.RGBA8888);
 	}
 
 	/**
