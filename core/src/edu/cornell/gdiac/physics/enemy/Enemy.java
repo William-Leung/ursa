@@ -28,8 +28,6 @@ public class Enemy extends BoxObstacle {
 	 * not hit the body (If we were able to hit the player then there wouldn't be any obstacles in between the body and the enemy)
 	 */
 	private float direc;
-	private Pixmap pixmap;
-	private Texture cone_texture;
 	private final Vector2 forceCache = new Vector2();
 	private float maxSpeed;
 	private float damping;
@@ -99,8 +97,6 @@ public class Enemy extends BoxObstacle {
 		maxSpeed = data.getFloat("maxspeed", 0);
 		damping = data.getFloat("damping", 0);
 		setName("ursa");
-		pixmap = new Pixmap(1,1, Format.RGBA8888);
-		cone_texture = new Texture(pixmap);
 	}
 
 	/**
@@ -230,14 +226,14 @@ public class Enemy extends BoxObstacle {
 	 */
 	public void drawSightCone(GameCanvas canvas, int num_vertices, Vector2 direction) {
 		// Create the texture for the sight cone
-
+		Pixmap pixmap = new Pixmap(1,1, Format.RGBA8888);
 		if(alerted) {
 			pixmap.setColor(new Color(1,0,0,0.5f));
 		} else {
 			pixmap.setColor(new Color(0,1,0,0.5f));
 		}
 		pixmap.fill();
-
+		Texture cone_texture = new Texture(pixmap);
 		TextureRegion cone_texture_region = new TextureRegion(cone_texture);
 
 		// Create the vertices to form the cone
@@ -269,12 +265,14 @@ public class Enemy extends BoxObstacle {
 
 	public void drawOuterSightCone(GameCanvas canvas, int num_vertices, Vector2 direction) {
 		// Create the texture for the sight cone
+		Pixmap pixmap = new Pixmap(1,1, Format.RGBA8888);
 		if(alerted) {
 			pixmap.setColor(new Color(1,0,0,0.5f));
 		} else {
 			pixmap.setColor(new Color(0,1,0,0.5f));
 		}
 		pixmap.fill();
+		Texture cone_texture = new Texture(pixmap);
 		TextureRegion cone_texture_region = new TextureRegion(cone_texture);
 
 		// Create the vertices to form the cone
