@@ -468,15 +468,15 @@ public abstract class WorldController implements Screen {
 		for(Obstacle obj : objects) {
 			obj.draw(canvas);
 		}
-		canvas.draw(backGround, Color.SKY, snowFall - canvas.getWidth(), snowFall - canvas.getHeight(), canvas.getWidth(), canvas.getHeight());
-		canvas.draw(backGround, Color.SKY, snowFall, snowFall - canvas.getHeight(), canvas.getWidth(), canvas.getHeight());
-		canvas.draw(backGround, Color.SKY, snowFall - canvas.getWidth(), snowFall, canvas.getWidth(), canvas.getHeight());
-		canvas.draw(backGround, Color.SKY, snowFall, snowFall, canvas.getWidth(), canvas.getHeight());
+		canvas.draw(backGround, Color.WHITE, snowFall - canvas.getWidth(), snowFall - canvas.getHeight(), canvas.getWidth(), canvas.getHeight());
+		canvas.draw(backGround, Color.WHITE, snowFall, snowFall - canvas.getHeight(), canvas.getWidth(), canvas.getHeight());
+		canvas.draw(backGround, Color.WHITE, snowFall - canvas.getWidth(), snowFall, canvas.getWidth(), canvas.getHeight());
+		canvas.draw(backGround, Color.WHITE, snowFall, snowFall, canvas.getWidth(), canvas.getHeight());
 
-		canvas.draw(backGround, Color.SKY, snowFall*1.3f + 70f - canvas.getWidth(), snowFall*1.3f + 50f - canvas.getHeight(), canvas.getWidth(), canvas.getHeight());
-		canvas.draw(backGround, Color.SKY, snowFall*1.3f + 70f - canvas.getWidth(), snowFall*1.3f + 50f, canvas.getWidth(), canvas.getHeight());
-		canvas.draw(backGround, Color.SKY, snowFall*1.3f + 70f, snowFall*1.3f + 50f - canvas.getHeight(), canvas.getWidth(), canvas.getHeight());
-		canvas.draw(backGround, Color.SKY, snowFall*1.3f + 70f, snowFall*1.3f + 50f, canvas.getWidth(), canvas.getHeight());
+		canvas.draw(backGround, Color.WHITE, snowFall*1.3f + 70f - canvas.getWidth(), snowFall*1.3f + 50f - canvas.getHeight(), canvas.getWidth(), canvas.getHeight());
+		canvas.draw(backGround, Color.WHITE, snowFall*1.3f + 70f - canvas.getWidth(), snowFall*1.3f + 50f, canvas.getWidth(), canvas.getHeight());
+		canvas.draw(backGround, Color.WHITE, snowFall*1.3f + 70f, snowFall*1.3f + 50f - canvas.getHeight(), canvas.getWidth(), canvas.getHeight());
+		canvas.draw(backGround, Color.WHITE, snowFall*1.3f + 70f, snowFall*1.3f + 50f, canvas.getWidth(), canvas.getHeight());
 
 		snowFall -= 0.2f;
 
