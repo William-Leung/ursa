@@ -1,14 +1,5 @@
-# Project Name
+Welcome to 5G Studios's Ursa!
 
-A brief description of what this project does and its purpose.
+This is the release for the Gameplay Prototype so we're mainly trying to show off vision cones changing when you step in and out of the shadows.
 
-## Table of Contents
-
-- [Installation](#installation)
-- [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
-
-## Installation
-
-Provide instruction
+Use WASD to move!
