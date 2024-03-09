@@ -48,6 +48,8 @@ import edu.cornell.gdiac.physics.obstacle.*;
 public abstract class WorldController implements Screen {
 	/** The texture for walls and platforms */
 	protected TextureRegion earthTile;
+	protected TextureRegion snowBackGround;
+
 	/** The texture for the exit condition */
 	protected TextureRegion goalTile;
 	/** The font for giving messages to the player */
@@ -222,6 +224,7 @@ public abstract class WorldController implements Screen {
 	protected WorldController() {
 		this(new Rectangle(0,0,DEFAULT_WIDTH,DEFAULT_HEIGHT), 
 			 new Vector2(0,DEFAULT_GRAVITY));
+
 	}
 
 	/**
@@ -291,6 +294,7 @@ public abstract class WorldController implements Screen {
 		earthTile = new TextureRegion(directory.getEntry( "shared:earth", Texture.class ));
 		goalTile  = new TextureRegion(directory.getEntry( "shared:goal", Texture.class ));
 		backGround = new TextureRegion(directory.getEntry("platform:snowback",Texture.class));
+		snowBackGround = new TextureRegion(directory.getEntry("platform:snowbackground",Texture.class));
 		displayFont = directory.getEntry( "shared:retro" ,BitmapFont.class);
 	}
 
@@ -457,9 +461,12 @@ public abstract class WorldController implements Screen {
 		canvas.clear();
 		
 		canvas.begin();
-
+		canvas.draw(snowBackGround,0,0);
 		if (snowFall < -100.0f) {
 			snowFall = 450.0f;
+		}
+		for(Obstacle obj : objects) {
+			obj.draw(canvas);
 		}
 		canvas.draw(backGround, Color.SKY, snowFall - canvas.getWidth(), snowFall - canvas.getHeight(), canvas.getWidth(), canvas.getHeight());
 		canvas.draw(backGround, Color.SKY, snowFall, snowFall - canvas.getHeight(), canvas.getWidth(), canvas.getHeight());
@@ -473,9 +480,7 @@ public abstract class WorldController implements Screen {
 
 		snowFall -= 0.2f;
 
-		for(Obstacle obj : objects) {
-			obj.draw(canvas);
-		}
+
 		canvas.end();
 		
 		if (debug) {

@@ -40,6 +40,7 @@
         "platform:enemy":  "platform/salmon.png",
         "platform:enemy2":  "platform/salmon2.png",
         "platform:snowback": "platform/snow.png",
+        "platform:snowbackground": "platform/Background.JPG",
         "platform:ursa":  "platform/ursa2.png",
         "platform:ursaWalk1":  "platform/Character_walking_1.png",
         "platform:ursaWalk2":  "platform/Character_walking_2.png",

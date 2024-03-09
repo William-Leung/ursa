@@ -320,7 +320,7 @@ public class UrsaModel extends CapsuleObstacle {
             body.applyForce(forceCache, getPosition(), true);
         }
         if (Math.abs(getVY()) >= getMaxSpeed()) {
-            setVY(Math.signum(getVY()) * getMaxSpeed()); // Set y-velocity, not x-velocity
+            setVY(Math.signum(getVY()) * getMaxSpeed() * 2); // Set y-velocity, not x-velocity
         } else {
             forceCache.set(0, getyMovement()); // Set y-movement
             body.applyForce(forceCache, getPosition(), true);
@@ -366,12 +366,12 @@ public class UrsaModel extends CapsuleObstacle {
         float scaleX;
         float effect = faceRight ? 1.0f : -1.0f;
         if(effect == 1f){
-            scaleX = 0.2f;
+            scaleX = 0.175f;
         }
         else {
-            scaleX = -.2f;
+            scaleX = -.175f;
         }
-        canvas.draw(texture, isShaded ? Color.BLUE : Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),scaleX,0.2f);
+        canvas.draw(texture, isShaded ? Color.BLUE : Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),scaleX,0.175f);
 
     }
 
