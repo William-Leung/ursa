@@ -320,7 +320,7 @@ public class UrsaModel extends CapsuleObstacle {
             body.applyForce(forceCache, getPosition(), true);
         }
         if (Math.abs(getVY()) >= getMaxSpeed()) {
-            setVY(Math.signum(getVY()) * getMaxSpeed() * 2); // Set y-velocity, not x-velocity
+            setVY(Math.signum(getVY()) * getMaxSpeed()); // Set y-velocity, not x-velocity
         } else {
             forceCache.set(0, getyMovement()); // Set y-movement
             body.applyForce(forceCache, getPosition(), true);
