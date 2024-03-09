@@ -38,8 +38,8 @@ public class PolygonObstacle extends SimpleObstacle {
 	
 	/** Shape information for this physics object */
 	protected PolygonShape[] shapes;
-	private Pixmap linePixmap;
-	private Texture lineTexture;
+	private Pixmap shadowPixmap;
+	private Texture shadowTexture;
 	/** Texture information for this object */
 	protected PolygonRegion region;
 	
@@ -159,10 +159,10 @@ public class PolygonObstacle extends SimpleObstacle {
 	public PolygonObstacle(float[] points, float x, float y) {
 		super(x, y);
 		assert points.length % 2 == 0;
-		linePixmap = new Pixmap(1, 1, Format.RGBA8888);
-		linePixmap.setColor(new Color(0,0,0,0.1f));
-		linePixmap.fill();
-		lineTexture = new Texture(linePixmap);
+		shadowPixmap = new Pixmap(1, 1, Format.RGBA8888);
+		shadowPixmap.setColor(new Color(0,0,0,0.1f));
+		shadowPixmap.fill();
+		shadowTexture = new Texture(shadowPixmap);
 		initShapes(points);
 		initBounds();
 	}
@@ -381,9 +381,7 @@ public class PolygonObstacle extends SimpleObstacle {
 		float lineWidth = 200.0f;
 
 
-
-
-		TextureRegion lineTextureRegion = new TextureRegion(lineTexture);
+		TextureRegion lineTextureRegion = new TextureRegion(shadowTexture);
 
 		// Create a PolygonRegion for the line segment
 		float[] vertices = {middleX - lineWidth / 2, 0, middleX - lineWidth / 2, lineHeight,

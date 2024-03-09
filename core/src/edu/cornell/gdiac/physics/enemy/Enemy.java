@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.PolygonRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -28,7 +29,9 @@ public class Enemy extends BoxObstacle {
 	 * not hit the body (If we were able to hit the player then there wouldn't be any obstacles in between the body and the enemy)
 	 */
 	private float direc;
-	private Pixmap pixmap;
+	/** A Pixmap used for drawing sightcones */
+	private TextureRegion redTextureRegion;
+	private TextureRegion greenTextureRegion;
 	private final Vector2 forceCache = new Vector2();
 	private float maxSpeed;
 	private float damping;
@@ -76,7 +79,7 @@ public class Enemy extends BoxObstacle {
 
 	private static final float ENEMY_DETECTION_RANGE_SIGHT = 3f;
 
-	private static final float ENEMY_DETECTION_RANGE_SHADOW = 20;
+	private static final float ENEMY_DETECTION_RANGE_SHADOW = 10;
 
 	private static final float ENEMY_DETECTION_ANGLE_SIGHT = 30;
 
@@ -97,8 +100,24 @@ public class Enemy extends BoxObstacle {
 		direc = dire;
 		maxSpeed = data.getFloat("maxspeed", 0);
 		damping = data.getFloat("damping", 0);
+
+		/** Creating the red and green texture regions */
+		Pixmap redPixmap = new Pixmap(1, 1, Format.RGBA8888);
+		redPixmap.setColor(new Color(1, 0, 0, 0.5f));
+		redPixmap.fill();
+		Texture redTexture = new Texture(redPixmap);
+		redTextureRegion = new TextureRegion(redTexture);
+
+		Pixmap greenPixmap = new Pixmap(1, 1, Format.RGBA8888);
+		greenPixmap.setColor(new Color(0, 1, 0, 0.5f));
+		greenPixmap.fill();
+		Texture greenTexture = new Texture(greenPixmap);
+		greenTextureRegion = new TextureRegion(greenTexture);
+
+		redPixmap.dispose();
+		greenPixmap.dispose();
+		/** RED TEXTURE AND GREENTEXTURE ARE NOT DISPOSED*/
 		setName("ursa");
-		pixmap = new Pixmap(1,1, Format.RGBA8888);
 	}
 
 	/**
@@ -143,11 +162,11 @@ public class Enemy extends BoxObstacle {
 			else {
 
 
-					direc = -1;
-				}
-
+				direc = -1;
 			}
+
 		}
+	}
 
 	/**
 	 * Sets whether or not the enemy is alerted by the player
@@ -183,11 +202,10 @@ public class Enemy extends BoxObstacle {
 		Vector2 direction = new Vector2(direc * 1, 0); // Dummy direction vector. Represents the enemy looking East
 		Vector2 dirToVector = new Vector2(player.getPosition()).sub(pos).nor();
 		float angle = direction.angleDeg(dirToVector);
-		// HARD CODE TO REMOVE (also remove canvas argument)
 		boolean possiblyVisible;
 		if(isInShadow(playerPos.x * drawScale.x)) {
 			//dst <= ENEMY_DETECTION_RANGE_NOISE || (dst <= ENEMY_DETECTION_RANGE_SIGHT && (angle <= ENEMY_DETECTION_ANGLE_SIGHT || angle >= 360 - ENEMY_DETECTION_ANGLE_SIGHT));
-			possiblyVisible = dst <= 2 * ENEMY_DETECTION_RANGE_SIGHT && (angle <= ENEMY_DETECTION_ANGLE_SIGHT || angle >= 360 - ENEMY_DETECTION_ANGLE_SIGHT);
+			possiblyVisible = dst <= ENEMY_DETECTION_RANGE_SHADOW && (angle <= ENEMY_DETECTION_ANGLE_SIGHT || angle >= 360 - ENEMY_DETECTION_ANGLE_SIGHT);
 		} else {
 			possiblyVisible = dst <= ENEMY_DETECTION_RANGE_SIGHT && (angle <= ENEMY_DETECTION_ANGLE_SIGHT || angle >= 360 - ENEMY_DETECTION_ANGLE_SIGHT);
 		}
@@ -206,14 +224,13 @@ public class Enemy extends BoxObstacle {
 	}
 
 
-	// REMOVE player argument
 	public void draw(GameCanvas canvas) {
 		Color color = alerted ? Color.RED : Color.GREEN;
 		canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),direc* .1f,.1f);
 
-		drawSightCone(canvas, 8, new Vector2(direc * 1,0));
+		drawSightCone(canvas, ENEMY_DETECTION_RANGE_NOISE, new Vector2(direc * 1,0), 8);
 		if(playerInShadow) {
-			drawOuterSightCone(canvas, 8, new Vector2(direc * 1, 0));
+			drawSightCone(canvas, ENEMY_DETECTION_RANGE_SHADOW, new Vector2(direc * 1,0), 8);
 		}
 
 		screenWidth = canvas.getWidth();
@@ -222,70 +239,19 @@ public class Enemy extends BoxObstacle {
 	/**
 	 * drawSightCones(canvas, num_vertices) uses PolygonRegion to
 	 * @param canvas This is the canvas you can draw with.
-	 * @param num_vertices Number of vertices in PolygonRegion. Higher values increase smoothness.
+	 * @param range how far the enemy can see
 	 * @param direction direction in which cone faces
+	 * @param num_vertices Number of vertices in PolygonRegion. Higher values increase smoothness.
 	 * Invariant: num_vertices must be even and >= 4.
 	 */
-	public void drawSightCone(GameCanvas canvas, int num_vertices, Vector2 direction) {
-		// Create the texture for the sight cone
-		Pixmap pixmap = new Pixmap(1,1, Format.RGBA8888);
-		if(alerted) {
-			pixmap.setColor(new Color(1,0,0,0.5f));
-		} else {
-			pixmap.setColor(new Color(0,1,0,0.5f));
-		}
-		pixmap.fill();
-		Texture cone_texture = new Texture(pixmap);
-		TextureRegion cone_texture_region = new TextureRegion(cone_texture);
-
-		// Create the vertices to form the cone
+	public void drawSightCone(GameCanvas canvas, float range, Vector2 direction, int num_vertices) {
+		// Create the vertices which will form the cone
 		float[] vertices = new float[num_vertices * 2];
 		vertices[0] = 0f;
 		vertices[1] = 0f;
 		float curr_angle = ENEMY_DETECTION_ANGLE_SIGHT + direction.angleDeg();
 		float angle_scale_factor =  (ENEMY_DETECTION_ANGLE_SIGHT)/ ((num_vertices - 2 ) / 2);
 		for(int i = 2; i < vertices.length - 1; i += 2) {
-			vertices[i] = drawScale.x * ENEMY_DETECTION_RANGE_SIGHT * (float) Math.cos(Math.toRadians(curr_angle));
-			vertices[i+1] = drawScale.y * ENEMY_DETECTION_RANGE_SIGHT * (float) Math.sin(Math.toRadians(curr_angle));
-			curr_angle -= angle_scale_factor;
-		}
-
-		// Specify triangles to draw our texture region.
-		// For example, triangles = {0,1,2} draws a triangle between vertices 0, 1, and 2
-		short[] triangles = new short[3 * (num_vertices - 2)];
-		short triangle_counter = 1;
-		for(int i = 0; i < triangles.length - 2; i += 3) {
-			triangles[i] = 0;
-			triangles[i+1] = triangle_counter;
-			triangle_counter++;
-			triangles[i+2] = triangle_counter;
-		}
-
-		PolygonRegion polygonRegion = new PolygonRegion(cone_texture_region,vertices, triangles);
-		canvas.draw(polygonRegion, Color.WHITE, origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),1.0f,1.0f);
-	}
-
-	public void drawOuterSightCone(GameCanvas canvas, int num_vertices, Vector2 direction) {
-		// Create the texture for the sight cone
-		Pixmap pixmap = new Pixmap(1,1, Format.RGBA8888);
-		if(alerted) {
-			pixmap.setColor(new Color(1,0,0,0.5f));
-		} else {
-			pixmap.setColor(new Color(0,1,0,0.5f));
-		}
-		pixmap.fill();
-		Texture cone_texture = new Texture(pixmap);
-		TextureRegion cone_texture_region = new TextureRegion(cone_texture);
-
-		// Create the vertices to form the cone
-		float[] vertices = new float[num_vertices * 2];
-		vertices[0] = 0f;
-		vertices[1] = 0f;
-		float curr_angle = ENEMY_DETECTION_ANGLE_SIGHT + direction.angleDeg();
-		float angle_scale_factor =  (ENEMY_DETECTION_ANGLE_SIGHT)/ ((num_vertices - 2 ) / 2);
-		float range = ENEMY_DETECTION_RANGE_SIGHT * 2 ;
-		for(int i = 2; i < vertices.length - 1; i += 2) {
-			/** FIX: this 30 is super hard-coded. find out the world-local scaling*/
 			vertices[i] = drawScale.x * range * (float) Math.cos(Math.toRadians(curr_angle));
 			vertices[i+1] = drawScale.y * range * (float) Math.sin(Math.toRadians(curr_angle));
 			curr_angle -= angle_scale_factor;
@@ -302,7 +268,13 @@ public class Enemy extends BoxObstacle {
 			triangles[i+2] = triangle_counter;
 		}
 
-		PolygonRegion polygonRegion = new PolygonRegion(cone_texture_region,vertices, triangles);
+		// Create a polygonRegion with color dependent on alerted
+		PolygonRegion polygonRegion;
+		if(alerted) {
+			polygonRegion = new PolygonRegion(redTextureRegion,vertices, triangles);
+		} else {
+			polygonRegion = new PolygonRegion(greenTextureRegion,vertices, triangles);
+		}
 		canvas.draw(polygonRegion, Color.WHITE, origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),1.0f,1.0f);
 	}
 
