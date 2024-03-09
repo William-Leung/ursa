@@ -61,6 +61,9 @@ public class SceneModel extends WorldController implements ContactListener {
     private UrsaModel avatar;
     /** List of references to enemies */
     private Enemy[] enemies = new Enemy[20];
+    private float timer = 0;
+    private TextureRegion[] playerWalk = new TextureRegion[11];
+    private int playerWalkAnimIndex = 0;
     /** Reference to the goalDoor (for collision detection) */
     private BoxObstacle goalDoor;
     /** Controller for all dynamic shadows */
@@ -81,6 +84,7 @@ public class SceneModel extends WorldController implements ContactListener {
         setFailure(false);
         world.setContactListener(this);
         sensorFixtures = new ObjectSet<Fixture>();
+
     }
     /**
      * Gather the assets for this controller.
@@ -100,6 +104,18 @@ public class SceneModel extends WorldController implements ContactListener {
         bridgeTexture = new TextureRegion(directory.getEntry("platform:rope",Texture.class));
         shadowTexture = new TextureRegion(directory.getEntry("platform:shadow",Texture.class));
         backGround = new TextureRegion(directory.getEntry("platform:snowback",Texture.class));
+        playerWalk[0] = new TextureRegion(directory.getEntry("platform:ursaWalk1",Texture.class));
+        playerWalk[1] = new TextureRegion(directory.getEntry("platform:ursaWalk2",Texture.class));
+        playerWalk[2] = new TextureRegion(directory.getEntry("platform:ursaWalk3",Texture.class));
+        playerWalk[3] = new TextureRegion(directory.getEntry("platform:ursaWalk4",Texture.class));
+        playerWalk[4] = new TextureRegion(directory.getEntry("platform:ursaWalk5",Texture.class));
+        playerWalk[5] = new TextureRegion(directory.getEntry("platform:ursaWalk6",Texture.class));
+        playerWalk[6] = new TextureRegion(directory.getEntry("platform:ursaWalk7",Texture.class));
+        playerWalk[7] = new TextureRegion(directory.getEntry("platform:ursaWalk8",Texture.class));
+        playerWalk[8] = new TextureRegion(directory.getEntry("platform:ursaWalk9",Texture.class));
+        playerWalk[9] = new TextureRegion(directory.getEntry("platform:ursaWalk10",Texture.class));
+
+
 
 
 
@@ -260,14 +276,24 @@ public class SceneModel extends WorldController implements ContactListener {
         // Process actions in object model
         float xVal = InputController.getInstance().getHorizontal() *avatar.getForce();
         float yVal = InputController.getInstance().getVertical() *avatar.getForce();
-
+        timer += 1;
         avatar.setMovement(xVal,yVal);
         // avatar.setJumping(InputController.getInstance().didPrimary());
         avatar.setShooting(InputController.getInstance().didSecondary());
 
-        // Add a bullet if we fire
-        if (avatar.isShooting()) {
-            createBullet();
+        if(playerWalkAnimIndex == 0){
+            ursaTexture = playerWalk[playerWalkAnimIndex];
+            avatar.setTexture(ursaTexture);
+            playerWalkAnimIndex += 1;
+
+        }
+        else if(timer % 3== 0){
+            ursaTexture = playerWalk[playerWalkAnimIndex];
+            avatar.setTexture(ursaTexture);
+            playerWalkAnimIndex += 1;
+            if(playerWalkAnimIndex == 10){
+                playerWalkAnimIndex = 0;
+            }
         }
 
         avatar.applyForce();

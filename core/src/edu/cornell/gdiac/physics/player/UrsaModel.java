@@ -14,6 +14,7 @@ public class UrsaModel extends CapsuleObstacle {
     /** The initializing data (to avoid magic numbers) */
     private final JsonValue data;
 
+
     /** The factor to multiply by the input */
     private final float force;
     /** The amount to slow the character down */
@@ -365,12 +366,12 @@ public class UrsaModel extends CapsuleObstacle {
         float scaleX;
         float effect = faceRight ? 1.0f : -1.0f;
         if(effect == 1f){
-            scaleX = 0.02f;
+            scaleX = 0.2f;
         }
         else {
-            scaleX = -.02f;
+            scaleX = -.2f;
         }
-        canvas.draw(texture, isShaded ? Color.BLUE : Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),scaleX,0.02f);
+        canvas.draw(texture, isShaded ? Color.BLUE : Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),scaleX,0.2f);
 
     }
 
