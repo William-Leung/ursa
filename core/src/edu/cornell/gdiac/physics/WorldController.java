@@ -107,6 +107,7 @@ public abstract class WorldController implements Screen {
 
 	private TextureRegion backGround;
 	private float snowFall = 450.0f;
+	private Color backgroundColor = new Color(0.8f,1f,1f,0.9f);
 
 	/**
 	 * Returns true if debug mode is active.
@@ -224,7 +225,6 @@ public abstract class WorldController implements Screen {
 	protected WorldController() {
 		this(new Rectangle(0,0,DEFAULT_WIDTH,DEFAULT_HEIGHT), 
 			 new Vector2(0,DEFAULT_GRAVITY));
-
 	}
 
 	/**
@@ -461,7 +461,8 @@ public abstract class WorldController implements Screen {
 		canvas.clear();
 		
 		canvas.begin();
-		canvas.draw(snowBackGround,0,0);
+		//canvas.draw(snowBackGround,0,0);
+		canvas.draw(snowBackGround,backgroundColor,0,0, canvas.getWidth(), canvas.getHeight());
 		if (snowFall < -100.0f) {
 			snowFall = 450.0f;
 		}
