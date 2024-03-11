@@ -63,7 +63,9 @@ public class SceneModel extends WorldController implements ContactListener {
     private Enemy[] enemies = new Enemy[20];
     private float timer = 0;
     private TextureRegion[] playerWalk = new TextureRegion[11];
+    private TextureRegion[] salmonWalk = new TextureRegion[8];
     private int playerWalkAnimIndex = 0;
+    private int salmonWalkAnimIndex = 0;
     /** Reference to the goalDoor (for collision detection) */
     private BoxObstacle goalDoor;
     /** Controller for all dynamic shadows */
@@ -114,7 +116,14 @@ public class SceneModel extends WorldController implements ContactListener {
         playerWalk[7] = new TextureRegion(directory.getEntry("platform:ursaWalk8",Texture.class));
         playerWalk[8] = new TextureRegion(directory.getEntry("platform:ursaWalk9",Texture.class));
         playerWalk[9] = new TextureRegion(directory.getEntry("platform:ursaWalk10",Texture.class));
-
+        salmonWalk[0] = new TextureRegion(directory.getEntry("enemies:salmonWalk1",Texture.class));
+        salmonWalk[1] = new TextureRegion(directory.getEntry("enemies:salmonWalk2",Texture.class));
+        salmonWalk[2] = new TextureRegion(directory.getEntry("enemies:salmonWalk3",Texture.class));
+        salmonWalk[3] = new TextureRegion(directory.getEntry("enemies:salmonWalk4",Texture.class));
+        salmonWalk[4] = new TextureRegion(directory.getEntry("enemies:salmonWalk5",Texture.class));
+        salmonWalk[5] = new TextureRegion(directory.getEntry("enemies:salmonWalk6",Texture.class));
+        salmonWalk[6] = new TextureRegion(directory.getEntry("enemies:salmonWalk7",Texture.class));
+        salmonWalk[7] = new TextureRegion(directory.getEntry("enemies:salmonWalk8",Texture.class));
 
 
 
@@ -262,6 +271,35 @@ public class SceneModel extends WorldController implements ContactListener {
         return true;
     }
 
+    private void animateModels(){
+        if(playerWalkAnimIndex == 0){
+            ursaTexture = playerWalk[playerWalkAnimIndex];
+            avatar.setTexture(ursaTexture);
+            playerWalkAnimIndex += 1;
+
+        }
+        else if(timer % 3== 0){
+            ursaTexture = playerWalk[playerWalkAnimIndex];
+            avatar.setTexture(ursaTexture);
+            playerWalkAnimIndex += 1;
+            if(playerWalkAnimIndex == 10){
+                playerWalkAnimIndex = 0;
+            }
+        }
+        if(salmonWalkAnimIndex == 0 ){
+            enemyTexture = salmonWalk[0];
+            enemies[0].setTexture(enemyTexture);
+            salmonWalkAnimIndex += 1;
+        }else if(timer % 3== 0){
+            enemyTexture = salmonWalk[salmonWalkAnimIndex];
+            enemies[0].setTexture(enemyTexture);
+            salmonWalkAnimIndex += 1;
+            if(salmonWalkAnimIndex == 8){
+                salmonWalkAnimIndex = 0;
+            }
+        }
+    }
+
     /**
      * The core gameplay loop of this world.
      *
@@ -279,22 +317,9 @@ public class SceneModel extends WorldController implements ContactListener {
         timer += 1;
         avatar.setMovement(xVal,yVal);
         // avatar.setJumping(InputController.getInstance().didPrimary());
-        avatar.setShooting(InputController.getInstance().didSecondary());
+        //avatar.setShooting(InputController.getInstance().didSecondary());
 
-        if(playerWalkAnimIndex == 0){
-            ursaTexture = playerWalk[playerWalkAnimIndex];
-            avatar.setTexture(ursaTexture);
-            playerWalkAnimIndex += 1;
-
-        }
-        else if(timer % 3== 0){
-            ursaTexture = playerWalk[playerWalkAnimIndex];
-            avatar.setTexture(ursaTexture);
-            playerWalkAnimIndex += 1;
-            if(playerWalkAnimIndex == 10){
-                playerWalkAnimIndex = 0;
-            }
-        }
+        animateModels();
 
         avatar.applyForce();
         enemies[0].applyForce();
