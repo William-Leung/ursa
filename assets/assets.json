@@ -52,7 +52,7 @@
         "platform:ursaWalk8":  "platform/Character_walking_8.png",
         "platform:ursaWalk9":  "platform/Character_walking_9.png",
         "platform:ursaWalk10":  "platform/Character_walking_10.png",
-
+        "platform:ursaWalk10":  "platform/Character_walking_10.png",
         "platform:rope":  "platform/ropebridge.png",
         "platform:barrier": "platform/barrier.png",
         "platform:bullet":  "platform/bullet.png",
