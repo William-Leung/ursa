@@ -303,6 +303,7 @@ public class UrsaModel extends CapsuleObstacle {
         }
 
         // Don't want to be moving. Damp out player motion
+
         if (getXMovement() == 0f) {
             forceCache.set(-getDamping() * getVX(), 0);
             body.applyForce(forceCache, getPosition(), true);

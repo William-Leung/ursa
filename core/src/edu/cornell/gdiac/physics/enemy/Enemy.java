@@ -38,6 +38,9 @@ public class Enemy extends BoxObstacle {
 
 	private boolean playerInShadow = false;
 	private float screenWidth = 1280f;
+	/** the vector to use to indicate the direction the enemy character
+	 * should go/face x and y should be either -15 or 15 or 0*/
+	private Vector2 movementDirection = new Vector2(15,0);
 	private static class EnemyLoSCallback implements RayCastCallback {
 
 		/**
@@ -99,7 +102,8 @@ public class Enemy extends BoxObstacle {
 		setFixedRotation(true);
 		direc = dire;
 		maxSpeed = data.getFloat("maxspeed", 0);
-		damping = data.getFloat("damping", 0);
+		damping = 15; //data.getFloat("damping", 0);
+
 
 		/** Creating the red and green texture regions */
 		Pixmap redPixmap = new Pixmap(1, 1, Format.RGBA8888);
@@ -131,40 +135,36 @@ public class Enemy extends BoxObstacle {
 		if (!isActive()) {
 			return;
 		}
-		if (direc == -1) {
-			if (this.getPosition().x > 5) {
-				if (Math.abs(getVX()) >= maxSpeed) {
-					setVX(Math.signum(getVX()) * maxSpeed);
-				} else {
-					forceCache.set(direc * 30, 0);
-					body.applyForce(forceCache, getPosition(), true);
-
-				}
-
-			}
-			else {
-
-				direc = 1;
-
-
-			}
+		if(this.getPosition().x >= 15){
+			movementDirection.x = -15;
+			direc = -1;
 		}
-		else {
-			if (this.getPosition().x < 12) {
-				if (Math.abs(getVX()) >= maxSpeed) {
-					setVX(Math.signum(getVX()) * maxSpeed);
-				} else {
-					forceCache.set(direc * 30, 0);
-					body.applyForce(forceCache, getPosition(), true);
-				}
+		if(this.getPosition().x <= 5)
+		{
+			movementDirection.x = 15;
+			direc = 1;
+		}
+		if (movementDirection.x == 0f) {
+			forceCache.set(-damping * getVX(), 0);
+			body.applyForce(forceCache, getPosition(), true);
+		}
+		if (movementDirection.y == 0f) {
+			forceCache.set(0, -damping * getVY());
+			body.applyForce(forceCache, getPosition(), true);
+		}
 
-			}
-			else {
-
-
-				direc = -1;
-			}
-
+		// Velocity too high, clamp it
+		if (Math.abs(getVX()) >= maxSpeed * 2) {
+			//setVX(Math.signum(getVX()) * maxSpeed);
+		} else {
+			forceCache.set(movementDirection.x, 0);
+			body.applyForce(forceCache, getPosition(), true);
+		}
+		if (Math.abs(getVY()) >= maxSpeed * 2) {
+			//setVY(Math.signum(getVY()) * maxSpeed ); // Set y-velocity, not x-velocity
+		} else {
+			forceCache.set(0, movementDirection.y); // Set y-movement
+			body.applyForce(forceCache, getPosition(), true);
 		}
 	}
 
