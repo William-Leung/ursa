@@ -40,6 +40,8 @@ public class SceneModel extends WorldController implements ContactListener {
     private TextureRegion bridgeTexture;
     /** Texture asset for the shadows */
     private TextureRegion shadowTexture;
+    private TextureRegion tundraTree;
+    private TextureRegion tundraTreeWithSnow;
     private TextureRegion backGround;
 
     /** The jump sound.  We only want to play once. */
@@ -106,6 +108,9 @@ public class SceneModel extends WorldController implements ContactListener {
         bridgeTexture = new TextureRegion(directory.getEntry("platform:rope",Texture.class));
         shadowTexture = new TextureRegion(directory.getEntry("platform:shadow",Texture.class));
         backGround = new TextureRegion(directory.getEntry("platform:snowback",Texture.class));
+        tundraTree = new TextureRegion(directory.getEntry("object:tundra_tree",Texture.class));
+        tundraTreeWithSnow = new TextureRegion(directory.getEntry("object:tundra_tree_with_snow", Texture.class));
+
         playerWalk[0] = new TextureRegion(directory.getEntry("platform:ursaWalk1",Texture.class));
         playerWalk[1] = new TextureRegion(directory.getEntry("platform:ursaWalk2",Texture.class));
         playerWalk[2] = new TextureRegion(directory.getEntry("platform:ursaWalk3",Texture.class));
@@ -206,8 +211,23 @@ public class SceneModel extends WorldController implements ContactListener {
             obj.setFriction(defaults.getFloat( "friction", 0.0f ));
             obj.setRestitution(defaults.getFloat( "restitution", 0.0f ));
             obj.setDrawScale(scale);
-            obj.setTexture(earthTile);
+            obj.setTexture(ursaTexture);
             obj.setName(pname+ii);
+            addObject(obj);
+        }
+
+        String tname = "tree";
+        JsonValue treejv = constants.get("trees");
+        for(int ii = 0; ii < treejv.size; ii++) {
+            PolygonObstacle obj;
+            obj = new PolygonObstacle(treejv.get(ii).asFloatArray(),0,0);
+            obj.setBodyType(BodyDef.BodyType.StaticBody);
+            obj.setDensity(defaults.getFloat( "density", 0.0f ));
+            obj.setFriction(defaults.getFloat( "friction", 0.0f ));
+            obj.setRestitution(defaults.getFloat( "restitution", 0.0f ));
+            obj.setDrawScale(scale);
+            obj.setTexture(tundraTree);
+            obj.setName(tname+ii);
             addObject(obj);
         }
 

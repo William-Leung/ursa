@@ -34,6 +34,8 @@
                 }
             }
         },
+        "object:tundra_tree": "object/tundra_tree.png",
+        "object:tundra_tree_with_snow": "object/tundra_tree_snow.png",
         "rocket:crate01": "rocket/crate01.png",
         "rocket:crate02": "rocket/crate02.png",
         "platform:dude":  "platform/dude.png",
