@@ -27,6 +27,7 @@ import edu.cornell.gdiac.physics.platform.RopeBridge;
 import edu.cornell.gdiac.physics.platform.Spinner;
 import edu.cornell.gdiac.physics.player.UrsaModel;
 import edu.cornell.gdiac.physics.shadows.ShadowController;
+import edu.cornell.gdiac.physics.tree.Tree;
 
 public class SceneModel extends WorldController implements ContactListener {
     /** Texture asset for character avatar */
@@ -221,14 +222,14 @@ public class SceneModel extends WorldController implements ContactListener {
         String tname = "tree";
         JsonValue treejv = constants.get("trees");
         for(int ii = 0; ii < treejv.size; ii++) {
-            PolygonObstacle obj;
-            obj = new PolygonObstacle(treejv.get(ii).asFloatArray(),0,0);
+            Tree obj;
+            obj = new Tree(treejv.get(ii).asFloatArray(),0,0);
             obj.setBodyType(BodyDef.BodyType.StaticBody);
             obj.setDensity(defaults.getFloat( "density", 0.0f ));
             obj.setFriction(defaults.getFloat( "friction", 0.0f ));
             obj.setRestitution(defaults.getFloat( "restitution", 0.0f ));
             obj.setDrawScale(scale);
-            obj.setTexture(tundraTree);
+            obj.setTexture(tundraTreeWithSnow);
             obj.setName(tname+ii);
             addObject(obj);
         }
