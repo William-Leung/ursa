@@ -17,6 +17,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.assets.FilmStripLoader;
 import edu.cornell.gdiac.physics.enemy.Enemy;
 import edu.cornell.gdiac.physics.enemy.EnemyModel;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
@@ -28,6 +29,7 @@ import edu.cornell.gdiac.physics.platform.Spinner;
 import edu.cornell.gdiac.physics.player.UrsaModel;
 import edu.cornell.gdiac.physics.shadows.ShadowController;
 import edu.cornell.gdiac.physics.tree.Tree;
+import edu.cornell.gdiac.util.FilmStrip;
 
 public class SceneModel extends WorldController implements ContactListener {
     /** Texture asset for character avatar */
@@ -35,6 +37,7 @@ public class SceneModel extends WorldController implements ContactListener {
     private TextureRegion ursaTexture;
     private TextureRegion enemyTexture;
     private TextureRegion enemyTexture2;
+    private FilmStrip salmonFilmStrip;
     /** Texture asset for the spinning barrier */
     private TextureRegion barrierTexture;
     /** Texture asset for the bullet */
@@ -113,6 +116,8 @@ public class SceneModel extends WorldController implements ContactListener {
         backGround = new TextureRegion(directory.getEntry("platform:snowback",Texture.class));
         tundraTree = new TextureRegion(directory.getEntry("object:tundra_tree",Texture.class));
         tundraTreeWithSnow = new TextureRegion(directory.getEntry("object:tundra_tree_with_snow", Texture.class));
+
+        // do in a film strip
 
         playerWalk[0] = new TextureRegion(directory.getEntry("platform:ursaWalk1",Texture.class));
         playerWalk[1] = new TextureRegion(directory.getEntry("platform:ursaWalk2",Texture.class));
