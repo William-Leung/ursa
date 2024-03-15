@@ -193,6 +193,9 @@ public class SceneModel extends WorldController implements ContactListener {
 //        goalDoor.setName("goal");
 //        addObject(goalDoor);
 
+        // create shadow (idk if this does anything even)
+        shadows = new ShadowController();
+
         String wname = "wall";
         JsonValue walljv = constants.get("walls");
         JsonValue defaults = constants.get("defaults");
@@ -224,21 +227,6 @@ public class SceneModel extends WorldController implements ContactListener {
             addObject(obj);
         }
 
-        String tname = "tree";
-        JsonValue treejv = constants.get("trees");
-        for(int ii = 0; ii < treejv.size; ii++) {
-            Tree obj;
-            obj = new Tree(treejv.get(ii).asFloatArray(),0,0);
-            obj.setBodyType(BodyDef.BodyType.StaticBody);
-            obj.setDensity(defaults.getFloat( "density", 0.0f ));
-            obj.setFriction(defaults.getFloat( "friction", 0.0f ));
-            obj.setRestitution(defaults.getFloat( "restitution", 0.0f ));
-            obj.setDrawScale(scale);
-            obj.setTexture(tundraTreeWithSnow);
-            obj.setName(tname+ii);
-            addObject(obj);
-        }
-
         // This world is heavier
         //world.setGravity( new Vector2(0,defaults.getFloat("gravity",0)) );
 
@@ -266,11 +254,22 @@ public class SceneModel extends WorldController implements ContactListener {
         enemies[1].setTexture(enemyTexture2);
         addObject(enemies[1]);
 
+        String tname = "tree";
+        JsonValue treejv = constants.get("trees");
+        for(int ii = 0; ii < treejv.size; ii++) {
+            Tree obj;
+            obj = new Tree(treejv.get(ii).asFloatArray(),0,2);
+            obj.setBodyType(BodyDef.BodyType.StaticBody);
+            obj.setDensity(defaults.getFloat( "density", 0.0f ));
+            obj.setFriction(defaults.getFloat( "friction", 0.0f ));
+            obj.setRestitution(defaults.getFloat( "restitution", 0.0f ));
+            obj.setDrawScale(scale);
+            obj.setTexture(tundraTreeWithSnow);
+            obj.setName(tname+ii);
+            addObject(obj);
 
-        // create shadow (idk if this does anything even)
-        shadows = new ShadowController();
-        shadows.setTexture(shadowTexture);
-        shadows.initAllShadows();
+            shadows.addShadow(obj.getShadow());
+        }
 
         volume = constants.getFloat("volume", 1.0f);
     }
@@ -365,7 +364,6 @@ public class SceneModel extends WorldController implements ContactListener {
         canvas.clear();
         canvas.begin();
         shadows.update();
-        shadows.drawAllShadows(canvas);
         canvas.end();
     }
 
@@ -500,5 +498,10 @@ public class SceneModel extends WorldController implements ContactListener {
         // jumpSound.stop(jumpId);
         plopSound.stop(plopId);
         fireSound.stop(fireId);
+    }
+
+    @Override
+    public void preDraw(float dt) {
+        shadows.drawAllShadows(canvas);
     }
 }

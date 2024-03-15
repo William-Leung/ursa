@@ -446,6 +446,10 @@ public abstract class WorldController implements Screen {
 			}
 		}
 	}
+
+	public void preDraw(float dt) {
+
+	}
 	
 	/**
 	 * Draw the physics objects to the canvas
@@ -462,10 +466,14 @@ public abstract class WorldController implements Screen {
 		
 		canvas.begin();
 		//canvas.draw(snowBackGround,0,0);
+
 		canvas.draw(snowBackGround,backgroundColor,0,0, canvas.getWidth(), canvas.getHeight());
 		if (snowFall < -100.0f) {
 			snowFall = 450.0f;
 		}
+
+		preDraw(dt);
+
 		for(Obstacle obj : objects) {
 			obj.draw(canvas);
 		}
@@ -481,6 +489,7 @@ public abstract class WorldController implements Screen {
 
 		snowFall -= 0.2f;
 
+		postDraw(dt);
 
 		canvas.end();
 		
@@ -504,6 +513,10 @@ public abstract class WorldController implements Screen {
 			canvas.drawTextCentered("FAILURE!", displayFont, 0.0f);
 			canvas.end();
 		}
+	}
+
+	public void postDraw(float dt) {
+
 	}
 
 	/**

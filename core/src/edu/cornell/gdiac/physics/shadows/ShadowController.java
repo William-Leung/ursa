@@ -46,22 +46,22 @@ public class ShadowController {
 
     public void addShadow(ShadowModel sh) { shadows.add(sh); }
 
-    public void initAllShadows() {
-
-        // INITIALIZATION DATA FOR ALL THE SHADOWS --- DELETE LATER
-        ShadowModel[] init_data = {
-                new ShadowModel(new Vector2(100f, 100f), new Vector2(300f,300f), texture)
-        };
-
-        for (ShadowModel sh : init_data) addShadow(sh);
-    }
+//    public void initAllShadows() {
+//
+//        // INITIALIZATION DATA FOR ALL THE SHADOWS --- DELETE LATER
+//        ShadowModel[] init_data = {
+//                new ShadowModel(new Vector2(100f, 100f), new Vector2(300f,300f), texture)
+//        };
+//
+//        for (ShadowModel sh : init_data) addShadow(sh);
+//    }
 
     public void updateShadow(ShadowModel sh) {
-        if (time < TICKS_PER_DAY / 2) {
-            sh.setWidth(sh.getInitWidth() - (time * (1/(TICKS_PER_DAY / 2))));
-        } else {
-            sh.setWidth(0 + (time * (1/(TICKS_PER_DAY / 2))));
-        }
+//        if (time < TICKS_PER_DAY / 2) {
+//            sh.setWidth(sh.getInitWidth() - (time * (1/(TICKS_PER_DAY / 2))));
+//        } else {
+//            sh.setWidth(0 + (time * (1/(TICKS_PER_DAY / 2))));
+//        }
         //System.out.println("Ticks: " + time);
     }
 

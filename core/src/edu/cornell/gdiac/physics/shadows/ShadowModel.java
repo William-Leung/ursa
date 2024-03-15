@@ -24,6 +24,11 @@ public class ShadowModel {
     /** The texture used to show this shadow */
     private TextureRegion texture;
 
+    private float sx;
+    private float sy;
+    private Vector2 drawScale = new Vector2();
+    private Vector2 origin = new Vector2();
+
 
     public Vector2 getTopLeft() { return top_left; }
 
@@ -46,6 +51,30 @@ public class ShadowModel {
 
         this.initial_height = top_left.y - bottom_right.y;
         this.initial_width = bottom_right.x - top_left.x;
+    }
+
+    public ShadowModel(Vector2 anchor) {
+        this.shadow_anchor = anchor;
+
+        this.initial_height = 0;
+        this.initial_width = 0;
+    }
+
+    public void setTexture(TextureRegion value) {
+        this.texture = value;
+    }
+
+    public void setTextureOrigin(Vector2 origin) {
+        this.origin.set(origin);
+    }
+
+    public void setScale(float sx, float sy) {
+        this.sx = sx;
+        this.sy = sy;
+    }
+
+    public void setDrawScale(Vector2 scale) {
+        this.drawScale.set(scale);
     }
 
     public float getWidth() { return bottom_right.x - top_left.x; }
@@ -73,7 +102,12 @@ public class ShadowModel {
     public float getInitWidth() { return initial_width; }
 
     public void draw(GameCanvas canvas) {
-        canvas.draw(texture, Color.WHITE,getAnchor().x,getAnchor().y,getWidth(),getHeight());
+        Affine2 affine = new Affine2()
+            .setToTranslation(shadow_anchor.x * drawScale.x, shadow_anchor.y * drawScale.y)
+            .scale(sx, sy)
+            .shear(0.25f, 0);
+
+        canvas.draw(texture, new Color(0, 0, 0, 127), origin.x, origin.y, affine);
     }
 
 }
