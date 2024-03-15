@@ -447,6 +447,11 @@ public abstract class WorldController implements Screen {
 		}
 	}
 
+	/**
+	 * Draws objects to the canvas that are meant to be drawn before the main objects
+	 * are drawn.
+	 * @param dt	Number of seconds since last animation frame
+	 */
 	public void preDraw(float dt) {
 
 	}
@@ -515,6 +520,11 @@ public abstract class WorldController implements Screen {
 		}
 	}
 
+	/**
+	 * Draws objects to the canvas that are meant to be drawn after the main objects
+	 * are drawn.
+	 * @param dt	Number of seconds since last animation frame
+	 */
 	public void postDraw(float dt) {
 
 	}
