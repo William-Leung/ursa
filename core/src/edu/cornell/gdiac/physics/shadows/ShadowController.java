@@ -15,6 +15,17 @@ public class ShadowController {
     /** The texture used for all shadows in this controller. */
     private TextureRegion texture;
 
+    /**
+     * The amount of x-skew to apply to all shadows
+     */
+    private float xSkew = 0.75f;
+
+    /**
+     * The amount of y-scaling to apply to all shadows. If this is negative then the shadow will appear
+     * upside down.
+     */
+    private float yScalar = 0.8f;
+
     /** The total number of ticks in a day */
     private static final int TICKS_PER_DAY = 240;
 
@@ -77,7 +88,7 @@ public class ShadowController {
 
     public void drawAllShadows(GameCanvas canvas) {
         for (ShadowModel sh: shadows) {
-            sh.draw(canvas);
+            sh.draw(canvas, xSkew, yScalar);
         }
     }
 

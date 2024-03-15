@@ -101,11 +101,11 @@ public class ShadowModel {
 
     public float getInitWidth() { return initial_width; }
 
-    public void draw(GameCanvas canvas) {
+    public void draw(GameCanvas canvas, float xSkew, float yScalar) {
         Affine2 affine = new Affine2()
             .setToTranslation(shadow_anchor.x * drawScale.x, shadow_anchor.y * drawScale.y)
-            .scale(sx, sy)
-            .shear(0.25f, 0);
+            .scale(sx, sy * yScalar)
+            .shear(xSkew, 0);
 
         canvas.draw(texture, new Color(0, 0, 0, 127), origin.x, origin.y, affine);
     }
