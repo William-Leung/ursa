@@ -28,6 +28,7 @@ import edu.cornell.gdiac.physics.platform.RopeBridge;
 import edu.cornell.gdiac.physics.platform.Spinner;
 import edu.cornell.gdiac.physics.player.UrsaModel;
 import edu.cornell.gdiac.physics.shadows.ShadowController;
+import edu.cornell.gdiac.physics.shadows.ShadowedObject;
 import edu.cornell.gdiac.physics.tree.Tree;
 import edu.cornell.gdiac.util.FilmStrip;
 
@@ -267,8 +268,16 @@ public class SceneModel extends WorldController implements ContactListener {
             obj.setTexture(tundraTreeWithSnow);
             obj.setName(tname+ii);
             addObject(obj);
+        }
 
-            shadows.addShadow(obj.getShadow());
+        /*
+         * For all obstacles/objects that have a drawn shadow to them, add them to the shadow controller
+         */
+        for (Obstacle obstacle : objects) {
+            if (obstacle instanceof ShadowedObject) {
+                ShadowedObject shadowedObject = (ShadowedObject) obstacle;
+                shadows.addShadow(shadowedObject.getShadow());
+            }
         }
 
         volume = constants.getFloat("volume", 1.0f);
