@@ -367,12 +367,12 @@ public class UrsaModel extends CapsuleObstacle {
         float scaleX;
         float effect = faceRight ? 1.0f : -1.0f;
         if(effect == 1f){
-            scaleX = 0.175f;
+            scaleX = 0.3f;
         }
         else {
-            scaleX = -.175f;
+            scaleX = -.3f;
         }
-        canvas.draw(texture, isShaded ? Color.BLUE : Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),scaleX,0.175f);
+        canvas.draw(texture, isShaded ? Color.BLUE : Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),scaleX,0.3f);
 
     }
 

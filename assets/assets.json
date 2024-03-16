@@ -44,6 +44,8 @@
         "platform:snowback": "platform/snow.png",
         "platform:snowbackground": "platform/Background.JPG",
         "platform:ursa":  "platform/ursa2.png",
+        "player:ursaWalk": "player/Walk.png",
+        "player:ursaIdle": "player/Stand.png",
         "platform:ursaWalk1":  "platform/Character_walking_1.png",
         "platform:ursaWalk2":  "platform/Character_walking_2.png",
         "platform:ursaWalk3":  "platform/Character_walking_3.png",
