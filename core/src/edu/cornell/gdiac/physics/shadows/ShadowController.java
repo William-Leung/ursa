@@ -74,6 +74,7 @@ public class ShadowController {
 //            sh.setWidth(0 + (time * (1/(TICKS_PER_DAY / 2))));
 //        }
         //System.out.println("Ticks: " + time);
+        sh.rotateDirection(1);
     }
 
     public void update() {

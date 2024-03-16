@@ -258,7 +258,7 @@ public class SceneModel extends WorldController implements ContactListener {
         JsonValue treejv = constants.get("trees");
         for(int ii = 0; ii < treejv.size; ii++) {
             Tree obj;
-            obj = new Tree(treejv.get(ii).asFloatArray(),0,2);
+            obj = new Tree(treejv.get(ii).asFloatArray(),1,3);
             obj.setBodyType(BodyDef.BodyType.StaticBody);
             obj.setDensity(defaults.getFloat( "density", 0.0f ));
             obj.setFriction(defaults.getFloat( "friction", 0.0f ));

@@ -29,6 +29,12 @@ public class ShadowModel {
     private Vector2 drawScale = new Vector2();
     private Vector2 origin = new Vector2();
 
+    /**
+     * The direction that the shadow is facing.
+     * Invariant: This vector is always normalized.
+     */
+    private Vector2 direction = new Vector2(0, 1);
+
 
     public Vector2 getTopLeft() { return top_left; }
 
@@ -58,6 +64,23 @@ public class ShadowModel {
 
         this.initial_height = 0;
         this.initial_width = 0;
+    }
+
+    /**
+     * Rotates the direction of the shadow by the given degrees. These rotations are counterclockwise.
+     * @param degrees The amount of degrees to rotate the shadow.
+     */
+    public void rotateDirection(float degrees) {
+        direction.rotateDeg(degrees).nor();
+    }
+
+    /**
+     * Gets the direction of the shadow. Modifying this vector can have unintended behavior. If you need to modify it for external use,
+     * use {@link Vector2#cpy()} or {@link Vector2#Vector2(Vector2)} to construct a copy of the direction.
+     * @return The direction of the shadow.
+     */
+    public Vector2 getDirection() {
+        return direction;
     }
 
     public void setTexture(TextureRegion value) {
@@ -101,11 +124,17 @@ public class ShadowModel {
 
     public float getInitWidth() { return initial_width; }
 
+    /**
+     * Draws the shadow onto the given GameCanvas with the specified max skew and y-scalar
+     * @param canvas The GameCanvas to draw to
+     * @param xSkew The maximum skew that this shadow can have.
+     * @param yScalar The maximum y-scaling this shadow can have.
+     */
     public void draw(GameCanvas canvas, float xSkew, float yScalar) {
         Affine2 affine = new Affine2()
             .setToTranslation(shadow_anchor.x * drawScale.x, shadow_anchor.y * drawScale.y)
-            .scale(sx, sy * yScalar)
-            .shear(xSkew, 0);
+            .scale(sx, sy * yScalar * direction.y)
+            .shear(xSkew * direction.x, 0);
 
         canvas.draw(texture, new Color(0, 0, 0, 127), origin.x, origin.y, affine);
     }
