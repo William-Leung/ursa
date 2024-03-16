@@ -23,12 +23,7 @@ import edu.cornell.gdiac.physics.obstacle.SimpleObstacle;
 import edu.cornell.gdiac.physics.platform.DudeModel;
 
 public class Enemy extends BoxObstacle {
-	/**
-	 * The callback class for the enemy line-of-sight raycast towards the targeted body. This is used to detect whether or not there are any obstacles
-	 * between the body position and the enemy position. If so, it will cancel the raycast callback and report that we could
-	 * not hit the body (If we were able to hit the player then there wouldn't be any obstacles in between the body and the enemy)
-	 */
-	private float direc;
+
 	/** A Pixmap used for drawing sightcones */
 	private TextureRegion redTextureRegion;
 	private TextureRegion greenTextureRegion;
@@ -38,9 +33,22 @@ public class Enemy extends BoxObstacle {
 
 	private boolean playerInShadow = false;
 	private float screenWidth = 1280f;
+
 	/** the vector to use to indicate the direction the enemy character
 	 * should go/face x and y should be either -15 or 15 or 0*/
 	private Vector2 movementDirection = new Vector2(15,0);
+
+	/**
+	 * The looking direction of the enemy in the x/y direction.
+	 * Invariant: This direction is always normalized.
+	 */
+	private Vector2 lookDirection = new Vector2(1, 0);
+
+	/**
+	 * The callback class for the enemy line-of-sight raycast towards the targeted body. This is used to detect whether or not there are any obstacles
+	 * between the body position and the enemy position. If so, it will cancel the raycast callback and report that we could
+	 * not hit the body (If we were able to hit the player then there wouldn't be any obstacles in between the body and the enemy)
+	 */
 	private static class EnemyLoSCallback implements RayCastCallback {
 
 		/**
@@ -91,7 +99,7 @@ public class Enemy extends BoxObstacle {
 	 */
 	private boolean alerted = false;
 
-	public Enemy(JsonValue data, float width, float height,float dire) {
+	public Enemy(JsonValue data, float width, float height) {
 		// The shrink factors fit the image to a tigher hitbox
 		super(	data.get("pos").getFloat(0),
 				data.get("pos").getFloat(1),
@@ -100,7 +108,6 @@ public class Enemy extends BoxObstacle {
 		setDensity(data.getFloat("density", 0));
 		setFriction(data.getFloat("friction", 0));  /// HE WILL STICK TO WALLS IF YOU FORGET
 		setFixedRotation(true);
-		direc = dire;
 		maxSpeed = data.getFloat("maxspeed", 0);
 		damping = 15; //data.getFloat("damping", 0);
 
@@ -137,12 +144,12 @@ public class Enemy extends BoxObstacle {
 		}
 		if(this.getPosition().x >= 15){
 			movementDirection.x = -15;
-			direc = -1;
+			setLookDirection(-1, 0);
 		}
 		if(this.getPosition().x <= 5)
 		{
 			movementDirection.x = 15;
-			direc = 1;
+			setLookDirection(1, 0);
 		}
 		if (movementDirection.x == 0f) {
 			forceCache.set(-damping * getVX(), 0);
@@ -166,6 +173,24 @@ public class Enemy extends BoxObstacle {
 			forceCache.set(0, movementDirection.y); // Set y-movement
 			body.applyForce(forceCache, getPosition(), true);
 		}
+	}
+
+	/**
+	 * Sets the look direction of the enemy given the x and y direction vectors.
+	 * The new look direction will be normalized.
+	 * @param dx The x-direction vector
+	 * @param dy The y-direction vector.
+	 */
+	public void setLookDirection(float dx, float dy) {
+		lookDirection.set(dx, dy).nor();
+	}
+
+	/**
+	 * Rotates the look direction of the enemy by a given number of degrees.
+	 * @param degrees The amount of degrees to rotate the enemy by, positive or negative.
+	 */
+	public void rotateLookDirection(float degrees) {
+		lookDirection.rotateDeg(degrees);
 	}
 
 	/**
@@ -199,9 +224,8 @@ public class Enemy extends BoxObstacle {
 		Vector2 playerPos = new Vector2(player.getPosition());
 		double dst = playerPos.dst(pos);
 
-		Vector2 direction = new Vector2(direc * 1, 0); // Dummy direction vector. Represents the enemy looking East
 		Vector2 dirToVector = new Vector2(player.getPosition()).sub(pos).nor();
-		float angle = direction.angleDeg(dirToVector);
+		float angle = lookDirection.angleDeg(dirToVector);
 		boolean possiblyVisible;
 		if(isInShadow(playerPos.x * drawScale.x)) {
 			//dst <= ENEMY_DETECTION_RANGE_NOISE || (dst <= ENEMY_DETECTION_RANGE_SIGHT && (angle <= ENEMY_DETECTION_ANGLE_SIGHT || angle >= 360 - ENEMY_DETECTION_ANGLE_SIGHT));
@@ -226,11 +250,12 @@ public class Enemy extends BoxObstacle {
 
 	public void draw(GameCanvas canvas) {
 		Color color = alerted ? Color.RED : Color.GREEN;
-		canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),direc* .1f,.1f);
+		canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),
+			(lookDirection.x > 0 ? 1 : -1) * .1f,.1f);
 
-		drawSightCone(canvas, ENEMY_DETECTION_RANGE_NOISE, new Vector2(direc * 1,0), 8);
+		drawSightCone(canvas, ENEMY_DETECTION_RANGE_NOISE, lookDirection, 8);
 		if(playerInShadow) {
-			drawSightCone(canvas, ENEMY_DETECTION_RANGE_SHADOW, new Vector2(direc * 1,0), 8);
+			drawSightCone(canvas, ENEMY_DETECTION_RANGE_SHADOW, lookDirection, 8);
 		}
 
 		screenWidth = canvas.getWidth();

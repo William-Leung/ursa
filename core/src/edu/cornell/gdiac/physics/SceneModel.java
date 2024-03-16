@@ -240,14 +240,16 @@ public class SceneModel extends WorldController implements ContactListener {
         //create enemy
         dwidth  = enemyTexture.getRegionWidth()/scale.x;
         dheight = enemyTexture.getRegionHeight()/scale.y;
-        enemies[0] = new Enemy(constants.get("enemy"), dwidth, dheight,1);
+        enemies[0] = new Enemy(constants.get("enemy"), dwidth, dheight);
+        enemies[0].setLookDirection(1, 0);
         enemies[0].setDrawScale(scale);
         enemies[0].setTexture(enemyTexture);
         addObject(enemies[0]);
 
         dwidth  = enemyTexture2.getRegionWidth()/30;
         dheight = enemyTexture2.getRegionHeight()/30;
-        enemies[1] = new Enemy(constants.get("enemy2"), dwidth, dheight,-1);
+        enemies[1] = new Enemy(constants.get("enemy2"), dwidth, dheight);
+        enemies[1].setLookDirection(1, 0);
         enemies[1].setDrawScale(scale);
         enemies[1].setTexture(enemyTexture2);
         addObject(enemies[1]);
