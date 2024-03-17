@@ -36,9 +36,13 @@ public class Enemy extends BoxObstacle {
 	private final Vector2 forceCache = new Vector2();
 	private float maxSpeed;
 	private float damping;
+	private Vector2 playerPos;
+	private float previousXMovement;
+	private float PreviousYMovement;
 
 	private boolean playerInShadow = false;
 	private float screenWidth = 1280f;
+	private boolean playerCurrentInSight;
 
 	/** the vector to use to indicate the direction the enemy character
 	 * should go/face x and y should be either -15 or 15 or 0*/
@@ -66,6 +70,7 @@ public class Enemy extends BoxObstacle {
 		 * The indication if the body was hit or not.
 		 */
 		private boolean hitPlayer = false;
+
 
 		/**
 		 * Constructs a new EnemyLoSCallback object used for raycasting.
@@ -158,32 +163,63 @@ public class Enemy extends BoxObstacle {
 		return stunDuration > 0;
 	}
 
+	/**
+	 * gets the player position to move towards
+	 */
+	public void getPlayerPos(Vector2 pos){
+		playerPos = pos;
+	}
+	
 	public void applyForce() {
 		if (!isActive()) {
 			return;
 		}
-		if(this.getPosition().x >= 15){
-			movementDirection.x = -15;
-			setLookDirection(-1, 0);
+		if(previousXMovement != movementDirection.x){
+			setVX(0);
 		}
-		if(this.getPosition().x <= 5)
-		{
-			movementDirection.x = 15;
-			setLookDirection(1, 0);
+		if(PreviousYMovement != movementDirection.y){
+			setVY(0);
 		}
+		previousXMovement = movementDirection.x;
+		PreviousYMovement = movementDirection.y;
+		if(!playerCurrentInSight) {
 
-		int damping = getDampening();
+			if (this.getPosition().x >= 15) {
+				movementDirection.x = -15;
+				setLookDirection(-1, 0);
+			}
+			if (this.getPosition().x <= 5) {
+				movementDirection.x = 15;
+				setLookDirection(1, 0);
+			}
+			if (movementDirection.x == 0f) {
+				forceCache.set(-damping * getVX(), 0);
+				body.applyForce(forceCache, getPosition(), true);
+			}
+			if (movementDirection.y == 0f) {
+				forceCache.set(0, -damping * getVY());
+				body.applyForce(forceCache, getPosition(), true);
+			}
 
-		if (isStunned() || movementDirection.x == 0f) {
-			forceCache.set(-damping * getVX(), 0);
-			body.applyForce(forceCache, getPosition(), true);
 		}
-		if (isStunned() || movementDirection.y == 0f) {
-			forceCache.set(0, -damping * getVY());
-			body.applyForce(forceCache, getPosition(), true);
+		else{
+			if(playerPos.x > getPosition().x){
+				movementDirection.x = 15;
+			} else if (playerPos.x < getPosition().x) {
+				movementDirection.x = -15;
+			}
+			else {
+				movementDirection.x = 0;
+			}
+			if(playerPos.y > getPosition().y){
+				movementDirection.y = 15;
+			} else if (playerPos.y < getPosition().y) {
+				movementDirection.y = -15;
+			}
+			else {
+				movementDirection.y = 0;
+			}
 		}
-
-		// Velocity too high, clamp it
 		if (Math.abs(getVX()) >= maxSpeed * 2) {
 			//setVX(Math.signum(getVX()) * maxSpeed);
 		} else {
@@ -269,10 +305,11 @@ public class Enemy extends BoxObstacle {
 			EnemyLoSCallback callback = new EnemyLoSCallback(player.getBody());
 			world.rayCast(callback, getPosition(), player.getPosition());
 			if (callback.hitPlayer) {
+				playerCurrentInSight = true;
 				return true;
 			}
 		}
-
+		playerCurrentInSight = false;
 		return false;
 	}
 

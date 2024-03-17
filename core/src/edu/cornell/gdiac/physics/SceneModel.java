@@ -430,9 +430,12 @@ public class SceneModel extends WorldController implements ContactListener {
         }
         enemies[0].setAlerted(enemies[0].isPlayerInLineOfSight(world, avatar));
         enemies[1].setAlerted(enemies[1].isPlayerInLineOfSight(world, avatar));
-//        if (avatar.isJumping()) {
-//            jumpId = playSound( jumpSound, jumpId, volume );
-//        }
+        for (Enemy enemy: enemies){
+            if(enemy != null && enemy.isPlayerInLineOfSight(world,avatar)){
+                enemy.getPlayerPos(avatar.getPosition());
+            }
+
+        }
 
         canvas.clear();
         shadowController.update(this);
