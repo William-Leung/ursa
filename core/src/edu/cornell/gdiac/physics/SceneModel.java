@@ -1,6 +1,8 @@
 package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -28,6 +30,26 @@ import edu.cornell.gdiac.util.FilmStrip;
 import edu.cornell.gdiac.util.PooledList;
 
 public class SceneModel extends WorldController implements ContactListener {
+
+    /*
+     * Initialize the global blob shadow used for Ursa and enemies.
+     * Since it's a shared texture, we can just use it statically across everything to make it easier.
+     */
+
+    private static final int BLOB_SHADOW_RESOLUTION = 1024; // High resolution for lesser edge cuts (in theory that is)
+
+    public static final Texture BLOB_SHADOW_TEXTURE;
+
+    static {
+        Pixmap pixmap = new Pixmap(BLOB_SHADOW_RESOLUTION * 2, BLOB_SHADOW_RESOLUTION * 2, Pixmap.Format.RGBA8888);
+        pixmap.setColor(Color.BLACK);
+        int xcenter = pixmap.getWidth() / 2;
+        int ycenter = pixmap.getHeight() / 2;
+        pixmap.fillCircle(xcenter, ycenter, BLOB_SHADOW_RESOLUTION);
+        BLOB_SHADOW_TEXTURE = new Texture(pixmap);
+        pixmap.dispose();
+    }
+
     /** Texture asset for character avatar */
     private TextureRegion avatarTexture;
     private TextureRegion ursaTexture;

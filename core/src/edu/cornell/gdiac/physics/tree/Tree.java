@@ -12,7 +12,6 @@ public class Tree extends PolygonObstacle {
 	public static final float X_SCALE = 0.1f;
 	public static final float Y_SCALE = 0.1f;
 
-
 	public Tree(float[] points, float x, float y) {
 		super(points, x, y);
 		setBodyType(BodyDef.BodyType.StaticBody);
@@ -22,6 +21,5 @@ public class Tree extends PolygonObstacle {
 		canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),
 			X_SCALE,Y_SCALE);
 	}
-
 
 }

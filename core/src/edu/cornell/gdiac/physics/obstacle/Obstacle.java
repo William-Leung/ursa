@@ -984,6 +984,14 @@ public abstract class Obstacle {
 	}
 
 	/**
+	 * Draws any necessary background textures before drawing the main textures
+	 * @param canvas
+	 */
+	public void preDraw(GameCanvas canvas) {
+
+	}
+
+	/**
 	 * Draws the texture physics object.
 	 *
 	 * @param canvas Drawing context

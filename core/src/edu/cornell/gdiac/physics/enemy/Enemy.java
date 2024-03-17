@@ -14,11 +14,14 @@ import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.physics.GameCanvas;
+import edu.cornell.gdiac.physics.SceneModel;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.physics.obstacle.SimpleObstacle;
 import edu.cornell.gdiac.physics.shadows.ShadowController;
 
 public class Enemy extends BoxObstacle {
+
+	private static final float BLOB_SHADOW_SIZE = 0.5f;
 
 	/** A Pixmap used for drawing sightcones */
 	private TextureRegion redTextureRegion;
@@ -243,6 +246,16 @@ public class Enemy extends BoxObstacle {
 		return false;
 	}
 
+
+	@Override
+	public void preDraw(GameCanvas canvas) {
+		Texture blobShadow = SceneModel.BLOB_SHADOW_TEXTURE;
+		int xcenter = blobShadow.getWidth() / 2;
+		int ycenter = blobShadow.getHeight() / 2;
+		canvas.draw(blobShadow, Color.BLACK,xcenter,ycenter,
+			getX()*drawScale.x,(getY() - 1.25f) * drawScale.y,getAngle(),BLOB_SHADOW_SIZE / drawScale.x,
+			(BLOB_SHADOW_SIZE / 2f) / drawScale.y);
+	}
 
 	public void draw(GameCanvas canvas) {
 		Color color = alerted ? Color.RED : Color.GREEN;

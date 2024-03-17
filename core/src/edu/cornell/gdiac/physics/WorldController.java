@@ -480,6 +480,10 @@ public abstract class WorldController implements Screen {
 		preDraw(dt);
 
 		for(Obstacle obj : objects) {
+			obj.preDraw(canvas);
+		}
+
+		for(Obstacle obj : objects) {
 			obj.draw(canvas);
 		}
 		canvas.draw(backGround, Color.WHITE, snowFall - canvas.getWidth(), snowFall - canvas.getHeight(), canvas.getWidth(), canvas.getHeight());

@@ -1,6 +1,9 @@
 package edu.cornell.gdiac.physics.player;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
@@ -8,9 +11,13 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.physics.GameCanvas;
+import edu.cornell.gdiac.physics.SceneModel;
 import edu.cornell.gdiac.physics.obstacle.CapsuleObstacle;
 
 public class UrsaModel extends CapsuleObstacle {
+
+    private static final float BLOB_SHADOW_SIZE = 0.7f;
+
     /** The initializing data (to avoid magic numbers) */
     private final JsonValue data;
 
@@ -356,6 +363,16 @@ public class UrsaModel extends CapsuleObstacle {
         }
 
         super.update(dt);
+    }
+
+    @Override
+    public void preDraw(GameCanvas canvas) {
+        Texture blobShadow = SceneModel.BLOB_SHADOW_TEXTURE;
+        int xcenter = blobShadow.getWidth() / 2;
+        int ycenter = blobShadow.getHeight() / 2;
+        canvas.draw(blobShadow, Color.BLACK,xcenter,ycenter,
+            getX()*drawScale.x,(getY() - 1) * drawScale.y,getAngle(),BLOB_SHADOW_SIZE / drawScale.x,
+            (BLOB_SHADOW_SIZE / 2f) / drawScale.y);
     }
 
     /**
