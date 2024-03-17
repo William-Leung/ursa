@@ -251,7 +251,7 @@ public class Enemy extends BoxObstacle {
 	public void draw(GameCanvas canvas) {
 		Color color = alerted ? Color.RED : Color.GREEN;
 		canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),
-			(lookDirection.x > 0 ? 1 : -1) * .1f,.1f);
+			(lookDirection.x > 0 ? 1 : -1) * .35f,.35f);
 
 		drawSightCone(canvas, ENEMY_DETECTION_RANGE_NOISE, lookDirection, 8);
 		if(playerInShadow) {

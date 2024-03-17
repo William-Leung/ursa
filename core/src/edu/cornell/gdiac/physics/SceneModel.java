@@ -73,9 +73,11 @@ public class SceneModel extends WorldController implements ContactListener {
     private float timer = 0;
     private TextureRegion playerWalkTextureScript;
     private TextureRegion playerIdleTextureScript;
+    private TextureRegion salmonUprightWalkScript;
     private FilmStrip playerWalkFilm;
+    private FilmStrip salmonUprightWalkFilm;
     private FilmStrip playerIdleFilm;
-    private TextureRegion[] salmonWalk = new TextureRegion[8];
+
     private int playerWalkAnimIndex = 0;
     private int playerIdleAnimIndex =0;
     private int salmonWalkAnimIndex = 0;
@@ -130,6 +132,9 @@ public class SceneModel extends WorldController implements ContactListener {
         playerIdleFilm = new FilmStrip(playerIdleTextureScript.getTexture(),4,8);
         playerIdleFilm.setFrame(0);
 
+        salmonUprightWalkScript = new TextureRegion(directory.getEntry("enemies:salmonUprightWalk",Texture.class));
+        salmonUprightWalkFilm = new FilmStrip(salmonUprightWalkScript.getTexture(),3,8);
+        salmonUprightWalkFilm.setFrame(0);
 
 
 
@@ -243,7 +248,7 @@ public class SceneModel extends WorldController implements ContactListener {
         enemies[0] = new Enemy(constants.get("enemy"), dwidth, dheight);
         enemies[0].setLookDirection(1, 0);
         enemies[0].setDrawScale(scale);
-        enemies[0].setTexture(enemyTexture);
+        enemies[0].setTexture(salmonUprightWalkFilm);
         addObject(enemies[0]);
 
         dwidth  = enemyTexture2.getRegionWidth()/30;
@@ -251,7 +256,7 @@ public class SceneModel extends WorldController implements ContactListener {
         enemies[1] = new Enemy(constants.get("enemy2"), dwidth, dheight);
         enemies[1].setLookDirection(1, 0);
         enemies[1].setDrawScale(scale);
-        enemies[1].setTexture(enemyTexture2);
+        enemies[1].setTexture(salmonUprightWalkFilm);
         addObject(enemies[1]);
 
         String tname = "tree";
@@ -305,7 +310,25 @@ public class SceneModel extends WorldController implements ContactListener {
 
         return true;
     }
-
+    private void animateEnemies(){
+        if(salmonWalkAnimIndex == 0 || salmonWalkAnimIndex == 21){
+            salmonWalkAnimIndex = 0;
+            salmonUprightWalkFilm.setFrame(0);
+            enemies[1].setTexture(salmonUprightWalkFilm);
+            enemies[0].setTexture(salmonUprightWalkFilm);
+            salmonWalkAnimIndex +=1;
+            System.out.println(salmonWalkAnimIndex);
+        }
+        else {
+            salmonUprightWalkFilm.setFrame(salmonWalkAnimIndex);
+            salmonWalkAnimIndex +=1;
+            enemies[1].setTexture(salmonUprightWalkFilm);
+            enemies[0].setTexture(salmonUprightWalkFilm);
+        }
+    }
+    /*
+    Animates the player model based on the conidtions of the player
+     */
     private void animatePlayerModel(){
         if(avatar.getXMovement() != 0 || avatar.getyMovement() != 0){
             playerIdleAnimIndex = 0;
@@ -359,6 +382,7 @@ public class SceneModel extends WorldController implements ContactListener {
         //avatar.setShooting(InputController.getInstance().didSecondary());
 
         animatePlayerModel();
+        animateEnemies();
 
         avatar.applyForce();
         enemies[0].applyForce();
