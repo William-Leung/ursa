@@ -93,6 +93,11 @@ public class SceneModel extends WorldController implements ContactListener {
      */
     private PooledList<ShadowModel> shadows = new PooledList<>();
 
+    /**
+     * List of all references to all trees
+     */
+    private PooledList<Tree> trees = new PooledList<>();
+
     private float timer = 0;
     private TextureRegion playerWalkTextureScript;
     private TextureRegion playerIdleTextureScript;
@@ -285,8 +290,7 @@ public class SceneModel extends WorldController implements ContactListener {
         String tname = "tree";
         JsonValue treejv = constants.get("trees");
         for(int ii = 0; ii < treejv.size; ii++) {
-            Tree obj;
-            obj = new Tree(treejv.get(ii).asFloatArray(),1,3);
+            Tree obj = new Tree(treejv.get(ii).asFloatArray(),3,3);
             obj.setBodyType(BodyDef.BodyType.StaticBody);
             obj.setDensity(defaults.getFloat( "density", 0.0f ));
             obj.setFriction(defaults.getFloat( "friction", 0.0f ));
@@ -295,6 +299,7 @@ public class SceneModel extends WorldController implements ContactListener {
             obj.setTexture(tundraTreeWithSnow);
             obj.setName(tname+ii);
             addObject(obj);
+            trees.add(obj);
             shadows.add(new ShadowModel(new Vector2(obj.getX(), obj.getY()), Tree.X_SCALE, Tree.Y_SCALE,
                 obj.getTexture(), obj.getDrawOrigin(), obj.getDrawScale()));
         }
@@ -398,6 +403,17 @@ public class SceneModel extends WorldController implements ContactListener {
 
         animatePlayerModel();
         animateEnemies();
+
+        // Shake trees
+        if (InputController.getInstance().didInteract()) {
+            for (Tree tree : trees) {
+                if (tree.canShake() && avatar.getPosition().dst(tree.getPosition()) < 2) {
+                    tree.putOnShakeCooldown();
+                    System.out.println("Tree shaken");
+                    break;
+                }
+            }
+        }
 
         avatar.applyForce();
         enemies[0].applyForce();
