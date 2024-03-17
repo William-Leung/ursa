@@ -91,7 +91,7 @@ public class SceneModel extends WorldController implements ContactListener {
     /**
      * List of references to all shadows.
      */
-    private PooledList<ShadowModel> shadows = new PooledList<>();
+    private static PooledList<ShadowModel> shadows = new PooledList<>();
 
     /**
      * List of all references to all trees
@@ -337,7 +337,7 @@ public class SceneModel extends WorldController implements ContactListener {
             enemies[1].setTexture(salmonUprightWalkFilm);
             enemies[0].setTexture(salmonUprightWalkFilm);
             salmonWalkAnimIndex +=1;
-            System.out.println(salmonWalkAnimIndex);
+//            System.out.println(salmonWalkAnimIndex);
         }
         else {
             salmonUprightWalkFilm.setFrame(salmonWalkAnimIndex);
@@ -548,7 +548,7 @@ public class SceneModel extends WorldController implements ContactListener {
         }
     }
 
-    public PooledList<ShadowModel> getShadows() {
+    public static PooledList<ShadowModel> getShadows() {
         return shadows;
     }
 

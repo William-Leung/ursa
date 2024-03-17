@@ -11,7 +11,7 @@ import com.badlogic.gdx.math.*;
 public class ShadowController {
 
     /** Current time of day */
-    private int time;
+    private static int time;
     /** The texture used for all shadows in this controller. */
     private TextureRegion texture;
     /** Boolean that tracks whether it is currently nighttime **/
@@ -31,11 +31,13 @@ public class ShadowController {
     /** The total number of ticks in a day */
     private static final int TICKS_PER_DAY = 240;
 
+    private final Vector2 origDir = new Vector2(0, 1);
+
     /** Creates and initializes a new instance of a shadow controller
      *
      * The shadow controller has a time of 0 ticks and texture texture */
     public ShadowController(TextureRegion texture) {
-        this.time = 0;
+        time = 0;
         this.texture = texture;
         isNight = false;
     }
@@ -44,7 +46,7 @@ public class ShadowController {
      *
      * The shadow controller has a time of 0 ticks */
     public ShadowController() {
-        this.time = 0;
+        time = 0;
         this.texture = null;
         isNight = false;
     }
@@ -63,7 +65,6 @@ public class ShadowController {
 //        for (ShadowModel sh : init_data) addShadow(sh);
 //    }
 
-    Vector2 origDir = new Vector2(0, 1);
     public void updateShadow(ShadowModel sh) {
 //        if (time < TICKS_PER_DAY / 2) {
 //            sh.setWidth(sh.getInitWidth() - (time * (1/(TICKS_PER_DAY / 2))));
@@ -76,6 +77,7 @@ public class ShadowController {
         } else {
             sh.setDirection(origDir);
         }
+//        System.out.println(sh.getDirection());
     }
 
     public void update(SceneModel sceneModel) {
