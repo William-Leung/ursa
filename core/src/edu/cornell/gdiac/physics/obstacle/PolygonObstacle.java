@@ -24,6 +24,7 @@ import com.badlogic.gdx.physics.box2d.*;
 
 import edu.cornell.gdiac.physics.*;  // For GameCanvas
 import edu.cornell.gdiac.math.Poly2; // For the shape
+import edu.cornell.gdiac.physics.shadows.ShadowController;
 
 /**
  * Arbitrary polygonal-shaped model to support collisions.
@@ -378,7 +379,7 @@ public class PolygonObstacle extends SimpleObstacle {
 
 		// Define vertices for the line segment at the middle of the screen
 		float lineHeight = canvas.getHeight();
-		float lineWidth = 200.0f;
+		float lineWidth = canvas.getWidth();
 
 
 		TextureRegion lineTextureRegion = new TextureRegion(shadowTexture);
@@ -390,7 +391,9 @@ public class PolygonObstacle extends SimpleObstacle {
 		PolygonRegion lineRegion = new PolygonRegion(lineTextureRegion, vertices, lineIndices);
 
 		// Draw the line segment at the middle of the screen
-		canvas.draw(lineRegion, Color.BLACK, 0, 0, 0, 0, 0, 1, 1);
+		if (ShadowController.isNight()) {
+			canvas.draw(lineRegion, Color.BLACK, 0, 0, 0, 0, 0, 1, 1);
+		}
 	}
 
 	/**

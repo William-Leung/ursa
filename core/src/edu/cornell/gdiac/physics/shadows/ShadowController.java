@@ -15,7 +15,7 @@ public class ShadowController {
     /** The texture used for all shadows in this controller. */
     private TextureRegion texture;
     /** Boolean that tracks whether it is currently nighttime **/
-    private boolean isNight = false;
+    private static boolean isNight;
 
     /**
      * The amount of x-skew to apply to all shadows
@@ -38,6 +38,7 @@ public class ShadowController {
         this.time = 0;
         shadows = new LinkedList<ShadowModel>();
         this.texture = texture;
+        this.isNight = false;
     }
 
     /** Creates and initializes a new instance of a shadow controller
@@ -47,6 +48,7 @@ public class ShadowController {
         this.time = 0;
         shadows = new LinkedList<ShadowModel>();
         this.texture = null;
+        this.isNight = false;
     }
 
     public TextureRegion getTexture() { return texture; }
@@ -102,6 +104,8 @@ public class ShadowController {
             sh.draw(canvas, xSkew, yScalar);
         }
     }
+
+    public static boolean isNight() { return isNight; }
 
     //public boolean checkOverlap(Vector2 ursa_tl, Vector2 ursa_br, ShadowModel sh) {}
 }
