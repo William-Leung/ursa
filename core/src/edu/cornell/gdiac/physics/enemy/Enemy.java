@@ -185,7 +185,7 @@ public class Enemy extends BoxObstacle {
 		else{
 			if(playerPos.x > getPosition().x){
 				movementDirection.x = 15;
-			} else if (playerPos.x > getPosition().x) {
+			} else if (playerPos.x < getPosition().x) {
 				movementDirection.x = -15;
 			}
 			else {
@@ -193,7 +193,7 @@ public class Enemy extends BoxObstacle {
 			}
 			if(playerPos.y > getPosition().y){
 				movementDirection.y = 15;
-			} else if (playerPos.y > getPosition().y) {
+			} else if (playerPos.y < getPosition().y) {
 				movementDirection.y = -15;
 			}
 			else {
