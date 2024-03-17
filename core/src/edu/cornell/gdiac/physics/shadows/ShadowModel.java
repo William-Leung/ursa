@@ -61,11 +61,16 @@ public class ShadowModel {
         this.initial_width = bottom_right.x - top_left.x;
     }
 
-    public ShadowModel(Vector2 anchor) {
-        this.shadow_anchor = anchor;
-
+    public ShadowModel(Vector2 anchor, float sx, float sy, TextureRegion texture, Vector2 textureOrigin, Vector2 drawScale) {
         this.initial_height = 0;
         this.initial_width = 0;
+        this.shadow_anchor = anchor;
+
+        this.sx = sx;
+        this.sy = sy;
+        this.drawScale.set(drawScale);
+        this.origin.set(textureOrigin);
+        this.texture = texture;
     }
 
     /**

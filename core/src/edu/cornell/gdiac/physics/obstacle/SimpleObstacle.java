@@ -779,6 +779,10 @@ public abstract class SimpleObstacle extends Obstacle {
 			canvas.draw(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(),1,1);
 		}
 	}
+
+	public Vector2 getDrawOrigin() {
+		return origin;
+	}
 	
 	/**
 	 * Returns the Box2D body for this object.

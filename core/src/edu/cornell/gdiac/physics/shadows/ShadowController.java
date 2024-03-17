@@ -3,6 +3,8 @@ package edu.cornell.gdiac.physics.shadows;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.physics.GameCanvas;
+import edu.cornell.gdiac.physics.SceneModel;
+import edu.cornell.gdiac.util.PooledList;
 import java.util.LinkedList;
 import com.badlogic.gdx.math.*;
 
@@ -10,8 +12,6 @@ public class ShadowController {
 
     /** Current time of day */
     private int time;
-    /** All of the dynamic shadows on the map */
-    private LinkedList<ShadowModel> shadows;
     /** The texture used for all shadows in this controller. */
     private TextureRegion texture;
     /** Boolean that tracks whether it is currently nighttime **/
@@ -36,7 +36,6 @@ public class ShadowController {
      * The shadow controller has a time of 0 ticks and texture texture */
     public ShadowController(TextureRegion texture) {
         this.time = 0;
-        shadows = new LinkedList<ShadowModel>();
         this.texture = texture;
         isNight = false;
     }
@@ -46,7 +45,6 @@ public class ShadowController {
      * The shadow controller has a time of 0 ticks */
     public ShadowController() {
         this.time = 0;
-        shadows = new LinkedList<ShadowModel>();
         this.texture = null;
         isNight = false;
     }
@@ -54,12 +52,6 @@ public class ShadowController {
     public TextureRegion getTexture() { return texture; }
 
     public void setTexture(TextureRegion t) { texture = t; }
-
-    public void addShadow(Vector2 top_left, Vector2 bottom_right, TextureRegion texture) {
-        shadows.add(new ShadowModel(top_left, bottom_right, texture));
-    }
-
-    public void addShadow(ShadowModel sh) { shadows.add(sh); }
 
 //    public void initAllShadows() {
 //
@@ -86,7 +78,7 @@ public class ShadowController {
         }
     }
 
-    public void update() {
+    public void update(SceneModel sceneModel) {
         if (time == 180) {
             isNight = true;
         } else if (time == 360) {
@@ -94,13 +86,13 @@ public class ShadowController {
             isNight = false;
         }
         time++;
-        for (ShadowModel sh : shadows) {
+        for (ShadowModel sh : sceneModel.getShadows()) {
             updateShadow(sh);
         }
     }
 
-    public void drawAllShadows(GameCanvas canvas) {
-        for (ShadowModel sh: shadows) {
+    public void drawAllShadows(GameCanvas canvas, SceneModel sceneModel) {
+        for (ShadowModel sh: sceneModel.getShadows()) {
             sh.draw(canvas, xSkew, yScalar);
         }
     }

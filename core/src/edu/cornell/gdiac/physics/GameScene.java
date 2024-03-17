@@ -47,8 +47,6 @@ public class GameScene {
 		for (Obstacle object : objects) {
 			object.draw(canvas);
 		}
-
-		if (shadows != null) shadows.drawAllShadows(canvas);
 	}
 
 //	/**

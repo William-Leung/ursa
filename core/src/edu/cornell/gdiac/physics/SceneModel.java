@@ -2,8 +2,6 @@ package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -17,20 +15,17 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.assets.AssetDirectory;
-import edu.cornell.gdiac.assets.FilmStripLoader;
 import edu.cornell.gdiac.physics.enemy.Enemy;
-import edu.cornell.gdiac.physics.enemy.EnemyModel;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.physics.obstacle.PolygonObstacle;
 import edu.cornell.gdiac.physics.obstacle.WheelObstacle;
-import edu.cornell.gdiac.physics.platform.RopeBridge;
-import edu.cornell.gdiac.physics.platform.Spinner;
 import edu.cornell.gdiac.physics.player.UrsaModel;
 import edu.cornell.gdiac.physics.shadows.ShadowController;
-import edu.cornell.gdiac.physics.shadows.ShadowedObject;
+import edu.cornell.gdiac.physics.shadows.ShadowModel;
 import edu.cornell.gdiac.physics.tree.Tree;
 import edu.cornell.gdiac.util.FilmStrip;
+import edu.cornell.gdiac.util.PooledList;
 
 public class SceneModel extends WorldController implements ContactListener {
     /** Texture asset for character avatar */
@@ -70,6 +65,12 @@ public class SceneModel extends WorldController implements ContactListener {
     private UrsaModel avatar;
     /** List of references to enemies */
     private Enemy[] enemies = new Enemy[20];
+
+    /**
+     * List of references to all shadows.
+     */
+    private PooledList<ShadowModel> shadows = new PooledList<>();
+
     private float timer = 0;
     private TextureRegion playerWalkTextureScript;
     private TextureRegion playerIdleTextureScript;
@@ -84,7 +85,7 @@ public class SceneModel extends WorldController implements ContactListener {
     /** Reference to the goalDoor (for collision detection) */
     private BoxObstacle goalDoor;
     /** Controller for all dynamic shadows */
-    private ShadowController shadows;
+    private ShadowController shadowController;
 
     /** Mark set to handle more sophisticated collision callbacks */
     protected ObjectSet<Fixture> sensorFixtures;
@@ -197,7 +198,7 @@ public class SceneModel extends WorldController implements ContactListener {
 //        addObject(goalDoor);
 
         // create shadow (idk if this does anything even)
-        shadows = new ShadowController();
+        shadowController = new ShadowController();
 
         String wname = "wall";
         JsonValue walljv = constants.get("walls");
@@ -272,16 +273,8 @@ public class SceneModel extends WorldController implements ContactListener {
             obj.setTexture(tundraTreeWithSnow);
             obj.setName(tname+ii);
             addObject(obj);
-        }
-
-        /*
-         * For all obstacles/objects that have a drawn shadow to them, add them to the shadow controller
-         */
-        for (Obstacle obstacle : objects) {
-            if (obstacle instanceof ShadowedObject) {
-                ShadowedObject shadowedObject = (ShadowedObject) obstacle;
-                shadows.addShadow(shadowedObject.getShadow());
-            }
+            shadows.add(new ShadowModel(new Vector2(obj.getX(), obj.getY()), Tree.X_SCALE, Tree.Y_SCALE,
+                obj.getTexture(), obj.getDrawOrigin(), obj.getDrawScale()));
         }
 
         volume = constants.getFloat("volume", 1.0f);
@@ -398,9 +391,7 @@ public class SceneModel extends WorldController implements ContactListener {
 //        }
 
         canvas.clear();
-        canvas.begin();
-        shadows.update();
-        canvas.end();
+        shadowController.update(this);
     }
 
     /**
@@ -519,6 +510,10 @@ public class SceneModel extends WorldController implements ContactListener {
         }
     }
 
+    public PooledList<ShadowModel> getShadows() {
+        return shadows;
+    }
+
     /** Unused ContactListener method */
     public void postSolve(Contact contact, ContactImpulse impulse) {}
     /** Unused ContactListener method */
@@ -538,6 +533,6 @@ public class SceneModel extends WorldController implements ContactListener {
 
     @Override
     public void preDraw(float dt) {
-        shadows.drawAllShadows(canvas);
+        shadowController.drawAllShadows(canvas, this);
     }
 }
