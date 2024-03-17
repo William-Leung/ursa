@@ -768,7 +768,7 @@ public abstract class SimpleObstacle extends Obstacle {
 		texture = value;
 		origin.set(texture.getRegionWidth()/2.0f, texture.getRegionHeight()/2.0f);
 	}
-	
+
 	/**
 	 * Draws the physics object.
 	 *

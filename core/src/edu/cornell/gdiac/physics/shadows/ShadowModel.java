@@ -42,11 +42,11 @@ public class ShadowModel {
 
     public Vector2 getAnchor() { return shadow_anchor; }
 
-    public void setTopLeft(Vector2 newCoord) { top_left = newCoord; }
+    public void setTopLeft(Vector2 newCoord) { top_left.set(newCoord); }
 
-    public void setBottomRight(Vector2 newCoord) { bottom_right = newCoord; }
+    public void setBottomRight(Vector2 newCoord) { bottom_right.set(newCoord); }
 
-    public void setDirection (Vector2 newDirec) { direction = newDirec; }
+    public void setDirection (Vector2 newDirec) { direction.set(newDirec); }
 
     public ShadowModel(Vector2 top_left, Vector2 bottom_right, TextureRegion texture) {
         this.top_left = top_left;

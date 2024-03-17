@@ -71,6 +71,9 @@ public class InputController {
 	/** Whether the exit button was pressed. */
 	private boolean exitPressed;
 	private boolean exitPrevious;
+
+	private boolean interactPressed;
+	private boolean interactPrevious;
 	
 	/** How much did we move horizontally? */
 	private float horizontal;
@@ -170,6 +173,14 @@ public class InputController {
 	}
 
 	/**
+	 * Returns true if the interact button was pressed.
+	 * @return true if pressed, false otherwise.
+	 */
+	public boolean didInteract() {
+		return interactPressed && !interactPrevious;
+	}
+
+	/**
 	 * Returns true if the player wants to go to the next level.
 	 *
 	 * @return true if the player wants to go to the next level.
@@ -243,6 +254,7 @@ public class InputController {
 		exitPrevious = exitPressed;
 		nextPrevious = nextPressed;
 		prevPrevious = prevPressed;
+		interactPrevious = interactPressed;
 		
 		// Check to see if a GamePad is connected
 		if (xbox != null && xbox.isConnected()) {
@@ -270,6 +282,7 @@ public class InputController {
 		prevPressed  = xbox.getLBumper();
 		primePressed = xbox.getA();
 		debugPressed  = xbox.getY();
+		interactPressed = xbox.getX();
 
 		// Increase animation frame, but only if trying to move
 		horizontal = xbox.getLeftX();
@@ -309,6 +322,7 @@ public class InputController {
 		prevPressed = (secondary && prevPressed) || (Gdx.input.isKeyPressed(Input.Keys.P));
 		nextPressed = (secondary && nextPressed) || (Gdx.input.isKeyPressed(Input.Keys.N));
 		exitPressed  = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
+		interactPressed = (secondPressed && interactPressed) || (Gdx.input.isKeyPressed(Input.Keys.F));
 		
 		// Directional controls
 		horizontal = (secondary ? horizontal : 0.0f);

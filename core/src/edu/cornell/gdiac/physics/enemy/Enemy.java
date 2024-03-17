@@ -18,6 +18,8 @@ import edu.cornell.gdiac.physics.SceneModel;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.physics.obstacle.SimpleObstacle;
 import edu.cornell.gdiac.physics.shadows.ShadowController;
+import edu.cornell.gdiac.physics.shadows.ShadowModel;
+import edu.cornell.gdiac.util.PooledList;
 
 public class Enemy extends BoxObstacle {
 
@@ -354,12 +356,21 @@ public class Enemy extends BoxObstacle {
 	public boolean isInShadow(float x) {
 		float middleX = screenWidth / 2.0f;
 		float lineWidth = screenWidth;
+		PooledList<ShadowModel> shadows = SceneModel.getShadows();
 
 		if (ShadowController.isNight()) {
 			playerInShadow = x >= (middleX - lineWidth / 2) && x <= (middleX
 					+ lineWidth / 2);
 		} else {
 			playerInShadow = false;
+//			for(ShadowModel sh : shadows) {
+//				if (sh.getTopLeft() != null &&
+//						sh.getBottomRight() != null &&
+//						x >= sh.getTopLeft().x && x <= sh.getBottomRight().x) {
+//					playerInShadow = true;
+//					break;
+//				}
+//			}
 		}
 		return playerInShadow;
 	}
