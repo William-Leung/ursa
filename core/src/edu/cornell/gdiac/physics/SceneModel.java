@@ -406,12 +406,18 @@ public class SceneModel extends WorldController implements ContactListener {
 
         // Shake trees
         if (InputController.getInstance().didInteract()) {
+            Tree nearest = null;
+            float dst = 0;
             for (Tree tree : trees) {
-                if (tree.canShake() && avatar.getPosition().dst(tree.getPosition()) < 2) {
-                    tree.putOnShakeCooldown();
-                    System.out.println("Tree shaken");
-                    break;
+                float tempDst = avatar.getPosition().dst(tree.getPosition());
+                if (tree.canShake() && tempDst < 2 && (nearest == null || tempDst < dst)) {
+                    nearest = tree;
+                    dst = tempDst;
                 }
+            }
+
+            if (nearest != null) {
+                shakeTree(nearest);
             }
         }
 
@@ -430,6 +436,19 @@ public class SceneModel extends WorldController implements ContactListener {
 
         canvas.clear();
         shadowController.update(this);
+    }
+
+    private void shakeTree(Tree tree) {
+        if (tree.canShake()) {
+            tree.putOnShakeCooldown();
+            System.out.println("Tree shaken");
+
+            for (Enemy enemy : enemies) {
+                if (enemy != null && enemy.getPosition().dst(tree.getPosition()) < 5) {
+                    enemy.stun();
+                }
+            }
+        }
     }
 
     /**

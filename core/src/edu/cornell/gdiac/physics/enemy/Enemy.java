@@ -25,6 +25,11 @@ public class Enemy extends BoxObstacle {
 
 	private static final float BLOB_SHADOW_SIZE = 0.5f;
 
+	private static final int WALK_DAMPENING = 15;
+	private static final int STUN_DAMPENING = 25;
+
+	private static final int STUN_DURATION = 60 * 2;
+
 	/** A Pixmap used for drawing sightcones */
 	private TextureRegion redTextureRegion;
 	private TextureRegion greenTextureRegion;
@@ -100,6 +105,11 @@ public class Enemy extends BoxObstacle {
 	 */
 	private boolean alerted = false;
 
+	/**
+	 * Indicates whether or not this enemy is stunned.
+	 */
+	private int stunDuration = 0;
+
 	public Enemy(JsonValue data, float width, float height) {
 		// The shrink factors fit the image to a tigher hitbox
 		super(	data.get("pos").getFloat(0),
@@ -110,7 +120,7 @@ public class Enemy extends BoxObstacle {
 		setFriction(data.getFloat("friction", 0));  /// HE WILL STICK TO WALLS IF YOU FORGET
 		setFixedRotation(true);
 		maxSpeed = data.getFloat("maxspeed", 0);
-		damping = 15; //data.getFloat("damping", 0);
+		//data.getFloat("damping", 0);
 
 
 		/** Creating the red and green texture regions */
@@ -132,6 +142,10 @@ public class Enemy extends BoxObstacle {
 		setName("ursa");
 	}
 
+	public void stun() {
+		stunDuration = STUN_DURATION;
+	}
+
 	/**
 	 * Returns whether or not the enemy is alerted by the player
 	 * @return true if the enemy is alerted, false otherwise.
@@ -139,6 +153,11 @@ public class Enemy extends BoxObstacle {
 	public boolean isAlerted() {
 		return alerted;
 	}
+
+	public boolean isStunned() {
+		return stunDuration > 0;
+	}
+
 	public void applyForce() {
 		if (!isActive()) {
 			return;
@@ -152,11 +171,14 @@ public class Enemy extends BoxObstacle {
 			movementDirection.x = 15;
 			setLookDirection(1, 0);
 		}
-		if (movementDirection.x == 0f) {
+
+		int damping = getDampening();
+
+		if (isStunned() || movementDirection.x == 0f) {
 			forceCache.set(-damping * getVX(), 0);
 			body.applyForce(forceCache, getPosition(), true);
 		}
-		if (movementDirection.y == 0f) {
+		if (isStunned() || movementDirection.y == 0f) {
 			forceCache.set(0, -damping * getVY());
 			body.applyForce(forceCache, getPosition(), true);
 		}
@@ -165,15 +187,21 @@ public class Enemy extends BoxObstacle {
 		if (Math.abs(getVX()) >= maxSpeed * 2) {
 			//setVX(Math.signum(getVX()) * maxSpeed);
 		} else {
-			forceCache.set(movementDirection.x, 0);
+			forceCache.set(isStunned() ? 0 : movementDirection.x, 0);
 			body.applyForce(forceCache, getPosition(), true);
 		}
 		if (Math.abs(getVY()) >= maxSpeed * 2) {
 			//setVY(Math.signum(getVY()) * maxSpeed ); // Set y-velocity, not x-velocity
 		} else {
-			forceCache.set(0, movementDirection.y); // Set y-movement
+			forceCache.set(0, isStunned() ? 0 : movementDirection.y); // Set y-movement
 			body.applyForce(forceCache, getPosition(), true);
 		}
+
+	}
+
+	@Override
+	public void update(float dt) {
+		stunDuration = Math.max(stunDuration - 1, 0);
 	}
 
 	/**
@@ -334,5 +362,9 @@ public class Enemy extends BoxObstacle {
 //			}
 		}
 		return playerInShadow;
+	}
+
+	private int getDampening() {
+		return stunDuration > 0 ? STUN_DAMPENING : WALK_DAMPENING;
 	}
 }
