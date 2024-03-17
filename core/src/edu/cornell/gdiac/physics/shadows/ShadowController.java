@@ -14,6 +14,8 @@ public class ShadowController {
     private LinkedList<ShadowModel> shadows;
     /** The texture used for all shadows in this controller. */
     private TextureRegion texture;
+    /** Boolean that tracks whether it is currently nighttime **/
+    private boolean isNight = false;
 
     /**
      * The amount of x-skew to apply to all shadows
@@ -67,6 +69,7 @@ public class ShadowController {
 //        for (ShadowModel sh : init_data) addShadow(sh);
 //    }
 
+    Vector2 origDir = new Vector2(0, 1);
     public void updateShadow(ShadowModel sh) {
 //        if (time < TICKS_PER_DAY / 2) {
 //            sh.setWidth(sh.getInitWidth() - (time * (1/(TICKS_PER_DAY / 2))));
@@ -74,17 +77,24 @@ public class ShadowController {
 //            sh.setWidth(0 + (time * (1/(TICKS_PER_DAY / 2))));
 //        }
         //System.out.println("Ticks: " + time);
-        sh.rotateDirection(1);
+        if (!isNight) {
+            sh.rotateDirection((float) (360 / TICKS_PER_DAY) );
+        } else {
+            sh.setDirection(origDir);
+        }
     }
 
     public void update() {
-        if (time == TICKS_PER_DAY) {
+        if (time == 180) {
+            isNight = true;
+        } else if (time == 360) {
             time = 0;
-        } else {
-            time++;
+            isNight = false;
         }
-
-        for (ShadowModel sh : shadows) { updateShadow(sh); }
+        time++;
+        for (ShadowModel sh : shadows) {
+            updateShadow(sh);
+        }
     }
 
     public void drawAllShadows(GameCanvas canvas) {

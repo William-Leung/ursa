@@ -46,6 +46,8 @@ public class ShadowModel {
 
     public void setBottomRight(Vector2 newCoord) { bottom_right = newCoord; }
 
+    public void setDirection (Vector2 newDirec) { direction = newDirec; }
+
     public ShadowModel(Vector2 top_left, Vector2 bottom_right, TextureRegion texture) {
         this.top_left = top_left;
         this.bottom_right = bottom_right;
