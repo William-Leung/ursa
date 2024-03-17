@@ -38,7 +38,7 @@ public class ShadowController {
         this.time = 0;
         shadows = new LinkedList<ShadowModel>();
         this.texture = texture;
-        this.isNight = false;
+        isNight = false;
     }
 
     /** Creates and initializes a new instance of a shadow controller
@@ -48,7 +48,7 @@ public class ShadowController {
         this.time = 0;
         shadows = new LinkedList<ShadowModel>();
         this.texture = null;
-        this.isNight = false;
+        isNight = false;
     }
 
     public TextureRegion getTexture() { return texture; }
@@ -105,6 +105,7 @@ public class ShadowController {
         }
     }
 
+    /** An isNight getter to access the time of night from within ShadowController **/
     public static boolean isNight() { return isNight; }
 
     //public boolean checkOverlap(Vector2 ursa_tl, Vector2 ursa_br, ShadowModel sh) {}

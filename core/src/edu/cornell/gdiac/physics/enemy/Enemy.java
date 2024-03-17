@@ -21,6 +21,8 @@ import edu.cornell.gdiac.physics.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.physics.obstacle.SimpleObstacle;
 import edu.cornell.gdiac.physics.platform.DudeModel;
+import edu.cornell.gdiac.physics.shadows.ShadowController;
+import edu.cornell.gdiac.physics.shadows.ShadowedObject;
 
 public class Enemy extends BoxObstacle {
 
@@ -305,9 +307,14 @@ public class Enemy extends BoxObstacle {
 
 	public boolean isInShadow(float x) {
 		float middleX = screenWidth / 2.0f;
-		float lineWidth = 200.0f;
+		float lineWidth = screenWidth;
 
-		playerInShadow = x >= (middleX - lineWidth / 2) && x <= (middleX + lineWidth / 2);
+		if (ShadowController.isNight()) {
+			playerInShadow = x >= (middleX - lineWidth / 2) && x <= (middleX
+					+ lineWidth / 2);
+		} else {
+			playerInShadow = false;
+		}
 		return playerInShadow;
 	}
 }
