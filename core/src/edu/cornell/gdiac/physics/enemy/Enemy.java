@@ -38,7 +38,7 @@ public class Enemy extends BoxObstacle {
 	private float damping;
 	private Vector2 playerPos;
 	private float previousXMovement;
-	private float PreviousYMovement;
+	private float previousYMovement;
 
 	private boolean playerInShadow = false;
 	private float screenWidth = 1280f;
@@ -174,15 +174,22 @@ public class Enemy extends BoxObstacle {
 		if (!isActive()) {
 			return;
 		}
+
+		if (isStunned()) {
+			setVX(getVX() * 0.75f);
+			setVY(getVY() * 0.75f);
+			return;
+		}
+
 		if(previousXMovement != movementDirection.x){
 			setVX(0);
 		}
-		if(PreviousYMovement != movementDirection.y){
+		if(previousYMovement != movementDirection.y){
 			setVY(0);
 		}
 		previousXMovement = movementDirection.x;
-		PreviousYMovement = movementDirection.y;
-		if(!playerCurrentInSight) {
+		previousYMovement = movementDirection.y;
+		if (!playerCurrentInSight) {
 
 			if (this.getPosition().x >= 15) {
 				movementDirection.x = -15;
@@ -201,8 +208,7 @@ public class Enemy extends BoxObstacle {
 				body.applyForce(forceCache, getPosition(), true);
 			}
 
-		}
-		else{
+		} else {
 			if(playerPos.x > getPosition().x){
 				movementDirection.x = 15;
 			} else if (playerPos.x < getPosition().x) {
