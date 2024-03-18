@@ -199,11 +199,14 @@ public class SceneModel extends WorldController implements ContactListener {
         addQueue.clear();
         world.dispose();
 
+        for (AIController c : controls) c.reset();
+
         world = new World(gravity,false);
         world.setContactListener(this);
         setComplete(false);
         setFailure(false);
         populateLevel();
+
     }
 
     /**
@@ -437,8 +440,11 @@ public class SceneModel extends WorldController implements ContactListener {
         for (AIController c : controls) {
             c.getAction();
             Enemy thisEnemy = c.getEnemy();
+            thisEnemy.applyForce();
             thisEnemy.setAlerted(thisEnemy.isPlayerInLineOfSight(world, avatar));
 
+
+            if (c.isWon()) setFailure(true);
         }
 
         if (avatar.isJumping()) {
