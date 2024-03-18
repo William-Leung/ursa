@@ -182,10 +182,10 @@ public class Enemy extends BoxObstacle {
 		}
 
 		if(previousXMovement != movementDirection.x){
-			setVX(0);
+			setVX(previousXMovement/2);
 		}
-		if(previousYMovement != movementDirection.y){
-			setVY(0);
+		if(previousXMovement != movementDirection.y){
+			setVY(previousXMovement/2);
 		}
 		previousXMovement = movementDirection.x;
 		previousYMovement = movementDirection.y;
