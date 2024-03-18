@@ -47,6 +47,7 @@
         "player:ursaWalk": "player/Walk.png",
         "player:ursaIdle": "player/Stand.png",
         "enemies:salmonUprightWalk": "enemies/Walk.png",
+        "object:cave": "object/Polar_Cave.png",
         "enemies:salmonWalk1":  "enemies/salmon_walk_2.png",
         "enemies:salmonWalk2":  "enemies/salmon_walk_6.png",
         "enemies:salmonWalk3":  "enemies/salmon_walk_10.png",

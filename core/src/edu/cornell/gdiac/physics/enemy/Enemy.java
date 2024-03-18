@@ -1,28 +1,34 @@
 package edu.cornell.gdiac.physics.enemy;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.PolygonRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.RayCastCallback;
-import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.physics.GameCanvas;
+import edu.cornell.gdiac.physics.SceneModel;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.physics.obstacle.SimpleObstacle;
-import edu.cornell.gdiac.physics.platform.DudeModel;
+import edu.cornell.gdiac.physics.shadows.ShadowController;
+import edu.cornell.gdiac.physics.shadows.ShadowModel;
+import edu.cornell.gdiac.util.PooledList;
 
 public class Enemy extends BoxObstacle {
+
+	private static final float BLOB_SHADOW_SIZE = 0.5f;
+
+	private static final int WALK_DAMPENING = 15;
+	private static final int STUN_DAMPENING = 25;
+
+	private static final int STUN_DURATION = 60 * 2;
 
 	/** A Pixmap used for drawing sightcones */
 	private TextureRegion redTextureRegion;
@@ -30,9 +36,14 @@ public class Enemy extends BoxObstacle {
 	private final Vector2 forceCache = new Vector2();
 	private float maxSpeed;
 	private float damping;
+	private Vector2 playerPos;
+	private float previousXMovement;
+	private float previousYMovement;
 
 	private boolean playerInShadow = false;
 	private float screenWidth = 1280f;
+	private boolean playerCurrentInSight;
+	private boolean playerInDynamicShadow = false;
 
 	/** the vector to use to indicate the direction the enemy character
 	 * should go/face x and y should be either -15 or 15 or 0*/
@@ -61,6 +72,7 @@ public class Enemy extends BoxObstacle {
 		 */
 		private boolean hitPlayer = false;
 
+
 		/**
 		 * Constructs a new EnemyLoSCallback object used for raycasting.
 		 * @param target
@@ -88,7 +100,7 @@ public class Enemy extends BoxObstacle {
 	 */
 	private static final float ENEMY_DETECTION_RANGE_NOISE = 3;
 
-	private static final float ENEMY_DETECTION_RANGE_SIGHT = 4f;
+	private static final float ENEMY_DETECTION_RANGE_SIGHT = 3f;
 
 	private static final float ENEMY_DETECTION_RANGE_SHADOW = 10;
 
@@ -98,6 +110,11 @@ public class Enemy extends BoxObstacle {
 	 * The boolean for whether or not this enemy is alerted by the player
 	 */
 	private boolean alerted = false;
+
+	/**
+	 * Indicates whether or not this enemy is stunned.
+	 */
+	private int stunDuration = 0;
 
 	public Enemy(JsonValue data, float width, float height) {
 		// The shrink factors fit the image to a tigher hitbox
@@ -109,7 +126,7 @@ public class Enemy extends BoxObstacle {
 		setFriction(data.getFloat("friction", 0));  /// HE WILL STICK TO WALLS IF YOU FORGET
 		setFixedRotation(true);
 		maxSpeed = data.getFloat("maxspeed", 0);
-		damping = 15; //data.getFloat("damping", 0);
+		//data.getFloat("damping", 0);
 
 
 		/** Creating the red and green texture regions */
@@ -131,6 +148,10 @@ public class Enemy extends BoxObstacle {
 		setName("ursa");
 	}
 
+	public void stun() {
+		stunDuration = STUN_DURATION;
+	}
+
 	/**
 	 * Returns whether or not the enemy is alerted by the player
 	 * @return true if the enemy is alerted, false otherwise.
@@ -138,46 +159,92 @@ public class Enemy extends BoxObstacle {
 	public boolean isAlerted() {
 		return alerted;
 	}
+
+	public boolean isStunned() {
+		return stunDuration > 0;
+	}
+
+	/**
+	 * gets the player position to move towards
+	 */
+	public void getPlayerPos(Vector2 pos){
+		playerPos = pos;
+	}
+	
 	public void applyForce() {
 		if (!isActive()) {
 			return;
 		}
 
-		//movementDirection.x = lookDirection.x * 15;
-		//movementDirection.y = lookDirection.y * 15;
-
-
-//		if(this.getPosition().x >= 15){
-//			movementDirection.x = -15;
-//			setLookDirection(-1, 0);
-//		}
-//		if(this.getPosition().x <= 5)
-//		{
-//			movementDirection.x = 15;
-//			setLookDirection(1, 0);
-//		}
-		if (movementDirection.x == 0f) {
-			forceCache.set(-damping * getVX(), 0);
-			body.applyForce(forceCache, getPosition(), true);
-		}
-		if (movementDirection.y == 0f) {
-			forceCache.set(0, -damping * getVY());
-			body.applyForce(forceCache, getPosition(), true);
+		if (isStunned()) {
+			setVX(getVX() * 0.75f);
+			setVY(getVY() * 0.75f);
+			return;
 		}
 
-		// Velocity too high, clamp it
-		if (Math.abs(getVX()) >= maxSpeed * 2) {
-			setVX(Math.signum(getVX()) * maxSpeed);
+		if(previousXMovement != movementDirection.x){
+			setVX(previousXMovement/2);
+		}
+		if(previousXMovement != movementDirection.y){
+			setVY(previousXMovement/2);
+		}
+		previousXMovement = movementDirection.x;
+		previousYMovement = movementDirection.y;
+		if (!playerCurrentInSight) {
+
+			if (this.getPosition().x >= 15) {
+				movementDirection.x = -15;
+				setLookDirection(-1, 0);
+			}
+			if (this.getPosition().x <= 5) {
+				movementDirection.x = 15;
+				setLookDirection(1, 0);
+			}
+			if (movementDirection.x == 0f) {
+				forceCache.set(-damping * getVX(), 0);
+				body.applyForce(forceCache, getPosition(), true);
+			}
+			if (movementDirection.y == 0f) {
+				forceCache.set(0, -damping * getVY());
+				body.applyForce(forceCache, getPosition(), true);
+			}
+
 		} else {
-			forceCache.set(movementDirection.x, 0);
+			if(playerPos.x > getPosition().x){
+				movementDirection.x = 15;
+			} else if (playerPos.x < getPosition().x) {
+				movementDirection.x = -15;
+			}
+			else {
+				movementDirection.x = 0;
+			}
+			if(playerPos.y > getPosition().y){
+				movementDirection.y = 15;
+			} else if (playerPos.y < getPosition().y) {
+				movementDirection.y = -15;
+			}
+			else {
+				movementDirection.y = 0;
+			}
+		}
+		if (Math.abs(getVX()) >= maxSpeed * 2) {
+			//setVX(Math.signum(getVX()) * maxSpeed);
+		} else {
+			forceCache.set(isStunned() ? 0 : movementDirection.x, 0);
 			body.applyForce(forceCache, getPosition(), true);
 		}
 		if (Math.abs(getVY()) >= maxSpeed * 2) {
-			setVY(Math.signum(getVY()) * maxSpeed ); // Set y-velocity, not x-velocity
+			//setVY(Math.signum(getVY()) * maxSpeed ); // Set y-velocity, not x-velocity
 		} else {
-			forceCache.set(0, movementDirection.y); // Set y-movement
+			forceCache.set(0, isStunned() ? 0 : movementDirection.y); // Set y-movement
 			body.applyForce(forceCache, getPosition(), true);
 		}
+
+	}
+
+	@Override
+	public void update(float dt) {
+		stunDuration = Math.max(stunDuration - 1, 0);
 	}
 
 	/**
@@ -188,16 +255,6 @@ public class Enemy extends BoxObstacle {
 	 */
 	public void setLookDirection(float dx, float dy) {
 		lookDirection.set(dx, dy).nor();
-	}
-
-	/**
-	 * Sets the movement direction of the enemy given the x and y direction vectors.
-	 * The new movement direction will be normalized.
-	 * @param dx The x-direction vector
-	 * @param dy The y-direction vector.
-	 */
-	public void setMoveDirection(float dx, float dy) {
-		movementDirection.set(dx, dy).nor();
 	}
 
 	/**
@@ -215,6 +272,10 @@ public class Enemy extends BoxObstacle {
 
 	public void setAlerted(boolean alerted) {
 		this.alerted = alerted;
+	}
+
+	public void setInShadow(boolean shadowed) {
+		this.playerInDynamicShadow = shadowed;
 	}
 
 	/**
@@ -255,20 +316,31 @@ public class Enemy extends BoxObstacle {
 			EnemyLoSCallback callback = new EnemyLoSCallback(player.getBody());
 			world.rayCast(callback, getPosition(), player.getPosition());
 			if (callback.hitPlayer) {
+				playerCurrentInSight = true;
 				return true;
 			}
 		}
-
+		playerCurrentInSight = false;
 		return false;
 	}
 
 
+	@Override
+	public void preDraw(GameCanvas canvas) {
+		Texture blobShadow = SceneModel.BLOB_SHADOW_TEXTURE;
+		int xcenter = blobShadow.getWidth() / 2;
+		int ycenter = blobShadow.getHeight() / 2;
+		canvas.draw(blobShadow, Color.BLACK,xcenter,ycenter,
+			getX()*drawScale.x,(getY() - 1.25f) * drawScale.y,getAngle(),BLOB_SHADOW_SIZE / drawScale.x,
+			(BLOB_SHADOW_SIZE / 2f) / drawScale.y);
+	}
+
 	public void draw(GameCanvas canvas) {
 		Color color = alerted ? Color.RED : Color.GREEN;
 		canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),
-			(lookDirection.x > 0 ? 1 : -1) * .1f,.1f);
+			(lookDirection.x > 0 ? 1 : -1) * .35f,.35f);
 
-		drawSightCone(canvas, ENEMY_DETECTION_RANGE_SIGHT, lookDirection, 8);
+		drawSightCone(canvas, ENEMY_DETECTION_RANGE_NOISE, lookDirection, 8);
 		if(playerInShadow) {
 			drawSightCone(canvas, ENEMY_DETECTION_RANGE_SHADOW, lookDirection, 8);
 		}
@@ -320,9 +392,14 @@ public class Enemy extends BoxObstacle {
 
 	public boolean isInShadow(float x) {
 		float middleX = screenWidth / 2.0f;
-		float lineWidth = 200.0f;
+		float lineWidth = screenWidth;
 
-		playerInShadow = x >= (middleX - lineWidth / 2) && x <= (middleX + lineWidth / 2);
+            playerInShadow = ShadowController.isNight() || playerInDynamicShadow;
+
 		return playerInShadow;
+	}
+
+	private int getDampening() {
+		return stunDuration > 0 ? STUN_DAMPENING : WALK_DAMPENING;
 	}
 }

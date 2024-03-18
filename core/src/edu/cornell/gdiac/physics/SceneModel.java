@@ -1,9 +1,9 @@
 package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -17,24 +17,39 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.assets.AssetDirectory;
-import edu.cornell.gdiac.assets.FilmStripLoader;
 import edu.cornell.gdiac.physics.enemy.Enemy;
-import edu.cornell.gdiac.physics.enemy.EnemyModel;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
-import edu.cornell.gdiac.physics.obstacle.CapsuleObstacle;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.physics.obstacle.PolygonObstacle;
 import edu.cornell.gdiac.physics.obstacle.WheelObstacle;
-import edu.cornell.gdiac.physics.platform.RopeBridge;
-import edu.cornell.gdiac.physics.platform.Spinner;
 import edu.cornell.gdiac.physics.player.UrsaModel;
 import edu.cornell.gdiac.physics.shadows.ShadowController;
-//import edu.cornell.gdiac.physics.shadows.ShadowedObject;
+import edu.cornell.gdiac.physics.shadows.ShadowModel;
 import edu.cornell.gdiac.physics.tree.Tree;
 import edu.cornell.gdiac.util.FilmStrip;
-import java.util.LinkedList;
+import edu.cornell.gdiac.util.PooledList;
 
 public class SceneModel extends WorldController implements ContactListener {
+
+    /*
+     * Initialize the global blob shadow used for Ursa and enemies.
+     * Since it's a shared texture, we can just use it statically across everything to make it easier.
+     */
+
+    private static final int BLOB_SHADOW_RESOLUTION = 1024; // High resolution for lesser edge cuts (in theory that is)
+
+    public static final Texture BLOB_SHADOW_TEXTURE;
+
+    static {
+        Pixmap pixmap = new Pixmap(BLOB_SHADOW_RESOLUTION * 2, BLOB_SHADOW_RESOLUTION * 2, Pixmap.Format.RGBA8888);
+        pixmap.setColor(Color.BLACK);
+        int xcenter = pixmap.getWidth() / 2;
+        int ycenter = pixmap.getHeight() / 2;
+        pixmap.fillCircle(xcenter, ycenter, BLOB_SHADOW_RESOLUTION);
+        BLOB_SHADOW_TEXTURE = new Texture(pixmap);
+        pixmap.dispose();
+    }
+
     /** Texture asset for character avatar */
     private TextureRegion avatarTexture;
     private TextureRegion ursaTexture;
@@ -72,21 +87,32 @@ public class SceneModel extends WorldController implements ContactListener {
     private UrsaModel avatar;
     /** List of references to enemies */
     private Enemy[] enemies = new Enemy[20];
-    /** List of enemy AI controllers */
-    private LinkedList<AIController> controls = new LinkedList<>();
+
+    /**
+     * List of references to all shadows.
+     */
+    private PooledList<ShadowModel> shadows = new PooledList<>();
+
+    /**
+     * List of all references to all trees
+     */
+    private PooledList<Tree> trees = new PooledList<>();
+
     private float timer = 0;
     private TextureRegion playerWalkTextureScript;
     private TextureRegion playerIdleTextureScript;
+    private TextureRegion salmonUprightWalkScript;
     private FilmStrip playerWalkFilm;
+    private FilmStrip salmonUprightWalkFilm;
     private FilmStrip playerIdleFilm;
-    private TextureRegion[] salmonWalk = new TextureRegion[8];
+
     private int playerWalkAnimIndex = 0;
     private int playerIdleAnimIndex =0;
     private int salmonWalkAnimIndex = 0;
     /** Reference to the goalDoor (for collision detection) */
     private BoxObstacle goalDoor;
     /** Controller for all dynamic shadows */
-    private ShadowController shadows;
+    private ShadowController shadowController;
 
     /** Mark set to handle more sophisticated collision callbacks */
     protected ObjectSet<Fixture> sensorFixtures;
@@ -134,6 +160,9 @@ public class SceneModel extends WorldController implements ContactListener {
         playerIdleFilm = new FilmStrip(playerIdleTextureScript.getTexture(),4,8);
         playerIdleFilm.setFrame(0);
 
+        salmonUprightWalkScript = new TextureRegion(directory.getEntry("enemies:salmonUprightWalk",Texture.class));
+        salmonUprightWalkFilm = new FilmStrip(salmonUprightWalkScript.getTexture(),3,8);
+        salmonUprightWalkFilm.setFrame(0);
 
 
 
@@ -167,15 +196,11 @@ public class SceneModel extends WorldController implements ContactListener {
         addQueue.clear();
         world.dispose();
 
-        for (AIController e : controls) e.reset();
-        controls.clear();
-
         world = new World(gravity,false);
         world.setContactListener(this);
         setComplete(false);
         setFailure(false);
         populateLevel();
-
     }
 
     /**
@@ -200,7 +225,7 @@ public class SceneModel extends WorldController implements ContactListener {
 //        addObject(goalDoor);
 
         // create shadow (idk if this does anything even)
-        shadows = new ShadowController();
+        shadowController = new ShadowController();
 
         String wname = "wall";
         JsonValue walljv = constants.get("walls");
@@ -251,7 +276,7 @@ public class SceneModel extends WorldController implements ContactListener {
         enemies[0] = new Enemy(constants.get("enemy"), dwidth, dheight);
         enemies[0].setLookDirection(1, 0);
         enemies[0].setDrawScale(scale);
-        enemies[0].setTexture(enemyTexture);
+        enemies[0].setTexture(salmonUprightWalkFilm);
         addObject(enemies[0]);
 
         dwidth  = enemyTexture2.getRegionWidth()/30;
@@ -259,14 +284,13 @@ public class SceneModel extends WorldController implements ContactListener {
         enemies[1] = new Enemy(constants.get("enemy2"), dwidth, dheight);
         enemies[1].setLookDirection(1, 0);
         enemies[1].setDrawScale(scale);
-        enemies[1].setTexture(enemyTexture2);
+        enemies[1].setTexture(salmonUprightWalkFilm);
         addObject(enemies[1]);
 
         String tname = "tree";
         JsonValue treejv = constants.get("trees");
         for(int ii = 0; ii < treejv.size; ii++) {
-            Tree obj;
-            obj = new Tree(treejv.get(ii).asFloatArray(),1,3);
+            Tree obj = new Tree(treejv.get(ii).asFloatArray(),3,3);
             obj.setBodyType(BodyDef.BodyType.StaticBody);
             obj.setDensity(defaults.getFloat( "density", 0.0f ));
             obj.setFriction(defaults.getFloat( "friction", 0.0f ));
@@ -275,13 +299,9 @@ public class SceneModel extends WorldController implements ContactListener {
             obj.setTexture(tundraTreeWithSnow);
             obj.setName(tname+ii);
             addObject(obj);
-        }
-
-        // Create all AI Controllers for enemies
-        for (int i = 0; i < enemies.length; i++) {
-            if (enemies[i] != null) {
-                controls.add(new AIController(enemies[i], avatar));
-            }
+            trees.add(obj);
+            shadows.add(new ShadowModel(new Vector2(obj.getX(), obj.getY()), Tree.X_SCALE, Tree.Y_SCALE,
+                obj.getTexture(), obj.getDrawOrigin(), obj.getDrawScale()));
         }
 
         volume = constants.getFloat("volume", 1.0f);
@@ -310,7 +330,25 @@ public class SceneModel extends WorldController implements ContactListener {
 
         return true;
     }
-
+    private void animateEnemies(){
+        if(salmonWalkAnimIndex == 0 || salmonWalkAnimIndex == 21){
+            salmonWalkAnimIndex = 0;
+            salmonUprightWalkFilm.setFrame(0);
+            enemies[1].setTexture(salmonUprightWalkFilm);
+            enemies[0].setTexture(salmonUprightWalkFilm);
+            salmonWalkAnimIndex +=1;
+//            System.out.println(salmonWalkAnimIndex);
+        }
+        else {
+            salmonUprightWalkFilm.setFrame(salmonWalkAnimIndex);
+            salmonWalkAnimIndex +=1;
+            enemies[1].setTexture(salmonUprightWalkFilm);
+            enemies[0].setTexture(salmonUprightWalkFilm);
+        }
+    }
+    /*
+    Animates the player model based on the conidtions of the player
+     */
     private void animatePlayerModel(){
         if(avatar.getXMovement() != 0 || avatar.getyMovement() != 0){
             playerIdleAnimIndex = 0;
@@ -364,40 +402,68 @@ public class SceneModel extends WorldController implements ContactListener {
         //avatar.setShooting(InputController.getInstance().didSecondary());
 
         animatePlayerModel();
+        animateEnemies();
+
+        // Shake trees
+        if (InputController.getInstance().didInteract()) {
+            Tree nearest = null;
+            float dst = 0;
+            for (Tree tree : trees) {
+                float tempDst = avatar.getPosition().dst(tree.getPosition());
+                if (tree.canShake() && tempDst < 2 && (nearest == null || tempDst < dst)) {
+                    nearest = tree;
+                    dst = tempDst;
+                }
+            }
+
+            if (nearest != null) {
+                shakeTree(nearest);
+            }
+        }
 
         avatar.applyForce();
+        enemies[0].applyForce();
+        enemies[1].applyForce();
 
         if (avatar.isJumping()) {
             jumpId = playSound( jumpSound, jumpId, volume );
         }
-//        if (avatar.isJumping()) {
-//            jumpId = playSound( jumpSound, jumpId, volume );
-//        }
+        enemies[0].setAlerted(enemies[0].isPlayerInLineOfSight(world, avatar));
+        enemies[1].setAlerted(enemies[1].isPlayerInLineOfSight(world, avatar));
 
-        // update enemies
-        for (AIController e : controls) {
-            e.getAction();
-            Enemy thisEnemy = e.getEnemy();
+        boolean inShadow = false;
+        for (ShadowModel shadow : shadows) {
+            if (shadow != null && shadow.isPlayerInShadow(world, avatar)) {
+                inShadow = true;
+                break;
+            }
+        }
 
-            if (e.isWon()) setFailure(true);
-
-            thisEnemy.applyForce();
-
-            boolean inSight = thisEnemy.isPlayerInLineOfSight(world, avatar);
-            thisEnemy.setAlerted(inSight);
-            if (!inSight) e.resetLifeTime();
-
-            //manually handle collisions
-            if (Math.pow(thisEnemy.getX() - avatar.getX(),2) + Math.pow(thisEnemy.getY() - avatar.getY(), 2)
-                    <= thisEnemy.getHeight() + avatar.getHeight()) setFailure(true);
+        for (Enemy enemy : enemies) {
+            if(enemy != null) {
+                if (enemy.isPlayerInLineOfSight(world,avatar)) {
+                    enemy.getPlayerPos(avatar.getPosition());
+                }
+                enemy.setInShadow(inShadow);
+            }
         }
 
 
-
         canvas.clear();
-        canvas.begin();
-        //shadows.update();
-        canvas.end();
+        shadowController.update(this);
+    }
+
+    private void shakeTree(Tree tree) {
+        if (tree.canShake()) {
+            tree.putOnShakeCooldown();
+            System.out.println("Tree shaken");
+
+            for (Enemy enemy : enemies) {
+                if (enemy != null && enemy.getPosition().dst(tree.getPosition()) < 5) {
+                    enemy.stun();
+                }
+            }
+        }
     }
 
     /**
@@ -481,7 +547,6 @@ public class SceneModel extends WorldController implements ContactListener {
                     (bd1 == goalDoor && bd2 == avatar)) {
                 setComplete(true);
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -517,6 +582,10 @@ public class SceneModel extends WorldController implements ContactListener {
         }
     }
 
+    public PooledList<ShadowModel> getShadows() {
+        return shadows;
+    }
+
     /** Unused ContactListener method */
     public void postSolve(Contact contact, ContactImpulse impulse) {}
     /** Unused ContactListener method */
@@ -536,6 +605,6 @@ public class SceneModel extends WorldController implements ContactListener {
 
     @Override
     public void preDraw(float dt) {
-        //shadows.drawAllShadows(canvas);
+        shadowController.drawAllShadows(canvas, this);
     }
 }
