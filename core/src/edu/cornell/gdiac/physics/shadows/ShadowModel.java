@@ -2,9 +2,15 @@ package edu.cornell.gdiac.physics.shadows;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.RayCastCallback;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.math.*;
 import edu.cornell.gdiac.physics.GameCanvas;
+import edu.cornell.gdiac.physics.obstacle.SimpleObstacle;
 
 /**
  * Dynamic (currently only rectangular) shadows for the current map
@@ -29,10 +35,48 @@ public class ShadowModel {
     private Vector2 drawScale = new Vector2();
     private Vector2 origin = new Vector2();
 
-    /**
-     * The direction that the shadow is facing.
-     * Invariant: This vector is always normalized.
-     */
+    private boolean playerCurrentInShadow;
+
+    private static class ShadowCallback implements RayCastCallback {
+        /**
+         * The targeted body by the line-of-sight raycast
+         */
+        private final Body target;
+
+        /**
+         * The indication if the body was hit or not.
+         */
+        private boolean hitPlayer = false;
+
+
+        /**
+         * Constructs a new ShadowCallback object used for raycasting.
+         * @param target
+         */
+        private ShadowCallback(Body target) {
+            this.target = target;
+        }
+
+        @Override
+        public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
+            Body body = fixture.getBody();
+
+            if (body.getType() == BodyDef.BodyType.StaticBody) { // For simplicity's sake, we're considering all static bodies to be obstacles
+                hitPlayer = false;
+                return 0;
+            } else if (body.equals(target)) { // The body is not static? Might be our target. Let's check to see if it is.
+                hitPlayer = true;
+                return -1;
+            }
+            return -1; // Otherwise, ignore the fixture and continue
+        }
+    }
+
+
+        /**
+         * The direction that the shadow is facing.
+         * Invariant: This vector is always normalized.
+         */
     private Vector2 direction = new Vector2(0, 1);
 
 
@@ -130,6 +174,28 @@ public class ShadowModel {
     public float getInitHeight() { return initial_height; }
 
     public float getInitWidth() { return initial_width; }
+
+    public boolean isPlayerInShadow(World world, SimpleObstacle player) {
+        Vector2 pos = getAnchor();
+        Vector2 playerPos = new Vector2(player.getPosition());
+        double dst = playerPos.dst(pos);
+
+        Vector2 dirToVector = new Vector2(player.getPosition()).sub(pos).nor();
+        float angle = getDirection().angleDeg(dirToVector);
+        boolean possiblyVisible = dst <= 10 && (angle <= 30 || angle >= 360 - 30);
+
+        if (possiblyVisible) {
+            ShadowCallback callback = new ShadowCallback(player.getBody());
+            world.rayCast(callback, getAnchor(), player.getPosition());
+            if (callback.hitPlayer) {
+                playerCurrentInShadow = true;
+                return true;
+            }
+        }
+        playerCurrentInShadow = false;
+        return false;
+
+    }
 
     /**
      * Draws the shadow onto the given GameCanvas with the specified max skew and y-scalar

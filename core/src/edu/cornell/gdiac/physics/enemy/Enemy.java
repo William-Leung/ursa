@@ -43,6 +43,7 @@ public class Enemy extends BoxObstacle {
 	private boolean playerInShadow = false;
 	private float screenWidth = 1280f;
 	private boolean playerCurrentInSight;
+	private boolean playerInDynamicShadow = false;
 
 	/** the vector to use to indicate the direction the enemy character
 	 * should go/face x and y should be either -15 or 15 or 0*/
@@ -273,6 +274,10 @@ public class Enemy extends BoxObstacle {
 		this.alerted = alerted;
 	}
 
+	public void setInShadow(boolean shadowed) {
+		this.playerInDynamicShadow = true;
+	}
+
 	/**
 	 * Checks if the given player object is in line of sight. This checks based on their position, centered
 	 * around their body of mass.
@@ -388,22 +393,9 @@ public class Enemy extends BoxObstacle {
 	public boolean isInShadow(float x) {
 		float middleX = screenWidth / 2.0f;
 		float lineWidth = screenWidth;
-		PooledList<ShadowModel> shadows = SceneModel.getShadows();
 
-		if (ShadowController.isNight()) {
-			playerInShadow = x >= (middleX - lineWidth / 2) && x <= (middleX
-					+ lineWidth / 2);
-		} else {
-			playerInShadow = false;
-//			for(ShadowModel sh : shadows) {
-//				if (sh.getTopLeft() != null &&
-//						sh.getBottomRight() != null &&
-//						x >= sh.getTopLeft().x && x <= sh.getBottomRight().x) {
-//					playerInShadow = true;
-//					break;
-//				}
-//			}
-		}
+            playerInShadow = ShadowController.isNight() || playerInDynamicShadow;
+
 		return playerInShadow;
 	}
 

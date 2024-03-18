@@ -91,7 +91,7 @@ public class SceneModel extends WorldController implements ContactListener {
     /**
      * List of references to all shadows.
      */
-    private static PooledList<ShadowModel> shadows = new PooledList<>();
+    private PooledList<ShadowModel> shadows = new PooledList<>();
 
     /**
      * List of all references to all trees
@@ -435,7 +435,17 @@ public class SceneModel extends WorldController implements ContactListener {
                 enemy.getPlayerPos(avatar.getPosition());
             }
 
+            if (enemy != null) {
+                for (ShadowModel shadow : shadows) {
+                    if (shadow != null && shadow.isPlayerInShadow(world, avatar)) {
+                        enemy.setInShadow(true);
+                    }
+                }
+            }
+
         }
+
+
 
         canvas.clear();
         shadowController.update(this);
@@ -570,7 +580,7 @@ public class SceneModel extends WorldController implements ContactListener {
         }
     }
 
-    public static PooledList<ShadowModel> getShadows() {
+    public PooledList<ShadowModel> getShadows() {
         return shadows;
     }
 
