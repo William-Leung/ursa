@@ -349,7 +349,7 @@ public class SceneModel extends WorldController implements ContactListener {
             enemies[1].setTexture(salmonUprightWalkFilm);
             enemies[0].setTexture(salmonUprightWalkFilm);
             salmonWalkAnimIndex +=1;
-//            System.out.println(salmonWalkAnimIndex);
+//
         }
         else {
             salmonUprightWalkFilm.setFrame(salmonWalkAnimIndex);

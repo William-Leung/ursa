@@ -186,11 +186,10 @@ public class Enemy extends BoxObstacle {
 			setVX(previousXMovement/2);
 		}
 		if(previousYMovement != movementDirection.y){
-			setVY(previousYMovement/2);
+			setVY(previousXMovement/2);
 		}
 		previousXMovement = movementDirection.x;
 		previousYMovement = movementDirection.y;
-
 		if (!playerCurrentInSight) {
 
 			if (this.getPosition().x >= 15) {
