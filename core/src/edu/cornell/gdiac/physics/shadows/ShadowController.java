@@ -73,7 +73,7 @@ public class ShadowController {
 //        }
         //System.out.println("Ticks: " + time);
         if (!isNight) {
-            sh.rotateDirection((float) (360 / TICKS_PER_DAY) );
+            sh.rotateDirection((float) (360 / TICKS_PER_DAY)/10 );
         } else {
             sh.setDirection(origDir);
         }
@@ -81,9 +81,9 @@ public class ShadowController {
     }
 
     public void update(SceneModel sceneModel) {
-        if (time == 180) {
+        if (time == 1800) {
             isNight = true;
-        } else if (time == 360) {
+        } else if (time == 3600) {
             time = 0;
             isNight = false;
         }
