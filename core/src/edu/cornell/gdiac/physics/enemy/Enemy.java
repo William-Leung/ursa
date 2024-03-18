@@ -100,7 +100,7 @@ public class Enemy extends BoxObstacle {
 	 */
 	private static final float ENEMY_DETECTION_RANGE_NOISE = 3;
 
-	private static final float ENEMY_DETECTION_RANGE_SIGHT = 3f;
+	private static final float ENEMY_DETECTION_RANGE_SIGHT = 5f;
 
 	private static final float ENEMY_DETECTION_RANGE_SHADOW = 10;
 
@@ -340,7 +340,7 @@ public class Enemy extends BoxObstacle {
 		canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),
 			(lookDirection.x > 0 ? 1 : -1) * .35f,.35f);
 
-		drawSightCone(canvas, ENEMY_DETECTION_RANGE_NOISE, lookDirection, 8);
+		drawSightCone(canvas, ENEMY_DETECTION_RANGE_SIGHT, lookDirection, 8);
 		if(playerInShadow) {
 			drawSightCone(canvas, ENEMY_DETECTION_RANGE_SHADOW, lookDirection, 8);
 		}
