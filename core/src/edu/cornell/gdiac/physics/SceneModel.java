@@ -105,6 +105,7 @@ public class SceneModel extends WorldController implements ContactListener {
     private TextureRegion playerWalkTextureScript;
     private TextureRegion playerIdleTextureScript;
     private TextureRegion salmonUprightWalkScript;
+    private TextureRegion whiteTexture;
     private FilmStrip playerWalkFilm;
     private FilmStrip salmonUprightWalkFilm;
     private FilmStrip playerIdleFilm;
@@ -154,7 +155,7 @@ public class SceneModel extends WorldController implements ContactListener {
         backGround = new TextureRegion(directory.getEntry("platform:snowback",Texture.class));
         tundraTree = new TextureRegion(directory.getEntry("object:tundra_tree",Texture.class));
         tundraTreeWithSnow = new TextureRegion(directory.getEntry("object:tundra_tree_with_snow", Texture.class));
-
+        whiteTexture = new TextureRegion(directory.getEntry("object/white", Texture.class));
         playerWalkTextureScript = new TextureRegion(directory.getEntry("player:ursaWalk",Texture.class));
         playerWalkFilm = new FilmStrip(playerWalkTextureScript.getTexture(),2,8);
         playerWalkFilm.setFrame(0);
@@ -245,7 +246,7 @@ public class SceneModel extends WorldController implements ContactListener {
             obj.setFriction(defaults.getFloat( "friction", 0.0f ));
             obj.setRestitution(defaults.getFloat( "restitution", 0.0f ));
             obj.setDrawScale(scale);
-            obj.setTexture(ursaTexture);
+            obj.setTexture(whiteTexture);
             obj.setName(wname+ii);
             addObject(obj);
         }
@@ -260,7 +261,7 @@ public class SceneModel extends WorldController implements ContactListener {
             obj.setFriction(defaults.getFloat( "friction", 0.0f ));
             obj.setRestitution(defaults.getFloat( "restitution", 0.0f ));
             obj.setDrawScale(scale);
-            obj.setTexture(ursaTexture);
+            obj.setTexture(whiteTexture);
             obj.setName(pname+ii);
             addObject(obj);
         }
