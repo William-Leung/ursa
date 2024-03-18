@@ -346,7 +346,7 @@ public class SceneModel extends WorldController implements ContactListener {
             enemies[1].setTexture(salmonUprightWalkFilm);
             enemies[0].setTexture(salmonUprightWalkFilm);
             salmonWalkAnimIndex +=1;
-//            System.out.println(salmonWalkAnimIndex);
+//
         }
         else {
             salmonUprightWalkFilm.setFrame(salmonWalkAnimIndex);
@@ -437,6 +437,7 @@ public class SceneModel extends WorldController implements ContactListener {
         for (AIController c : controls) {
             c.getAction();
             Enemy thisEnemy = c.getEnemy();
+            thisEnemy.applyForce();
             thisEnemy.setAlerted(thisEnemy.isPlayerInLineOfSight(world, avatar));
 
         }
