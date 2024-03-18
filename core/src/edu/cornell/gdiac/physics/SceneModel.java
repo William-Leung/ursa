@@ -17,6 +17,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.physics.cave.Cave;
 import edu.cornell.gdiac.physics.enemy.Enemy;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
@@ -105,6 +106,7 @@ public class SceneModel extends WorldController implements ContactListener {
     private TextureRegion playerWalkTextureScript;
     private TextureRegion playerIdleTextureScript;
     private TextureRegion salmonUprightWalkScript;
+    private TextureRegion polarCave;
     private TextureRegion whiteTexture;
     private FilmStrip playerWalkFilm;
     private FilmStrip salmonUprightWalkFilm;
@@ -159,7 +161,7 @@ public class SceneModel extends WorldController implements ContactListener {
         playerWalkTextureScript = new TextureRegion(directory.getEntry("player:ursaWalk",Texture.class));
         playerWalkFilm = new FilmStrip(playerWalkTextureScript.getTexture(),2,8);
         playerWalkFilm.setFrame(0);
-
+        polarCave = new TextureRegion(directory.getEntry("object:cave",Texture.class));
         playerIdleTextureScript = new TextureRegion(directory.getEntry("player:ursaIdle",Texture.class));
         playerIdleFilm = new FilmStrip(playerIdleTextureScript.getTexture(),4,8);
         playerIdleFilm.setFrame(0);
@@ -222,16 +224,16 @@ public class SceneModel extends WorldController implements ContactListener {
 
         JsonValue goal = constants.get("goal");
         JsonValue goalpos = goal.get("pos");
-        //goalDoor = new Cave(dwidth,dheight);
-       // goalDoor.setBodyType(BodyDef.BodyType.StaticBody);
-        //goalDoor.setDensity(goal.getFloat("density", 0));
-        //goalDoor.setFriction(goal.getFloat("friction", 0));
-        //goalDoor.setRestitution(goal.getFloat("restitution", 0));
-        //goalDoor.setSensor(true);
-        //goalDoor.setDrawScale(scale);
-       // goalDoor.setTexture(goalTile);
-        //goalDoor.setName("goal");
-        //addObject(goalDoor);
+        goalDoor = new Cave(dwidth,dheight);
+        goalDoor.setBodyType(BodyDef.BodyType.StaticBody);
+        goalDoor.setDensity(goal.getFloat("density", 0));
+        goalDoor.setFriction(goal.getFloat("friction", 0));
+        goalDoor.setRestitution(goal.getFloat("restitution", 0));
+        goalDoor.setSensor(true);
+        goalDoor.setDrawScale(scale);
+        goalDoor.setTexture(polarCave);
+        goalDoor.setName("goal");
+        addObject(goalDoor);
 
         // create shadow (idk if this does anything even)
         shadowController = new ShadowController();
