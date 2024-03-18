@@ -306,24 +306,10 @@ public class SceneModel extends WorldController implements ContactListener {
 
         String tname = "tree";
         JsonValue treejv = constants.get("trees");
-        for(int ii = 0; ii < treejv.size; ii++) {
-            Tree obj = new Tree(treejv.get(ii).asFloatArray(),3,3);
-            obj.setBodyType(BodyDef.BodyType.StaticBody);
-            obj.setDensity(defaults.getFloat( "density", 0.0f ));
-            obj.setFriction(defaults.getFloat( "friction", 0.0f ));
-            obj.setRestitution(defaults.getFloat( "restitution", 0.0f ));
-            obj.setDrawScale(scale);
-            obj.setTexture(tundraTreeWithSnow);
-            obj.setName(tname+ii);
-            addObject(obj);
-            trees.add(obj);
-            shadows.add(new ShadowModel(new Vector2(obj.getX(), obj.getY()), Tree.X_SCALE, Tree.Y_SCALE,
-                obj.getTexture(), obj.getDrawOrigin(), obj.getDrawScale()));
-        }
-        tname = "tree";
-        treejv = constants.get("trees");
-        for(int ii = 0; ii < treejv.size; ii++) {
-            Tree obj = new Tree(treejv.get(ii).asFloatArray(),9,3);
+        int[] treeXCoords = new int[]{27, 22, 27, 19, 17};
+        int[] treeYCoords = new int[]{5, 8, 10, 13, 6};
+        for(int ii = 0; ii < 5; ii++) {
+            Tree obj = new Tree(treejv.get(0).asFloatArray(),treeXCoords[ii],treeYCoords[ii]);
             obj.setBodyType(BodyDef.BodyType.StaticBody);
             obj.setDensity(defaults.getFloat( "density", 0.0f ));
             obj.setFriction(defaults.getFloat( "friction", 0.0f ));
