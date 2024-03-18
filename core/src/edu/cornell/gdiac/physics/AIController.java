@@ -173,9 +173,9 @@ public class AIController {
                 Vector2 action = new Vector2(0,0);
 
                 if (enemy.getX() < 5) {
-                    enemy.setMoveDirection(15,0);
+
                 } else if (enemy.getX() > 15) {
-                    enemy.setMoveDirection(-15,0);
+
                 }
 
                 if (enemy.getVX() < 0) {
