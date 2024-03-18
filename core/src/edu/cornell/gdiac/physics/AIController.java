@@ -161,7 +161,7 @@ public class AIController {
         ticks++;
 
         changeStateIfApplicable();
-        System.out.println(state.toString());
+        //System.out.println(state.toString());
 
         switch (state) {
             case SPAWN:
