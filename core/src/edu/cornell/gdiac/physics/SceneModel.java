@@ -28,6 +28,7 @@ import edu.cornell.gdiac.physics.shadows.ShadowModel;
 import edu.cornell.gdiac.physics.tree.Tree;
 import edu.cornell.gdiac.util.FilmStrip;
 import edu.cornell.gdiac.util.PooledList;
+import java.util.LinkedList;
 
 public class SceneModel extends WorldController implements ContactListener {
 
@@ -87,6 +88,8 @@ public class SceneModel extends WorldController implements ContactListener {
     private UrsaModel avatar;
     /** List of references to enemies */
     private Enemy[] enemies = new Enemy[20];
+    /** List of AIControllers */
+    private LinkedList<AIController> controls = new LinkedList<>();
 
     /**
      * List of references to all shadows.
@@ -287,6 +290,12 @@ public class SceneModel extends WorldController implements ContactListener {
         enemies[1].setTexture(salmonUprightWalkFilm);
         addObject(enemies[1]);
 
+        for (int i = 0; i < enemies.length; i++) {
+            if (enemies[i] != null) {
+                controls.add(new AIController(enemies[i], avatar));
+            }
+        }
+
         String tname = "tree";
         JsonValue treejv = constants.get("trees");
         for(int ii = 0; ii < treejv.size; ii++) {
@@ -422,14 +431,20 @@ public class SceneModel extends WorldController implements ContactListener {
         }
 
         avatar.applyForce();
-        enemies[0].applyForce();
-        enemies[1].applyForce();
+        //enemies[0].applyForce();
+        //enemies[1].applyForce();
+
+        for (AIController c : controls) {
+            c.getAction();
+            Enemy thisEnemy = c.getEnemy();
+            thisEnemy.setAlerted(thisEnemy.isPlayerInLineOfSight(world, avatar));
+
+        }
 
         if (avatar.isJumping()) {
             jumpId = playSound( jumpSound, jumpId, volume );
         }
-        enemies[0].setAlerted(enemies[0].isPlayerInLineOfSight(world, avatar));
-        enemies[1].setAlerted(enemies[1].isPlayerInLineOfSight(world, avatar));
+
 
         boolean inShadow = false;
         for (ShadowModel shadow : shadows) {
