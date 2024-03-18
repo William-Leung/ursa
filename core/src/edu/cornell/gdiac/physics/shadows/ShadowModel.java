@@ -182,7 +182,7 @@ public class ShadowModel {
 
         Vector2 dirToVector = new Vector2(player.getPosition()).sub(pos).nor();
         float angle = getDirection().angleDeg(dirToVector);
-        boolean possiblyVisible = dst <= 10 && (angle <= 30 || angle >= 360 - 30);
+        boolean possiblyVisible = dst <= 5 && (angle <= 20 || angle >= 360 - 20);
 
         if (possiblyVisible) {
             ShadowCallback callback = new ShadowCallback(player.getBody());
