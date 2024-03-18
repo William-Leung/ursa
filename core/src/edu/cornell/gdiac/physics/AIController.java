@@ -201,7 +201,7 @@ public class AIController {
                 return;
 
             case CONFUSED:
-                System.out.println("Enemy is confused");
+                //System.out.println("Enemy is confused");
                 enemy.setVX(0);
                 enemy.setVY(0);
                 curr_stamina = Math.min(MAX_STAMINA, curr_stamina + 1);
