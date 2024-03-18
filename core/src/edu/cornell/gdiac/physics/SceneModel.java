@@ -196,6 +196,7 @@ public class SceneModel extends WorldController implements ContactListener {
             obj.deactivatePhysics(world);
         }
         objects.clear();
+        shadows.clear();
         addQueue.clear();
         world.dispose();
 
@@ -217,18 +218,18 @@ public class SceneModel extends WorldController implements ContactListener {
         float dwidth  = goalTile.getRegionWidth()/scale.x;
         float dheight = goalTile.getRegionHeight()/scale.y;
 
-//        JsonValue goal = constants.get("goal");
-//        JsonValue goalpos = goal.get("pos");
-//        goalDoor = new BoxObstacle(goalpos.getFloat(0),goalpos.getFloat(1),dwidth,dheight);
-//        goalDoor.setBodyType(BodyDef.BodyType.StaticBody);
-//        goalDoor.setDensity(goal.getFloat("density", 0));
-//        goalDoor.setFriction(goal.getFloat("friction", 0));
-//        goalDoor.setRestitution(goal.getFloat("restitution", 0));
-//        goalDoor.setSensor(true);
-//        goalDoor.setDrawScale(scale);
-//        goalDoor.setTexture(goalTile);
-//        goalDoor.setName("goal");
-//        addObject(goalDoor);
+        JsonValue goal = constants.get("goal");
+        JsonValue goalpos = goal.get("pos");
+        //goalDoor = new Cave(dwidth,dheight);
+       // goalDoor.setBodyType(BodyDef.BodyType.StaticBody);
+        //goalDoor.setDensity(goal.getFloat("density", 0));
+        //goalDoor.setFriction(goal.getFloat("friction", 0));
+        //goalDoor.setRestitution(goal.getFloat("restitution", 0));
+        //goalDoor.setSensor(true);
+        //goalDoor.setDrawScale(scale);
+       // goalDoor.setTexture(goalTile);
+        //goalDoor.setName("goal");
+        //addObject(goalDoor);
 
         // create shadow (idk if this does anything even)
         shadowController = new ShadowController();
@@ -244,7 +245,7 @@ public class SceneModel extends WorldController implements ContactListener {
             obj.setFriction(defaults.getFloat( "friction", 0.0f ));
             obj.setRestitution(defaults.getFloat( "restitution", 0.0f ));
             obj.setDrawScale(scale);
-            obj.setTexture(earthTile);
+            obj.setTexture(ursaTexture);
             obj.setName(wname+ii);
             addObject(obj);
         }
