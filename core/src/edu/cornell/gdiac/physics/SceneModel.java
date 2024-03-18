@@ -201,7 +201,8 @@ public class SceneModel extends WorldController implements ContactListener {
         addQueue.clear();
         world.dispose();
 
-        for (AIController c : controls) c.reset();
+        //for (AIController c : controls) c.reset();
+        controls.clear();
 
         world = new World(gravity,false);
         world.setContactListener(this);
