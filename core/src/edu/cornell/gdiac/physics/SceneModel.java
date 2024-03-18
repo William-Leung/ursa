@@ -445,6 +445,12 @@ public class SceneModel extends WorldController implements ContactListener {
 
 
             if (c.isWon()) setFailure(true);
+
+            // manual collision detection
+            if (Math.pow(thisEnemy.getX() - avatar.getX(), 2) + Math.pow(thisEnemy.getY() - avatar.getY(), 2)
+                    <= thisEnemy.getHeight() + avatar.getHeight()) {
+                setFailure(true);
+            }
         }
 
         if (avatar.isJumping()) {
