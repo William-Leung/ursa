@@ -275,7 +275,7 @@ public class Enemy extends BoxObstacle {
 	}
 
 	public void setInShadow(boolean shadowed) {
-		this.playerInDynamicShadow = true;
+		this.playerInDynamicShadow = shadowed;
 	}
 
 	/**
