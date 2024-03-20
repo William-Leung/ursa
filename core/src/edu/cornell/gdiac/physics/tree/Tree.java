@@ -14,8 +14,8 @@ public class Tree extends PolygonObstacle {
 	private static final int SHAKE_COOLDOWN = 180;
 	private static final float SHAKE_STRENGTH = 0.1f;
 
-	public static final float X_SCALE = 0.1f;
-	public static final float Y_SCALE = 0.1f;
+	public static final float X_SCALE = 0.15f;
+	public static final float Y_SCALE = 0.15f;
 
 	private int shakeCooldown = 0;
 	private int shakeAnimation = 0;
@@ -55,7 +55,7 @@ public class Tree extends PolygonObstacle {
 
 	public void draw(GameCanvas canvas) {
 		Affine2 affine = new Affine2()
-			.setToTranslation(getX() * drawScale.x, getY() * drawScale.y)
+			.translate(getX() * drawScale.x, getY() * drawScale.y)
 			.scale(X_SCALE, Y_SCALE)
 			.shear(shakeAnimationInvert * SHAKE_STRENGTH * ((float) shakeAnimation / SHAKE_ANIMATION_TIME), 0);
 		canvas.draw(texture, Color.WHITE,origin.x, origin.y, affine);

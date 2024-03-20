@@ -306,8 +306,8 @@ public class SceneModel extends WorldController implements ContactListener {
 
         String tname = "tree";
         JsonValue treejv = constants.get("trees");
-        int[] treeXCoords = new int[]{14, 17, 19, 27, 25};
-        int[] treeYCoords = new int[]{3, 12, 6, 11, 5};
+        float[] treeXCoords = new float[]{24,14, 17, 19, 27, 25};
+        float[] treeYCoords = new float[]{5.5f,3, 12, 6, 11, 5};
         for(int ii = 0; ii < 5; ii++) {
             Tree obj = new Tree(treejv.get(0).asFloatArray(),treeXCoords[ii],treeYCoords[ii]);
             obj.setBodyType(BodyDef.BodyType.StaticBody);
