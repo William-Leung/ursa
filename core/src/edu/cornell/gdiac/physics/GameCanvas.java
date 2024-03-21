@@ -18,7 +18,6 @@
 package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g3d.utils.shapebuilders.EllipseShapeBuilder;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
@@ -161,6 +160,15 @@ public class GameCanvas {
 			Gdx.graphics.setWindowedMode(width, getHeight());
 		}
 		resize();
+	}
+
+	protected void moveCam(float x, float y){
+		camera.position.x = x * 34.7f;
+		camera.position.y = y * 28.8f;
+		camera.update();
+	}
+	protected void updateCam(){
+		camera.update(true);
 	}
 	
 	/**

@@ -2,6 +2,7 @@ package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -412,6 +413,8 @@ public class SceneModel extends WorldController implements ContactListener {
      * @param dt	Number of seconds since last animation frame
      */
     public void update(float dt) {
+
+        canvas.moveCam(avatar.getPosition().x,avatar.getPosition().y);
         // Process actions in object model
         float xVal = InputController.getInstance().getHorizontal() *avatar.getForce();
         float yVal = InputController.getInstance().getVertical() *avatar.getForce();
@@ -485,6 +488,7 @@ public class SceneModel extends WorldController implements ContactListener {
 
         canvas.clear();
         shadowController.update(this);
+
     }
 
     private void shakeTree(Tree tree) {

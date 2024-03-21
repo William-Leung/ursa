@@ -107,7 +107,7 @@ public abstract class WorldController implements Screen {
 
 	private TextureRegion backGround;
 	private float snowFall = 450.0f;
-	private Color backgroundColor = new Color(1f,1f,1f,1f);
+	private Color backgroundColor = new Color(0.8f,1f,1f,0.9f);
 
 	/**
 	 * Returns true if debug mode is active.
