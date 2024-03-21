@@ -167,9 +167,7 @@ public class GameCanvas {
 		camera.position.y = y * 28.8f;
 		camera.update();
 	}
-	protected void updateCam(){
-		camera.update(true);
-	}
+
 	
 	/**
 	 * Returns the height of this canvas
