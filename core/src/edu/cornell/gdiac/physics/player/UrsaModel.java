@@ -230,13 +230,15 @@ public class UrsaModel extends CapsuleObstacle {
      */
     public UrsaModel(JsonValue data, float width, float height) {
         // The shrink factors fit the image to a tigher hitbox
-        super(	data.get("pos").getFloat(0),
+
+        super(	data.get("pos").getFloat(0) ,
                 data.get("pos").getFloat(1),
                 width*data.get("shrink").getFloat( 0 ),
-                height*data.get("shrink").getFloat( 1 ));
+                height*data.get("shrink").getFloat( 1 ) );
         setDensity(data.getFloat("density", 0));
         setFriction(data.getFloat("friction", 0));  /// HE WILL STICK TO WALLS IF YOU FORGET
         setFixedRotation(true);
+
 
         maxspeed = data.getFloat("maxspeed", 0);
         damping = data.getFloat("damping", 0);
@@ -252,7 +254,6 @@ public class UrsaModel extends CapsuleObstacle {
         isShooting = false;
         isJumping = false;
         faceRight = true;
-
         shootCooldown = 0;
         jumpCooldown = 0;
         setName("ursa");
@@ -371,7 +372,7 @@ public class UrsaModel extends CapsuleObstacle {
         int xcenter = blobShadow.getWidth() / 2;
         int ycenter = blobShadow.getHeight() / 2;
         canvas.draw(blobShadow, Color.BLACK,xcenter,ycenter,
-            getX()*drawScale.x,(getY() - 1) * drawScale.y,getAngle(),BLOB_SHADOW_SIZE / drawScale.x,
+            getX()*drawScale.x,(getY() ) * drawScale.y - 10.5f ,getAngle(),BLOB_SHADOW_SIZE / drawScale.x,
             (BLOB_SHADOW_SIZE / 2f) / drawScale.y);
     }
 
@@ -389,7 +390,7 @@ public class UrsaModel extends CapsuleObstacle {
         else {
             scaleX = -.3f;
         }
-        canvas.draw(texture, isShaded ? Color.BLUE : Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),scaleX,0.3f);
+        canvas.draw(texture, isShaded ? Color.BLUE : Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y+20,getAngle(),scaleX,0.3f);
 
     }
 

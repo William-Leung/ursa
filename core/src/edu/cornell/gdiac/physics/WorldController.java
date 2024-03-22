@@ -49,6 +49,7 @@ public abstract class WorldController implements Screen {
 	/** The texture for walls and platforms */
 	protected TextureRegion earthTile;
 	protected TextureRegion snowBackGround;
+	private float currentRatio;
 
 	/** The texture for the exit condition */
 	protected TextureRegion goalTile;
@@ -213,6 +214,9 @@ public abstract class WorldController implements Screen {
 		this.canvas = canvas;
 		this.scale.x = canvas.getWidth()/bounds.getWidth();
 		this.scale.y = canvas.getHeight()/bounds.getHeight();
+	}
+	public void getTimeLeft(float timeleft){
+
 	}
 	
 	/**

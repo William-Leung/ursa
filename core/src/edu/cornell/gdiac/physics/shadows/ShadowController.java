@@ -21,7 +21,10 @@ public class ShadowController {
      * The amount of x-skew to apply to all shadows
      */
     private float xSkew = 0.75f;
-
+    /**
+     * ratio of ticks remaining in day
+     */
+        private float timeRatio = time/1800;
     /**
      * The amount of y-scaling to apply to all shadows. If this is negative then the shadow will appear
      * upside down.
@@ -42,6 +45,8 @@ public class ShadowController {
         isNight = false;
     }
 
+
+
     /** Creates and initializes a new instance of a shadow controller
      *
      * The shadow controller has a time of 0 ticks */
@@ -49,6 +54,9 @@ public class ShadowController {
         time = 0;
         this.texture = null;
         isNight = false;
+    }
+    public float getTimeRatio(){
+        return timeRatio;
     }
 
     public TextureRegion getTexture() { return texture; }
@@ -77,6 +85,10 @@ public class ShadowController {
         } else {
             sh.setDirection(origDir);
         }
+        if(time <= 1800){
+            timeRatio = time/1800;
+        }
+
 //        System.out.println(sh.getDirection());
     }
 

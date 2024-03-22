@@ -59,6 +59,8 @@ public class SceneModel extends WorldController implements ContactListener {
     private TextureRegion enemyTexture;
     private TextureRegion enemyTexture2;
     private FilmStrip salmonFilmStrip;
+    private Color backgroundColor;
+    private float timeRatio;
     /** Texture asset for the spinning barrier */
     private TextureRegion barrierTexture;
     /** Texture asset for the bullet */
@@ -136,6 +138,7 @@ public class SceneModel extends WorldController implements ContactListener {
         setFailure(false);
         world.setContactListener(this);
         sensorFixtures = new ObjectSet<Fixture>();
+        backgroundColor = new Color(1,1,1,1);
 
     }
     /**
@@ -274,8 +277,8 @@ public class SceneModel extends WorldController implements ContactListener {
         //world.setGravity( new Vector2(0,defaults.getFloat("gravity",0)) );
 
         // Create ursa
-        dwidth  = ursaTexture.getRegionWidth()/750f;
-        dheight = ursaTexture.getRegionHeight()/750f;
+        dwidth  = playerIdleFilm.getRegionWidth()/50;
+        dheight = playerIdleFilm.getRegionHeight()/100f;
         avatar = new UrsaModel(constants.get("ursa"), dwidth, dheight);
         avatar.setDrawScale(scale);
 
@@ -413,7 +416,8 @@ public class SceneModel extends WorldController implements ContactListener {
      * @param dt	Number of seconds since last animation frame
      */
     public void update(float dt) {
-
+        timeRatio = shadowController.getTimeRatio();
+        backgroundColor.set(1 * (1-timeRatio),1* (1-timeRatio),1* (1-timeRatio),1);
         canvas.moveCam(avatar.getPosition().x,avatar.getPosition().y);
         // Process actions in object model
         float xVal = InputController.getInstance().getHorizontal() *avatar.getForce();
