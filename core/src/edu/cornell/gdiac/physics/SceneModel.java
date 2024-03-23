@@ -126,7 +126,7 @@ public class SceneModel extends WorldController implements ContactListener {
     protected Color backgroundColor = Color.BLACK;
 
     private final Color[] colors;
-    private float[] intervals = {0f,0.02f,0.05f,0.12f,0.15f,0.5f,1f};
+    private float[] intervals = {0f,0.05f,0.06f,0.07f,0.08f,0.09f,0.10f,0.3f,0.8f,1f};
 
     private int nextPointer = 1;
 
@@ -144,14 +144,17 @@ public class SceneModel extends WorldController implements ContactListener {
         world.setContactListener(this);
         sensorFixtures = new ObjectSet<Fixture>();
 
-        colors = new Color[7];
+        colors = new Color[10];
         colors[0] = new Color(0f,0f,0f,0.7f);
-        colors[1] = new Color(0.188f, 0.157f, 0.188f,0.6f);
-        colors[2] = new Color(0.424f, 0.357f, 0.482f,0.5f);
-        colors[3] = new Color(0.976f, 0.863f, 0.565f,0.6f);
-        colors[4] = new Color(0.992f, 0.945f, 0.804f, 0.7f);
-        colors[5] = new Color(1f,1f,1f,1f);
-        colors[6] = new Color(0f,0f,0f,0.8f);
+        colors[1] = new Color(0.486f, 0.435f, 0.467f,0.7f);
+        colors[2] = new Color(0.71f, 0.514f, 0.553f,0.5f);
+        colors[3] = new Color(.753f, 0.424f, 0.518f,0.4f);
+        colors[4] = new Color(0.898f, 0.596f, 0.608f,0.5f);
+        colors[5] = new Color(1f, 0.706f, 0.635f, 0.6f);
+        colors[6] = new Color(1f, 0.804f, 0.698f,0.7f);
+        colors[7] = new Color(1f,1f,1f,1f);
+        colors[8] = new Color(1f,1f,1f,1f);
+        colors[9] = new Color(0f,0f,0f,0.8f);
         //backgroundColor = new Color(0.98f,0.55f,0.11f,0.3f);
     }
     /**
