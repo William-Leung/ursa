@@ -123,7 +123,12 @@ public class SceneModel extends WorldController implements ContactListener {
 
     /** Mark set to handle more sophisticated collision callbacks */
     protected ObjectSet<Fixture> sensorFixtures;
-    protected Color backgroundColor;
+    protected Color backgroundColor = Color.BLACK;
+
+    private final Color[] colors;
+    private float[] intervals = {0f,0.02f,0.05f,0.12f,0.15f,0.5f,1f};
+
+    private int nextPointer = 1;
 
 
     /**
@@ -138,7 +143,16 @@ public class SceneModel extends WorldController implements ContactListener {
         setFailure(false);
         world.setContactListener(this);
         sensorFixtures = new ObjectSet<Fixture>();
-        backgroundColor = new Color(0.98f,0.55f,0.11f,0.3f);
+
+        colors = new Color[7];
+        colors[0] = new Color(0f,0f,0f,0.7f);
+        colors[1] = new Color(0.188f, 0.157f, 0.188f,0.6f);
+        colors[2] = new Color(0.424f, 0.357f, 0.482f,0.5f);
+        colors[3] = new Color(0.976f, 0.863f, 0.565f,0.6f);
+        colors[4] = new Color(0.992f, 0.945f, 0.804f, 0.7f);
+        colors[5] = new Color(1f,1f,1f,1f);
+        colors[6] = new Color(0f,0f,0f,0.8f);
+        //backgroundColor = new Color(0.98f,0.55f,0.11f,0.3f);
     }
     /**
      * Gather the assets for this controller.
@@ -177,11 +191,6 @@ public class SceneModel extends WorldController implements ContactListener {
 
 
 
-
-
-
-
-
         jumpSound = directory.getEntry( "platform:jump", Sound.class );
         fireSound = directory.getEntry( "platform:pew", Sound.class );
         plopSound = directory.getEntry( "platform:plop", Sound.class );
@@ -214,6 +223,7 @@ public class SceneModel extends WorldController implements ContactListener {
         setComplete(false);
         setFailure(false);
         populateLevel();
+        nextPointer = 1;
 
     }
 
@@ -416,7 +426,16 @@ public class SceneModel extends WorldController implements ContactListener {
      */
     public void update(float dt) {
         timeRatio = shadowController.getTimeRatio();
-        updateBackgroundColor(timeRatio);
+        if(timeRatio > 1) {
+            nextPointer = 1;
+        } else {
+            // Update nextPointer to next interval
+            if(timeRatio > intervals[nextPointer]) {
+                nextPointer++;
+            }
+            updateBackgroundColor(intervals[nextPointer-1],timeRatio);
+        }
+
         canvas.moveCam(avatar.getPosition().x,avatar.getPosition().y);
         // Process actions in object model
         float xVal = InputController.getInstance().getHorizontal() *avatar.getForce();
@@ -645,12 +664,19 @@ public class SceneModel extends WorldController implements ContactListener {
         fireSound.stop(fireId);
     }
 
-    private void updateBackgroundColor(float time) {
-        if(timeRatio > 0.5) {
-            backgroundColor.set(1f-0.02f*(timeRatio-0.5f) * 2,1f-.45f*(timeRatio-0.5f) * 2,1f-0.89f*(timeRatio-0.5f) * 2,1f-0.7f*(timeRatio-0.5f)*2);
-        } else {
-            backgroundColor.set(0.98f+0.02f*timeRatio * 2,0.55f+0.45f*timeRatio * 2,0.11f+0.89f*timeRatio * 2,0.3f+0.7f*timeRatio *2);
-        }
+    /**
+     * Invariant: intervals.length == colors.length
+     * Transitions smoothly between colors[reachPointer] and colors[reachPointer-1] in the time
+     * between intervals[reachPointer] and intervals[reachPointer-1]
+     * @param timeRatio
+     */
+    private void updateBackgroundColor(float startTime, float timeRatio) {
+        // Prevent IndexOutBoundsException
+        //System.out.println("Red: " + (colors[nextPointer - 1].r + (colors[nextPointer].r - colors[nextPointer - 1].r) * (timeRatio - startTime) * 2f));
+        backgroundColor.r = colors[nextPointer - 1].r + (colors[nextPointer].r - colors[nextPointer - 1].r) * (timeRatio - startTime) / (intervals[nextPointer] - intervals[nextPointer - 1]);
+        backgroundColor.g = colors[nextPointer - 1].g + (colors[nextPointer].g - colors[nextPointer - 1].g) * (timeRatio - startTime) / (intervals[nextPointer] - intervals[nextPointer - 1]);
+        backgroundColor.b = colors[nextPointer - 1].b + (colors[nextPointer].b - colors[nextPointer - 1].b) * (timeRatio - startTime) / (intervals[nextPointer] - intervals[nextPointer - 1]);
+        backgroundColor.a = colors[nextPointer - 1].a + (colors[nextPointer].a - colors[nextPointer - 1].a) * (timeRatio - startTime) / (intervals[nextPointer] - intervals[nextPointer - 1]);
     }
 
     @Override

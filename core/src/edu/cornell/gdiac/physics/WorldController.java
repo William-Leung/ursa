@@ -107,8 +107,7 @@ public abstract class WorldController implements Screen {
 
 	private TextureRegion snowTexture;
 	private TextureRegion backGround;
-	private Color[] colors;
-	private float[] intervals;
+
 	private float snowFall = 450.0f;
 
 	/**

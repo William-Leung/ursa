@@ -98,9 +98,7 @@ public class ShadowController {
             isNight = false;
         }
         time++;
-        if(time <= 1800){
-            timeRatio = time/1800f;
-        }
+        timeRatio = time/1800f;
         for (ShadowModel sh : sceneModel.getShadows()) {
             updateShadow(sh);
         }
