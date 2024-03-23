@@ -24,7 +24,7 @@ public class ShadowController {
     /**
      * ratio of ticks remaining in day
      */
-        private float timeRatio = time/1800;
+    private float timeRatio = time/1800;
     /**
      * The amount of y-scaling to apply to all shadows. If this is negative then the shadow will appear
      * upside down.
@@ -81,13 +81,11 @@ public class ShadowController {
 //        }
         //System.out.println("Ticks: " + time);
         if (!isNight) {
-            sh.rotateDirection((float) (360 / TICKS_PER_DAY)/10 );
+            sh.rotateDirection((float) (360 / TICKS_PER_DAY)/5 );
         } else {
             sh.setDirection(origDir);
         }
-        if(time <= 1800){
-            timeRatio = time/1800;
-        }
+
 
 //        System.out.println(sh.getDirection());
     }
@@ -100,12 +98,24 @@ public class ShadowController {
             isNight = false;
         }
         time++;
+        if(time <= 1800){
+            timeRatio = time/1800f;
+        }
         for (ShadowModel sh : sceneModel.getShadows()) {
             updateShadow(sh);
         }
     }
 
+    /**
+     * Draws shadows for all objects in the SceneModel.
+     * If it is night, draws nothing.
+     * @param canvas GameCanvas
+     * @param sceneModel SceneModel
+     */
     public void drawAllShadows(GameCanvas canvas, SceneModel sceneModel) {
+        if(isNight()) {
+            return;
+        }
         for (ShadowModel sh: sceneModel.getShadows()) {
             sh.draw(canvas, xSkew, yScalar);
         }

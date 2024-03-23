@@ -59,7 +59,6 @@ public class SceneModel extends WorldController implements ContactListener {
     private TextureRegion enemyTexture;
     private TextureRegion enemyTexture2;
     private FilmStrip salmonFilmStrip;
-    private Color backgroundColor;
     private float timeRatio;
     /** Texture asset for the spinning barrier */
     private TextureRegion barrierTexture;
@@ -114,7 +113,6 @@ public class SceneModel extends WorldController implements ContactListener {
     private FilmStrip playerWalkFilm;
     private FilmStrip salmonUprightWalkFilm;
     private FilmStrip playerIdleFilm;
-
     private int playerWalkAnimIndex = 0;
     private int playerIdleAnimIndex =0;
     private int salmonWalkAnimIndex = 0;
@@ -125,6 +123,8 @@ public class SceneModel extends WorldController implements ContactListener {
 
     /** Mark set to handle more sophisticated collision callbacks */
     protected ObjectSet<Fixture> sensorFixtures;
+    protected Color backgroundColor;
+
 
     /**
      * Creates and initialize a new instance of the platformer game
@@ -138,8 +138,7 @@ public class SceneModel extends WorldController implements ContactListener {
         setFailure(false);
         world.setContactListener(this);
         sensorFixtures = new ObjectSet<Fixture>();
-        backgroundColor = new Color(1,1,1,1);
-
+        backgroundColor = new Color(0.98f,0.55f,0.11f,0.3f);
     }
     /**
      * Gather the assets for this controller.
@@ -161,7 +160,7 @@ public class SceneModel extends WorldController implements ContactListener {
         backGround = new TextureRegion(directory.getEntry("platform:snowback",Texture.class));
         tundraTree = new TextureRegion(directory.getEntry("object:tundra_tree",Texture.class));
         tundraTreeWithSnow = new TextureRegion(directory.getEntry("object:tundra_tree_with_snow", Texture.class));
-        whiteTexture = new TextureRegion(directory.getEntry("object/white", Texture.class));
+        whiteTexture = new TextureRegion(directory.getEntry("object:white", Texture.class));
         playerWalkTextureScript = new TextureRegion(directory.getEntry("player:ursaWalk",Texture.class));
         playerWalkFilm = new FilmStrip(playerWalkTextureScript.getTexture(),2,8);
         playerWalkFilm.setFrame(0);
@@ -417,7 +416,7 @@ public class SceneModel extends WorldController implements ContactListener {
      */
     public void update(float dt) {
         timeRatio = shadowController.getTimeRatio();
-        backgroundColor.set(1 * (1-timeRatio),1* (1-timeRatio),1* (1-timeRatio),1);
+        updateBackgroundColor(timeRatio);
         canvas.moveCam(avatar.getPosition().x,avatar.getPosition().y);
         // Process actions in object model
         float xVal = InputController.getInstance().getHorizontal() *avatar.getForce();
@@ -494,6 +493,7 @@ public class SceneModel extends WorldController implements ContactListener {
         shadowController.update(this);
 
     }
+
 
     private void shakeTree(Tree tree) {
         if (tree.canShake()) {
@@ -645,8 +645,17 @@ public class SceneModel extends WorldController implements ContactListener {
         fireSound.stop(fireId);
     }
 
+    private void updateBackgroundColor(float time) {
+        if(timeRatio > 0.5) {
+            backgroundColor.set(1f-0.02f*(timeRatio-0.5f) * 2,1f-.45f*(timeRatio-0.5f) * 2,1f-0.89f*(timeRatio-0.5f) * 2,1f-0.7f*(timeRatio-0.5f)*2);
+        } else {
+            backgroundColor.set(0.98f+0.02f*timeRatio * 2,0.55f+0.45f*timeRatio * 2,0.11f+0.89f*timeRatio * 2,0.3f+0.7f*timeRatio *2);
+        }
+    }
+
     @Override
     public void preDraw(float dt) {
+        canvas.draw(snowBackGround,backgroundColor,0,0, canvas.getWidth(), canvas.getHeight());
         shadowController.drawAllShadows(canvas, this);
     }
 }

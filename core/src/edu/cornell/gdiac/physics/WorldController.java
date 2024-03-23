@@ -47,7 +47,6 @@ import edu.cornell.gdiac.physics.obstacle.*;
  */
 public abstract class WorldController implements Screen {
 	/** The texture for walls and platforms */
-	protected TextureRegion earthTile;
 	protected TextureRegion snowBackGround;
 	private float currentRatio;
 
@@ -106,9 +105,11 @@ public abstract class WorldController implements Screen {
 	/** Countdown active for winning or losing */
 	private int countdown;
 
+	private TextureRegion snowTexture;
 	private TextureRegion backGround;
+	private Color[] colors;
+	private float[] intervals;
 	private float snowFall = 450.0f;
-	private Color backgroundColor = new Color(0.8f,1f,1f,0.9f);
 
 	/**
 	 * Returns true if debug mode is active.
@@ -295,9 +296,9 @@ public abstract class WorldController implements Screen {
 	 */
 	public void gatherAssets(AssetDirectory directory) {
 		// Allocate the tiles
-		earthTile = new TextureRegion(directory.getEntry( "shared:earth", Texture.class ));
 		goalTile  = new TextureRegion(directory.getEntry( "shared:goal", Texture.class ));
 		backGround = new TextureRegion(directory.getEntry("platform:snowback",Texture.class));
+		snowTexture = new TextureRegion(directory.getEntry("object:white",Texture.class));
 		snowBackGround = new TextureRegion(directory.getEntry("platform:snowbackground",Texture.class));
 		displayFont = directory.getEntry( "shared:retro" ,BitmapFont.class);
 	}
@@ -476,7 +477,7 @@ public abstract class WorldController implements Screen {
 		canvas.begin();
 		//canvas.draw(snowBackGround,0,0);
 
-		canvas.draw(snowBackGround,backgroundColor,0,0, canvas.getWidth(), canvas.getHeight());
+		canvas.draw(snowTexture, Color.WHITE, 0,0,canvas.getWidth(),canvas.getHeight());
 		if (snowFall < -100.0f) {
 			snowFall = 450.0f;
 		}

@@ -373,27 +373,6 @@ public class PolygonObstacle extends SimpleObstacle {
 		if (region != null) {
 			canvas.draw(region,Color.WHITE,0,0,getX()*drawScale.x,getY()*drawScale.y,getAngle(),1,1);
 		}
-
-		/** SUPER HARD CODE SHADOW DO NOT REPLICATE!!! */
-		float middleX = canvas.getWidth() / 2.0f;
-
-		// Define vertices for the line segment at the middle of the screen
-		float lineHeight = canvas.getHeight();
-		float lineWidth = canvas.getWidth();
-
-
-		TextureRegion lineTextureRegion = new TextureRegion(shadowTexture);
-
-		// Create a PolygonRegion for the line segment
-		float[] vertices = {middleX - lineWidth / 2, 0, middleX - lineWidth / 2, lineHeight,
-				middleX + lineWidth / 2, lineHeight, middleX + lineWidth / 2, 0};
-		short[] lineIndices = {0, 1, 2, 0, 2, 3};
-		PolygonRegion lineRegion = new PolygonRegion(lineTextureRegion, vertices, lineIndices);
-
-		// Draw the line segment at the middle of the screen
-		if (ShadowController.isNight()) {
-			canvas.draw(lineRegion, Color.BLACK, 0, 0, 0, 0, 0, 1, 1);
-		}
 	}
 
 	/**
