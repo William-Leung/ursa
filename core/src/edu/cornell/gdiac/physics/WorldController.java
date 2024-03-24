@@ -16,6 +16,7 @@
  */
 package edu.cornell.gdiac.physics;
 
+import java.util.Comparator;
 import java.util.Iterator;
 
 import com.badlogic.gdx.*;
@@ -109,6 +110,13 @@ public abstract class WorldController implements Screen {
 	private TextureRegion backGround;
 
 	private float snowFall = 450.0f;
+
+	private Comparator<Obstacle> comp = new Comparator<Obstacle>() {
+		@Override
+		public int compare(Obstacle o1, Obstacle o2) {
+			return (int) (o1.getY() - o2.getY());
+		}
+	};
 
 	/**
 	 * Returns true if debug mode is active.
@@ -483,13 +491,17 @@ public abstract class WorldController implements Screen {
 
 		preDraw(dt);
 
+
 		for(Obstacle obj : objects) {
 			obj.preDraw(canvas);
 		}
 
+		objects.sort(comp);
 		for(Obstacle obj : objects) {
 			obj.draw(canvas);
+			System.out.println(obj.getY());
 		}
+		System.out.println("----");
 		canvas.draw(backGround, Color.WHITE, snowFall - canvas.getWidth(), snowFall - canvas.getHeight(), canvas.getWidth(), canvas.getHeight());
 		canvas.draw(backGround, Color.WHITE, snowFall, snowFall - canvas.getHeight(), canvas.getWidth(), canvas.getHeight());
 		canvas.draw(backGround, Color.WHITE, snowFall - canvas.getWidth(), snowFall, canvas.getWidth(), canvas.getHeight());

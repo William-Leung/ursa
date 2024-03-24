@@ -126,7 +126,7 @@ public class SceneModel extends WorldController implements ContactListener {
     protected Color backgroundColor = Color.BLACK;
 
     private final Color[] colors;
-    private float[] intervals = {0f,0.05f,0.06f,0.07f,0.08f,0.09f,0.10f,0.3f,0.8f,1f};
+    private float[] intervals = {0f,0.03f,0.06f,0.08f,0.09f,0.10f,0.2f,0.8f,1f};
 
     private int nextPointer = 1;
 
@@ -144,17 +144,16 @@ public class SceneModel extends WorldController implements ContactListener {
         world.setContactListener(this);
         sensorFixtures = new ObjectSet<Fixture>();
 
-        colors = new Color[10];
+        colors = new Color[9];
         colors[0] = new Color(0f,0f,0f,0.7f);
         colors[1] = new Color(0.486f, 0.435f, 0.467f,0.7f);
         colors[2] = new Color(0.71f, 0.514f, 0.553f,0.5f);
-        colors[3] = new Color(.753f, 0.424f, 0.518f,0.4f);
-        colors[4] = new Color(0.898f, 0.596f, 0.608f,0.5f);
-        colors[5] = new Color(1f, 0.706f, 0.635f, 0.6f);
-        colors[6] = new Color(1f, 0.804f, 0.698f,0.7f);
+        colors[3] = new Color(0.898f, 0.596f, 0.608f,0.5f);
+        colors[4] = new Color(1f, 0.706f, 0.635f, 0.6f);
+        colors[5] = new Color(1f, 0.804f, 0.698f,0.7f);
+        colors[6] = new Color(1f,1f,1f,1f);
         colors[7] = new Color(1f,1f,1f,1f);
-        colors[8] = new Color(1f,1f,1f,1f);
-        colors[9] = new Color(0f,0f,0f,0.8f);
+        colors[8] = new Color(0f,0f,0f,0.8f);
         //backgroundColor = new Color(0.98f,0.55f,0.11f,0.3f);
     }
     /**
@@ -270,20 +269,6 @@ public class SceneModel extends WorldController implements ContactListener {
             addObject(obj);
         }
 
-        String pname = "platform";
-        JsonValue platjv = constants.get("platforms");
-        for (int ii = 0; ii < platjv.size; ii++) {
-            PolygonObstacle obj;
-            obj = new PolygonObstacle(platjv.get(ii).asFloatArray(), 0, 0);
-            obj.setBodyType(BodyDef.BodyType.StaticBody);
-            obj.setDensity(defaults.getFloat( "density", 0.0f ));
-            obj.setFriction(defaults.getFloat( "friction", 0.0f ));
-            obj.setRestitution(defaults.getFloat( "restitution", 0.0f ));
-            obj.setDrawScale(scale);
-            obj.setTexture(whiteTexture);
-            obj.setName(pname+ii);
-            addObject(obj);
-        }
 
         // This world is heavier
         //world.setGravity( new Vector2(0,defaults.getFloat("gravity",0)) );
@@ -322,9 +307,9 @@ public class SceneModel extends WorldController implements ContactListener {
 
         String tname = "tree";
         JsonValue treejv = constants.get("trees");
-        float[] treeXCoords = new float[]{24,14, 17, 19, 27, 25};
-        float[] treeYCoords = new float[]{5.5f,3, 12, 6, 11, 5};
-        for(int ii = 0; ii < 5; ii++) {
+        float[] treeXCoords = new float[]{24,14, 17, 19, 27}; //
+        float[] treeYCoords = new float[]{5.5f,3, 12, 6, 11}; //
+        for(int ii = 0; ii < treeXCoords.length; ii++) {
             Tree obj = new Tree(treejv.get(0).asFloatArray(),treeXCoords[ii],treeYCoords[ii]);
             obj.setBodyType(BodyDef.BodyType.StaticBody);
             obj.setDensity(defaults.getFloat( "density", 0.0f ));
