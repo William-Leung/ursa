@@ -1,10 +1,10 @@
 /*
  * WorldController.java
  *
- * This is the most important new class in this lab.  This class serves as a combination 
- * of the CollisionController and GameplayController from the previous lab.  There is not 
- * much to do for collisions; Box2d takes care of all of that for us.  This controller 
- * invokes Box2d and then performs any after the fact modifications to the data 
+ * This is the most important new class in this lab.  This class serves as a combination
+ * of the CollisionController and GameplayController from the previous lab.  There is not
+ * much to do for collisions; Box2d takes care of all of that for us.  This controller
+ * invokes Box2d and then performs any after the fact modifications to the data
  * (e.g. gameplay).
  *
  * If you study this class, and the contents of the edu.cornell.cs3152.physics.obstacles
@@ -47,22 +47,25 @@ import edu.cornell.gdiac.physics.obstacle.*;
  * place nicely with the static assets.
  */
 public abstract class WorldController implements Screen {
-	/** The texture for walls and platforms */
+	/** The texture for backgrounds */
 	protected TextureRegion snowBackGround;
-	private float currentRatio;
-
+	/** The texture for white (placed behind snowBackground) */
+	protected TextureRegion whiteTexture;
+	/** The texture for falling snow */
+	protected TextureRegion fallingSnow;
 	/** The texture for the exit condition */
 	protected TextureRegion goalTile;
+
 	/** The font for giving messages to the player */
 	protected BitmapFont displayFont;
-	
+
 	/** Exit code for quitting the game */
 	public static final int EXIT_QUIT = 0;
 	/** Exit code for advancing to next level */
 	public static final int EXIT_NEXT = 1;
 	/** Exit code for jumping back to previous level */
 	public static final int EXIT_PREV = 2;
-    /** How many frames after winning/losing do we continue? */
+	/** How many frames after winning/losing do we continue? */
 	public static final int EXIT_COUNT = 120;
 
 	/** The amount of time for a physics engine step. */
@@ -71,14 +74,14 @@ public abstract class WorldController implements Screen {
 	public static final int WORLD_VELOC = 6;
 	/** Number of position iterations for the constrain solvers */
 	public static final int WORLD_POSIT = 2;
-	
+
 	/** Width of the game world in Box2d units */
 	protected static final float DEFAULT_WIDTH  = 32.0f;
 	/** Height of the game world in Box2d units */
 	protected static final float DEFAULT_HEIGHT = 18.0f;
 	/** The default value of gravity (going down) */
 	protected static final float DEFAULT_GRAVITY = -4.9f;
-	
+
 	/** Reference to the game canvas */
 	protected GameCanvas canvas;
 	/** All the objects in the world. */
@@ -94,7 +97,7 @@ public abstract class WorldController implements Screen {
 	protected Rectangle bounds;
 	/** The world scale */
 	protected Vector2 scale;
-	
+
 	/** Whether or not this is an active controller */
 	private boolean active;
 	/** Whether we have completed this level */
@@ -106,17 +109,10 @@ public abstract class WorldController implements Screen {
 	/** Countdown active for winning or losing */
 	private int countdown;
 
-	private TextureRegion snowTexture;
-	private TextureRegion backGround;
-
+	/** Offset to help move falling snow */
 	private float snowFall = 450.0f;
-
-	private Comparator<Obstacle> comp = new Comparator<Obstacle>() {
-		@Override
-		public int compare(Obstacle o1, Obstacle o2) {
-			return (int) (o1.getY() - o2.getY());
-		}
-	};
+	/** Comparator to determine hierarchy of drawing for Pokémon 3/4 */
+	private Comparator<Obstacle> obstacleComparator = (o1, o2) -> Float.compare(o2.getY(), o1.getY());
 
 	/**
 	 * Returns true if debug mode is active.
@@ -189,7 +185,7 @@ public abstract class WorldController implements Screen {
 		}
 		failed = value;
 	}
-	
+
 	/**
 	 * Returns true if this is the active screen
 	 *
@@ -209,7 +205,7 @@ public abstract class WorldController implements Screen {
 	public GameCanvas getCanvas() {
 		return canvas;
 	}
-	
+
 	/**
 	 * Sets the canvas associated with this controller
 	 *
@@ -223,10 +219,7 @@ public abstract class WorldController implements Screen {
 		this.scale.x = canvas.getWidth()/bounds.getWidth();
 		this.scale.y = canvas.getHeight()/bounds.getHeight();
 	}
-	public void getTimeLeft(float timeleft){
 
-	}
-	
 	/**
 	 * Creates a new game world with the default values.
 	 *
@@ -235,8 +228,8 @@ public abstract class WorldController implements Screen {
 	 * world, not the screen.
 	 */
 	protected WorldController() {
-		this(new Rectangle(0,0,DEFAULT_WIDTH,DEFAULT_HEIGHT), 
-			 new Vector2(0,DEFAULT_GRAVITY));
+		this(new Rectangle(0,0,DEFAULT_WIDTH,DEFAULT_HEIGHT),
+				new Vector2(0,DEFAULT_GRAVITY));
 	}
 
 	/**
@@ -274,7 +267,7 @@ public abstract class WorldController implements Screen {
 		active = false;
 		countdown = -1;
 	}
-	
+
 	/**
 	 * Dispose of all (non-static) resources allocated to this mode.
 	 */
@@ -302,10 +295,9 @@ public abstract class WorldController implements Screen {
 	 * @param directory	Reference to global asset manager.
 	 */
 	public void gatherAssets(AssetDirectory directory) {
-		// Allocate the tiles
 		goalTile  = new TextureRegion(directory.getEntry( "shared:goal", Texture.class ));
-		backGround = new TextureRegion(directory.getEntry("platform:snowback",Texture.class));
-		snowTexture = new TextureRegion(directory.getEntry("object:white",Texture.class));
+		fallingSnow = new TextureRegion(directory.getEntry("platform:snowback",Texture.class));
+		whiteTexture = new TextureRegion(directory.getEntry("object:white",Texture.class));
 		snowBackGround = new TextureRegion(directory.getEntry("platform:snowbackground",Texture.class));
 		displayFont = directory.getEntry( "shared:retro" ,BitmapFont.class);
 	}
@@ -314,7 +306,7 @@ public abstract class WorldController implements Screen {
 	 *
 	 * Adds a physics object in to the insertion queue.
 	 *
-	 * Objects on the queue are added just before collision processing.  We do this to 
+	 * Objects on the queue are added just before collision processing.  We do this to
 	 * control object creation.
 	 *
 	 * param obj The object to add
@@ -349,14 +341,14 @@ public abstract class WorldController implements Screen {
 		boolean vert  = (bounds.y <= obj.getY() && obj.getY() <= bounds.y+bounds.height);
 		return horiz && vert;
 	}
-	
+
 	/**
 	 * Resets the status of the game so that we can play again.
 	 *
 	 * This method disposes of the world and creates a new one.
 	 */
 	public abstract void reset();
-	
+
 	/**
 	 * Returns whether to process the update loop
 	 *
@@ -365,7 +357,7 @@ public abstract class WorldController implements Screen {
 	 * normally.
 	 *
 	 * @param dt	Number of seconds since last animation frame
-	 * 
+	 *
 	 * @return whether to process the update loop
 	 */
 	public boolean preUpdate(float dt) {
@@ -379,12 +371,12 @@ public abstract class WorldController implements Screen {
 		if (input.didDebug()) {
 			debug = !debug;
 		}
-		
+
 		// Handle resets
 		if (input.didReset()) {
 			reset();
 		}
-		
+
 		// Now it is time to maybe switch screens.
 		if (input.didExit()) {
 			pause();
@@ -411,7 +403,7 @@ public abstract class WorldController implements Screen {
 		}
 		return true;
 	}
-	
+
 	/**
 	 * The core gameplay loop of this world.
 	 *
@@ -423,7 +415,7 @@ public abstract class WorldController implements Screen {
 	 * @param dt	Number of seconds since last animation frame
 	 */
 	public abstract void update(float dt);
-	
+
 	/**
 	 * Processes physics
 	 *
@@ -438,7 +430,7 @@ public abstract class WorldController implements Screen {
 		while (!addQueue.isEmpty()) {
 			addObject(addQueue.poll());
 		}
-		
+
 		// Turn the physics engine crank.
 		world.step(WORLD_STEP,WORLD_VELOC,WORLD_POSIT);
 
@@ -467,7 +459,7 @@ public abstract class WorldController implements Screen {
 	public void preDraw(float dt) {
 
 	}
-	
+
 	/**
 	 * Draw the physics objects to the canvas
 	 *
@@ -480,44 +472,48 @@ public abstract class WorldController implements Screen {
 	 */
 	public void draw(float dt) {
 		canvas.clear();
-		
+
 		canvas.begin();
-		//canvas.draw(snowBackGround,0,0);
 
-		canvas.draw(snowTexture, Color.WHITE, 0,0,canvas.getWidth(),canvas.getHeight());
-		if (snowFall < -100.0f) {
-			snowFall = 450.0f;
-		}
+		// Draws white background over the canvas so we don't have a blue background
+		canvas.draw(whiteTexture, Color.WHITE, 0,0,canvas.getWidth(),canvas.getHeight());
 
+		// Draws backgrounds and shadows for static objects
 		preDraw(dt);
 
-
+		// Draws shadows for moving objects (enemy/player)
 		for(Obstacle obj : objects) {
 			obj.preDraw(canvas);
 		}
 
-		objects.sort(comp);
+		// Sort to draw higher-up objects first -> Pokemon 3/4
+		objects.sort(obstacleComparator);
 		for(Obstacle obj : objects) {
 			obj.draw(canvas);
-			System.out.println(obj.getY());
 		}
-		System.out.println("----");
-		canvas.draw(backGround, Color.WHITE, snowFall - canvas.getWidth(), snowFall - canvas.getHeight(), canvas.getWidth(), canvas.getHeight());
-		canvas.draw(backGround, Color.WHITE, snowFall, snowFall - canvas.getHeight(), canvas.getWidth(), canvas.getHeight());
-		canvas.draw(backGround, Color.WHITE, snowFall - canvas.getWidth(), snowFall, canvas.getWidth(), canvas.getHeight());
-		canvas.draw(backGround, Color.WHITE, snowFall, snowFall, canvas.getWidth(), canvas.getHeight());
 
-		canvas.draw(backGround, Color.WHITE, snowFall*1.3f + 70f - canvas.getWidth(), snowFall*1.3f + 50f - canvas.getHeight(), canvas.getWidth(), canvas.getHeight());
-		canvas.draw(backGround, Color.WHITE, snowFall*1.3f + 70f - canvas.getWidth(), snowFall*1.3f + 50f, canvas.getWidth(), canvas.getHeight());
-		canvas.draw(backGround, Color.WHITE, snowFall*1.3f + 70f, snowFall*1.3f + 50f - canvas.getHeight(), canvas.getWidth(), canvas.getHeight());
-		canvas.draw(backGround, Color.WHITE, snowFall*1.3f + 70f, snowFall*1.3f + 50f, canvas.getWidth(), canvas.getHeight());
+		// Reset snow back to its original position
+		if (snowFall < -100.0f) {
+			snowFall = 450.0f;
+		}
+		canvas.draw(fallingSnow, Color.WHITE, snowFall - canvas.getWidth(), snowFall - canvas.getHeight(), canvas.getWidth(), canvas.getHeight());
+		canvas.draw(fallingSnow, Color.WHITE, snowFall, snowFall - canvas.getHeight(), canvas.getWidth(), canvas.getHeight());
+		canvas.draw(fallingSnow, Color.WHITE, snowFall - canvas.getWidth(), snowFall, canvas.getWidth(), canvas.getHeight());
+		canvas.draw(fallingSnow, Color.WHITE, snowFall, snowFall, canvas.getWidth(), canvas.getHeight());
+
+		canvas.draw(fallingSnow, Color.WHITE, snowFall*1.3f + 70f - canvas.getWidth(), snowFall*1.3f + 50f - canvas.getHeight(), canvas.getWidth(), canvas.getHeight());
+		canvas.draw(fallingSnow, Color.WHITE, snowFall*1.3f + 70f - canvas.getWidth(), snowFall*1.3f + 50f, canvas.getWidth(), canvas.getHeight());
+		canvas.draw(fallingSnow, Color.WHITE, snowFall*1.3f + 70f, snowFall*1.3f + 50f - canvas.getHeight(), canvas.getWidth(), canvas.getHeight());
+		canvas.draw(fallingSnow, Color.WHITE, snowFall*1.3f + 70f, snowFall*1.3f + 50f, canvas.getWidth(), canvas.getHeight());
 
 		snowFall -= 0.2f;
 
+		// Doesn't do anything right now
 		postDraw(dt);
 
 		canvas.end();
-		
+
+		// Draw yellow outlines of hitboxes (useful for debugging collisions)
 		if (debug) {
 			canvas.beginDebug();
 			for(Obstacle obj : objects) {
@@ -525,7 +521,7 @@ public abstract class WorldController implements Screen {
 			}
 			canvas.endDebug();
 		}
-		
+
 		// Final message
 		if (complete && !failed) {
 			displayFont.setColor(Color.YELLOW);
@@ -623,7 +619,7 @@ public abstract class WorldController implements Screen {
 
 	/**
 	 * Called when the Screen is paused.
-	 * 
+	 *
 	 * This is usually when it's not active or visible on screen. An Application is 
 	 * also paused before it is destroyed.
 	 */
@@ -639,7 +635,7 @@ public abstract class WorldController implements Screen {
 	public void resume() {
 		// TODO Auto-generated method stub
 	}
-	
+
 	/**
 	 * Called when this screen becomes the current screen for a Game.
 	 */

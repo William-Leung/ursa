@@ -108,3 +108,6 @@ core/build/classes/java/main/edu/cornell/gdiac/util/PooledList$ValueIterator.cla
 core/build/classes/java/main/edu/cornell/gdiac/util/XBoxController$Direction.class
 core/build/libs/core-1.0.jar
 core/build/tmp/compileJava/previous-compilation-data.bin
+core/build/classes/java/main/edu/cornell/gdiac/physics/WorldController.class
+core/build/libs/core-1.0.jar
+core/build/tmp/compileJava/previous-compilation-data.bin
