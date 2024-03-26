@@ -6,6 +6,9 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.tiled.TideMapLoader;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -31,6 +34,7 @@ import edu.cornell.gdiac.physics.tree.Tree;
 import edu.cornell.gdiac.util.FilmStrip;
 import edu.cornell.gdiac.util.PooledList;
 import java.util.LinkedList;
+import com.badlogic.gdx.maps.tiled.TiledMap;
 
 public class SceneModel extends WorldController implements ContactListener {
 
@@ -51,6 +55,8 @@ public class SceneModel extends WorldController implements ContactListener {
         pixmap.fillCircle(xcenter, ycenter, BLOB_SHADOW_RESOLUTION);
         BLOB_SHADOW_TEXTURE = new Texture(pixmap);
         pixmap.dispose();
+
+
     }
 
     /** Texture asset for character avatar */
@@ -60,6 +66,9 @@ public class SceneModel extends WorldController implements ContactListener {
     private TextureRegion enemyTexture2;
     private FilmStrip salmonFilmStrip;
     private float timeRatio;
+    private TmxMapLoader loader;
+    private TiledMap map;
+    private OrthogonalTiledMapRenderer renderer;
     /** Texture asset for the spinning barrier */
     private TextureRegion barrierTexture;
     /** Texture asset for the bullet */
@@ -155,6 +164,8 @@ public class SceneModel extends WorldController implements ContactListener {
         colors[7] = new Color(1f,1f,1f,1f);
         colors[8] = new Color(0f,0f,0f,0.8f);
         //backgroundColor = new Color(0.98f,0.55f,0.11f,0.3f);
+        loader = new TmxMapLoader();
+
     }
     /**
      * Gather the assets for this controller.
@@ -184,19 +195,17 @@ public class SceneModel extends WorldController implements ContactListener {
         playerIdleTextureScript = new TextureRegion(directory.getEntry("player:ursaIdle",Texture.class));
         playerIdleFilm = new FilmStrip(playerIdleTextureScript.getTexture(),4,8);
         playerIdleFilm.setFrame(0);
-
         salmonUprightWalkScript = new TextureRegion(directory.getEntry("enemies:salmonUprightWalk",Texture.class));
         salmonUprightWalkFilm = new FilmStrip(salmonUprightWalkScript.getTexture(),3,8);
         salmonUprightWalkFilm.setFrame(0);
-
-
+        map = loader.load("assets/maps/level 1.tmx");
+        renderer = new OrthogonalTiledMapRenderer(map);
 
 
 
         jumpSound = directory.getEntry( "platform:jump", Sound.class );
         fireSound = directory.getEntry( "platform:pew", Sound.class );
         plopSound = directory.getEntry( "platform:plop", Sound.class );
-
         constants = directory.getEntry( "platform:constants", JsonValue.class );
         super.gatherAssets(directory);
     }
@@ -256,18 +265,7 @@ public class SceneModel extends WorldController implements ContactListener {
         String wname = "wall";
         JsonValue walljv = constants.get("walls");
         JsonValue defaults = constants.get("defaults");
-        for (int ii = 0; ii < walljv.size; ii++) {
-            PolygonObstacle obj;
-            obj = new PolygonObstacle(walljv.get(ii).asFloatArray(), 0, 0);
-            obj.setBodyType(BodyDef.BodyType.StaticBody);
-            obj.setDensity(defaults.getFloat( "density", 0.0f ));
-            obj.setFriction(defaults.getFloat( "friction", 0.0f ));
-            obj.setRestitution(defaults.getFloat( "restitution", 0.0f ));
-            obj.setDrawScale(scale);
-            obj.setTexture(whiteTexture);
-            obj.setName(wname+ii);
-            addObject(obj);
-        }
+
 
 
         // This world is heavier
@@ -414,6 +412,7 @@ public class SceneModel extends WorldController implements ContactListener {
      */
     public void update(float dt) {
         timeRatio = shadowController.getTimeRatio();
+        renderer.render();
         if(timeRatio > 1) {
             nextPointer = 1;
         } else {
@@ -661,6 +660,7 @@ public class SceneModel extends WorldController implements ContactListener {
     private void updateBackgroundColor(float startTime, float timeRatio) {
         // Prevent IndexOutBoundsException
         //System.out.println("Red: " + (colors[nextPointer - 1].r + (colors[nextPointer].r - colors[nextPointer - 1].r) * (timeRatio - startTime) * 2f));
+
         backgroundColor.r = colors[nextPointer - 1].r + (colors[nextPointer].r - colors[nextPointer - 1].r) * (timeRatio - startTime) / (intervals[nextPointer] - intervals[nextPointer - 1]);
         backgroundColor.g = colors[nextPointer - 1].g + (colors[nextPointer].g - colors[nextPointer - 1].g) * (timeRatio - startTime) / (intervals[nextPointer] - intervals[nextPointer - 1]);
         backgroundColor.b = colors[nextPointer - 1].b + (colors[nextPointer].b - colors[nextPointer - 1].b) * (timeRatio - startTime) / (intervals[nextPointer] - intervals[nextPointer - 1]);
@@ -669,6 +669,7 @@ public class SceneModel extends WorldController implements ContactListener {
 
     @Override
     public void preDraw(float dt) {
+
         canvas.draw(snowBackGround,backgroundColor,0,0, canvas.getWidth(), canvas.getHeight());
         shadowController.drawAllShadows(canvas, this);
     }

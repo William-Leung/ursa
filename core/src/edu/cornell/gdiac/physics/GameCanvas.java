@@ -18,6 +18,7 @@
 package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
@@ -466,6 +467,10 @@ public class GameCanvas {
 		// Call the master drawing method (more efficient that base method)
 		holder.setRegion(image);
 		draw(holder, tint, x-ox, y-oy, width, height);
+	}
+	public void render(TiledMapRenderer renderer){
+		renderer.setView(camera);
+		renderer.render();
 	}
 
 
