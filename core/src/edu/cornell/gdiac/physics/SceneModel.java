@@ -67,6 +67,8 @@ public class SceneModel extends WorldController implements ContactListener {
     private TextureRegion enemyTexture;
     private TextureRegion enemyTexture2;
     private FilmStrip salmonFilmStrip;
+    private float tileY;
+    private float tileX;
     private float tileWidth;
     private float tileHeight;
     private float timeRatio;
@@ -81,6 +83,7 @@ public class SceneModel extends WorldController implements ContactListener {
     private TextureRegion barrierTexture;
     /** Texture asset for the bullet */
     private TextureRegion bulletTexture;
+    private TextureRegion polarMiddle;
     /** Texture asset for the bridge plank */
     private TextureRegion bridgeTexture;
     /** Texture asset for the shadows */
@@ -166,14 +169,7 @@ public class SceneModel extends WorldController implements ContactListener {
 
         tileHeight = jsonData.get("layers").get(0).get(1).asFloat();
         tileWidth = jsonData.get("layers").get(0).get(7).asFloat();
-        float y = 0;
-        float x = 0;
-        for (int i = 0; i < tileHeight ; i++) {
 
-            for(int j = 0; j < tileWidth;i++){
-
-            }
-        }
 
 
 
@@ -228,7 +224,7 @@ public class SceneModel extends WorldController implements ContactListener {
         salmonUprightWalkScript = new TextureRegion(directory.getEntry("enemies:salmonUprightWalk",Texture.class));
         salmonUprightWalkFilm = new FilmStrip(salmonUprightWalkScript.getTexture(),3,8);
         salmonUprightWalkFilm.setFrame(0);
-
+        polarMiddle = new TextureRegion(directory.getEntry("maps:polar_middle",Texture.class));
 
 
 
@@ -378,6 +374,29 @@ public class SceneModel extends WorldController implements ContactListener {
 
         return true;
     }
+
+    public void drawTiles(){
+        int counter = 0;
+        tileX = 0;
+        tileY = 0;
+
+        for (int i = (int) tileHeight; i >0 ; i--) {
+
+            for(int j = 0; j < tileWidth;j++){
+
+                if(jsonData.get("layers").get(0).get(0).get(counter).asInt() == 1 ||jsonData.get("layers").get(0).get(0).get(counter).asInt() == 2){
+
+
+                    canvas.draw(polarMiddle, Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
+                }
+                counter += 1;
+                System.out.println("counter is: " + counter);
+
+            }
+
+
+        }
+    }
     private void animateEnemies(){
         if(salmonWalkAnimIndex == 0 || salmonWalkAnimIndex == 21){
             salmonWalkAnimIndex = 0;
@@ -441,6 +460,7 @@ public class SceneModel extends WorldController implements ContactListener {
      * @param dt	Number of seconds since last animation frame
      */
     public void update(float dt) {
+
         timeRatio = shadowController.getTimeRatio();
         if(timeRatio > 1) {
             nextPointer = 1;
@@ -699,7 +719,9 @@ public class SceneModel extends WorldController implements ContactListener {
     @Override
     public void preDraw(float dt) {
 
+
         canvas.draw(snowBackGround,backgroundColor,0,0, canvas.getWidth(), canvas.getHeight());
+        drawTiles();
         shadowController.drawAllShadows(canvas, this);
     }
 }

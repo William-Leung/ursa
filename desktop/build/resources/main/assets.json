@@ -44,6 +44,7 @@
         "platform:enemy2":  "platform/salmon2.png",
         "platform:snowback": "platform/snow.png",
         "platform:snowbackground": "platform/Background.JPG",
+        "maps:polar_middle": "maps/polar_middle.png",
         "platform:ursa":  "platform/ursa2.png",
         "player:ursaWalk": "player/Walk.png",
         "player:ursaIdle": "player/Stand.png",
