@@ -1,5 +1,6 @@
 package edu.cornell.gdiac.physics;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -18,6 +19,7 @@ import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.assets.AssetDirectory;
@@ -65,9 +67,15 @@ public class SceneModel extends WorldController implements ContactListener {
     private TextureRegion enemyTexture;
     private TextureRegion enemyTexture2;
     private FilmStrip salmonFilmStrip;
+    private float tileWidth;
+    private float tileHeight;
     private float timeRatio;
-    private TmxMapLoader loader;
-    private TiledMap map;
+
+    private JsonReader json;
+    private JsonValue jsonData;
+
+
+
     private OrthogonalTiledMapRenderer renderer;
     /** Texture asset for the spinning barrier */
     private TextureRegion barrierTexture;
@@ -152,6 +160,28 @@ public class SceneModel extends WorldController implements ContactListener {
         setFailure(false);
         world.setContactListener(this);
         sensorFixtures = new ObjectSet<Fixture>();
+        json = new JsonReader();
+
+        jsonData = json.parse(Gdx.files.internal("level1.json"));
+
+        tileHeight = jsonData.get("layers").get(0).get(1).asFloat();
+        tileWidth = jsonData.get("layers").get(0).get(7).asFloat();
+        float y = 0;
+        float x = 0;
+        for (int i = 0; i < tileHeight ; i++) {
+
+            for(int j = 0; j < tileWidth;i++){
+
+            }
+        }
+
+
+
+
+
+
+
+
 
         colors = new Color[9];
         colors[0] = new Color(0f,0f,0f,0.7f);
@@ -164,7 +194,7 @@ public class SceneModel extends WorldController implements ContactListener {
         colors[7] = new Color(1f,1f,1f,1f);
         colors[8] = new Color(0f,0f,0f,0.8f);
         //backgroundColor = new Color(0.98f,0.55f,0.11f,0.3f);
-        loader = new TmxMapLoader();
+
 
     }
     /**
@@ -198,8 +228,8 @@ public class SceneModel extends WorldController implements ContactListener {
         salmonUprightWalkScript = new TextureRegion(directory.getEntry("enemies:salmonUprightWalk",Texture.class));
         salmonUprightWalkFilm = new FilmStrip(salmonUprightWalkScript.getTexture(),3,8);
         salmonUprightWalkFilm.setFrame(0);
-        map = loader.load("assets/maps/level 1.tmx");
-        renderer = new OrthogonalTiledMapRenderer(map);
+
+
 
 
 
@@ -412,7 +442,6 @@ public class SceneModel extends WorldController implements ContactListener {
      */
     public void update(float dt) {
         timeRatio = shadowController.getTimeRatio();
-        renderer.render();
         if(timeRatio > 1) {
             nextPointer = 1;
         } else {
