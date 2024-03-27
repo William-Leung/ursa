@@ -8,13 +8,36 @@
         "."
     ],
     "fileStates": {
+        "Polar_Cliff_Corner_1.tsx": {
+            "scaleInDock": 0.5,
+            "scaleInEditor": 1
+        },
+        "Polar_Cliff_Corner_2.tsx": {
+            "scaleInDock": 0.5,
+            "scaleInEditor": 1
+        },
+        "Polar_Cliff_center.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "backgroundTest.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1
+        },
+        "center.tsx": {
+            "scaleInDock": 1
+        },
         "level 1.tmx": {
             "scale": 0.0625,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 248,
-                "y": 136
+                "x": 3592,
+                "y": -632
             }
+        },
+        "polar_cliff_edge_left_side.tsx": {
+            "scaleInDock": 0.5,
+            "scaleInEditor": 1
         },
         "polar_middle.tsx": {
             "scaleInDock": 1,
@@ -25,12 +48,14 @@
             "scaleInEditor": 1
         }
     },
-    "last.imagePath": "C:/Users/danbp/Desktop/School/Junioir year cornell/3152/ursa/assets/maps",
-    "map.height": 11,
+    "last.exportedFilePath": "C:/Users/danbp/Desktop/School/Junioir year cornell/3152/ursa/assets",
+    "last.imagePath": "C:/Users/danbp/Desktop/School/Junioir year cornell/3152/ursa/assets/tiles",
+    "map.height": 13,
+    "map.lastUsedExportFilter": "JSON map files (*.tmj *.json)",
     "map.lastUsedFormat": "tmx",
-    "map.tileHeight": 51,
-    "map.tileWidth": 51,
-    "map.width": 15,
+    "map.tileHeight": 512,
+    "map.tileWidth": 512,
+    "map.width": 6,
     "openFiles": [
         "level 1.tmx",
         "polar_middle_small.tsx",
@@ -38,13 +63,17 @@
     ],
     "project": "map1_test.tiled-project",
     "recentFiles": [
-        "level 1.tmx",
         "polar_middle_small.tsx",
+        "polar_cliff_edge_left_side.tsx",
+        "Polar_Cliff_Corner_1.tsx",
+        "Polar_Cliff_Corner_2.tsx",
+        "Polar_Cliff_center.tsx",
+        "level 1.tmx",
         "polar_middle.tsx"
     ],
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {
-        "height": 51,
-        "width": 51
+        "height": 512,
+        "width": 512
     }
 }

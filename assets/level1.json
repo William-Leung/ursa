@@ -1,25 +1,28 @@
 { "compressionlevel":-1,
- "height":10,
+ "height":13,
  "infinite":false,
  "layers":[
         {
-         "data":[0, 0, 0, 1, 1, 1, 0, 0, 0, 0,
-            0, 0, 0, 1, 1, 1, 1, 0, 0, 0,
-            2, 0, 0, 1, 1, 1, 1, 1, 1, 0,
-            2, 0, 0, 1, 1, 1, 1, 1, 1, 0,
-            0, 0, 1, 1, 1, 1, 1, 1, 1, 0,
-            0, 1, 1, 1, 1, 1, 1, 1, 1, 2,
-            2, 1, 1, 1, 1, 1, 1, 1, 1, 2,
-            0, 1, 1, 1, 1, 1, 1, 1, 1, 0,
-            0, 0, 1, 1, 1, 1, 1, 1, 1, 0,
-            0, 0, 0, 2, 0, 2, 0, 2, 0, 0],
-         "height":10,
+         "data":[0, 0, 0, 0, 0, 0,
+            10, 12, 12, 12, 12, 11,
+            7, 1, 1, 1, 1, 9,
+            7, 1, 1, 1, 1, 9,
+            6, 3, 1, 1, 1, 13,
+            0, 14, 1, 1, 1, 13,
+            0, 7, 1, 1, 1, 13,
+            0, 7, 1, 1, 1, 9,
+            0, 7, 1, 1, 1, 13,
+            0, 6, 3, 1, 1, 13,
+            10, 12, 4, 1, 1, 5,
+            6, 3, 1, 1, 1, 1,
+            0, 6, 8, 8, 3, 1],
+         "height":13,
          "id":1,
          "name":"Tile Layer 1",
          "opacity":1,
          "type":"tilelayer",
          "visible":true,
-         "width":10,
+         "width":6,
          "x":0,
          "y":0
         }],
@@ -32,14 +35,64 @@
  "tilesets":[
         {
          "firstgid":1,
-         "source":"maps\/center.tsx"
+         "source":"maps\/Polar_Cliff_center.tsx"
         }, 
         {
          "firstgid":2,
-         "source":"maps\/backgroundTest.tsx"
+         "source":"maps\/Polar_Cliff_Corner_1.tsx"
+        }, 
+        {
+         "firstgid":3,
+         "source":"maps\/Polar_Cliff_Corner_2.tsx"
+        }, 
+        {
+         "firstgid":4,
+         "source":"maps\/Polar_Cliff_Corner_3.tsx"
+        }, 
+        {
+         "firstgid":5,
+         "source":"maps\/Polar_Cliff_Corner_4.tsx"
+        }, 
+        {
+         "firstgid":6,
+         "source":"maps\/Polar_Cliff_Corner_6.tsx"
+        },
+    
+        {
+         "firstgid":7,
+         "source":"maps\/Polar_Cliff_Edge_2.tsx"
+        }, 
+        {
+         "firstgid":8,
+         "source":"maps\/Polar_Cliff_Edge_4.tsx"
+        }, 
+        {
+         "firstgid":9,
+         "source":"maps\/Polar_Cliff_Edge_6.tsx"
+        }, 
+        {
+         "firstgid":10,
+         "source":"maps\/Polar_Cliff_Corner_5.tsx"
+        }, 
+        {
+         "firstgid":11,
+         "source":"maps\/Polar_Cliff_Corner_8.tsx"
+        }, 
+        {
+         "firstgid":12,
+         "source":"maps\/Polar_Cliff_Edge_1.tsx"
+        },
+    
+        {
+         "firstgid":13,
+         "source":"maps\/Polar_Cliff_Edge_5.tsx"
+        }, 
+        {
+         "firstgid":14,
+         "source":"maps\/Polar_Cliff_Edge_3.tsx"
         }],
- "tilewidth":511,
+ "tilewidth":512,
  "type":"map",
  "version":"1.10",
- "width":10
+ "width":6
 }

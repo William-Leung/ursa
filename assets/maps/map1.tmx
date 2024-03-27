@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="6" height="13" tilewidth="512" tileheight="512" infinite="0" nextlayerid="2" nextobjectid="1">
+ <tileset firstgid="1" source="Polar_Cliff_center.tsx"/>
+ <tileset firstgid="2" source="Polar_Cliff_Corner_1.tsx"/>
+ <tileset firstgid="3" source="Polar_Cliff_Corner_2.tsx"/>
+ <tileset firstgid="4" source="Polar_Cliff_Corner_3.tsx"/>
+ <tileset firstgid="5" source="Polar_Cliff_Corner_4.tsx"/>
+ <tileset firstgid="6" source="Polar_Cliff_Corner_6.tsx"/>
+ <tileset firstgid="7" source="Polar_Cliff_Edge_2.tsx"/>
+ <tileset firstgid="8" source="Polar_Cliff_Edge_4.tsx"/>
+ <tileset firstgid="9" source="Polar_Cliff_Edge_6.tsx"/>
+ <tileset firstgid="10" source="Polar_Cliff_Corner_5.tsx"/>
+ <tileset firstgid="11" source="Polar_Cliff_Corner_8.tsx"/>
+ <tileset firstgid="12" source="Polar_Cliff_Edge_1.tsx"/>
+ <tileset firstgid="13" source="Polar_Cliff_Edge_5.tsx"/>
+ <tileset firstgid="14" source="Polar_Cliff_Edge_3.tsx"/>
+ <layer id="1" name="Tile Layer 1" width="6" height="13">
+  <data encoding="csv">
+0,0,0,0,0,0,
+10,12,12,12,12,11,
+7,1,1,1,1,9,
+7,1,1,1,1,9,
+6,3,1,1,1,13,
+0,14,1,1,1,13,
+0,7,1,1,1,13,
+0,7,1,1,1,9,
+0,7,1,1,1,13,
+0,6,3,1,1,13,
+10,12,4,1,1,5,
+6,3,1,1,1,1,
+0,6,8,8,3,1
+</data>
+ </layer>
+</map>

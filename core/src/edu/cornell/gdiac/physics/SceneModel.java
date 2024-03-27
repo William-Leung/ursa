@@ -166,7 +166,7 @@ public class SceneModel extends WorldController implements ContactListener {
         json = new JsonReader();
 
         jsonData = json.parse(Gdx.files.internal("level1.json"));
-
+        System.out.println(jsonData.get("layers").get(0).get(0));
         tileHeight = jsonData.get("layers").get(0).get(1).asFloat();
         tileWidth = jsonData.get("layers").get(0).get(7).asFloat();
 
@@ -390,7 +390,7 @@ public class SceneModel extends WorldController implements ContactListener {
                     canvas.draw(polarMiddle, Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
                 }
                 counter += 1;
-                System.out.println("counter is: " + counter);
+
 
             }
 
