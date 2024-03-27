@@ -404,9 +404,42 @@ public class SceneModel extends WorldController implements ContactListener {
             for(int j = 0; j < tileWidth;j++){
 
                 if(jsonData.get("layers").get(0).get(0).get(counter).asInt() == 1){
-
-
                     canvas.draw(tileTextures[0], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
+                } else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 2) {
+                    canvas.draw(tileTextures[1], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
+                }
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 3) {
+                    canvas.draw(tileTextures[2], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
+                }
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 4) {
+                    canvas.draw(tileTextures[3], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
+                }
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 5) {
+                    canvas.draw(tileTextures[4], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
+                }
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 6) {
+                    canvas.draw(tileTextures[6], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
+                }
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 7) {
+                    canvas.draw(tileTextures[10], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
+                }
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 8) {
+                    canvas.draw(tileTextures[12], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
+                }
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 9) {
+                    canvas.draw(tileTextures[14], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
+                }
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 10) {
+                    canvas.draw(tileTextures[5], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
+                }
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 11) {
+                    canvas.draw(tileTextures[8], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
+                }
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 12) {
+                    canvas.draw(tileTextures[9], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
+                }
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 13) {
+                    canvas.draw(tileTextures[13], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
                 }
                 counter += 1;
 

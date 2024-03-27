@@ -8,7 +8,7 @@
             7, 1, 1, 1, 1, 9,
             7, 1, 1, 1, 1, 9,
             6, 3, 1, 1, 1, 13,
-            0, 14, 1, 1, 1, 13,
+            0, 7, 1, 1, 1, 13,
             0, 7, 1, 1, 1, 13,
             0, 7, 1, 1, 1, 9,
             0, 7, 1, 1, 1, 13,
@@ -34,8 +34,17 @@
  "tileheight":512,
  "tilesets":[
         {
+         "columns":1,
          "firstgid":1,
-         "source":"maps\/Polar_Cliff_center.tsx"
+         "image":"tiles\/Polar_Cliff_center.png",
+         "imageheight":512,
+         "imagewidth":512,
+         "margin":0,
+         "name":"Polar_Cliff_center",
+         "spacing":0,
+         "tilecount":1,
+         "tileheight":512,
+         "tilewidth":512
         }, 
         {
          "firstgid":2,

@@ -16,6 +16,9 @@
             "scaleInDock": 0.5,
             "scaleInEditor": 1
         },
+        "Polar_Cliff_Corner_6.tsx": {
+            "scaleInEditor": 1
+        },
         "Polar_Cliff_center.tsx": {
             "scaleInDock": 1,
             "scaleInEditor": 1
@@ -33,6 +36,14 @@
             "viewCenter": {
                 "x": 3592,
                 "y": -632
+            }
+        },
+        "map1.tmx": {
+            "scale": 0.125,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 1740,
+                "y": 3780
             }
         },
         "polar_cliff_edge_left_side.tsx": {
@@ -63,6 +74,8 @@
     ],
     "project": "map1_test.tiled-project",
     "recentFiles": [
+        "Polar_Cliff_Corner_6.tsx",
+        "map1.tmx",
         "polar_middle_small.tsx",
         "polar_cliff_edge_left_side.tsx",
         "Polar_Cliff_Corner_1.tsx",
