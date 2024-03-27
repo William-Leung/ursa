@@ -66,6 +66,7 @@ public class SceneModel extends WorldController implements ContactListener {
     private TextureRegion ursaTexture;
     private TextureRegion enemyTexture;
     private TextureRegion enemyTexture2;
+    private TextureRegion[] tileTextures = new TextureRegion[16];
     private FilmStrip salmonFilmStrip;
     private float tileY;
     private float tileX;
@@ -83,7 +84,7 @@ public class SceneModel extends WorldController implements ContactListener {
     private TextureRegion barrierTexture;
     /** Texture asset for the bullet */
     private TextureRegion bulletTexture;
-    private TextureRegion polarMiddle;
+
     /** Texture asset for the bridge plank */
     private TextureRegion bridgeTexture;
     /** Texture asset for the shadows */
@@ -224,7 +225,8 @@ public class SceneModel extends WorldController implements ContactListener {
         salmonUprightWalkScript = new TextureRegion(directory.getEntry("enemies:salmonUprightWalk",Texture.class));
         salmonUprightWalkFilm = new FilmStrip(salmonUprightWalkScript.getTexture(),3,8);
         salmonUprightWalkFilm.setFrame(0);
-        polarMiddle = new TextureRegion(directory.getEntry("maps:polar_middle",Texture.class));
+        gatherTiles(directory);
+
 
 
 
@@ -234,6 +236,23 @@ public class SceneModel extends WorldController implements ContactListener {
         plopSound = directory.getEntry( "platform:plop", Sound.class );
         constants = directory.getEntry( "platform:constants", JsonValue.class );
         super.gatherAssets(directory);
+    }
+    public void gatherTiles(AssetDirectory directory ){
+        tileTextures[0] = new TextureRegion(directory.getEntry("tiles:polar_middle",Texture.class));
+        tileTextures[1] = new TextureRegion(directory.getEntry("tiles:polar_corner_1",Texture.class));
+        tileTextures[2] = new TextureRegion(directory.getEntry("tiles:polar_corner_2",Texture.class));
+        tileTextures[3] = new TextureRegion(directory.getEntry("tiles:polar_corner_3",Texture.class));
+        tileTextures[4] = new TextureRegion(directory.getEntry("tiles:polar_corner_4",Texture.class));
+        tileTextures[5] = new TextureRegion(directory.getEntry("tiles:polar_corner_5",Texture.class));
+        tileTextures[6] = new TextureRegion(directory.getEntry("tiles:polar_corner_6",Texture.class));
+        tileTextures[7] = new TextureRegion(directory.getEntry("tiles:polar_corner_7",Texture.class));
+        tileTextures[8] = new TextureRegion(directory.getEntry("tiles:polar_corner_8",Texture.class));
+        tileTextures[9] = new TextureRegion(directory.getEntry("tiles:polar_edge_1",Texture.class));
+        tileTextures[10] = new TextureRegion(directory.getEntry("tiles:polar_edge_2",Texture.class));
+        tileTextures[11] = new TextureRegion(directory.getEntry("tiles:polar_edge_3",Texture.class));
+        tileTextures[12] = new TextureRegion(directory.getEntry("tiles:polar_edge_4",Texture.class));
+        tileTextures[13] = new TextureRegion(directory.getEntry("tiles:polar_edge_5",Texture.class));
+        tileTextures[14] = new TextureRegion(directory.getEntry("tiles:polar_edge_6",Texture.class));
     }
 
     /**
@@ -384,10 +403,10 @@ public class SceneModel extends WorldController implements ContactListener {
 
             for(int j = 0; j < tileWidth;j++){
 
-                if(jsonData.get("layers").get(0).get(0).get(counter).asInt() == 1 ||jsonData.get("layers").get(0).get(0).get(counter).asInt() == 2){
+                if(jsonData.get("layers").get(0).get(0).get(counter).asInt() == 1){
 
 
-                    canvas.draw(polarMiddle, Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
+                    canvas.draw(tileTextures[0], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
                 }
                 counter += 1;
 
