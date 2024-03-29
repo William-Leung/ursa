@@ -64,10 +64,13 @@ public class SceneModel extends WorldController implements ContactListener {
     /** Texture asset for character avatar */
     private TextureRegion avatarTexture;
     private TextureRegion ursaTexture;
+    private float maxY;
     private TextureRegion enemyTexture;
     private TextureRegion enemyTexture2;
     private TextureRegion[] tileTextures = new TextureRegion[16];
     private FilmStrip salmonFilmStrip;
+    private float playerStartX;
+    private float playerStartY;
     private float tileY;
     private float tileX;
     private float tileWidth;
@@ -167,11 +170,17 @@ public class SceneModel extends WorldController implements ContactListener {
         json = new JsonReader();
 
         jsonData = json.parse(Gdx.files.internal("level1.json"));
-        System.out.println(jsonData.get("layers").get(0).get(0));
         tileHeight = jsonData.get("layers").get(0).get(1).asFloat();
         tileWidth = jsonData.get("layers").get(0).get(7).asFloat();
+        playerStartX = jsonData.get("layers").get(1).get("objects").get(0).get(8).asFloat();
+        playerStartY = jsonData.get("layers").get(1).get("objects").get(0).get(9).asFloat();
+        maxY = (jsonData.get("layers").get(0).get("height").asFloat()) * 512f;
+        playerStartY = 1- (playerStartY/maxY);
+        playerStartX = (playerStartX/(tileWidth * 512f));
+        tileX = tileWidth * 7f;
+        tileY = tileHeight * 7f;
 
-
+        System.out.println(jsonData.get("layers").get(4));
 
 
 
@@ -319,28 +328,35 @@ public class SceneModel extends WorldController implements ContactListener {
         // Create ursa
         dwidth  = playerIdleFilm.getRegionWidth()/50;
         dheight = playerIdleFilm.getRegionHeight()/100f;
-        avatar = new UrsaModel(constants.get("ursa"), dwidth, dheight);
+        avatar = new UrsaModel(playerStartX * tileX + 5.5f,playerStartY * tileY +9.0f,constants.get("ursa"), dwidth, dheight);
         avatar.setDrawScale(scale);
 
         avatar.setTexture(playerWalkFilm);
         addObject(avatar);
-
-        //create enemy
         dwidth  = enemyTexture.getRegionWidth()/scale.x;
         dheight = enemyTexture.getRegionHeight()/scale.y;
-        enemies[0] = new Enemy(constants.get("enemy"), dwidth, dheight);
-        enemies[0].setLookDirection(1, 0);
-        enemies[0].setDrawScale(scale);
-        enemies[0].setTexture(salmonUprightWalkFilm);
-        addObject(enemies[0]);
 
-        dwidth  = enemyTexture2.getRegionWidth()/30;
-        dheight = enemyTexture2.getRegionHeight()/30;
-        enemies[1] = new Enemy(constants.get("enemy2"), dwidth, dheight);
-        enemies[1].setLookDirection(1, 0);
-        enemies[1].setDrawScale(scale);
-        enemies[1].setTexture(salmonUprightWalkFilm);
-        addObject(enemies[1]);
+        for(int i = 0; i< jsonData.get("layers").get(3).get("objects").size;i++){
+            float x = (jsonData.get("layers").get(3).get("objects").get(i).get(9).asFloat()) / (tileWidth * 512f);
+            x = x * tileX + 5.5f;
+            float y = (maxY - jsonData.get("layers").get(3).get("objects").get(i).get(10).asFloat())/(tileHeight * 512f);
+            y = y * tileY +11.0f;
+
+            float direction = jsonData.get("layers").get(3).get("objects").get(0).get("properties").get(0).get("value").asFloat();
+            float maxX = (jsonData.get("layers").get(3).get("objects").get(0).get("properties").get(1).get("value").asFloat())/60;
+            float minX = (jsonData.get("layers").get(3).get("objects").get(0).get("properties").get(2).get("value").asFloat())/60;
+            enemies[i] = new Enemy(x,y,maxX,minX,constants.get("enemy"), dwidth, dheight);
+            enemies[i].setLookDirection(direction, 0);
+            enemies[i].setDrawScale(scale);
+            enemies[i].setTexture(salmonUprightWalkFilm);
+            addObject(enemies[i]);
+        }
+        //create enemy
+
+
+
+
+
 
         for (int i = 0; i < enemies.length; i++) {
             if (enemies[i] != null) {
@@ -441,6 +457,9 @@ public class SceneModel extends WorldController implements ContactListener {
                 else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 13) {
                     canvas.draw(tileTextures[13], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
                 }
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 14) {
+                    canvas.draw(tileTextures[11], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
+                }
                 counter += 1;
 
 
@@ -453,16 +472,24 @@ public class SceneModel extends WorldController implements ContactListener {
         if(salmonWalkAnimIndex == 0 || salmonWalkAnimIndex == 21){
             salmonWalkAnimIndex = 0;
             salmonUprightWalkFilm.setFrame(0);
-            enemies[1].setTexture(salmonUprightWalkFilm);
-            enemies[0].setTexture(salmonUprightWalkFilm);
+            for (Enemy enemy:enemies) {
+                if(enemy != null){
+                    enemy.setTexture(salmonUprightWalkFilm);
+                }
+
+            }
             salmonWalkAnimIndex +=1;
 //
         }
         else {
             salmonUprightWalkFilm.setFrame(salmonWalkAnimIndex);
             salmonWalkAnimIndex +=1;
-            enemies[1].setTexture(salmonUprightWalkFilm);
-            enemies[0].setTexture(salmonUprightWalkFilm);
+            for (Enemy enemy:enemies) {
+                if(enemy != null){
+                    enemy.setTexture(salmonUprightWalkFilm);
+                }
+
+            }
         }
     }
     /*

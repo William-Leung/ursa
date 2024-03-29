@@ -36,6 +36,8 @@ public class Enemy extends BoxObstacle {
 	private final Vector2 forceCache = new Vector2();
 	private float maxSpeed;
 	private float damping;
+	private float maxX;
+	private float minX;
 	private Vector2 playerPos;
 	private float previousXMovement;
 	private float previousYMovement;
@@ -116,10 +118,10 @@ public class Enemy extends BoxObstacle {
 	 */
 	private int stunDuration = 0;
 
-	public Enemy(JsonValue data, float width, float height) {
+	public Enemy(float xStart,float yStart,float maxX, float minX,JsonValue data, float width, float height) {
 		// The shrink factors fit the image to a tigher hitbox
-		super(	data.get("pos").getFloat(0),
-				data.get("pos").getFloat(1),
+		super(	xStart,
+				yStart,
 				width*data.get("shrink").getFloat( 0 ),
 				height*data.get("shrink").getFloat( 1 ));
 		setDensity(data.getFloat("density", 0));
@@ -127,7 +129,8 @@ public class Enemy extends BoxObstacle {
 		setFixedRotation(true);
 		maxSpeed = data.getFloat("maxspeed", 0);
 		//data.getFloat("damping", 0);
-
+		this.maxX = maxX;
+		this.minX = minX;
 
 		/** Creating the red and green texture regions */
 		Pixmap redPixmap = new Pixmap(1, 1, Format.RGBA8888);
@@ -192,11 +195,11 @@ public class Enemy extends BoxObstacle {
 		previousYMovement = movementDirection.y;
 		if (!playerCurrentInSight) {
 
-			if (this.getPosition().x >= 15) {
+			if (this.getPosition().x >= maxX) {
 				movementDirection.x = -15;
 				setLookDirection(-1, 0);
 			}
-			if (this.getPosition().x <= 5) {
+			if (this.getPosition().x <= minX) {
 				movementDirection.x = 15;
 				setLookDirection(1, 0);
 			}

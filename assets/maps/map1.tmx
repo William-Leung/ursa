@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="6" height="13" tilewidth="512" tileheight="512" infinite="0" nextlayerid="2" nextobjectid="1">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="6" height="13" tilewidth="512" tileheight="512" infinite="0" nextlayerid="6" nextobjectid="32">
  <editorsettings>
   <export target="../level1.json" format="json"/>
  </editorsettings>
@@ -19,21 +19,53 @@
  <tileset firstgid="12" source="Polar_Cliff_Edge_1.tsx"/>
  <tileset firstgid="13" source="Polar_Cliff_Edge_5.tsx"/>
  <tileset firstgid="14" source="Polar_Cliff_Edge_3.tsx"/>
+ <tileset firstgid="15" source="Ursa.tsx"/>
+ <tileset firstgid="21" source="salmon_walk_2_small.tsx"/>
+ <tileset firstgid="25" source="tundra_tree_snow_small.tsx"/>
  <layer id="1" name="Tile Layer 1" width="6" height="13">
   <data encoding="csv">
-0,0,0,0,0,0,
-10,12,12,12,12,11,
-7,1,1,1,1,9,
-7,1,1,1,1,9,
-6,3,1,1,1,13,
-0,7,1,1,1,13,
-0,7,1,1,1,13,
-0,7,1,1,1,9,
-0,7,1,1,1,13,
-0,6,3,1,1,13,
-10,12,4,1,1,5,
-6,3,1,1,1,1,
-0,6,8,8,3,1
+1,1,1,1,1,1,
+1,2,8,8,8,3,
+1,9,0,0,0,14,
+1,13,0,0,0,14,
+1,9,0,0,0,14,
+1,13,0,0,0,14,
+1,13,0,0,0,14,
+1,13,0,0,0,14,
+1,13,0,0,0,14,
+1,13,0,0,0,14,
+1,5,11,0,0,14,
+1,1,5,12,12,4,
+1,1,1,1,1,1
 </data>
  </layer>
+ <objectgroup id="2" name="player">
+  <object id="19" gid="15" x="2443.27" y="5312" width="102" height="130"/>
+ </objectgroup>
+ <group id="4" name="contants">
+  <properties>
+   <property name="maxY" value="6718.91"/>
+  </properties>
+ </group>
+ <objectgroup id="3" name="Enemies">
+  <object id="23" gid="21" x="2193.27" y="5487.52" width="358" height="332">
+   <properties>
+    <property name="direction" value="1"/>
+    <property name="maxX" value="2571.27"/>
+    <property name="minX" value="1259.27"/>
+   </properties>
+  </object>
+  <object id="26" gid="21" x="1332" y="5840" width="358" height="332">
+   <properties>
+    <property name="direction" value="1"/>
+    <property name="maxX" value="2571.27"/>
+    <property name="minX" value="1259.27"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup id="5" name="Trees">
+  <object id="29" gid="25" x="856" y="4632" width="512" height="512"/>
+  <object id="30" gid="25" x="2048" y="3632" width="512" height="512"/>
+  <object id="31" gid="25" x="1968" y="5232" width="512" height="512"/>
+ </objectgroup>
 </map>

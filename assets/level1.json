@@ -3,19 +3,19 @@
  "infinite":false,
  "layers":[
         {
-         "data":[0, 0, 0, 0, 0, 0,
-            10, 12, 12, 12, 12, 11,
-            7, 1, 1, 1, 1, 9,
-            7, 1, 1, 1, 1, 9,
-            6, 3, 1, 1, 1, 13,
-            0, 7, 1, 1, 1, 13,
-            0, 7, 1, 1, 1, 13,
-            0, 7, 1, 1, 1, 9,
-            0, 7, 1, 1, 1, 13,
-            0, 6, 3, 1, 1, 13,
-            10, 12, 4, 1, 1, 5,
-            6, 3, 1, 1, 1, 1,
-            0, 6, 8, 8, 3, 1],
+         "data":[1, 1, 1, 1, 1, 1,
+            1, 2, 8, 8, 8, 3,
+            1, 9, 0, 0, 0, 14,
+            1, 13, 0, 0, 0, 14,
+            1, 9, 0, 0, 0, 14,
+            1, 13, 0, 0, 0, 14,
+            1, 13, 0, 0, 0, 14,
+            1, 13, 0, 0, 0, 14,
+            1, 13, 0, 0, 0, 14,
+            1, 13, 0, 0, 0, 14,
+            1, 5, 11, 0, 0, 14,
+            1, 1, 5, 12, 12, 4,
+            1, 1, 1, 1, 1, 1],
          "height":13,
          "id":1,
          "name":"Tile Layer 1",
@@ -25,9 +25,162 @@
          "width":6,
          "x":0,
          "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":2,
+         "name":"player",
+         "objects":[
+                {
+                 "gid":15,
+                 "height":130,
+                 "id":19,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":102,
+                 "x":2443.27,
+                 "y":5312
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "id":4,
+         "layers":[],
+         "name":"contants",
+         "opacity":1,
+         "properties":[
+                {
+                 "name":"maxY",
+                 "type":"string",
+                 "value":"6718.91"
+                }],
+         "type":"group",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":3,
+         "name":"Enemies",
+         "objects":[
+                {
+                 "gid":21,
+                 "height":332,
+                 "id":23,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"direction",
+                         "type":"string",
+                         "value":"1"
+                        }, 
+                        {
+                         "name":"maxX",
+                         "type":"string",
+                         "value":"2571.27"
+                        }, 
+                        {
+                         "name":"minX",
+                         "type":"string",
+                         "value":"1259.27"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":358,
+                 "x":2193.27,
+                 "y":5487.52
+                }, 
+                {
+                 "gid":21,
+                 "height":332,
+                 "id":26,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"direction",
+                         "type":"string",
+                         "value":"1"
+                        }, 
+                        {
+                         "name":"maxX",
+                         "type":"string",
+                         "value":"2571.27"
+                        }, 
+                        {
+                         "name":"minX",
+                         "type":"string",
+                         "value":"1259.27"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":358,
+                 "x":1332,
+                 "y":5840
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":5,
+         "name":"Trees",
+         "objects":[
+                {
+                 "gid":25,
+                 "height":512,
+                 "id":29,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":512,
+                 "x":856,
+                 "y":4632
+                }, 
+                {
+                 "gid":25,
+                 "height":512,
+                 "id":30,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":512,
+                 "x":2048,
+                 "y":3632
+                }, 
+                {
+                 "gid":25,
+                 "height":512,
+                 "id":31,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":512,
+                 "x":1968,
+                 "y":5232
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
         }],
- "nextlayerid":2,
- "nextobjectid":1,
+ "nextlayerid":6,
+ "nextobjectid":32,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.10.2",
@@ -99,6 +252,18 @@
         {
          "firstgid":14,
          "source":"maps\/Polar_Cliff_Edge_3.tsx"
+        }, 
+        {
+         "firstgid":15,
+         "source":"maps\/Ursa.tsx"
+        }, 
+        {
+         "firstgid":21,
+         "source":"maps\/salmon_walk_2_small.tsx"
+        }, 
+        {
+         "firstgid":25,
+         "source":"maps\/tundra_tree_snow_small.tsx"
         }],
  "tilewidth":512,
  "type":"map",
