@@ -72,7 +72,7 @@
          "objects":[
                 {
                  "gid":21,
-                 "height":332,
+                 "height":280.484848484848,
                  "id":23,
                  "name":"",
                  "properties":[
@@ -94,9 +94,9 @@
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":358,
-                 "x":2193.27,
-                 "y":5487.52
+                 "width":258,
+                 "x":2059.93666666667,
+                 "y":5411.76242424242
                 }, 
                 {
                  "gid":21,
@@ -170,8 +170,8 @@
                  "type":"",
                  "visible":true,
                  "width":512,
-                 "x":1968,
-                 "y":5232
+                 "x":1296,
+                 "y":4640
                 }],
          "opacity":1,
          "type":"objectgroup",
