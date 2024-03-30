@@ -340,7 +340,7 @@ public class SceneModel extends WorldController implements ContactListener {
         // Create ursa
         dwidth  = playerIdleFilm.getRegionWidth()/50;
         dheight = playerIdleFilm.getRegionHeight()/100f;
-        avatar = new UrsaModel(playerStartX * tileX + 5.5f,playerStartY * tileY +9.0f,constants.get("ursa"), dwidth, dheight);
+        avatar = new UrsaModel(playerStartX * tileX + 5.5f,playerStartY * tileY +11.0f,constants.get("ursa"), dwidth, dheight);
         avatar.setDrawScale(scale);
 
         avatar.setTexture(playerWalkFilm);
@@ -452,7 +452,7 @@ public class SceneModel extends WorldController implements ContactListener {
         for(int i = 0; i < jsonData.get("layers").get(5).get("objects").size;i++){
             float x = (jsonData.get("layers").get(5).get("objects").get(i).get(8).asFloat())/2;
             System.out.println(x);
-            float y = (maxY - jsonData.get("layers").get(5).get("objects").get(i).get(9).asFloat())/1.5f;
+            float y = (maxY - jsonData.get("layers").get(5).get("objects").get(i).get(9).asFloat())/1.3f;
 
             System.out.println(y);
             canvas.draw(backgroundTextures[0], Color.WHITE,0,0,x,y,avatar.getAngle(), 0.15f,0.15f);

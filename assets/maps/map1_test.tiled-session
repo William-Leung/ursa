@@ -77,17 +77,18 @@
             }
         },
         "map1.tmx": {
-            "scale": 0.25,
-            "selectedLayer": 4,
+            "scale": 0.5,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": 2008,
-                "y": 4986
+                "x": 2360,
+                "y": 5485
             }
         },
         "map1.tmx#Polar_Cliff_center": {
             "scaleInDock": 1
         },
         "player test.tsx": {
+            "dynamicWrapping": false,
             "scaleInDock": 1,
             "scaleInEditor": 1
         },
@@ -132,20 +133,20 @@
     "map.tileWidth": 512,
     "map.width": 6,
     "openFiles": [
-        "map1.tmx",
         "Polar_Cliff_Corner_5.tsx",
         "player test.tsx",
         "Ursa.tsx",
         "tundra_tree_snow_small.tsx",
-        "polar_flower_1.tsx"
+        "polar_flower_1.tsx",
+        "map1.tmx"
     ],
     "project": "map1_test.tiled-project",
     "recentFiles": [
-        "polar_flower_1.tsx",
-        "tundra_tree_snow_small.tsx",
-        "Ursa.tsx",
-        "player test.tsx",
         "Polar_Cliff_Corner_5.tsx",
+        "player test.tsx",
+        "Ursa.tsx",
+        "tundra_tree_snow_small.tsx",
+        "polar_flower_1.tsx",
         "map1.tmx",
         "tundra_tree_snow.tsx",
         "salmon_walk_2_small.tsx",

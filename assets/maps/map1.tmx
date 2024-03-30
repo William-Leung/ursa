@@ -41,7 +41,7 @@
 </data>
  </layer>
  <objectgroup id="2" name="player">
-  <object id="19" gid="15" x="2399.27" y="5704" width="102" height="130"/>
+  <object id="19" gid="15" x="2407.27" y="5680" width="142" height="154"/>
  </objectgroup>
  <group id="4" name="contants">
   <properties>
@@ -94,12 +94,12 @@
   <object id="53" gid="25" x="1328" y="4644" width="512" height="512"/>
  </objectgroup>
  <objectgroup id="6" name="objects">
-  <object id="38" gid="26" x="2274.55" y="5656.36" width="80" height="80"/>
-  <object id="41" gid="26" x="2317.33" y="5770.67" width="80" height="80"/>
-  <object id="45" gid="26" x="2393.81" y="5514.18" width="80" height="80"/>
-  <object id="46" gid="26" x="2532" y="5625.33" width="80" height="80"/>
-  <object id="47" gid="26" x="2532" y="5753.33" width="80" height="80"/>
-  <object id="54" gid="26" x="1842" y="5752" width="80" height="80"/>
-  <object id="55" gid="26" x="2022" y="5762" width="80" height="80"/>
+  <object id="38" gid="26" x="2262.55" y="5674.36" width="134" height="136"/>
+  <object id="41" gid="26" x="2317.33" y="5770.67" width="134" height="134"/>
+  <object id="45" gid="26" x="2393.81" y="5514.18" width="134" height="134"/>
+  <object id="46" gid="26" x="2532" y="5625.33" width="134" height="134"/>
+  <object id="47" gid="26" x="2532" y="5753.33" width="134" height="134"/>
+  <object id="54" gid="26" x="1842" y="5752" width="134" height="134"/>
+  <object id="55" gid="26" x="2022" y="5762" width="134" height="134"/>
  </objectgroup>
 </map>
