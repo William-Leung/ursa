@@ -40,7 +40,7 @@
 </data>
  </layer>
  <objectgroup id="2" name="player">
-  <object id="19" gid="15" x="2443.27" y="5312" width="102" height="130"/>
+  <object id="19" gid="15" x="2399.27" y="5704" width="102" height="130"/>
  </objectgroup>
  <group id="4" name="contants">
   <properties>

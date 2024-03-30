@@ -240,6 +240,7 @@ public class SceneModel extends WorldController implements ContactListener {
 
 
 
+
         jumpSound = directory.getEntry( "platform:jump", Sound.class );
         fireSound = directory.getEntry( "platform:pew", Sound.class );
         plopSound = directory.getEntry( "platform:plop", Sound.class );
@@ -798,8 +799,8 @@ public class SceneModel extends WorldController implements ContactListener {
     @Override
     public void preDraw(float dt) {
 
-
-        canvas.draw(snowBackGround,backgroundColor,0,0, canvas.getWidth(), canvas.getHeight());
+        System.out.println(tileHeight * 512);
+        canvas.draw(snowBackGround,backgroundColor,0,0,tileWidth* 512, tileHeight*512);
         drawTiles();
         shadowController.drawAllShadows(canvas, this);
     }
