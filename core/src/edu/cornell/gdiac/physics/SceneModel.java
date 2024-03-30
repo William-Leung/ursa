@@ -87,6 +87,7 @@ public class SceneModel extends WorldController implements ContactListener {
     private TextureRegion barrierTexture;
     /** Texture asset for the bullet */
     private TextureRegion bulletTexture;
+    private TextureRegion[] backgroundTextures = new TextureRegion[3];
 
     /** Texture asset for the bridge plank */
     private TextureRegion bridgeTexture;
@@ -180,7 +181,7 @@ public class SceneModel extends WorldController implements ContactListener {
         tileX = tileWidth * 7f;
         tileY = tileHeight * 7f;
 
-        System.out.println(jsonData.get("layers").get(4));
+        System.out.println(jsonData.get("layers").get(4).get("objects"));
 
 
 
@@ -263,6 +264,7 @@ public class SceneModel extends WorldController implements ContactListener {
         tileTextures[12] = new TextureRegion(directory.getEntry("tiles:polar_edge_4",Texture.class));
         tileTextures[13] = new TextureRegion(directory.getEntry("tiles:polar_edge_5",Texture.class));
         tileTextures[14] = new TextureRegion(directory.getEntry("tiles:polar_edge_6",Texture.class));
+        backgroundTextures[0] = new TextureRegion(directory.getEntry("tiles:polar_flower_1",Texture.class));
     }
 
     /**
@@ -297,6 +299,15 @@ public class SceneModel extends WorldController implements ContactListener {
      * Lays out the game geography.
      */
     private void populateLevel() {
+        tileHeight = jsonData.get("layers").get(0).get(1).asFloat();
+        tileWidth = jsonData.get("layers").get(0).get(7).asFloat();
+        playerStartX = jsonData.get("layers").get(1).get("objects").get(0).get(8).asFloat();
+        playerStartY = jsonData.get("layers").get(1).get("objects").get(0).get(9).asFloat();
+        maxY = (jsonData.get("layers").get(0).get("height").asFloat()) * 512f;
+        playerStartY = 1- (playerStartY/maxY);
+        playerStartX = (playerStartX/(tileWidth * 512f));
+        tileX = tileWidth * 7f;
+        tileY = tileHeight * 7f;
         // Add level goal
         float dwidth  = goalTile.getRegionWidth()/scale.x;
         float dheight = goalTile.getRegionHeight()/scale.y;
@@ -337,6 +348,7 @@ public class SceneModel extends WorldController implements ContactListener {
         dwidth  = enemyTexture.getRegionWidth()/scale.x;
         dheight = enemyTexture.getRegionHeight()/scale.y;
 
+        // place the enemies based on position in Tiled
         for(int i = 0; i< jsonData.get("layers").get(3).get("objects").size;i++){
             float x = (jsonData.get("layers").get(3).get("objects").get(i).get(9).asFloat()) / (tileWidth * 512f);
             x = x * tileX + 5.5f;
@@ -352,7 +364,31 @@ public class SceneModel extends WorldController implements ContactListener {
             enemies[i].setTexture(salmonUprightWalkFilm);
             addObject(enemies[i]);
         }
-        //create enemy
+
+        //place trees in the level
+        JsonValue treejv = constants.get("trees");
+        String tname = "tree";
+
+        for(int i = 0; i < jsonData.get("layers").get(4).get("objects").size; i++){
+            float x = (jsonData.get("layers").get(4).get("objects").get(i).get(8).asFloat())/ (tileWidth * 512f);
+            x = x * tileX + 5.5f;
+            float y = (maxY - jsonData.get("layers").get(4).get("objects").get(i).get(9).asFloat())/(tileHeight * 512f);
+            y = y * tileY +11.0f;
+            Tree obj = new Tree(treejv.get(0).asFloatArray(),x,y);
+            obj.setBodyType(BodyDef.BodyType.StaticBody);
+            obj.setDensity(defaults.getFloat( "density", 0.0f ));
+            obj.setFriction(defaults.getFloat( "friction", 0.0f ));
+            obj.setRestitution(defaults.getFloat( "restitution", 0.0f ));
+            obj.setDrawScale(scale);
+            obj.setTexture(tundraTreeWithSnow);
+            obj.setName(tname+i);
+            addObject(obj);
+            trees.add(obj);
+            shadows.add(new ShadowModel(new Vector2(obj.getX(), obj.getY()), Tree.X_SCALE, Tree.Y_SCALE,
+                    obj.getTexture(), obj.getDrawOrigin(), obj.getDrawScale()));
+        }
+
+
 
 
 
@@ -365,23 +401,22 @@ public class SceneModel extends WorldController implements ContactListener {
             }
         }
 
-        String tname = "tree";
-        JsonValue treejv = constants.get("trees");
+
         float[] treeXCoords = new float[]{24,14, 17, 19, 27}; //
         float[] treeYCoords = new float[]{5.5f,3, 12, 6, 11}; //
         for(int ii = 0; ii < treeXCoords.length; ii++) {
-            Tree obj = new Tree(treejv.get(0).asFloatArray(),treeXCoords[ii],treeYCoords[ii]);
-            obj.setBodyType(BodyDef.BodyType.StaticBody);
-            obj.setDensity(defaults.getFloat( "density", 0.0f ));
-            obj.setFriction(defaults.getFloat( "friction", 0.0f ));
-            obj.setRestitution(defaults.getFloat( "restitution", 0.0f ));
-            obj.setDrawScale(scale);
-            obj.setTexture(tundraTreeWithSnow);
-            obj.setName(tname+ii);
-            addObject(obj);
-            trees.add(obj);
-            shadows.add(new ShadowModel(new Vector2(obj.getX(), obj.getY()), Tree.X_SCALE, Tree.Y_SCALE,
-                    obj.getTexture(), obj.getDrawOrigin(), obj.getDrawScale()));
+            //Tree obj = new Tree(treejv.get(0).asFloatArray(),treeXCoords[ii],treeYCoords[ii]);
+            //obj.setBodyType(BodyDef.BodyType.StaticBody);
+            //obj.setDensity(defaults.getFloat( "density", 0.0f ));
+            //obj.setFriction(defaults.getFloat( "friction", 0.0f ));
+            //obj.setRestitution(defaults.getFloat( "restitution", 0.0f ));
+            //obj.setDrawScale(scale);
+            //obj.setTexture(tundraTreeWithSnow);
+            //obj.setName(tname+ii);
+            //addObject(obj);
+            //trees.add(obj);
+            //shadows.add(new ShadowModel(new Vector2(obj.getX(), obj.getY()), Tree.X_SCALE, Tree.Y_SCALE,
+                  //  obj.getTexture(), obj.getDrawOrigin(), obj.getDrawScale()));
         }
 
         volume = constants.getFloat("volume", 1.0f);
@@ -466,8 +501,13 @@ public class SceneModel extends WorldController implements ContactListener {
 
             }
 
+            //draw the background objects
+
+
 
         }
+
+
     }
     private void animateEnemies(){
         if(salmonWalkAnimIndex == 0 || salmonWalkAnimIndex == 21){
@@ -799,7 +839,7 @@ public class SceneModel extends WorldController implements ContactListener {
     @Override
     public void preDraw(float dt) {
 
-        System.out.println(tileHeight * 512);
+
         canvas.draw(snowBackGround,backgroundColor,0,0,tileWidth* 256, tileHeight*256);
         drawTiles();
         shadowController.drawAllShadows(canvas, this);

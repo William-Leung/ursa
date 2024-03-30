@@ -77,11 +77,11 @@
             }
         },
         "map1.tmx": {
-            "scale": 0.25,
-            "selectedLayer": 4,
+            "scale": 0.75,
+            "selectedLayer": 5,
             "viewCenter": {
-                "x": 1830,
-                "y": 4354
+                "x": 2153.333333333333,
+                "y": 5476.666666666666
             }
         },
         "map1.tmx#Polar_Cliff_center": {
@@ -93,6 +93,10 @@
         },
         "polar_cliff_edge_left_side.tsx": {
             "scaleInDock": 0.5,
+            "scaleInEditor": 1
+        },
+        "polar_flower_1.tsx": {
+            "scaleInDock": 0.125,
             "scaleInEditor": 1
         },
         "polar_middle.tsx": {
@@ -120,7 +124,7 @@
         }
     },
     "last.exportedFilePath": "C:/Users/video/Desktop/ursa/assets",
-    "last.imagePath": "C:/Users/video/Desktop/ursa/assets/object",
+    "last.imagePath": "C:/Users/danbp/Desktop/School/Junioir year cornell/3152/ursa/assets/tiles",
     "map.height": 13,
     "map.lastUsedExportFilter": "JSON map files (*.tmj *.json)",
     "map.lastUsedFormat": "tmx",
@@ -132,10 +136,12 @@
         "Polar_Cliff_Corner_5.tsx",
         "player test.tsx",
         "Ursa.tsx",
-        "tundra_tree_snow_small.tsx"
+        "tundra_tree_snow_small.tsx",
+        "polar_flower_1.tsx"
     ],
     "project": "map1_test.tiled-project",
     "recentFiles": [
+        "polar_flower_1.tsx",
         "tundra_tree_snow_small.tsx",
         "Ursa.tsx",
         "player test.tsx",
@@ -146,8 +152,7 @@
         "Polar_Cliff_Corner_2.tsx",
         "Polar_Cliff_Corner_1.tsx",
         "Polar_Cliff_center.tsx",
-        "Polar_Cliff_Corner_6.tsx",
-        "polar_middle_small.tsx"
+        "Polar_Cliff_Corner_6.tsx"
     ],
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {
