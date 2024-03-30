@@ -800,7 +800,7 @@ public class SceneModel extends WorldController implements ContactListener {
     public void preDraw(float dt) {
 
         System.out.println(tileHeight * 512);
-        canvas.draw(snowBackGround,backgroundColor,0,0,tileWidth* 512, tileHeight*512);
+        canvas.draw(snowBackGround,backgroundColor,0,0,tileWidth* 256, tileHeight*256);
         drawTiles();
         shadowController.drawAllShadows(canvas, this);
     }
