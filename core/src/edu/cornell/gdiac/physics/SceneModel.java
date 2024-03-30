@@ -181,7 +181,7 @@ public class SceneModel extends WorldController implements ContactListener {
         tileX = tileWidth * 7f;
         tileY = tileHeight * 7f;
 
-        System.out.println(jsonData.get("layers").get(4).get("objects"));
+        System.out.println(jsonData.get("layers").get(5).get("objects").get(0).get(8).asFloat());
 
 
 
@@ -446,6 +446,21 @@ public class SceneModel extends WorldController implements ContactListener {
         return true;
     }
 
+
+    private void drawExtraObjects(){
+        canvas.draw(backgroundTextures[0], Color.WHITE,0,0,1000,100,avatar.getAngle(), 0.1f,0.1f);
+        for(int i = 0; i < jsonData.get("layers").get(5).get("objects").size;i++){
+            float x = (jsonData.get("layers").get(5).get("objects").get(i).get(8).asFloat())/2;
+            System.out.println(x);
+            float y = (maxY - jsonData.get("layers").get(5).get("objects").get(i).get(9).asFloat())/1.5f;
+
+            System.out.println(y);
+            canvas.draw(backgroundTextures[0], Color.WHITE,0,0,x,y,avatar.getAngle(), 0.15f,0.15f);
+        }
+    }
+    /**
+    Draws all tiles based on the json data from Tiled
+     */
     public void drawTiles(){
         int counter = 0;
         tileX = 0;
@@ -842,6 +857,7 @@ public class SceneModel extends WorldController implements ContactListener {
 
         canvas.draw(snowBackGround,backgroundColor,0,0,tileWidth* 256, tileHeight*256);
         drawTiles();
+        drawExtraObjects();
         shadowController.drawAllShadows(canvas, this);
     }
 }

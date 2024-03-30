@@ -77,11 +77,11 @@
             }
         },
         "map1.tmx": {
-            "scale": 0.75,
-            "selectedLayer": 5,
+            "scale": 0.25,
+            "selectedLayer": 4,
             "viewCenter": {
-                "x": 2153.333333333333,
-                "y": 5476.666666666666
+                "x": 2008,
+                "y": 4986
             }
         },
         "map1.tmx#Polar_Cliff_center": {
