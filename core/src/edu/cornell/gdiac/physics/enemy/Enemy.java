@@ -192,22 +192,22 @@ public class Enemy extends BoxObstacle {
 		previousYMovement = movementDirection.y;
 		if (!playerCurrentInSight) {
 
-			if (this.getPosition().x >= 15) {
-				movementDirection.x = -15;
-				setLookDirection(-1, 0);
-			}
-			if (this.getPosition().x <= 5) {
-				movementDirection.x = 15;
-				setLookDirection(1, 0);
-			}
-			if (movementDirection.x == 0f) {
-				forceCache.set(-damping * getVX(), 0);
-				body.applyForce(forceCache, getPosition(), true);
-			}
-			if (movementDirection.y == 0f) {
-				forceCache.set(0, -damping * getVY());
-				body.applyForce(forceCache, getPosition(), true);
-			}
+//			if (this.getPosition().x >= 15) {
+//				movementDirection.x = -15;
+//				setLookDirection(-1, 0);
+//			}
+//			if (this.getPosition().x <= 5) {
+//				movementDirection.x = 15;
+//				setLookDirection(1, 0);
+//			}
+//			if (movementDirection.x == 0f) {
+//				forceCache.set(-damping * getVX(), 0);
+//				body.applyForce(forceCache, getPosition(), true);
+//			}
+//			if (movementDirection.y == 0f) {
+//				forceCache.set(0, -damping * getVY());
+//				body.applyForce(forceCache, getPosition(), true);
+//			}
 
 		} else {
 			if(playerPos.x > getPosition().x){
@@ -218,6 +218,7 @@ public class Enemy extends BoxObstacle {
 			else {
 				movementDirection.x = 0;
 			}
+
 			if(playerPos.y > getPosition().y){
 				movementDirection.y = 15;
 			} else if (playerPos.y < getPosition().y) {

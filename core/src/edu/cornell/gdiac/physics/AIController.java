@@ -2,7 +2,10 @@ package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.math.Vector2;
 import edu.cornell.gdiac.physics.enemy.Enemy;
+import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.physics.player.UrsaModel;
+import java.util.HashMap;
+import java.util.List;
 
 public class AIController {
 
@@ -41,6 +44,8 @@ public class AIController {
     private static final int DIR_TIME = 70;
     /** Amount of time enemy can sprint */
     private static final int MAX_STAMINA = 70;
+    /** Degrees enemy can rotate per tick */
+    private static final int ROTATE_SPEED = 12;
 
     // Instance Attributes
     /** The enemy being controlled by this AIController */
@@ -49,6 +54,8 @@ public class AIController {
     private UrsaModel ursa;
     /** The enemy's current state in the FSM */
     private FSMState state;
+    /** world */
+    private WorldController world;
     /** The ship's next action (may include firing). */
     private int move; // A ControlCode
     /** Ticks spent confused */
@@ -65,6 +72,10 @@ public class AIController {
     private long ticks;
     /** Determines whether this enemy has won and caught Ursa */
     private boolean hasWon = false;
+    /** The goal angle to face, used to prevent cone snapping */
+    private float goalAngle = 0;
+    /** The list of patrol tiles this enemy will visit if wandering */
+    private List<Float> goalLocs;
 
     /**
      * Creates an AIController for the ship with the given id.
@@ -73,6 +84,7 @@ public class AIController {
         this.enemy = enemy;
         //this.board = board;
         this.ursa = ursa;
+        //this.world = world;
 
         state = FSMState.SPAWN;
         //move  = CONTROL_NO_ACTION;
@@ -161,6 +173,7 @@ public class AIController {
         ticks++;
 
         changeStateIfApplicable();
+        checkRange();
         //System.out.println(state.toString());
 
         switch (state) {
@@ -169,36 +182,9 @@ public class AIController {
                 enemy.setVY(0);
                 break;
             case WANDER:
-
-                Vector2 action = new Vector2(0,0);
-
-                if (enemy.getX() < 5) {
-
-                } else if (enemy.getX() > 15) {
-
-                }
-
-                if (enemy.getVX() < 0) {
-                    enemy.setLookDirection(-1,0);
-                } else {
-                    enemy.setLookDirection(1,0);
-                }
-
-//                enemy.setLookDirection(action.x, 0);
-//                enemy.setVX(action.x * 10);
-
-//                if ((enemy.getVX() != 0 || enemy.getVY() != 0) && ticks_since_change < DIR_TIME) {
-//                    ticks_since_change++;
-//                    return;
-//                }
-//                Vector2 action = new Vector2((float) (2 * Math.random() - 1),
-//                        (float) (2 * Math.random() - 1)).nor();
-//                enemy.setLookDirection(action.x, action.y);
-//                enemy.setVX(action.x);
-//                enemy.setVY(action.y);
-//                ticks_since_change = 0;
                 curr_stamina = Math.min(MAX_STAMINA, curr_stamina + 1);
-                return;
+
+                break;
 
             case CONFUSED:
                 //System.out.println("Enemy is confused");
@@ -207,20 +193,17 @@ public class AIController {
                 curr_stamina = Math.min(MAX_STAMINA, curr_stamina + 1);
                 break;
             case CHASE:
-                action =  new Vector2(ursa.getX() - enemy.getX(), ursa.getY() - enemy.getY()).nor();
+                Vector2 action =  new Vector2(ursa.getX() - enemy.getX(), ursa.getY() - enemy.getY()).nor();
 
-                int multiplier = curr_stamina != 0 ? 4 : 2;
-                curr_stamina = Math.max(curr_stamina - 1, 0);
+                //int multiplier = curr_stamina != 0 ? 4 : 2;
+                //curr_stamina = Math.max(curr_stamina - 1, 0);
 
-                action.x *= multiplier;
-                action.y *= multiplier;
-                enemy.setVX(action.x);
-                enemy.setVY(action.y);
+                enemy.setVX(action.x * 8);
+                enemy.setVY(action.y * 8);
                 enemy.setLookDirection(action.x, action.y);
 
                 break;
         }
-
     }
 
 
@@ -233,4 +216,74 @@ public class AIController {
 
     public void resetLifeTime() { ticks_attacked = 0; }
 
+    public void checkRange() {
+        if (Math.pow(enemy.getX() - ursa.getX(), 2) + Math.pow(enemy.getY() - ursa.getY(), 2)
+                <= enemy.getHeight() + ursa.getHeight()) {
+
+            //enemy.setLookDirection(ursa.getY() - enemy.getY(), ursa.getY() - enemy.getY());
+
+            float goalAngle = (float) Math.atan(ursa.getY() - enemy.getY() / ursa.getY() - enemy.getY());
+            if (enemy.isAlerted()) {
+                setWon(true);
+            } else {
+                rotateEnemy(ROTATE_SPEED, goalAngle);
+            }
+
+        }
+    }
+
+
+    public void rotateEnemy(float rotSpeed, float goalAngle) {
+        if (enemy.getAngle() < goalAngle) {
+            enemy.rotateLookDirection(rotSpeed);
+        } else if (enemy.getAngle() > goalAngle) {
+            enemy.rotateLookDirection(-rotSpeed);
+        }
+    }
+
+    private class Board {
+        /** grid to store whether an object exists in any location */
+        private boolean[][] grid;
+        /** The height of each grid box */
+        float tileHeight;
+        /** The width of each grid box */
+        float tileWidth;
+        /** the height of the canvas */
+        float canvasHeight;
+        /** The width of the canvas */
+        float canvasWidth;
+
+        public Board(WorldController world, float enemyHeight, float enemyWidth) {
+            this.canvasHeight = world.canvas.height;
+            this.canvasWidth = world.canvas.width;
+
+            tileHeight = enemyHeight;
+            tileWidth = enemyWidth;
+
+            grid = new boolean[(int) (canvasHeight / tileHeight) + 1][(int) (canvasWidth / tileWidth) + 1];
+
+            // fill in every grid slot with false
+            for (int i = 0; i < grid.length; i++) {
+                for (int j = 0; j < grid[i].length; j++) {
+                    grid[i][j] = false;
+                }
+            }
+        }
+
+        public void initBoard() {
+            for (Obstacle o : world.objects) {
+                grid[getXCell(o.getX())][getYCell(o.getY())] = true;
+            }
+        }
+
+        public int getXCell(float x_loc) {
+            if (x_loc < 0) return 0;
+            return (int) Math.min((int) x_loc / tileWidth, grid[0].length);
+        }
+
+        public int getYCell(float y_loc) {
+            if (y_loc < 0) return 0;
+            return (int) Math.min((int) y_loc / tileHeight, grid.length);
+        }
+    }
 }
