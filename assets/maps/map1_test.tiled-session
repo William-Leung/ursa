@@ -3,10 +3,11 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "level 1.tmx",
+    "activeFile": "map1.tmx",
     "expandedProjectPaths": [
         "."
     ],
+    "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
         "Polar_Cliff_Corner_1.tsx": {
             "scaleInDock": 0.5,
@@ -16,11 +17,48 @@
             "scaleInDock": 0.5,
             "scaleInEditor": 1
         },
-        "Polar_Cliff_Corner_6.tsx": {
+        "Polar_Cliff_Corner_3.tsx": {
+            "scaleInDock": 1
+        },
+        "Polar_Cliff_Corner_4.tsx": {
+            "scaleInDock": 1
+        },
+        "Polar_Cliff_Corner_5.tsx": {
+            "scaleInDock": 1,
             "scaleInEditor": 1
+        },
+        "Polar_Cliff_Corner_6.tsx": {
+            "scaleInDock": 0.5,
+            "scaleInEditor": 1
+        },
+        "Polar_Cliff_Corner_8.tsx": {
+            "scaleInDock": 1
+        },
+        "Polar_Cliff_Edge_1.tsx": {
+            "scaleInDock": 1
+        },
+        "Polar_Cliff_Edge_2.tsx": {
+            "scaleInDock": 1
+        },
+        "Polar_Cliff_Edge_3.tsx": {
+            "scaleInDock": 1
+        },
+        "Polar_Cliff_Edge_4.tsx": {
+            "scaleInDock": 1
+        },
+        "Polar_Cliff_Edge_5.tsx": {
+            "scaleInDock": 1
+        },
+        "Polar_Cliff_Edge_6.tsx": {
+            "scaleInDock": 1
         },
         "Polar_Cliff_center.tsx": {
             "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "Ursa.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 0.25,
             "scaleInEditor": 1
         },
         "backgroundTest.tsx": {
@@ -39,15 +77,27 @@
             }
         },
         "map1.tmx": {
-            "scale": 0.125,
-            "selectedLayer": 0,
+            "scale": 0.5,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": 1740,
-                "y": 3780
+                "x": 2360,
+                "y": 5485
             }
+        },
+        "map1.tmx#Polar_Cliff_center": {
+            "scaleInDock": 1
+        },
+        "player test.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
         },
         "polar_cliff_edge_left_side.tsx": {
             "scaleInDock": 0.5,
+            "scaleInEditor": 1
+        },
+        "polar_flower_1.tsx": {
+            "scaleInDock": 0.125,
             "scaleInEditor": 1
         },
         "polar_middle.tsx": {
@@ -57,9 +107,24 @@
         "polar_middle_small.tsx": {
             "scaleInDock": 1,
             "scaleInEditor": 1
+        },
+        "salmon_walk_2_small.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "tundra_tree_snow.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 0.5
+        },
+        "tundra_tree_snow_small.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
         }
     },
-    "last.exportedFilePath": "C:/Users/danbp/Desktop/School/Junioir year cornell/3152/ursa/assets",
+    "last.exportedFilePath": "C:/Users/video/Desktop/ursa/assets",
     "last.imagePath": "C:/Users/danbp/Desktop/School/Junioir year cornell/3152/ursa/assets/tiles",
     "map.height": 13,
     "map.lastUsedExportFilter": "JSON map files (*.tmj *.json)",
@@ -68,21 +133,27 @@
     "map.tileWidth": 512,
     "map.width": 6,
     "openFiles": [
-        "level 1.tmx",
-        "polar_middle_small.tsx",
-        "level 1.tmx"
+        "Polar_Cliff_Corner_5.tsx",
+        "player test.tsx",
+        "Ursa.tsx",
+        "tundra_tree_snow_small.tsx",
+        "polar_flower_1.tsx",
+        "map1.tmx"
     ],
     "project": "map1_test.tiled-project",
     "recentFiles": [
-        "Polar_Cliff_Corner_6.tsx",
+        "Polar_Cliff_Corner_5.tsx",
+        "player test.tsx",
+        "Ursa.tsx",
+        "tundra_tree_snow_small.tsx",
+        "polar_flower_1.tsx",
         "map1.tmx",
-        "polar_middle_small.tsx",
-        "polar_cliff_edge_left_side.tsx",
-        "Polar_Cliff_Corner_1.tsx",
+        "tundra_tree_snow.tsx",
+        "salmon_walk_2_small.tsx",
         "Polar_Cliff_Corner_2.tsx",
+        "Polar_Cliff_Corner_1.tsx",
         "Polar_Cliff_center.tsx",
-        "level 1.tmx",
-        "polar_middle.tsx"
+        "Polar_Cliff_Corner_6.tsx"
     ],
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {

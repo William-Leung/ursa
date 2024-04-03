@@ -228,11 +228,11 @@ public class UrsaModel extends CapsuleObstacle {
      * @param width		The object width in physics units
      * @param height	The object width in physics units
      */
-    public UrsaModel(JsonValue data, float width, float height) {
+    public UrsaModel(float xPos,float yPos,JsonValue data, float width, float height) {
         // The shrink factors fit the image to a tigher hitbox
 
-        super(	data.get("pos").getFloat(0) ,
-                data.get("pos").getFloat(1),
+        super(	xPos ,
+                yPos,
                 width*data.get("shrink").getFloat( 0 ),
                 height*data.get("shrink").getFloat( 1 ) );
         setDensity(data.getFloat("density", 0));
@@ -350,6 +350,7 @@ public class UrsaModel extends CapsuleObstacle {
      * @param dt	Number of seconds since last animation frame
      */
     public void update(float dt) {
+
         // Apply cooldowns
         if (isJumping()) {
             jumpCooldown = jumpLimit;
@@ -385,12 +386,12 @@ public class UrsaModel extends CapsuleObstacle {
         float scaleX;
         float effect = faceRight ? 1.0f : -1.0f;
         if(effect == 1f){
-            scaleX = 0.3f;
+            scaleX = 0.45f;
         }
         else {
-            scaleX = -.3f;
+            scaleX = -.45f;
         }
-        canvas.draw(texture, isShaded ? Color.BLUE : Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y+20,getAngle(),scaleX,0.3f);
+        canvas.draw(texture, isShaded ? Color.BLUE : Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y+20,getAngle(),scaleX,0.45f);
 
     }
 

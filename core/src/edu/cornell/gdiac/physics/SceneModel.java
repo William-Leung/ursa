@@ -64,10 +64,13 @@ public class SceneModel extends WorldController implements ContactListener {
     /** Texture asset for character avatar */
     private TextureRegion avatarTexture;
     private TextureRegion ursaTexture;
+    private float maxY;
     private TextureRegion enemyTexture;
     private TextureRegion enemyTexture2;
     private TextureRegion[] tileTextures = new TextureRegion[16];
     private FilmStrip salmonFilmStrip;
+    private float playerStartX;
+    private float playerStartY;
     private float tileY;
     private float tileX;
     private float tileWidth;
@@ -84,6 +87,7 @@ public class SceneModel extends WorldController implements ContactListener {
     private TextureRegion barrierTexture;
     /** Texture asset for the bullet */
     private TextureRegion bulletTexture;
+    private TextureRegion[] backgroundTextures = new TextureRegion[3];
 
     /** Texture asset for the bridge plank */
     private TextureRegion bridgeTexture;
@@ -167,11 +171,17 @@ public class SceneModel extends WorldController implements ContactListener {
         json = new JsonReader();
 
         jsonData = json.parse(Gdx.files.internal("level1.json"));
-        System.out.println(jsonData.get("layers").get(0).get(0));
         tileHeight = jsonData.get("layers").get(0).get(1).asFloat();
         tileWidth = jsonData.get("layers").get(0).get(7).asFloat();
+        playerStartX = jsonData.get("layers").get(1).get("objects").get(0).get(8).asFloat();
+        playerStartY = jsonData.get("layers").get(1).get("objects").get(0).get(9).asFloat();
+        maxY = (jsonData.get("layers").get(0).get("height").asFloat()) * 512f;
+        playerStartY = 1- (playerStartY/maxY);
+        playerStartX = (playerStartX/(tileWidth * 512f));
+        tileX = tileWidth * 7f;
+        tileY = tileHeight * 7f;
 
-
+        System.out.println(jsonData.get("layers").get(5).get("objects").get(0).get(8).asFloat());
 
 
 
@@ -231,6 +241,7 @@ public class SceneModel extends WorldController implements ContactListener {
 
 
 
+
         jumpSound = directory.getEntry( "platform:jump", Sound.class );
         fireSound = directory.getEntry( "platform:pew", Sound.class );
         plopSound = directory.getEntry( "platform:plop", Sound.class );
@@ -253,6 +264,7 @@ public class SceneModel extends WorldController implements ContactListener {
         tileTextures[12] = new TextureRegion(directory.getEntry("tiles:polar_edge_4",Texture.class));
         tileTextures[13] = new TextureRegion(directory.getEntry("tiles:polar_edge_5",Texture.class));
         tileTextures[14] = new TextureRegion(directory.getEntry("tiles:polar_edge_6",Texture.class));
+        backgroundTextures[0] = new TextureRegion(directory.getEntry("tiles:polar_flower_1",Texture.class));
     }
 
     /**
@@ -287,6 +299,15 @@ public class SceneModel extends WorldController implements ContactListener {
      * Lays out the game geography.
      */
     private void populateLevel() {
+        tileHeight = jsonData.get("layers").get(0).get(1).asFloat();
+        tileWidth = jsonData.get("layers").get(0).get(7).asFloat();
+        playerStartX = jsonData.get("layers").get(1).get("objects").get(0).get(8).asFloat();
+        playerStartY = jsonData.get("layers").get(1).get("objects").get(0).get(9).asFloat();
+        maxY = (jsonData.get("layers").get(0).get("height").asFloat()) * 512f;
+        playerStartY = 1- (playerStartY/maxY);
+        playerStartX = (playerStartX/(tileWidth * 512f));
+        tileX = tileWidth * 7f;
+        tileY = tileHeight * 7f;
         // Add level goal
         float dwidth  = goalTile.getRegionWidth()/scale.x;
         float dheight = goalTile.getRegionHeight()/scale.y;
@@ -319,28 +340,60 @@ public class SceneModel extends WorldController implements ContactListener {
         // Create ursa
         dwidth  = playerIdleFilm.getRegionWidth()/50;
         dheight = playerIdleFilm.getRegionHeight()/100f;
-        avatar = new UrsaModel(constants.get("ursa"), dwidth, dheight);
+        avatar = new UrsaModel(playerStartX * tileX + 5.5f,playerStartY * tileY +11.0f,constants.get("ursa"), dwidth, dheight);
         avatar.setDrawScale(scale);
 
         avatar.setTexture(playerWalkFilm);
         addObject(avatar);
-
-        //create enemy
         dwidth  = enemyTexture.getRegionWidth()/scale.x;
         dheight = enemyTexture.getRegionHeight()/scale.y;
-        enemies[0] = new Enemy(constants.get("enemy"), dwidth, dheight);
-        enemies[0].setLookDirection(1, 0);
-        enemies[0].setDrawScale(scale);
-        enemies[0].setTexture(salmonUprightWalkFilm);
-        addObject(enemies[0]);
 
-        dwidth  = enemyTexture2.getRegionWidth()/30;
-        dheight = enemyTexture2.getRegionHeight()/30;
-        enemies[1] = new Enemy(constants.get("enemy2"), dwidth, dheight);
-        enemies[1].setLookDirection(1, 0);
-        enemies[1].setDrawScale(scale);
-        enemies[1].setTexture(salmonUprightWalkFilm);
-        addObject(enemies[1]);
+        // place the enemies based on position in Tiled
+        for(int i = 0; i< jsonData.get("layers").get(3).get("objects").size;i++){
+            float x = (jsonData.get("layers").get(3).get("objects").get(i).get(9).asFloat()) / (tileWidth * 512f);
+            x = x * tileX + 5.5f;
+            float y = (maxY - jsonData.get("layers").get(3).get("objects").get(i).get(10).asFloat())/(tileHeight * 512f);
+            y = y * tileY +11.0f;
+
+            float direction = jsonData.get("layers").get(3).get("objects").get(0).get("properties").get(0).get("value").asFloat();
+            float maxX = (jsonData.get("layers").get(3).get("objects").get(0).get("properties").get(1).get("value").asFloat())/60;
+            float minX = (jsonData.get("layers").get(3).get("objects").get(0).get("properties").get(2).get("value").asFloat())/60;
+            enemies[i] = new Enemy(x,y,maxX,minX,constants.get("enemy"), dwidth, dheight);
+            enemies[i].setLookDirection(direction, 0);
+            enemies[i].setDrawScale(scale);
+            enemies[i].setTexture(salmonUprightWalkFilm);
+            addObject(enemies[i]);
+        }
+
+        //place trees in the level
+        JsonValue treejv = constants.get("trees");
+        String tname = "tree";
+
+        for(int i = 0; i < jsonData.get("layers").get(4).get("objects").size; i++){
+            float x = (jsonData.get("layers").get(4).get("objects").get(i).get(8).asFloat())/ (tileWidth * 512f);
+            x = x * tileX + 5.5f;
+            float y = (maxY - jsonData.get("layers").get(4).get("objects").get(i).get(9).asFloat())/(tileHeight * 512f);
+            y = y * tileY +11.0f;
+            Tree obj = new Tree(treejv.get(0).asFloatArray(),x,y);
+            obj.setBodyType(BodyDef.BodyType.StaticBody);
+            obj.setDensity(defaults.getFloat( "density", 0.0f ));
+            obj.setFriction(defaults.getFloat( "friction", 0.0f ));
+            obj.setRestitution(defaults.getFloat( "restitution", 0.0f ));
+            obj.setDrawScale(scale);
+            obj.setTexture(tundraTreeWithSnow);
+            obj.setName(tname+i);
+            addObject(obj);
+            trees.add(obj);
+            shadows.add(new ShadowModel(new Vector2(obj.getX(), obj.getY()), Tree.X_SCALE, Tree.Y_SCALE,
+                    obj.getTexture(), obj.getDrawOrigin(), obj.getDrawScale()));
+        }
+
+
+
+
+
+
+
 
         for (int i = 0; i < enemies.length; i++) {
             if (enemies[i] != null) {
@@ -348,23 +401,22 @@ public class SceneModel extends WorldController implements ContactListener {
             }
         }
 
-        String tname = "tree";
-        JsonValue treejv = constants.get("trees");
+
         float[] treeXCoords = new float[]{24,14, 17, 19, 27}; //
         float[] treeYCoords = new float[]{5.5f,3, 12, 6, 11}; //
         for(int ii = 0; ii < treeXCoords.length; ii++) {
-            Tree obj = new Tree(treejv.get(0).asFloatArray(),treeXCoords[ii],treeYCoords[ii]);
-            obj.setBodyType(BodyDef.BodyType.StaticBody);
-            obj.setDensity(defaults.getFloat( "density", 0.0f ));
-            obj.setFriction(defaults.getFloat( "friction", 0.0f ));
-            obj.setRestitution(defaults.getFloat( "restitution", 0.0f ));
-            obj.setDrawScale(scale);
-            obj.setTexture(tundraTreeWithSnow);
-            obj.setName(tname+ii);
-            addObject(obj);
-            trees.add(obj);
-            shadows.add(new ShadowModel(new Vector2(obj.getX(), obj.getY()), Tree.X_SCALE, Tree.Y_SCALE,
-                    obj.getTexture(), obj.getDrawOrigin(), obj.getDrawScale()));
+            //Tree obj = new Tree(treejv.get(0).asFloatArray(),treeXCoords[ii],treeYCoords[ii]);
+            //obj.setBodyType(BodyDef.BodyType.StaticBody);
+            //obj.setDensity(defaults.getFloat( "density", 0.0f ));
+            //obj.setFriction(defaults.getFloat( "friction", 0.0f ));
+            //obj.setRestitution(defaults.getFloat( "restitution", 0.0f ));
+            //obj.setDrawScale(scale);
+            //obj.setTexture(tundraTreeWithSnow);
+            //obj.setName(tname+ii);
+            //addObject(obj);
+            //trees.add(obj);
+            //shadows.add(new ShadowModel(new Vector2(obj.getX(), obj.getY()), Tree.X_SCALE, Tree.Y_SCALE,
+                  //  obj.getTexture(), obj.getDrawOrigin(), obj.getDrawScale()));
         }
 
         volume = constants.getFloat("volume", 1.0f);
@@ -394,6 +446,21 @@ public class SceneModel extends WorldController implements ContactListener {
         return true;
     }
 
+
+    private void drawExtraObjects(){
+        canvas.draw(backgroundTextures[0], Color.WHITE,0,0,1000,100,avatar.getAngle(), 0.1f,0.1f);
+        for(int i = 0; i < jsonData.get("layers").get(5).get("objects").size;i++){
+            float x = (jsonData.get("layers").get(5).get("objects").get(i).get(8).asFloat())/2;
+            System.out.println(x);
+            float y = (maxY - jsonData.get("layers").get(5).get("objects").get(i).get(9).asFloat())/1.3f;
+
+            System.out.println(y);
+            canvas.draw(backgroundTextures[0], Color.WHITE,0,0,x,y,avatar.getAngle(), 0.15f,0.15f);
+        }
+    }
+    /**
+    Draws all tiles based on the json data from Tiled
+     */
     public void drawTiles(){
         int counter = 0;
         tileX = 0;
@@ -441,28 +508,44 @@ public class SceneModel extends WorldController implements ContactListener {
                 else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 13) {
                     canvas.draw(tileTextures[13], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
                 }
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 14) {
+                    canvas.draw(tileTextures[11], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
+                }
                 counter += 1;
 
 
             }
 
+            //draw the background objects
+
+
 
         }
+
+
     }
     private void animateEnemies(){
         if(salmonWalkAnimIndex == 0 || salmonWalkAnimIndex == 21){
             salmonWalkAnimIndex = 0;
             salmonUprightWalkFilm.setFrame(0);
-            enemies[1].setTexture(salmonUprightWalkFilm);
-            enemies[0].setTexture(salmonUprightWalkFilm);
+            for (Enemy enemy:enemies) {
+                if(enemy != null){
+                    enemy.setTexture(salmonUprightWalkFilm);
+                }
+
+            }
             salmonWalkAnimIndex +=1;
 //
         }
         else {
             salmonUprightWalkFilm.setFrame(salmonWalkAnimIndex);
             salmonWalkAnimIndex +=1;
-            enemies[1].setTexture(salmonUprightWalkFilm);
-            enemies[0].setTexture(salmonUprightWalkFilm);
+            for (Enemy enemy:enemies) {
+                if(enemy != null){
+                    enemy.setTexture(salmonUprightWalkFilm);
+                }
+
+            }
         }
     }
     /*
@@ -768,8 +851,9 @@ public class SceneModel extends WorldController implements ContactListener {
     public void preDraw(float dt) {
 
 
-        canvas.draw(snowBackGround,backgroundColor,0,0, canvas.getWidth(), canvas.getHeight());
+        canvas.draw(snowBackGround,backgroundColor,0,0,tileWidth* 256, tileHeight*256);
         drawTiles();
+        drawExtraObjects();
         shadowController.drawAllShadows(canvas, this);
     }
 }
