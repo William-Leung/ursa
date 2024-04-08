@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
@@ -16,7 +17,7 @@ import edu.cornell.gdiac.physics.obstacle.CapsuleObstacle;
 
 public class UrsaModel extends CapsuleObstacle {
 
-    private static final float BLOB_SHADOW_SIZE = 0.7f;
+    private static final float BLOB_SHADOW_SIZE = 1.15f;
 
     /** The initializing data (to avoid magic numbers) */
     private final JsonValue data;
@@ -286,14 +287,15 @@ public class UrsaModel extends CapsuleObstacle {
 
         // Shadow sensor
         // -------------
-        Vector2 sensorCenter = new Vector2(0, -getHeight() / 2);
+        Vector2 sensorCenter = new Vector2(0, -getHeight());
         FixtureDef sensorDef = new FixtureDef();
         sensorDef.density = data.getFloat("density",0);
         sensorDef.isSensor = true;
         sensorShape = new PolygonShape();
         JsonValue sensorjv = data.get("sensor");
-        sensorShape.setAsBox(sensorjv.getFloat("shrink",0)*getWidth()/2.0f,
-                sensorjv.getFloat("height",0), sensorCenter, 0.0f);
+
+        float size = BLOB_SHADOW_SIZE - 0.25f;
+        sensorShape.setAsBox(size, size / 2f, sensorCenter, 0.0f);
         sensorDef.shape = sensorShape;
 
         // Ground sensor to represent our feet
@@ -376,7 +378,7 @@ public class UrsaModel extends CapsuleObstacle {
         int xcenter = blobShadow.getWidth() / 2;
         int ycenter = blobShadow.getHeight() / 2;
         canvas.draw(blobShadow, Color.BLACK,xcenter,ycenter,
-            getX()*drawScale.x,(getY() ) * drawScale.y - 10.5f ,getAngle(),BLOB_SHADOW_SIZE / drawScale.x,
+            getX()*drawScale.x,(getY() - 0.8f) * drawScale.y,getAngle(),BLOB_SHADOW_SIZE / drawScale.x,
             (BLOB_SHADOW_SIZE / 2f) / drawScale.y);
     }
 

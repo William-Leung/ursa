@@ -237,6 +237,16 @@ public class ShadowModel extends PolygonObstacle {
 
     }
 
+    @Override
+    public void preDraw(GameCanvas canvas) {
+        super.draw(canvas);
+    }
+
+    @Override
+    public void draw(GameCanvas canvas) {
+
+    }
+
 //    /**
 //     * Draws the shadow onto the given GameCanvas with the specified max skew and y-scalar
 //     * @param canvas The GameCanvas to draw to

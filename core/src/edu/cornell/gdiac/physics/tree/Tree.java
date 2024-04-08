@@ -43,7 +43,7 @@ public class Tree extends PolygonObstacle {
 		 * For some reason the origin for tree textures aren't set properly, so we just have to do it manually here.
 		 * We also need to set the origin to the base/trunk of the tree.
 		 */
-		origin.set(texture.getRegionWidth() / 2.0f, 50);
+		origin.set(texture.getRegionWidth() / 2.0f, 0);
 	}
 
 	@Override
