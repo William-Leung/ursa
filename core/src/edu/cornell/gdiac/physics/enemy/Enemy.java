@@ -23,6 +23,8 @@ import edu.cornell.gdiac.util.PooledList;
 
 public class Enemy extends BoxObstacle {
 
+
+	private static final float SIGHT_RANGE_INCREMENT = 0.35f;
 	private static final float BLOB_SHADOW_SIZE = 0.5f;
 
 	private static final int WALK_DAMPENING = 15;
@@ -117,6 +119,8 @@ public class Enemy extends BoxObstacle {
 	 * Indicates whether or not this enemy is stunned.
 	 */
 	private int stunDuration = 0;
+
+	private float detectionRange = ENEMY_DETECTION_RANGE_SIGHT;
 
 	public Enemy(float xStart,float yStart,float maxX, float minX,JsonValue data, float width, float height) {
 		// The shrink factors fit the image to a tigher hitbox
@@ -248,6 +252,12 @@ public class Enemy extends BoxObstacle {
 	@Override
 	public void update(float dt) {
 		stunDuration = Math.max(stunDuration - 1, 0);
+
+		if (isInShadow()) {
+			detectionRange = Math.min(detectionRange + SIGHT_RANGE_INCREMENT, ENEMY_DETECTION_RANGE_SHADOW);
+		} else {
+			detectionRange = Math.max(detectionRange - SIGHT_RANGE_INCREMENT, ENEMY_DETECTION_RANGE_SIGHT);
+		}
 	}
 
 	/**
@@ -306,12 +316,7 @@ public class Enemy extends BoxObstacle {
 		Vector2 dirToVector = new Vector2(player.getPosition()).sub(pos).nor();
 		float angle = lookDirection.angleDeg(dirToVector);
 		boolean possiblyVisible;
-		if(isInShadow(playerPos.x * drawScale.x)) {
-			//dst <= ENEMY_DETECTION_RANGE_NOISE || (dst <= ENEMY_DETECTION_RANGE_SIGHT && (angle <= ENEMY_DETECTION_ANGLE_SIGHT || angle >= 360 - ENEMY_DETECTION_ANGLE_SIGHT));
-			possiblyVisible = dst <= ENEMY_DETECTION_RANGE_SHADOW && (angle <= ENEMY_DETECTION_ANGLE_SIGHT || angle >= 360 - ENEMY_DETECTION_ANGLE_SIGHT);
-		} else {
-			possiblyVisible = dst <= ENEMY_DETECTION_RANGE_SIGHT && (angle <= ENEMY_DETECTION_ANGLE_SIGHT || angle >= 360 - ENEMY_DETECTION_ANGLE_SIGHT);
-		}
+		possiblyVisible = dst <= detectionRange && (angle <= ENEMY_DETECTION_ANGLE_SIGHT || angle >= 360 - ENEMY_DETECTION_ANGLE_SIGHT);
 		/** ------ */
 
 
@@ -343,10 +348,7 @@ public class Enemy extends BoxObstacle {
 		canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),
 			(lookDirection.x > 0 ? 1 : -1) * .35f,.35f);
 
-		drawSightCone(canvas, ENEMY_DETECTION_RANGE_SIGHT, lookDirection, 8);
-		if(playerInShadow) {
-			drawSightCone(canvas, ENEMY_DETECTION_RANGE_SHADOW, lookDirection, 8);
-		}
+		drawSightCone(canvas, detectionRange, lookDirection, 8);
 
 		screenWidth = canvas.getWidth();
 	}
@@ -393,12 +395,8 @@ public class Enemy extends BoxObstacle {
 		canvas.draw(polygonRegion, Color.WHITE, origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),1.0f,1.0f);
 	}
 
-	public boolean isInShadow(float x) {
-		float middleX = screenWidth / 2.0f;
-		float lineWidth = screenWidth;
-
-            playerInShadow = ShadowController.isNight() || playerInDynamicShadow;
-
+	public boolean isInShadow() {
+		playerInShadow = ShadowController.isNight() || playerInDynamicShadow;
 		return playerInShadow;
 	}
 
