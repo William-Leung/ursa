@@ -76,6 +76,11 @@ public class Enemy extends BoxObstacle {
 		 */
 		private boolean hitPlayer = false;
 
+		/**
+		 * The point at which the raycast terminates, if interrupted by something.
+		 */
+		private Vector2 rayTerm;
+
 
 		/**
 		 * Constructs a new EnemyLoSCallback object used for raycasting.
@@ -85,15 +90,25 @@ public class Enemy extends BoxObstacle {
 			this.target = target;
 		}
 
+		private Vector2 getRayTerm() {
+			return rayTerm;
+		}
+
+		private void resetRayTerm() {
+			rayTerm = null;
+		}
+
 		@Override
 		public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
 			Body body = fixture.getBody();
 
 			if (body.getType() == BodyDef.BodyType.StaticBody) { // For simplicity's sake, we're considering all static bodies to be obstacles
 				hitPlayer = false;
+				rayTerm = point;
 				return 0;
 			} else if (body.equals(target)) { // The body is not static? Might be our target. Let's check to see if it is.
 				hitPlayer = true;
+				rayTerm = point;
 				return -1;
 			}
 			return -1; // Otherwise, ignore the fixture and continue
@@ -317,8 +332,6 @@ public class Enemy extends BoxObstacle {
 		float angle = lookDirection.angleDeg(dirToVector);
 		boolean possiblyVisible;
 		possiblyVisible = dst <= detectionRange && (angle <= ENEMY_DETECTION_ANGLE_SIGHT || angle >= 360 - ENEMY_DETECTION_ANGLE_SIGHT);
-		/** ------ */
-
 
 		if (possiblyVisible) {
 			EnemyLoSCallback callback = new EnemyLoSCallback(player.getBody());
@@ -367,7 +380,9 @@ public class Enemy extends BoxObstacle {
 		vertices[0] = 0f;
 		vertices[1] = 0f;
 		float curr_angle = ENEMY_DETECTION_ANGLE_SIGHT + direction.angleDeg();
-		float angle_scale_factor =  (ENEMY_DETECTION_ANGLE_SIGHT)/ ((num_vertices - 2 ) / 2);
+		float angle_scale_factor =  (ENEMY_DETECTION_ANGLE_SIGHT)/ (
+                        (float) (num_vertices - 2) / 2);
+
 		for(int i = 2; i < vertices.length - 1; i += 2) {
 			vertices[i] = drawScale.x * range * (float) Math.cos(Math.toRadians(curr_angle));
 			vertices[i+1] = drawScale.y * range * (float) Math.sin(Math.toRadians(curr_angle));
