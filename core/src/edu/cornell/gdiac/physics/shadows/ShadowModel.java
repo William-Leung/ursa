@@ -1,21 +1,37 @@
 package edu.cornell.gdiac.physics.shadows;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.RayCastCallback;
+import com.badlogic.gdx.physics.box2d.Transform;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.math.*;
 import edu.cornell.gdiac.physics.GameCanvas;
+import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
+import edu.cornell.gdiac.physics.obstacle.PolygonObstacle;
 import edu.cornell.gdiac.physics.obstacle.SimpleObstacle;
 
 /**
  * Dynamic (currently only rectangular) shadows for the current map
  */
-public class ShadowModel {
+public class ShadowModel extends PolygonObstacle {
+
+    private static final TextureRegion SHADOW_TEXTURE;
+
+    static {
+        Pixmap redPixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        redPixmap.setColor(new Color(0, 0, 0, 0.5f));
+        redPixmap.fill();
+        Texture redTexture = new Texture(redPixmap);
+        SHADOW_TEXTURE = new TextureRegion(redTexture);
+    }
 
     /** Coordinate of the top left corner of the shadow. */
     private Vector2 top_left;
@@ -29,6 +45,10 @@ public class ShadowModel {
     private final float initial_width;
     /** The texture used to show this shadow */
     private TextureRegion texture;
+    /** The physics shape of this object */
+    private PolygonShape sensorShape;
+
+    private Vector2 sensorCenter;
 
     private float sx;
     private float sy;
@@ -92,30 +112,50 @@ public class ShadowModel {
 
     public void setDirection (Vector2 newDirec) { direction.set(newDirec); }
 
-    public ShadowModel(Vector2 top_left, Vector2 bottom_right, TextureRegion texture) {
-        this.top_left = top_left;
-        this.bottom_right = bottom_right;
-
-        this.shadow_anchor = new Vector2(bottom_right.x,
-                (top_left.y + bottom_right.y) / 2);
-
-        this.texture = texture;
-
-        this.initial_height = top_left.y - bottom_right.y;
-        this.initial_width = bottom_right.x - top_left.x;
-    }
-
     public ShadowModel(Vector2 anchor, float sx, float sy, TextureRegion texture, Vector2 textureOrigin, Vector2 drawScale) {
+        super(new float[] {
+            0, -1f,
+            -1f, -0.25f,
+            -1.5f, 0.15f,
+            0, 5f,
+            1.5f, 0.15f,
+            1f, -0.25f,
+        }, anchor.x, anchor.y);
         this.initial_height = 0;
         this.initial_width = 0;
         this.shadow_anchor = anchor;
 
         this.sx = sx;
         this.sy = sy;
-        this.drawScale.set(drawScale);
+        setDrawScale(drawScale);
+        setSensor(true);
         this.origin.set(textureOrigin);
-        this.texture = texture;
+        setTexture(SHADOW_TEXTURE);
+        setName("shadow");
     }
+
+//    @Override
+//    public void createFixtures() {
+//        // Ground Sensor
+//        // -------------
+//        // We only allow the dude to jump when he's on the ground.
+//        // Double jumping is not allowed.
+//        //
+//        // To determine whether or not the dude is on the ground,
+//        // we create a thin sensor under his feet, which reports
+//        // collisions with the world but has no collision response.
+//        sensorCenter = new Vector2(0, 3);
+//        FixtureDef sensorDef = new FixtureDef();
+//        sensorShape = new PolygonShape();
+//        sensorShape.setAsBox(1, 3, sensorCenter, 0.0f);
+//        sensorDef.shape = sensorShape;
+//
+//        // Ground sensor to represent our feet
+//        Fixture sensorFixture = body.createFixture( sensorDef );
+//        sensorFixture.setUserData("shadow");
+//        setSensor(true);
+//        setBodyType(BodyDef.BodyType.StaticBody);
+//    }
 
     /**
      * Rotates the direction of the shadow by the given degrees. These rotations are counterclockwise.
@@ -123,6 +163,8 @@ public class ShadowModel {
      */
     public void rotateDirection(float degrees) {
         direction.rotateDeg(degrees).nor();
+        Transform transform = body.getTransform();
+        body.setTransform(transform.getPosition(), transform.getRotation() + (float) Math.toRadians(degrees));
     }
 
     /**
@@ -134,10 +176,6 @@ public class ShadowModel {
         return direction;
     }
 
-    public void setTexture(TextureRegion value) {
-        this.texture = value;
-    }
-
     public void setTextureOrigin(Vector2 origin) {
         this.origin.set(origin);
     }
@@ -147,7 +185,9 @@ public class ShadowModel {
         this.sy = sy;
     }
 
+    @Override
     public void setDrawScale(Vector2 scale) {
+        super.setDrawScale(scale);
         this.drawScale.set(scale);
     }
 
@@ -197,19 +237,18 @@ public class ShadowModel {
 
     }
 
-    /**
-     * Draws the shadow onto the given GameCanvas with the specified max skew and y-scalar
-     * @param canvas The GameCanvas to draw to
-     * @param xSkew The maximum skew that this shadow can have.
-     * @param yScalar The maximum y-scaling this shadow can have.
-     */
-    public void draw(GameCanvas canvas, float xSkew, float yScalar) {
-        Affine2 affine = new Affine2()
-            .setToTranslation(shadow_anchor.x * drawScale.x, shadow_anchor.y * drawScale.y)
-            .scale(sx, sy * yScalar * direction.y)
-            .shear(xSkew * direction.x, 0);
-
-        canvas.draw(texture, new Color(0, 0, 0, 127), origin.x, origin.y, affine);
-    }
+//    /**
+//     * Draws the shadow onto the given GameCanvas with the specified max skew and y-scalar
+//     * @param canvas The GameCanvas to draw to
+//     * @param xSkew The maximum skew that this shadow can have.
+//     * @param yScalar The maximum y-scaling this shadow can have.
+//     */
+//    public void draw(GameCanvas canvas, float xSkew, float yScalar) {
+//        Affine2 affine = new Affine2()
+//            .setToTranslation(shadow_anchor.x * drawScale.x, shadow_anchor.y * drawScale.y)
+//            .scale(sx, sy * yScalar * direction.y)
+//            .shear(xSkew * direction.x, 0);
+//        canvas.draw(texture, new Color(0, 0, 0, 127), origin.x, origin.y, affine);
+//    }
 
 }

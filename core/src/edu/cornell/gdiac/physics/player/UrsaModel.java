@@ -58,6 +58,8 @@ public class UrsaModel extends CapsuleObstacle {
     /** Whether we are currently "shaded" */
     private boolean isShaded;
 
+    private boolean inShadow;
+
     /** Cache for internal force calculations */
     private final Vector2 forceCache = new Vector2();
 
@@ -148,6 +150,14 @@ public class UrsaModel extends CapsuleObstacle {
         isGrounded = value;
     }
 
+    public boolean isInShadow() {
+        return inShadow;
+    }
+
+    public void setInShadow(boolean v) {
+        inShadow = v;
+    }
+
     /**
      * Returns how much force to apply to get the dude moving
      *
@@ -231,7 +241,7 @@ public class UrsaModel extends CapsuleObstacle {
     public UrsaModel(float xPos,float yPos,JsonValue data, float width, float height) {
         // The shrink factors fit the image to a tigher hitbox
 
-        super(	xPos ,
+        super(xPos,
                 yPos,
                 width*data.get("shrink").getFloat( 0 ),
                 height*data.get("shrink").getFloat( 1 ) );
@@ -246,7 +256,7 @@ public class UrsaModel extends CapsuleObstacle {
         jump_force = data.getFloat( "jump_force", 0 );
         jumpLimit = data.getInt( "jump_cool", 0 );
         shotLimit = data.getInt( "shot_cool", 0 );
-        sensorName = "DudeGroundSensor";
+        sensorName = "shadow_sensor";
         this.data = data;
 
         // Gameplay attributes
@@ -274,14 +284,8 @@ public class UrsaModel extends CapsuleObstacle {
             return false;
         }
 
-        // Ground Sensor
+        // Shadow sensor
         // -------------
-        // We only allow the dude to jump when he's on the ground.
-        // Double jumping is not allowed.
-        //
-        // To determine whether or not the dude is on the ground,
-        // we create a thin sensor under his feet, which reports
-        // collisions with the world but has no collision response.
         Vector2 sensorCenter = new Vector2(0, -getHeight() / 2);
         FixtureDef sensorDef = new FixtureDef();
         sensorDef.density = data.getFloat("density",0);
@@ -298,7 +302,6 @@ public class UrsaModel extends CapsuleObstacle {
 
         return true;
     }
-
 
     /**
      * Applies the force to the body of this dude

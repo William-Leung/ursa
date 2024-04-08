@@ -95,6 +95,7 @@ public class SceneModel extends WorldController implements ContactListener {
     private TextureRegion shadowTexture;
     private TextureRegion tundraTree;
     private TextureRegion tundraTreeWithSnow;
+    private TextureRegion tundraTreeShadow;
     private TextureRegion backGround;
 
     /** The jump sound.  We only want to play once. */
@@ -183,13 +184,6 @@ public class SceneModel extends WorldController implements ContactListener {
 
         System.out.println(jsonData.get("layers").get(5).get("objects").get(0).get(8).asFloat());
 
-
-
-
-
-
-
-
         colors = new Color[9];
         colors[0] = new Color(0f,0f,0f,0.7f);
         colors[1] = new Color(0.486f, 0.435f, 0.467f,0.7f);
@@ -223,7 +217,9 @@ public class SceneModel extends WorldController implements ContactListener {
         shadowTexture = new TextureRegion(directory.getEntry("platform:shadow",Texture.class));
         backGround = new TextureRegion(directory.getEntry("platform:snowback",Texture.class));
         tundraTree = new TextureRegion(directory.getEntry("object:tundra_tree",Texture.class));
-        tundraTreeWithSnow = new TextureRegion(directory.getEntry("object:tundra_tree_with_snow", Texture.class));
+        tundraTreeWithSnow = new TextureRegion(directory.getEntry("object:tundra_tree_snow_small", Texture.class));
+        tundraTreeShadow = new TextureRegion(directory.getEntry("shadows:polar_tree_shadow", Texture.class));
+        tundraTreeShadow.flip(true, true);
         whiteTexture = new TextureRegion(directory.getEntry("object:white", Texture.class));
         playerWalkTextureScript = new TextureRegion(directory.getEntry("player:ursaWalk",Texture.class));
         playerWalkFilm = new FilmStrip(playerWalkTextureScript.getTexture(),2,8);
@@ -236,11 +232,6 @@ public class SceneModel extends WorldController implements ContactListener {
         salmonUprightWalkFilm = new FilmStrip(salmonUprightWalkScript.getTexture(),3,8);
         salmonUprightWalkFilm.setFrame(0);
         gatherTiles(directory);
-
-
-
-
-
 
         jumpSound = directory.getEntry( "platform:jump", Sound.class );
         fireSound = directory.getEntry( "platform:pew", Sound.class );
@@ -382,18 +373,15 @@ public class SceneModel extends WorldController implements ContactListener {
             obj.setDrawScale(scale);
             obj.setTexture(tundraTreeWithSnow);
             obj.setName(tname+i);
+
+            ShadowModel model = new ShadowModel(new Vector2(obj.getX(), obj.getY()), 0.75f, 0.75f,
+                tundraTreeShadow, new Vector2(tundraTreeShadow.getRegionWidth() / 2.0f, 85), scale);
+            shadows.add(model);
+            addObject(model);
+
             addObject(obj);
             trees.add(obj);
-            shadows.add(new ShadowModel(new Vector2(obj.getX(), obj.getY()), Tree.X_SCALE, Tree.Y_SCALE,
-                    obj.getTexture(), obj.getDrawOrigin(), obj.getDrawScale()));
         }
-
-
-
-
-
-
-
 
         for (int i = 0; i < enemies.length; i++) {
             if (enemies[i] != null) {
@@ -656,21 +644,12 @@ public class SceneModel extends WorldController implements ContactListener {
             jumpId = playSound( jumpSound, jumpId, volume );
         }
 
-
-        boolean inShadow = false;
-        for (ShadowModel shadow : shadows) {
-            if (shadow != null && shadow.isPlayerInShadow(world, avatar)) {
-                inShadow = true;
-                break;
-            }
-        }
-
         for (Enemy enemy : enemies) {
             if(enemy != null) {
                 if (enemy.isPlayerInLineOfSight(world,avatar)) {
                     enemy.getPlayerPos(avatar.getPosition());
                 }
-                enemy.setInShadow(inShadow);
+                enemy.setInShadow(avatar.isInShadow());
             }
         }
 
@@ -764,9 +743,9 @@ public class SceneModel extends WorldController implements ContactListener {
             }
 
             // See if we have landed on the ground.
-            if ((avatar.getSensorName().equals(fd2) && avatar != bd1) ||
-                    (avatar.getSensorName().equals(fd1) && avatar != bd2)) {
-                avatar.setGrounded(true);
+            if ((avatar.getSensorName().equals(fd2) && bd1.getName().equals("shadow")) ||
+                    (avatar.getSensorName().equals(fd1) && bd2.getName().equals("shadow"))) {
+                avatar.setInShadow(true);
                 sensorFixtures.add(avatar == bd1 ? fix2 : fix1); // Could have more than one ground
             }
 
@@ -798,14 +777,14 @@ public class SceneModel extends WorldController implements ContactListener {
         Object fd1 = fix1.getUserData();
         Object fd2 = fix2.getUserData();
 
-        Object bd1 = body1.getUserData();
-        Object bd2 = body2.getUserData();
+        Obstacle bd1 = (Obstacle) body1.getUserData();
+        Obstacle bd2 = (Obstacle) body2.getUserData();
 
-        if ((avatar.getSensorName().equals(fd2) && avatar != bd1) ||
-                (avatar.getSensorName().equals(fd1) && avatar != bd2)) {
+        if ((avatar.getSensorName().equals(fd2) && bd1.getName().equals("shadow")) ||
+                (avatar.getSensorName().equals(fd1) && bd2.getName().equals("shadow"))) {
             sensorFixtures.remove(avatar == bd1 ? fix2 : fix1);
             if (sensorFixtures.size == 0) {
-                avatar.setGrounded(false);
+                avatar.setInShadow(false);
             }
         }
     }

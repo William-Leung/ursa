@@ -115,7 +115,7 @@ public class ShadowController {
             return;
         }
         for (ShadowModel sh: sceneModel.getShadows()) {
-            sh.draw(canvas, xSkew, yScalar);
+            sh.draw(canvas);
         }
     }
 

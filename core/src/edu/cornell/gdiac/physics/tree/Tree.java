@@ -14,8 +14,8 @@ public class Tree extends PolygonObstacle {
 	private static final int SHAKE_COOLDOWN = 180;
 	private static final float SHAKE_STRENGTH = 0.1f;
 
-	public static final float X_SCALE = 0.15f;
-	public static final float Y_SCALE = 0.15f;
+	public static final float X_SCALE = 0.3f;
+	public static final float Y_SCALE = 0.3f;
 
 	private int shakeCooldown = 0;
 	private int shakeAnimation = 0;

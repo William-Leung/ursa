@@ -148,7 +148,7 @@ public class Enemy extends BoxObstacle {
 		redPixmap.dispose();
 		greenPixmap.dispose();
 		/** RED TEXTURE AND GREENTEXTURE ARE NOT DISPOSED*/
-		setName("ursa");
+		setName("enemy");
 	}
 
 	public void stun() {
