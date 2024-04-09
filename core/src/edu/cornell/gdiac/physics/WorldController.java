@@ -49,6 +49,8 @@ import edu.cornell.gdiac.physics.obstacle.*;
 public abstract class WorldController implements Screen {
 	/** The texture for backgrounds */
 	protected TextureRegion snowBackGround;
+	private float textX;
+	private float textY;
 	/** The texture for white (placed behind snowBackground) */
 	protected TextureRegion whiteTexture;
 	/** The texture for falling snow */
@@ -99,11 +101,11 @@ public abstract class WorldController implements Screen {
 	protected Vector2 scale;
 
 	/** Whether or not this is an active controller */
-	private boolean active;
+	public boolean active;
 	/** Whether we have completed this level */
-	private boolean complete;
+	public boolean complete;
 	/** Whether we have failed at this world (and need a reset) */
-	private boolean failed;
+	public boolean failed;
 	/** Whether or not debug mode is active */
 	private boolean debug;
 	/** Countdown active for winning or losing */
@@ -451,6 +453,11 @@ public abstract class WorldController implements Screen {
 		}
 	}
 
+	public void setTextPos(float x, float y){
+		textX = x;
+		textY = y;
+	}
+
 	/**
 	 * Draws objects to the canvas that are meant to be drawn before the main objects
 	 * are drawn.
@@ -526,6 +533,7 @@ public abstract class WorldController implements Screen {
 		if (complete && !failed) {
 			displayFont.setColor(Color.YELLOW);
 			canvas.begin(); // DO NOT SCALE
+
 			canvas.drawTextCentered("VICTORY!", displayFont, 0.0f);
 			canvas.end();
 		} else if (failed) {

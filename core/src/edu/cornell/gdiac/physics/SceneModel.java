@@ -183,7 +183,7 @@ public class SceneModel extends WorldController implements ContactListener {
         tileX = tileWidth * 7f;
         tileY = tileHeight * 7f;
 
-         System.out.println(jsonData.get("layers").get(5).get("objects").get(0).get(8).asFloat());
+
 
         colors = new Color[9];
         colors[0] = new Color(0f,0f,0f,0.7f);
@@ -312,25 +312,6 @@ public class SceneModel extends WorldController implements ContactListener {
         float dheight = goalTile.getRegionHeight()/scale.y;
 
 
-        JsonValue goal = constants.get("goal");
-        JsonValue goalpos = goal.get("pos");
-        goalDoor = new Cave(dwidth,dheight);
-        goalDoor.setBodyType(BodyDef.BodyType.StaticBody);
-        goalDoor.setDensity(goal.getFloat("density", 0));
-        goalDoor.setFriction(goal.getFloat("friction", 0));
-        goalDoor.setRestitution(goal.getFloat("restitution", 0));
-        goalDoor.setSensor(true);
-        goalDoor.setDrawScale(scale);
-        goalDoor.setTexture(polarCave);
-        goalDoor.setName("goal");
-
-        ShadowModel caveShadow = new ShadowModel(new Vector2(goalDoor.getX(), goalDoor.getY()), 0.75f, 0.75f,
-                tundraCaveShadow, new Vector2(tundraCaveShadow.getRegionWidth() / 2.0f, 85), scale);
-        shadows.add(caveShadow);
-        addObject(caveShadow);
-
-        addObject(goalDoor);
-
         // create shadow (idk if this does anything even)
         shadowController = new ShadowController();
 
@@ -356,6 +337,34 @@ public class SceneModel extends WorldController implements ContactListener {
         dheight = enemyTexture.getRegionHeight()/scale.y;
 
         // place the enemies based on position in Tiled
+        System.out.println((jsonData.get("layers").get(6)));
+        for(int i = 0; i< jsonData.get("layers").get(6).get("objects").size;i++){
+            float x = (jsonData.get("layers").get(6).get("objects").get(i).get(8).asFloat()) / (tileWidth * 512f);
+            x = x * tileX + 5.5f;
+            float y = (maxY - jsonData.get("layers").get(6).get("objects").get(i).get(9).asFloat())/(tileHeight * 512f);
+            y = y * tileY +11.0f;
+
+            JsonValue goal = constants.get("goal");
+            JsonValue goalpos = goal.get("pos");
+            goalDoor = new Cave(x,y,5,5);
+            goalDoor.setBodyType(BodyDef.BodyType.StaticBody);
+            goalDoor.setDensity(goal.getFloat("density", 0));
+            goalDoor.setFriction(goal.getFloat("friction", 0));
+            goalDoor.setRestitution(goal.getFloat("restitution", 0));
+            goalDoor.setSensor(true);
+            goalDoor.setDrawScale(scale);
+            goalDoor.setTexture(polarCave);
+            goalDoor.setName("goal");
+
+            ShadowModel caveShadow = new ShadowModel(new Vector2(goalDoor.getX(), goalDoor.getY()), 0.75f, 0.75f,
+                    tundraCaveShadow, new Vector2(tundraCaveShadow.getRegionWidth() / 2.0f, 85), scale);
+            shadows.add(caveShadow);
+            addObject(caveShadow);
+
+            addObject(goalDoor);
+
+        }
+
         for(int i = 0; i< jsonData.get("layers").get(3).get("objects").size;i++){
             float x = (jsonData.get("layers").get(3).get("objects").get(i).get(8).asFloat()) / (tileWidth * 512f);
             x = x * tileX + 5.5f;
@@ -375,7 +384,7 @@ public class SceneModel extends WorldController implements ContactListener {
         //place trees in the level
         JsonValue treejv = constants.get("trees");
         String tname = "tree";
-
+        System.out.println(jsonData.get("layers"));
         for(int i = 0; i < jsonData.get("layers").get(4).get("objects").size; i++){
             float x = (jsonData.get("layers").get(4).get("objects").get(i).get(8).asFloat())/ (tileWidth * 512f);
             x = x * tileX + 5.5f;
@@ -899,6 +908,7 @@ public class SceneModel extends WorldController implements ContactListener {
 
     }
 
+
     /**
      * The core gameplay loop of this world.
      *
@@ -923,6 +933,8 @@ public class SceneModel extends WorldController implements ContactListener {
         }
 
         canvas.moveCam(avatar.getPosition().x,avatar.getPosition().y);
+
+
         // Process actions in object model
         float xVal = InputController.getInstance().getHorizontal() *avatar.getForce();
         float yVal = InputController.getInstance().getVertical() *avatar.getForce();
@@ -1160,5 +1172,22 @@ public class SceneModel extends WorldController implements ContactListener {
         drawTiles();
         drawExtraObjects();
         shadowController.drawAllShadows(canvas, this);
+    }
+
+    @Override
+    public void draw(float dt) {
+        super.draw(dt);
+        if (complete && !failed) {
+            displayFont.setColor(Color.YELLOW);
+            canvas.begin(); // DO NOT SCALE
+            canvas.drawText("WINNER!",displayFont,avatar.getPosition().x * 31.9f, avatar.getPosition().x *31.9f);
+
+            canvas.end();
+        } else if (failed) {
+            displayFont.setColor(Color.RED);
+            canvas.begin(); // DO NOT SCALE
+            canvas.drawText("WINNER!",displayFont,avatar.getPosition().x*31.9f, avatar.getPosition().y*31.9f);
+            canvas.end();
+        }
     }
 }
