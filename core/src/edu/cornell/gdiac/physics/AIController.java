@@ -277,17 +277,17 @@ public class AIController {
                 break;
 
             case CONFUSED:
-                System.out.println("Enemy is confused");
+                //System.out.println("Enemy is confused");
                 enemy.setVX(0);
                 enemy.setVY(0);
 
                 break;
             case CHASE:
-                System.out.println("CHASE");
-                System.out.println("CHASE");
-                System.out.println("CHASE");
-                System.out.println("CHASE");
-                System.out.println("CHASE");
+//                System.out.println("CHASE");
+//                System.out.println("CHASE");
+//                System.out.println("CHASE");
+//                System.out.println("CHASE");
+//                System.out.println("CHASE");
 
                 action.x = lastDetection.x - enemy.getX();
                 action.y = lastDetection.y - enemy.getY();
@@ -302,11 +302,11 @@ public class AIController {
                 break;
 
             case ATTACK:
-                System.out.println("ATTACK");
-                System.out.println("ATTACK");
-                System.out.println("ATTACK");
-                System.out.println("ATTACK");
-                System.out.println("ATTACK");
+//                System.out.println("ATTACK");
+//                System.out.println("ATTACK");
+//                System.out.println("ATTACK");
+//                System.out.println("ATTACK");
+//                System.out.println("ATTACK");
 
                 action.x = ursa.getX() - enemy.getX();
                 action.y = ursa.getY() - enemy.getY();
@@ -319,11 +319,11 @@ public class AIController {
                 enemy.setLookDirection(action.x, action.y);
 
             case WON:
-                System.out.println("WON");
-                System.out.println("WON");
-                System.out.println("WON");
-                System.out.println("WON");
-                System.out.println("WON");
+//                System.out.println("WON");
+//                System.out.println("WON");
+//                System.out.println("WON");
+//                System.out.println("WON");
+//                System.out.println("WON");
 
 
                 enemy.setVX(0);
