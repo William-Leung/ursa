@@ -20,13 +20,14 @@
  <tileset firstgid="23" source="Polar_Cliff_Corner_6.tsx"/>
  <tileset firstgid="24" source="Polar_Cliff_Corner_8.tsx"/>
  <tileset firstgid="25" source="Polar_Cliff_Edge_6.tsx"/>
+ <tileset firstgid="26" source="polar_cliff_edge_left_side.tsx"/>
  <layer id="1" name="Tile Layer 1" width="7" height="7">
   <data encoding="csv">
 1,1,1,1,1,1,1,
 1,2,8,8,8,3,1,
-1,9,0,0,0,7,1,
 1,9,0,0,0,6,1,
-1,9,0,0,0,7,1,
+1,25,0,0,0,7,1,
+1,25,0,0,0,7,1,
 1,5,10,10,10,4,1,
 1,1,1,1,1,1,1
 </data>

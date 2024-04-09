@@ -85,8 +85,8 @@
             "scale": 0.25,
             "selectedLayer": 3,
             "viewCenter": {
-                "x": 1504,
-                "y": 4950
+                "x": 1534,
+                "y": 3322
             }
         },
         "map1.tmx#Polar_Cliff_center": {
@@ -94,15 +94,15 @@
         },
         "map2.tmx": {
             "expandedObjectLayers": [
-                3,
+                2,
                 5,
-                2
+                3
             ],
-            "scale": 0.22583705357142855,
-            "selectedLayer": 2,
+            "scale": 0.25,
+            "selectedLayer": 0,
             "viewCenter": {
-                "x": 3185.925376822338,
-                "y": 1100.3508771929826
+                "x": 1610,
+                "y": 2018
             }
         },
         "player test.tsx": {
