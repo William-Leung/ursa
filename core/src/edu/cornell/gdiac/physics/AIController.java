@@ -50,7 +50,7 @@ public class AIController {
     /** Degrees enemy can rotate per tick */
     private static final int ROTATE_SPEED = 12;
     /** Distance from goal enemy needs to get to */
-    private static final float GOAL_DIST = 30f;
+    private static final float GOAL_DIST = 2f;
     /** Distance from enemy that if player is within, they lose. */
     private static final float COLLISION_ERROR = 0f;
     /** Distance that enemy can detect a player regardless of where they are facing */
@@ -107,8 +107,8 @@ public class AIController {
         // add goal locs to player's deque
         goalLocs = new ArrayDeque<>();
 
-        goalLocs.addLast(new Vector2(100f, 100f));
-        currGoal = new Vector2(enemy.getX() - 40, enemy.getY() - 40);
+        goalLocs.addLast(new Vector2(enemy.getX(), enemy.getY()));
+        currGoal = new Vector2(enemy.getX() + 25, enemy.getY());
 
     }
 
