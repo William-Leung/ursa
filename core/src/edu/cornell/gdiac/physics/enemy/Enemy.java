@@ -405,4 +405,6 @@ public class Enemy extends BoxObstacle {
 	private int getDampening() {
 		return stunDuration > 0 ? STUN_DAMPENING : WALK_DAMPENING;
 	}
+
+	public float getMaxStun() { return STUN_DURATION; }
 }

@@ -133,14 +133,17 @@ public class SceneModel extends WorldController implements ContactListener {
     private TextureRegion playerWalkTextureScript;
     private TextureRegion playerIdleTextureScript;
     private TextureRegion salmonUprightWalkScript;
+    private TextureRegion salmonConfusedScript;
     private TextureRegion polarCave;
     private TextureRegion whiteTexture;
     private FilmStrip playerWalkFilm;
     private FilmStrip salmonUprightWalkFilm;
     private FilmStrip playerIdleFilm;
+    private FilmStrip salmonConfusedFilm;
     private int playerWalkAnimIndex = 0;
     private int playerIdleAnimIndex =0;
     private int salmonWalkAnimIndex = 0;
+    private int salmonConfusedAnimIndex = 0;
     /** Reference to the goalDoor (for collision detection) */
     private BoxObstacle goalDoor;
     /** Controller for all dynamic shadows */
@@ -234,6 +237,9 @@ public class SceneModel extends WorldController implements ContactListener {
         playerIdleFilm.setFrame(0);
         salmonUprightWalkScript = new TextureRegion(directory.getEntry("enemies:salmonUprightWalk",Texture.class));
         salmonUprightWalkFilm = new FilmStrip(salmonUprightWalkScript.getTexture(),3,8);
+        salmonUprightWalkFilm.setFrame(0);
+        salmonConfusedScript = new TextureRegion(directory.getEntry("enemies:salmonConfused",Texture.class));
+        salmonConfusedFilm = new FilmStrip(salmonConfusedScript.getTexture(),4,8);
         salmonUprightWalkFilm.setFrame(0);
         gatherTiles(directory);
 
@@ -525,28 +531,47 @@ public class SceneModel extends WorldController implements ContactListener {
 
     }
     private void animateEnemies(){
-        if(salmonWalkAnimIndex == 0 || salmonWalkAnimIndex == 21){
-            salmonWalkAnimIndex = 0;
-            salmonUprightWalkFilm.setFrame(0);
-            for (Enemy enemy:enemies) {
-                if(enemy != null){
-                    enemy.setTexture(salmonUprightWalkFilm);
-                }
 
+        for (AIController i : controls) {
+            if (i != null) {
+                if (i.isStunned() || i.isConfused()) {
+                    // animate stunned
+
+                    salmonConfusedFilm.setFrame(i.get_confused_anim_index());
+                    i.getEnemy().setTexture(salmonConfusedFilm);
+                    i.inc_anim_index();
+                } else {
+                    i.reset_anim_index();
+                    salmonUprightWalkFilm.setFrame(salmonWalkAnimIndex);
+                    i.getEnemy().setTexture(salmonUprightWalkFilm);
+                }
             }
-            salmonWalkAnimIndex +=1;
+        }
+        salmonWalkAnimIndex = (salmonWalkAnimIndex + 1) % 21;
+
+
+//        if(salmonWalkAnimIndex == 0 || salmonWalkAnimIndex == 21){
+//            salmonWalkAnimIndex = 0;
+//            salmonUprightWalkFilm.setFrame(0);
+//            for (Enemy enemy:enemies) {
+//                if(enemy != null){
+//                    enemy.setTexture(salmonUprightWalkFilm);
+//                }
 //
-        }
-        else {
-            salmonUprightWalkFilm.setFrame(salmonWalkAnimIndex);
-            salmonWalkAnimIndex +=1;
-            for (Enemy enemy:enemies) {
-                if(enemy != null){
-                    enemy.setTexture(salmonUprightWalkFilm);
-                }
-
-            }
-        }
+//            }
+//            salmonWalkAnimIndex +=1;
+////
+//        }
+//        else {
+//            salmonUprightWalkFilm.setFrame(salmonWalkAnimIndex);
+//            salmonWalkAnimIndex +=1;
+//            for (Enemy enemy:enemies) {
+//                if(enemy != null){
+//                    enemy.setTexture(salmonUprightWalkFilm);
+//                }
+//
+//            }
+//        }
     }
     /*
     Animates the player model based on the conidtions of the player
@@ -645,7 +670,6 @@ public class SceneModel extends WorldController implements ContactListener {
             Enemy thisEnemy = c.getEnemy();
             //thisEnemy.applyForce();
             thisEnemy.setAlerted(thisEnemy.isPlayerInLineOfSight(world, avatar));
-            //thisEnemy.rotateLookDirection(5f);
 
 
             if (c.isWon()) setFailure(true);
