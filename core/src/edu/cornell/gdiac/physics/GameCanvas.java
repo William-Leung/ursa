@@ -164,8 +164,8 @@ public class GameCanvas {
 	}
 
 	protected void moveCam(float x, float y){
-		camera.position.x = x * 34.7f;
-		camera.position.y = y * 28.8f;
+		camera.position.x = x * 31.9f;
+		camera.position.y = y * 31.9f;
 		camera.update();
 	}
 

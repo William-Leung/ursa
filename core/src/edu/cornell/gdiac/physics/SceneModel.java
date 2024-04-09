@@ -348,6 +348,7 @@ public class SceneModel extends WorldController implements ContactListener {
         avatar = new UrsaModel(playerStartX * tileX + 5.5f,playerStartY * tileY +11.0f,constants.get("ursa"), dwidth, dheight);
         avatar.setDrawScale(scale);
 
+
         avatar.setTexture(playerWalkFilm);
         addObject(avatar);
         dwidth  = enemyTexture.getRegionWidth()/scale.x;
