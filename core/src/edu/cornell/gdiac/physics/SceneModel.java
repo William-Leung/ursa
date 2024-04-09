@@ -182,7 +182,7 @@ public class SceneModel extends WorldController implements ContactListener {
         tileX = tileWidth * 7f;
         tileY = tileHeight * 7f;
 
-        System.out.println(jsonData.get("layers").get(5).get("objects").get(0).get(8).asFloat());
+        // System.out.println(jsonData.get("layers").get(5).get("objects").get(0).get(8).asFloat());
 
         colors = new Color[9];
         colors[0] = new Color(0f,0f,0f,0.7f);
@@ -439,10 +439,10 @@ public class SceneModel extends WorldController implements ContactListener {
         canvas.draw(backgroundTextures[0], Color.WHITE,0,0,1000,100,avatar.getAngle(), 0.1f,0.1f);
         for(int i = 0; i < jsonData.get("layers").get(5).get("objects").size;i++){
             float x = (jsonData.get("layers").get(5).get("objects").get(i).get(8).asFloat())/2;
-            System.out.println(x);
+            // System.out.println(x);
             float y = (maxY - jsonData.get("layers").get(5).get("objects").get(i).get(9).asFloat())/1.3f;
 
-            System.out.println(y);
+            // System.out.println(y);
             canvas.draw(backgroundTextures[0], Color.WHITE,0,0,x,y,avatar.getAngle(), 0.15f,0.15f);
         }
     }

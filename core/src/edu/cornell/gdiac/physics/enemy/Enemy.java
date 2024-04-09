@@ -114,6 +114,42 @@ public class Enemy extends BoxObstacle {
 			return -1; // Otherwise, ignore the fixture and continue
 		}
 	}
+
+	private static class ObstObstrctCallback implements RayCastCallback {
+
+		/**
+		 * The point at which the raycast terminates, if interrupted by something.
+		 */
+		private Vector2 rayTerm;
+
+		/**
+		 * Constructs a new EnemyLoSCallback object used for raycasting.
+		 */
+		private ObstObstrctCallback() {
+
+		}
+
+		private Vector2 getRayTerm() {
+			return rayTerm;
+		}
+
+		private void resetRayTerm() {
+			rayTerm = null;
+		}
+
+		@Override
+		public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
+			Body body = fixture.getBody();
+
+			if (body.getType() == BodyDef.BodyType.StaticBody) { // For simplicity's sake, we're considering all static bodies to be obstacles
+				rayTerm = point;
+				return 0;
+			} else {
+				return -1;
+			}
+		}
+	}
+
 	/**
 	 * The default range that the enemy can hear noise/footsteps around them
 	 */
@@ -336,14 +372,49 @@ public class Enemy extends BoxObstacle {
 		if (possiblyVisible) {
 			EnemyLoSCallback callback = new EnemyLoSCallback(player.getBody());
 			world.rayCast(callback, getPosition(), player.getPosition());
+
+			System.out.println(callback.getRayTerm());
+
 			if (callback.hitPlayer) {
 				playerCurrentInSight = true;
 				return true;
 			}
+
 		}
 		playerCurrentInSight = false;
 		return false;
 	}
+
+//	public boolean isObjectInLineOfSight(World world) {
+//		ObstObstrctCallback callback = new ObstObstrctCallback();
+//
+//		Vector2 pos = new Vector2(getPosition());
+//		float fov = 30f;
+//		int numRays = 10;
+//		float dtAng = fov / (numRays - 1);
+//		Vector2 dir = new Vector2(
+//                        (float) Math.cos(Math.toRadians(lookDirection.angleDeg())),
+//				(float) Math.sin(Math.toRadians(lookDirection.angleDeg()))).nor();
+//		float ang = -fov/2;
+//		Vector2 rayDir = dir.rotateDeg(ang);
+//		Vector2 rayPos = pos.cpy().add(rayDir.scl(40f));
+//		world.rayCast(callback, pos, rayPos);
+//		if (callback.getRayTerm() != null) {
+//			rayPos = callback.getRayTerm();
+//			callback.resetRayTerm();
+//		}
+//		Vector2 prevRay = rayPos.cpy();
+//		for (int i = 1; i < numRays; i++) {
+//			ang = -fov / 2 + dtAng * i;
+//			rayDir = dir.rotateDeg(ang);
+//			rayPos = pos.add(rayDir.scl(40f));
+//			if (callback.getRayTerm() != null) {
+//				rayPos = callback.getRayTerm();
+//				callback.resetRayTerm();
+//			}
+//
+//		}
+//	}
 
 
 	@Override
