@@ -41,7 +41,7 @@
 </data>
  </layer>
  <objectgroup id="2" name="player">
-  <object id="19" gid="15" x="2407.27" y="5680" width="142" height="154"/>
+  <object id="19" gid="15" x="2407.27" y="5680" width="142" height="142"/>
  </objectgroup>
  <group id="4" name="contants">
   <properties>
@@ -63,13 +63,7 @@
     <property name="minX" value="1259.27"/>
    </properties>
   </object>
-  <object id="48" gid="21" x="1452.82" y="5699.15" width="258" height="280.485">
-   <properties>
-    <property name="direction" value="1"/>
-    <property name="maxX" value="2571.27"/>
-    <property name="minX" value="1259.27"/>
-   </properties>
-  </object>
+  <object id="48" gid="21" x="1452.82" y="5699.15" width="258" height="280.485"/>
   <object id="49" gid="21" x="1432.58" y="5342.91" width="258" height="280.485">
    <properties>
     <property name="direction" value="1"/>

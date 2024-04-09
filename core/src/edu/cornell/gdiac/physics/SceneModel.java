@@ -25,10 +25,7 @@ import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.physics.cave.Cave;
 import edu.cornell.gdiac.physics.enemy.Enemy;
-import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
-import edu.cornell.gdiac.physics.obstacle.Obstacle;
-import edu.cornell.gdiac.physics.obstacle.PolygonObstacle;
-import edu.cornell.gdiac.physics.obstacle.WheelObstacle;
+import edu.cornell.gdiac.physics.obstacle.*;
 import edu.cornell.gdiac.physics.player.UrsaModel;
 import edu.cornell.gdiac.physics.shadows.ShadowController;
 import edu.cornell.gdiac.physics.shadows.ShadowModel;
@@ -175,7 +172,7 @@ public class SceneModel extends WorldController implements ContactListener {
         sensorFixtures = new ObjectSet<Fixture>();
         json = new JsonReader();
 
-        jsonData = json.parse(Gdx.files.internal("level1.json"));
+        jsonData = json.parse(Gdx.files.internal("level2.json"));
         tileHeight = jsonData.get("layers").get(0).get(1).asFloat();
         tileWidth = jsonData.get("layers").get(0).get(7).asFloat();
         playerStartX = jsonData.get("layers").get(1).get("objects").get(0).get(8).asFloat();
@@ -186,7 +183,7 @@ public class SceneModel extends WorldController implements ContactListener {
         tileX = tileWidth * 7f;
         tileY = tileHeight * 7f;
 
-        // System.out.println(jsonData.get("layers").get(5).get("objects").get(0).get(8).asFloat());
+         System.out.println(jsonData.get("layers").get(5).get("objects").get(0).get(8).asFloat());
 
         colors = new Color[9];
         colors[0] = new Color(0f,0f,0f,0.7f);
@@ -248,21 +245,24 @@ public class SceneModel extends WorldController implements ContactListener {
         super.gatherAssets(directory);
     }
     public void gatherTiles(AssetDirectory directory ){
+        System.out.println(jsonData.get("tilesets"));
+        for(int i = 0; i < jsonData.get("tilesets").size;i++ ){
+            System.out.println(jsonData.get("tilesets").size);
+        }
         tileTextures[0] = new TextureRegion(directory.getEntry("tiles:polar_middle",Texture.class));
         tileTextures[1] = new TextureRegion(directory.getEntry("tiles:polar_corner_1",Texture.class));
         tileTextures[2] = new TextureRegion(directory.getEntry("tiles:polar_corner_2",Texture.class));
         tileTextures[3] = new TextureRegion(directory.getEntry("tiles:polar_corner_3",Texture.class));
         tileTextures[4] = new TextureRegion(directory.getEntry("tiles:polar_corner_4",Texture.class));
-        tileTextures[5] = new TextureRegion(directory.getEntry("tiles:polar_corner_5",Texture.class));
-        tileTextures[6] = new TextureRegion(directory.getEntry("tiles:polar_corner_6",Texture.class));
-        tileTextures[7] = new TextureRegion(directory.getEntry("tiles:polar_corner_7",Texture.class));
-        tileTextures[8] = new TextureRegion(directory.getEntry("tiles:polar_corner_8",Texture.class));
+        tileTextures[5] = new TextureRegion(directory.getEntry("tiles:polar_edge_3",Texture.class));
+        tileTextures[6] = new TextureRegion(directory.getEntry("tiles:polar_edge_2",Texture.class));
+        tileTextures[7] = new TextureRegion(directory.getEntry("tiles:polar_edge_4",Texture.class));
+        tileTextures[8] = new TextureRegion(directory.getEntry("tiles:polar_edge_5",Texture.class));
         tileTextures[9] = new TextureRegion(directory.getEntry("tiles:polar_edge_1",Texture.class));
-        tileTextures[10] = new TextureRegion(directory.getEntry("tiles:polar_edge_2",Texture.class));
-        tileTextures[11] = new TextureRegion(directory.getEntry("tiles:polar_edge_3",Texture.class));
-        tileTextures[12] = new TextureRegion(directory.getEntry("tiles:polar_edge_4",Texture.class));
-        tileTextures[13] = new TextureRegion(directory.getEntry("tiles:polar_edge_5",Texture.class));
-        tileTextures[14] = new TextureRegion(directory.getEntry("tiles:polar_edge_6",Texture.class));
+        tileTextures[10] = new TextureRegion(directory.getEntry("tiles:polar_corner_5",Texture.class));
+        tileTextures[11] = new TextureRegion(directory.getEntry("tiles:polar_corner_6",Texture.class));
+        tileTextures[12] = new TextureRegion(directory.getEntry("tiles:polar_corner_8",Texture.class));
+        tileTextures[13] = new TextureRegion(directory.getEntry("tiles:polar_edge_6",Texture.class));
         backgroundTextures[0] = new TextureRegion(directory.getEntry("tiles:polar_flower_1",Texture.class));
     }
 
@@ -311,6 +311,7 @@ public class SceneModel extends WorldController implements ContactListener {
         float dwidth  = goalTile.getRegionWidth()/scale.x;
         float dheight = goalTile.getRegionHeight()/scale.y;
 
+
         JsonValue goal = constants.get("goal");
         JsonValue goalpos = goal.get("pos");
         goalDoor = new Cave(dwidth,dheight);
@@ -348,6 +349,7 @@ public class SceneModel extends WorldController implements ContactListener {
         avatar = new UrsaModel(playerStartX * tileX + 5.5f,playerStartY * tileY +11.0f,constants.get("ursa"), dwidth, dheight);
         avatar.setDrawScale(scale);
 
+
         avatar.setTexture(playerWalkFilm);
         addObject(avatar);
         dwidth  = enemyTexture.getRegionWidth()/scale.x;
@@ -355,14 +357,14 @@ public class SceneModel extends WorldController implements ContactListener {
 
         // place the enemies based on position in Tiled
         for(int i = 0; i< jsonData.get("layers").get(3).get("objects").size;i++){
-            float x = (jsonData.get("layers").get(3).get("objects").get(i).get(9).asFloat()) / (tileWidth * 512f);
+            float x = (jsonData.get("layers").get(3).get("objects").get(i).get(8).asFloat()) / (tileWidth * 512f);
             x = x * tileX + 5.5f;
-            float y = (maxY - jsonData.get("layers").get(3).get("objects").get(i).get(10).asFloat())/(tileHeight * 512f);
+            float y = (maxY - jsonData.get("layers").get(3).get("objects").get(i).get(9).asFloat())/(tileHeight * 512f);
             y = y * tileY +11.0f;
 
-            float direction = jsonData.get("layers").get(3).get("objects").get(0).get("properties").get(0).get("value").asFloat();
-            float maxX = (jsonData.get("layers").get(3).get("objects").get(0).get("properties").get(1).get("value").asFloat())/60;
-            float minX = (jsonData.get("layers").get(3).get("objects").get(0).get("properties").get(2).get("value").asFloat())/60;
+            float direction = 1;
+            float maxX = 2500/60;
+            float minX = 1250/60;
             enemies[i] = new Enemy(x,y,maxX,minX,constants.get("enemy"), dwidth, dheight);
             enemies[i].setLookDirection(direction, 0);
             enemies[i].setDrawScale(scale);
@@ -422,6 +424,7 @@ public class SceneModel extends WorldController implements ContactListener {
         }
 
         volume = constants.getFloat("volume", 1.0f);
+        drawWalls();
     }
 
     /**
@@ -465,55 +468,346 @@ public class SceneModel extends WorldController implements ContactListener {
      */
     public void drawTiles(){
         int counter = 0;
-        tileX = 0;
-        tileY = 0;
+
 
         for (int i = (int) tileHeight; i >0 ; i--) {
 
             for(int j = 0; j < tileWidth;j++){
 
+
+
                 if(jsonData.get("layers").get(0).get(0).get(counter).asInt() == 1){
+                    //tileTextures[0] = new TextureRegion(directory.getEntry("tiles:polar_middle",Texture.class));
                     canvas.draw(tileTextures[0], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
+
                 } else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 2) {
+                    //tileTextures[1] = new TextureRegion(directory.getEntry("tiles:polar_corner_1",Texture.class));
+
+
                     canvas.draw(tileTextures[1], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
                 }
                 else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 3) {
+                    //tileTextures[2] = new TextureRegion(directory.getEntry("tiles:polar_corner_2",Texture.class));
                     canvas.draw(tileTextures[2], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
                 }
                 else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 4) {
+                    //tileTextures[3] = new TextureRegion(directory.getEntry("tiles:polar_corner_3",Texture.class));
                     canvas.draw(tileTextures[3], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
                 }
                 else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 5) {
+                    //tileTextures[4] = new TextureRegion(directory.getEntry("tiles:polar_corner_4",Texture.class));
                     canvas.draw(tileTextures[4], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
                 }
                 else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 6) {
-                    canvas.draw(tileTextures[6], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
-                }
-                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 7) {
-                    canvas.draw(tileTextures[10], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
-                }
-                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 8) {
-                    canvas.draw(tileTextures[12], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
-                }
-                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 9) {
-                    canvas.draw(tileTextures[14], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
-                }
-                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 10) {
+                    //tileTextures[6] = new TextureRegion(directory.getEntry("tiles:polar_corner_6",Texture.class));
                     canvas.draw(tileTextures[5], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
                 }
-                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 11) {
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 7) {
+                    //tileTextures[10] = new TextureRegion(directory.getEntry("tiles:polar_edge_2",Texture.class));
+                    canvas.draw(tileTextures[6], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
+                }
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 8) {
+                    //tileTextures[12] = new TextureRegion(directory.getEntry("tiles:polar_edge_4",Texture.class));
+
+                    canvas.draw(tileTextures[7], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
+                }
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 9) {
+                    //tileTextures[14] = new TextureRegion(directory.getEntry("tiles:polar_edge_6",Texture.class));
+
+
                     canvas.draw(tileTextures[8], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
                 }
-                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 12) {
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 10) {
+                    //tileTextures[5] = new TextureRegion(directory.getEntry("tiles:polar_corner_5",Texture.class));
+
                     canvas.draw(tileTextures[9], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
                 }
-                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 13) {
-                    canvas.draw(tileTextures[13], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 22) {
+                    //tileTextures[8] = new TextureRegion(directory.getEntry("tiles:polar_corner_8",Texture.class));
+
+                    canvas.draw(tileTextures[10], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
                 }
-                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 14) {
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 23) {
+                    //tileTextures[9] = new TextureRegion(directory.getEntry("tiles:polar_edge_1",Texture.class));
+
                     canvas.draw(tileTextures[11], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
                 }
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 24) {
+                    //tileTextures[13] = new TextureRegion(directory.getEntry("tiles:polar_edge_5",Texture.class));
+
+                    canvas.draw(tileTextures[12], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
+                }
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 25) {
+                    //tileTextures[11] = new TextureRegion(directory.getEntry("tiles:polar_edge_3",Texture.class));
+
+                    canvas.draw(tileTextures[13], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
+                }
                 counter += 1;
+
+
+
+            }
+
+            //draw the background objects
+
+
+
+        }
+
+
+    }
+    public void drawWalls(){
+        int counter = 0;
+        InvivisbleWall wall;
+        for (int i = (int) tileHeight; i >0 ; i--) {
+
+            for(int j = 0; j < tileWidth;j++){
+
+
+
+                if(jsonData.get("layers").get(0).get(0).get(counter).asInt() == 1){
+                    //tileTextures[0] = new TextureRegion(directory.getEntry("tiles:polar_middle",Texture.class));
+
+
+                } else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 2) {
+                    //tileTextures[1] = new TextureRegion(directory.getEntry("tiles:polar_corner_1",Texture.class));
+                    wall = new InvivisbleWall(4 + (j* 8),0+(i*8),3f,.3f);
+                    wall.setDensity(0);
+                    wall.setFriction(0);
+                    wall.setRestitution(0);
+                    wall.setDrawScale(scale);
+                    wall.setName("invis wall " + (i + j));
+                    addObject(wall);
+                    wall = new InvivisbleWall(5.5f + (j* 8),1+(i*8),.3f,2f);
+                    wall.setDensity(0);
+                    wall.setFriction(0);
+                    wall.setRestitution(0);
+                    wall.setDrawScale(scale);
+                    wall.setName("invis wall " + (i + j));
+                    addObject(wall);
+                    wall = new InvivisbleWall(6.5f + (j* 8),2.8f+(i*8),2.5f,.3f);
+                    wall.setDensity(0);
+                    wall.setFriction(0);
+                    wall.setRestitution(0);
+                    wall.setDrawScale(scale);
+                    wall.setName("invis wall " + (i + j));
+                    addObject(wall);
+
+
+
+
+                }
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 3) {
+                    //tileTextures[2] = new TextureRegion(directory.getEntry("tiles:polar_corner_2",Texture.class));
+                    wall = new InvivisbleWall( 1.3f + (j* 8),2.8f+(i*8),3f,.3f);
+                    wall.setDensity(0);
+                    wall.setFriction(0);
+                    wall.setRestitution(0);
+                    wall.setDrawScale(scale);
+                    wall.setName("invis wall " + (i + j));
+                    addObject(wall);
+                    wall = new InvivisbleWall(3f + (j* 8),1.4f+(i*8),.3f,2.8f);
+                    wall.setDensity(0);
+                    wall.setFriction(0);
+                    wall.setRestitution(0);
+                    wall.setDrawScale(scale);
+                    wall.setName("invis wall " + (i + j));
+                    addObject(wall);
+
+                }
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 4) {
+                    //tileTextures[3] = new TextureRegion(directory.getEntry("tiles:polar_corner_3",Texture.class));
+                    wall = new InvivisbleWall( 1.3f + (j* 8),5.5f+(i*8),3f,.3f);
+                    wall.setDensity(0);
+                    wall.setFriction(0);
+                    wall.setRestitution(0);
+                    wall.setDrawScale(scale);
+                    wall.setName("invis wall " + (i + j));
+                    addObject(wall);
+                    wall = new InvivisbleWall(2.5f + (j* 8),6.8f+(i*8),.3f,2.3f);
+                    wall.setDensity(0);
+                    wall.setFriction(0);
+                    wall.setRestitution(0);
+                    wall.setDrawScale(scale);
+                    wall.setName("invis wall " + (i + j));
+                    addObject(wall);
+
+                }
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 5) {
+                    //tileTextures[4] = new TextureRegion(directory.getEntry("tiles:polar_corner_4",Texture.class));
+                    wall = new InvivisbleWall( 7.5f + (j* 8),05.5f+(i*8),3f,.3f);
+                    wall.setDensity(0);
+                    wall.setFriction(0);
+                    wall.setRestitution(0);
+                    wall.setDrawScale(scale);
+                    wall.setName("invis wall " + (i + j));
+                    addObject(wall);
+                    wall = new InvivisbleWall(5.5f + (j* 8),6.8f+(i*8),.3f,2.3f);
+                    wall.setDensity(0);
+                    wall.setFriction(0);
+                    wall.setRestitution(0);
+                    wall.setDrawScale(scale);
+                    wall.setName("invis wall " + (i + j));
+                    addObject(wall);
+
+                }
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 6) {
+                    //tileTextures[6] = new TextureRegion(directory.getEntry("tiles:polar_corner_6",Texture.class));
+                    wall = new InvivisbleWall(3f + (j* 8),4f+(i*8),.3f,8f);
+                    wall.setDensity(0);
+                    wall.setFriction(0);
+                    wall.setRestitution(0);
+                    wall.setDrawScale(scale);
+                    wall.setName("invis wall " + (i + j));
+                    addObject(wall);
+
+                }
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 7) {
+                    //tileTextures[10] = new TextureRegion(directory.getEntry("tiles:polar_edge_2",Texture.class));
+                    wall = new InvivisbleWall(2.8f + (j* 8),.8f+(i*8),.3f,1.5f);
+                    wall.setDensity(0);
+                    wall.setFriction(0);
+                    wall.setRestitution(0);
+                    wall.setDrawScale(scale);
+                    wall.setName("invis wall " + (i + j));
+                    addObject(wall);
+                    wall = new InvivisbleWall(2.5f + (j* 8),7f+(i*8),.3f,2f);
+                    wall.setDensity(0);
+                    wall.setFriction(0);
+                    wall.setRestitution(0);
+                    wall.setDrawScale(scale);
+                    wall.setName("invis wall " + (i + j));
+                    addObject(wall);
+                    wall = new InvivisbleWall(3.7f + (j* 8),3.7f+(i*8),.3f,4f);
+                    wall.setDensity(0);
+                    wall.setFriction(0);
+                    wall.setRestitution(0);
+                    wall.setDrawScale(scale);
+                    wall.setName("invis wall " + (i + j));
+                    addObject(wall);
+
+                }
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 8) {
+                    //tileTextures[12] = new TextureRegion(directory.getEntry("tiles:polar_edge_4",Texture.class));
+                    wall = new InvivisbleWall( 3.9f + (j* 8),2.8f+(i*8),8f,.3f);
+                    wall.setDensity(0);
+                    wall.setFriction(0);
+                    wall.setRestitution(0);
+                    wall.setDrawScale(scale);
+                    wall.setName("invis wall " + (i + j));
+                    addObject(wall);
+
+                }
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 9) {
+                    //tileTextures[14] = new TextureRegion(directory.getEntry("tiles:polar_edge_6",Texture.class));
+                    wall = new InvivisbleWall( 4.9f + (j* 8),6.8f+(i*8),.3f,2.5f);
+                    wall.setDensity(0);
+                    wall.setFriction(0);
+                    wall.setRestitution(0);
+                    wall.setDrawScale(scale);
+                    wall.setName("invis wall " + (i + j));
+                    addObject(wall);
+                    wall = new InvivisbleWall( 3.9f + (j* 8),3.8f+(i*8),.3f,2.5f);
+                    wall.setDensity(0);
+                    wall.setFriction(0);
+                    wall.setRestitution(0);
+                    wall.setDrawScale(scale);
+                    wall.setName("invis wall " + (i + j));
+                    addObject(wall);
+                    wall = new InvivisbleWall( 5.3f + (j* 8),1.1f+(i*8),.3f,2.0f);
+                    wall.setDensity(0);
+                    wall.setFriction(0);
+                    wall.setRestitution(0);
+                    wall.setDrawScale(scale);
+                    wall.setName("invis wall " + (i + j));
+                    addObject(wall);
+
+                }
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 10) {
+                    //tileTextures[5] = new TextureRegion(directory.getEntry("tiles:polar_corner_5",Texture.class));
+                    wall = new InvivisbleWall( 4f + (j* 8),5f+(i*8),8f,.3f);
+                    wall.setDensity(0);
+                    wall.setFriction(0);
+                    wall.setRestitution(0);
+                    wall.setDrawScale(scale);
+                    wall.setName("invis wall " + (i + j));
+                    addObject(wall);
+
+                }
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 22) {
+                    //tileTextures[8] = new TextureRegion(directory.getEntry("tiles:polar_corner_8",Texture.class));
+                    wall = new InvivisbleWall( 6.2f +  (j* 8),4.7f+(i*8),3.5f,.3f);
+                    wall.setDensity(0);
+                    wall.setFriction(0);
+                    wall.setRestitution(0);
+                    wall.setDrawScale(scale);
+                    wall.setName("invis wall " + (i + j));
+                    addObject(wall);
+                    wall = new InvivisbleWall(3f + (j* 8),1.3f+(i*8),.3f,2.3f);
+                    wall.setDensity(0);
+                    wall.setFriction(0);
+                    wall.setRestitution(0);
+                    wall.setDrawScale(scale);
+                    wall.setName("invis wall " + (i + j));
+                    addObject(wall);
+                    wall = new InvivisbleWall(3.8f + (j* 8),3.3f+(i*8),.3f,1.3f);
+                    wall.setDensity(0);
+                    wall.setFriction(0);
+                    wall.setRestitution(0);
+                    wall.setDrawScale(scale);
+                    wall.setName("invis wall " + (i + j));
+                    addObject(wall);
+
+                }
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 23) {
+                    //tileTextures[9] = new TextureRegion(directory.getEntry("tiles:polar_edge_1",Texture.class));
+                    wall = new InvivisbleWall( 5.8f +  (j* 8),3.3f+(i*8),4f,.3f);
+                    wall.setDensity(0);
+                    wall.setFriction(0);
+                    wall.setRestitution(0);
+                    wall.setDrawScale(scale);
+                    wall.setName("invis wall " + (i + j));
+                    addObject(wall);
+                    wall = new InvivisbleWall(3f + (j* 8),6.3f+(i*8),.3f,4.3f);
+                    wall.setDensity(0);
+                    wall.setFriction(0);
+                    wall.setRestitution(0);
+                    wall.setDrawScale(scale);
+                    wall.setName("invis wall " + (i + j));
+                    addObject(wall);
+
+                }
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 24) {
+                    //tileTextures[13] = new TextureRegion(directory.getEntry("tiles:polar_edge_5",Texture.class));
+                    wall = new InvivisbleWall( 2.3f +  (j* 8),4.7f+(i*8),4.5f,.3f);
+                    wall.setDensity(0);
+                    wall.setFriction(0);
+                    wall.setRestitution(0);
+                    wall.setDrawScale(scale);
+                    wall.setName("invis wall " + (i + j));
+                    addObject(wall);
+                    wall = new InvivisbleWall(5.2f + (j* 8),2.5f+(i*8),.3f,4.3f);
+                    wall.setDensity(0);
+                    wall.setFriction(0);
+                    wall.setRestitution(0);
+                    wall.setDrawScale(scale);
+                    wall.setName("invis wall " + (i + j));
+                    addObject(wall);
+
+                }
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 25) {
+                    //tileTextures[11] = new TextureRegion(directory.getEntry("tiles:polar_edge_3",Texture.class));
+                    wall = new InvivisbleWall(5.2f + (j* 8),4f+(i*8),.3f,8f);
+                    wall.setDensity(0);
+                    wall.setFriction(0);
+                    wall.setRestitution(0);
+                    wall.setDrawScale(scale);
+                    wall.setName("invis wall " + (i + j));
+                    addObject(wall);
+
+                }
+                counter += 1;
+
 
 
             }
