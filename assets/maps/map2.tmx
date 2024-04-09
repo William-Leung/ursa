@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="7" height="7" tilewidth="512" tileheight="512" infinite="0" nextlayerid="7" nextobjectid="18">
+ <editorsettings>
+  <export target="../level2.json" format="json"/>
+ </editorsettings>
+ <tileset firstgid="1" source="Polar_Cliff_center.tsx"/>
+ <tileset firstgid="2" source="Polar_Cliff_Corner_1.tsx"/>
+ <tileset firstgid="3" source="Polar_Cliff_Corner_2.tsx"/>
+ <tileset firstgid="4" source="Polar_Cliff_Corner_3.tsx"/>
+ <tileset firstgid="5" source="Polar_Cliff_Corner_4.tsx"/>
+ <tileset firstgid="6" source="Polar_Cliff_Edge_3.tsx"/>
+ <tileset firstgid="7" source="Polar_Cliff_Edge_2.tsx"/>
+ <tileset firstgid="8" source="Polar_Cliff_Edge_4.tsx"/>
+ <tileset firstgid="9" source="Polar_Cliff_Edge_5.tsx"/>
+ <tileset firstgid="10" source="Polar_Cliff_Edge_1.tsx"/>
+ <tileset firstgid="11" source="Ursa.tsx"/>
+ <tileset firstgid="17" source="tundra_tree_snow_small.tsx"/>
+ <tileset firstgid="18" source="salmon_walk_2_small.tsx"/>
+ <tileset firstgid="22" source="Polar_Cliff_Corner_5.tsx"/>
+ <tileset firstgid="23" source="Polar_Cliff_Corner_6.tsx"/>
+ <tileset firstgid="24" source="Polar_Cliff_Corner_8.tsx"/>
+ <tileset firstgid="25" source="Polar_Cliff_Edge_6.tsx"/>
+ <layer id="1" name="Tile Layer 1" width="7" height="7">
+  <data encoding="csv">
+1,1,1,1,1,1,1,
+1,2,8,8,8,3,1,
+1,9,0,0,0,7,1,
+1,9,0,0,0,6,1,
+1,9,0,0,0,7,1,
+1,5,10,10,10,4,1,
+1,1,1,1,1,1,1
+</data>
+ </layer>
+ <objectgroup id="2" name="player">
+  <object id="1" gid="11" x="966.12" y="2713.52" width="200" height="200"/>
+ </objectgroup>
+ <group id="4" name="constants"/>
+ <objectgroup id="3" name="enemies">
+  <object id="15" gid="18" x="873.133" y="1548.97" width="512" height="512"/>
+ </objectgroup>
+ <objectgroup id="5" name="trees">
+  <object id="2" gid="17" x="762.433" y="2053.76" width="512" height="512"/>
+  <object id="3" gid="17" x="886.417" y="2044.9" width="512" height="512"/>
+  <object id="4" gid="17" x="988.26" y="2044.9" width="512" height="512"/>
+  <object id="5" gid="17" x="1107.82" y="2040.47" width="512" height="512"/>
+  <object id="6" gid="17" x="1209.66" y="2044.9" width="512" height="512"/>
+  <object id="7" gid="17" x="1320.36" y="2044.9" width="512" height="512"/>
+  <object id="8" gid="17" x="1475.34" y="2036.04" width="512" height="512"/>
+  <object id="9" gid="17" x="1904.85" y="2044.9" width="512" height="512"/>
+  <object id="10" gid="17" x="1993.41" y="2044.9" width="512" height="512"/>
+  <object id="11" gid="17" x="2148.39" y="2058.18" width="512" height="512"/>
+  <object id="12" gid="17" x="2259.09" y="2058.18" width="512" height="512"/>
+  <object id="13" gid="17" x="2343.22" y="2049.33" width="512" height="512"/>
+  <object id="14" gid="17" x="2436.21" y="2049.33" width="512" height="512"/>
+ </objectgroup>
+ <objectgroup id="6" name="objects"/>
+</map>

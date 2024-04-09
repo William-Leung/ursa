@@ -175,7 +175,7 @@ public class SceneModel extends WorldController implements ContactListener {
         sensorFixtures = new ObjectSet<Fixture>();
         json = new JsonReader();
 
-        jsonData = json.parse(Gdx.files.internal("level1.json"));
+        jsonData = json.parse(Gdx.files.internal("level2.json"));
         tileHeight = jsonData.get("layers").get(0).get(1).asFloat();
         tileWidth = jsonData.get("layers").get(0).get(7).asFloat();
         playerStartX = jsonData.get("layers").get(1).get("objects").get(0).get(8).asFloat();
@@ -248,21 +248,24 @@ public class SceneModel extends WorldController implements ContactListener {
         super.gatherAssets(directory);
     }
     public void gatherTiles(AssetDirectory directory ){
+        System.out.println(jsonData.get("tilesets"));
+        for(int i = 0; i < jsonData.get("tilesets").size;i++ ){
+            System.out.println(jsonData.get("tilesets").size);
+        }
         tileTextures[0] = new TextureRegion(directory.getEntry("tiles:polar_middle",Texture.class));
         tileTextures[1] = new TextureRegion(directory.getEntry("tiles:polar_corner_1",Texture.class));
         tileTextures[2] = new TextureRegion(directory.getEntry("tiles:polar_corner_2",Texture.class));
         tileTextures[3] = new TextureRegion(directory.getEntry("tiles:polar_corner_3",Texture.class));
         tileTextures[4] = new TextureRegion(directory.getEntry("tiles:polar_corner_4",Texture.class));
-        tileTextures[5] = new TextureRegion(directory.getEntry("tiles:polar_corner_5",Texture.class));
-        tileTextures[6] = new TextureRegion(directory.getEntry("tiles:polar_corner_6",Texture.class));
-        tileTextures[7] = new TextureRegion(directory.getEntry("tiles:polar_corner_7",Texture.class));
-        tileTextures[8] = new TextureRegion(directory.getEntry("tiles:polar_corner_8",Texture.class));
+        tileTextures[5] = new TextureRegion(directory.getEntry("tiles:polar_edge_3",Texture.class));
+        tileTextures[6] = new TextureRegion(directory.getEntry("tiles:polar_edge_2",Texture.class));
+        tileTextures[7] = new TextureRegion(directory.getEntry("tiles:polar_edge_4",Texture.class));
+        tileTextures[8] = new TextureRegion(directory.getEntry("tiles:polar_edge_5",Texture.class));
         tileTextures[9] = new TextureRegion(directory.getEntry("tiles:polar_edge_1",Texture.class));
-        tileTextures[10] = new TextureRegion(directory.getEntry("tiles:polar_edge_2",Texture.class));
-        tileTextures[11] = new TextureRegion(directory.getEntry("tiles:polar_edge_3",Texture.class));
-        tileTextures[12] = new TextureRegion(directory.getEntry("tiles:polar_edge_4",Texture.class));
-        tileTextures[13] = new TextureRegion(directory.getEntry("tiles:polar_edge_5",Texture.class));
-        tileTextures[14] = new TextureRegion(directory.getEntry("tiles:polar_edge_6",Texture.class));
+        tileTextures[10] = new TextureRegion(directory.getEntry("tiles:polar_corner_5",Texture.class));
+        tileTextures[11] = new TextureRegion(directory.getEntry("tiles:polar_corner_6",Texture.class));
+        tileTextures[12] = new TextureRegion(directory.getEntry("tiles:polar_corner_8",Texture.class));
+        tileTextures[13] = new TextureRegion(directory.getEntry("tiles:polar_edge_6",Texture.class));
         backgroundTextures[0] = new TextureRegion(directory.getEntry("tiles:polar_flower_1",Texture.class));
     }
 
@@ -355,15 +358,17 @@ public class SceneModel extends WorldController implements ContactListener {
         dheight = enemyTexture.getRegionHeight()/scale.y;
 
         // place the enemies based on position in Tiled
+        System.out.println(jsonData.get("layers").get(3));
         for(int i = 0; i< jsonData.get("layers").get(3).get("objects").size;i++){
-            float x = (jsonData.get("layers").get(3).get("objects").get(i).get(9).asFloat()) / (tileWidth * 512f);
+            float x = (jsonData.get("layers").get(3).get("objects").get(i).get(8).asFloat()) / (tileWidth * 512f);
             x = x * tileX + 5.5f;
-            float y = (maxY - jsonData.get("layers").get(3).get("objects").get(i).get(10).asFloat())/(tileHeight * 512f);
+            System.out.println(jsonData.get("layers").get(3).get("objects").get(i));
+            float y = (maxY - jsonData.get("layers").get(3).get("objects").get(i).get(9).asFloat())/(tileHeight * 512f);
             y = y * tileY +11.0f;
 
-            float direction = jsonData.get("layers").get(3).get("objects").get(0).get("properties").get(0).get("value").asFloat();
-            float maxX = (jsonData.get("layers").get(3).get("objects").get(0).get("properties").get(1).get("value").asFloat())/60;
-            float minX = (jsonData.get("layers").get(3).get("objects").get(0).get("properties").get(2).get("value").asFloat())/60;
+            float direction = 1;
+            float maxX = 2500/60;
+            float minX = 1250/60;
             enemies[i] = new Enemy(x,y,maxX,minX,constants.get("enemy"), dwidth, dheight);
             enemies[i].setLookDirection(direction, 0);
             enemies[i].setDrawScale(scale);
@@ -474,45 +479,59 @@ public class SceneModel extends WorldController implements ContactListener {
             for(int j = 0; j < tileWidth;j++){
 
                 if(jsonData.get("layers").get(0).get(0).get(counter).asInt() == 1){
+                    //tileTextures[0] = new TextureRegion(directory.getEntry("tiles:polar_middle",Texture.class));
                     canvas.draw(tileTextures[0], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
                 } else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 2) {
+                    //tileTextures[1] = new TextureRegion(directory.getEntry("tiles:polar_corner_1",Texture.class));
                     canvas.draw(tileTextures[1], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
                 }
                 else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 3) {
+                    //tileTextures[2] = new TextureRegion(directory.getEntry("tiles:polar_corner_2",Texture.class));
                     canvas.draw(tileTextures[2], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
                 }
                 else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 4) {
+                    //tileTextures[3] = new TextureRegion(directory.getEntry("tiles:polar_corner_3",Texture.class));
                     canvas.draw(tileTextures[3], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
                 }
                 else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 5) {
+                    //tileTextures[4] = new TextureRegion(directory.getEntry("tiles:polar_corner_4",Texture.class));
                     canvas.draw(tileTextures[4], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
                 }
                 else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 6) {
-                    canvas.draw(tileTextures[6], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
-                }
-                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 7) {
-                    canvas.draw(tileTextures[10], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
-                }
-                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 8) {
-                    canvas.draw(tileTextures[12], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
-                }
-                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 9) {
-                    canvas.draw(tileTextures[14], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
-                }
-                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 10) {
+                    //tileTextures[6] = new TextureRegion(directory.getEntry("tiles:polar_corner_6",Texture.class));
                     canvas.draw(tileTextures[5], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
                 }
-                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 11) {
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 7) {
+                    //tileTextures[10] = new TextureRegion(directory.getEntry("tiles:polar_edge_2",Texture.class));
+                    canvas.draw(tileTextures[6], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
+                }
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 8) {
+                    //tileTextures[12] = new TextureRegion(directory.getEntry("tiles:polar_edge_4",Texture.class));
+                    canvas.draw(tileTextures[7], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
+                }
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 9) {
+                    //tileTextures[14] = new TextureRegion(directory.getEntry("tiles:polar_edge_6",Texture.class));
                     canvas.draw(tileTextures[8], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
                 }
-                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 12) {
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 10) {
+                    //tileTextures[5] = new TextureRegion(directory.getEntry("tiles:polar_corner_5",Texture.class));
                     canvas.draw(tileTextures[9], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
                 }
-                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 13) {
-                    canvas.draw(tileTextures[13], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 22) {
+                    //tileTextures[8] = new TextureRegion(directory.getEntry("tiles:polar_corner_8",Texture.class));
+                    canvas.draw(tileTextures[10], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
                 }
-                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 14) {
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 23) {
+                    //tileTextures[9] = new TextureRegion(directory.getEntry("tiles:polar_edge_1",Texture.class));
                     canvas.draw(tileTextures[11], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
+                }
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 24) {
+                    //tileTextures[13] = new TextureRegion(directory.getEntry("tiles:polar_edge_5",Texture.class));
+                    canvas.draw(tileTextures[12], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
+                }
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 25) {
+                    //tileTextures[11] = new TextureRegion(directory.getEntry("tiles:polar_edge_3",Texture.class));
+                    canvas.draw(tileTextures[13], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
                 }
                 counter += 1;
 
