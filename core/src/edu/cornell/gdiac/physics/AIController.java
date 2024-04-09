@@ -18,6 +18,8 @@ public class AIController {
         SPAWN,
         /** The enemy is patrolling around without a target */
         WANDER,
+        /** The enemy is looking around */
+        LOOKING,
         /** Enemy has seen/heard something but hasn't been triggered yet. */
         CONFUSED,
         /** Enemy is chasing the player */
@@ -36,11 +38,13 @@ public class AIController {
     /** Time when enemy spawns where they cannot do anything */
     private static final int SPAWN_TICKS = 30;
     /** Time in range before changing confused to attack */
-    private static final int CONFUSE_TIME = 20;
+    private static final int CONFUSE_TIME = 32;
     /** ticks enemy will stay engaged in if chasing but not in cone */
     private static final int CHASE_MEMORY = 40;
     /** Amount of uninterrupted time player can spend in cone before losing */
-    private static final int LIFE_TIME = 120;
+    private static final int LIFE_TIME = 500;
+    /** Maximum amount of time enemy can spend looking around in one time */
+    private static final float MAX_LOOKING = 200;
 
 
     /** Degrees enemy can rotate per tick */
@@ -50,7 +54,9 @@ public class AIController {
     /** Distance from enemy that if player is within, they lose. */
     private static final float COLLISION_ERROR = 0f;
     /** Distance that enemy can detect a player regardless of where they are facing */
-    private static final float ENEMY_RADIUS = 0f;
+    private static final float ENEMY_RADIUS = 2f;
+    /** Distance that if chasing the player, the enemy will still attack them */
+    private static final float CHASE_RADIUS = 2f;
 
     // Instance Attributes
     /** The enemy being controlled by this AIController */
@@ -63,11 +69,15 @@ public class AIController {
     private long ticks;
     /** Determines whether this enemy has won and caught Ursa */
     private boolean hasWon = false;
+    /** Vector representing this enemy's next move */
+    private Vector2 action = new Vector2();
 
     /** Ticks spent confused */
     private int ticks_confused = 0;
     /** Ticks ursa has spent in the cone */
     private int ticks_attacked = 0;
+    /** Ticks this enemy has spent looking around */
+    private int ticks_looking = 0;
     /** Last location where this enemy detected the player */
     private Vector2 lastDetection = null;
     /** Last time ursa was detected */
@@ -77,6 +87,8 @@ public class AIController {
 
     /** The goal angle to face, used to prevent cone snapping */
     private float goalAngle = 0;
+    /** Whether the enemy is currently looking around randomly */
+    private boolean isLooking = false;
     /** The list of patrol tiles this enemy will visit if wandering */
     private ArrayDeque<Vector2> goalLocs;
     /** Current goal for the enemy */
@@ -125,7 +137,7 @@ public class AIController {
                         last_time_detected = ticks;
                         ticks_confused = 1;
                     } else {
-                        state = FSMState.WANDER;
+                        state = FSMState.LOOKING;
                     }
                 }
 
@@ -152,11 +164,24 @@ public class AIController {
 
                 break;
 
+            case LOOKING:
+
+                ticks_looking++;
+
+                if (isDetected()) {
+                    state = FSMState.CHASE;
+                    ticks_looking = 0;
+                } else if (ticks_looking >= MAX_LOOKING || Math.random() * ticks_looking > MAX_LOOKING / 3) {
+                    state = FSMState.WANDER;
+                }
+
+                break;
+
             case CONFUSED:
 
                 if (ticks_confused == 0) {
-                    state = FSMState.WANDER;
-                } else if (ticks_confused >= CONFUSE_TIME) {
+                    state = FSMState.LOOKING;
+                } else if (ticks_confused >= CONFUSE_TIME && isDetected()) {
                     state = FSMState.CHASE;
                 } else if (isDetected()) {
                     ticks_confused++;
@@ -183,9 +208,12 @@ public class AIController {
                     lastDetection.y = ursa.getY();
                     if (enemy.isAlerted()) {
                         state = FSMState.ATTACK;
+                        ticks_attacked = 1;
                     } else {
                         state = FSMState.CHASE;
                     }
+                } else if (checkRange(CHASE_RADIUS)){
+                    state = FSMState.CHASE;
                 } else {
                     if (ticks - last_time_detected >= CHASE_MEMORY) {
                         state = FSMState.CONFUSED;
@@ -199,11 +227,9 @@ public class AIController {
                 break;
 
             case ATTACK:
-                if (ticks_attacked >= LIFE_TIME /*|| checkRange(null)*/) {
+                if (ticks_attacked >= LIFE_TIME || checkRange(null)) {
                     state = FSMState.WON;
-                } else if (ticks_attacked == 0) {
-                    state = FSMState.CHASE;
-                } else if (enemy.isAlerted()) {
+                } else if (enemy.isAlerted() || checkRange(ENEMY_RADIUS)) {
                     last_time_detected = ticks;
                     lastDetection.x = ursa.getX();
                     lastDetection.y = ursa.getY();
@@ -211,7 +237,7 @@ public class AIController {
                     state = FSMState.ATTACK;
                 } else {
                     ticks_attacked--;
-                    state = FSMState.ATTACK;
+                    state = FSMState.CHASE;
                 }
 
                 if (enemy.isStunned()) {
@@ -242,12 +268,13 @@ public class AIController {
     public void getAction() {
         ticks++;
 
-        Vector2 action = new Vector2();
-
         changeStateIfApplicable();
         System.out.println(state.toString());
 
-        //if (checkRange()) return;
+        // update stunned
+        if (state == FSMState.STUNNED) {
+            enemy.setStunned(true);
+        } else enemy.setStunned(false);
 
         switch (state) {
             case SPAWN:
@@ -261,7 +288,6 @@ public class AIController {
                     // they reached the goal, so add curr goal to end and make next goal the first in deque
                     goalLocs.addLast(currGoal);
                     currGoal = goalLocs.pop();
-                    System.out.println("Goal reached");
                 } else { // move enemy in direction of goal
                     action.x = currGoal.x - enemy.getX();
                     action.y = currGoal.y - enemy.getY();
@@ -276,6 +302,19 @@ public class AIController {
 
                 break;
 
+            case LOOKING:
+
+                enemy.setVX(0);
+                enemy.setVY(0);
+
+                if (enemy.getAngle() >= goalAngle - ROTATE_SPEED && enemy.getAngle() <= goalAngle + ROTATE_SPEED) {
+                    goalAngle = enemy.getAngle() - 30 + (float) (Math.random() * 60);
+                }
+
+                rotateEnemy((float) Math.random() * 4, goalAngle);
+
+                break;
+
             case CONFUSED:
                 //System.out.println("Enemy is confused");
                 enemy.setVX(0);
@@ -283,48 +322,31 @@ public class AIController {
 
                 break;
             case CHASE:
-//                System.out.println("CHASE");
-//                System.out.println("CHASE");
-//                System.out.println("CHASE");
-//                System.out.println("CHASE");
-//                System.out.println("CHASE");
 
+                System.out.println("CHASE");
                 action.x = lastDetection.x - enemy.getX();
                 action.y = lastDetection.y - enemy.getY();
+                action = action.nor();
 
-                //int multiplier = curr_stamina != 0 ? 4 : 2;
-                //curr_stamina = Math.max(curr_stamina - 1, 0);
-
-                enemy.setVX(action.x * 2);
-                enemy.setVY(action.y * 2);
+                enemy.setVX(action.x * 6);
+                enemy.setVY(action.y * 6);
                 enemy.setLookDirection(action.x, action.y);
 
                 break;
 
             case ATTACK:
-//                System.out.println("ATTACK");
-//                System.out.println("ATTACK");
-//                System.out.println("ATTACK");
-//                System.out.println("ATTACK");
-//                System.out.println("ATTACK");
-
+                System.out.println("ATTACK");
                 action.x = ursa.getX() - enemy.getX();
                 action.y = ursa.getY() - enemy.getY();
+                action = action.nor();
 
-                //int multiplier = curr_stamina != 0 ? 4 : 2;
-                //curr_stamina = Math.max(curr_stamina - 1, 0);
-
-                enemy.setVX(action.x * 2);
-                enemy.setVY(action.y * 2);
+                enemy.setVX(action.x * 4);
+                enemy.setVY(action.y * 4);
                 enemy.setLookDirection(action.x, action.y);
 
-            case WON:
-//                System.out.println("WON");
-//                System.out.println("WON");
-//                System.out.println("WON");
-//                System.out.println("WON");
-//                System.out.println("WON");
+                break;
 
+            case WON:
 
                 enemy.setVX(0);
                 enemy.setVY(0);
@@ -341,6 +363,8 @@ public class AIController {
                     enemy.setVX(7 * (float) Math.random());
                     enemy.setVY(7 * (float) Math.random());
                 }
+
+                break;
         }
     }
 
@@ -360,12 +384,15 @@ public class AIController {
             range = COLLISION_ERROR;
         }
 
-        boolean checkX = Math.abs(ursa.getX() - enemy.getX()) <=
-                (ursa.getWidth() + enemy.getWidth()) / 2 + range;
-        boolean checkY = Math.abs(ursa.getY() - enemy.getY()) <=
-                (ursa.getHeight() + enemy.getHeight()) / 2 + range;
+//        boolean checkX = Math.abs(ursa.getX() - enemy.getX()) <=
+//                ENEMY_RADIUS + range;
+//        boolean checkY = Math.abs(ursa.getY() - enemy.getY()) <=
+//                ENEMY_RADIUS + range;
+//
+//        return checkX || checkY;
 
-        return checkX || checkY;
+        return Math.sqrt(Math.pow(ursa.getX() - enemy.getX(), 2) +
+                Math.pow(ursa.getY() - enemy.getY(), 2)) <= ENEMY_RADIUS + range;
 
     }
 
@@ -391,6 +418,8 @@ public class AIController {
         return state == FSMState.STUNNED;
     }
 
+    public boolean isChase() { return state == FSMState.CHASE; }
+
     public int get_confused_anim_index() {
         return confused_anim_index;
     }
@@ -398,5 +427,13 @@ public class AIController {
     public int inc_anim_index() { return confused_anim_index = (confused_anim_index + 1) % 30; }
 
     public void reset_anim_index() { confused_anim_index = 0; }
+
+//    public void lookAround() {
+//        if (goalAngle == 0 || enemy.getAngle() == goalAngle) {
+//            goalAngle = enemy.getAngle() - (ticks_wander / 2) + (float) (Math.random() * ticks_wander);
+//        }
+//
+//        rotateEnemy(Math.abs(goalAngle - enemy.getAngle()) / 20, goalAngle);
+//    }
 
 }
