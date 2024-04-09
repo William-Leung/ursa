@@ -7,7 +7,7 @@ import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 public class Cave extends BoxObstacle {
 
     public Cave(float width, float height) {
-        super(5,15,width, height);
+        super(5,25,width, height);
     }
 
     public void draw(GameCanvas canvas) {

@@ -96,6 +96,7 @@ public class SceneModel extends WorldController implements ContactListener {
     private TextureRegion tundraTree;
     private TextureRegion tundraTreeWithSnow;
     private TextureRegion tundraTreeShadow;
+    private TextureRegion tundraCaveShadow;
     private TextureRegion backGround;
 
     /** The jump sound.  We only want to play once. */
@@ -219,6 +220,7 @@ public class SceneModel extends WorldController implements ContactListener {
         tundraTree = new TextureRegion(directory.getEntry("object:tundra_tree",Texture.class));
         tundraTreeWithSnow = new TextureRegion(directory.getEntry("object:tundra_tree_snow_small", Texture.class));
         tundraTreeShadow = new TextureRegion(directory.getEntry("shadows:polar_tree_shadow", Texture.class));
+        tundraCaveShadow = new TextureRegion(directory.getEntry("shadows:polar_cave_shadow", Texture.class));
         tundraTreeShadow.flip(true, true);
         whiteTexture = new TextureRegion(directory.getEntry("object:white", Texture.class));
         playerWalkTextureScript = new TextureRegion(directory.getEntry("player:ursaWalk",Texture.class));
@@ -314,6 +316,12 @@ public class SceneModel extends WorldController implements ContactListener {
         goalDoor.setDrawScale(scale);
         goalDoor.setTexture(polarCave);
         goalDoor.setName("goal");
+
+        ShadowModel caveShadow = new ShadowModel(new Vector2(goalDoor.getX(), goalDoor.getY()), 0.75f, 0.75f,
+                tundraCaveShadow, new Vector2(tundraCaveShadow.getRegionWidth() / 2.0f, 85), scale);
+        shadows.add(caveShadow);
+        addObject(caveShadow);
+
         addObject(goalDoor);
 
         // create shadow (idk if this does anything even)

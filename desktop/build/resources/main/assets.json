@@ -40,6 +40,7 @@
         "object:tundra_tree_snow_small": "object/tundra_tree_snow_small.png",
         "object:polar_tree_1": "object/polar_tree_1.png",
         "shadows:polar_tree_shadow": "shadows/polar_tree_shadow.png",
+        "shadows:polar_cave_shadow": "shadows/Polar_Cave_Shadow.png",
         "rocket:crate01": "rocket/crate01.png",
         "rocket:crate02": "rocket/crate02.png",
         "platform:dude":  "platform/dude.png",
