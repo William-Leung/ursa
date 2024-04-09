@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
@@ -16,7 +17,7 @@ import edu.cornell.gdiac.physics.obstacle.CapsuleObstacle;
 
 public class UrsaModel extends CapsuleObstacle {
 
-    private static final float BLOB_SHADOW_SIZE = 0.7f;
+    private static final float BLOB_SHADOW_SIZE = 1.15f;
 
     /** The initializing data (to avoid magic numbers) */
     private final JsonValue data;
@@ -57,6 +58,8 @@ public class UrsaModel extends CapsuleObstacle {
     private PolygonShape sensorShape;
     /** Whether we are currently "shaded" */
     private boolean isShaded;
+
+    private boolean inShadow;
 
     /** Cache for internal force calculations */
     private final Vector2 forceCache = new Vector2();
@@ -148,6 +151,14 @@ public class UrsaModel extends CapsuleObstacle {
         isGrounded = value;
     }
 
+    public boolean isInShadow() {
+        return inShadow;
+    }
+
+    public void setInShadow(boolean v) {
+        inShadow = v;
+    }
+
     /**
      * Returns how much force to apply to get the dude moving
      *
@@ -231,7 +242,7 @@ public class UrsaModel extends CapsuleObstacle {
     public UrsaModel(float xPos,float yPos,JsonValue data, float width, float height) {
         // The shrink factors fit the image to a tigher hitbox
 
-        super(	xPos ,
+        super(xPos,
                 yPos,
                 width*data.get("shrink").getFloat( 0 ),
                 height*data.get("shrink").getFloat( 1 ) );
@@ -246,7 +257,7 @@ public class UrsaModel extends CapsuleObstacle {
         jump_force = data.getFloat( "jump_force", 0 );
         jumpLimit = data.getInt( "jump_cool", 0 );
         shotLimit = data.getInt( "shot_cool", 0 );
-        sensorName = "DudeGroundSensor";
+        sensorName = "shadow_sensor";
         this.data = data;
 
         // Gameplay attributes
@@ -274,22 +285,17 @@ public class UrsaModel extends CapsuleObstacle {
             return false;
         }
 
-        // Ground Sensor
+        // Shadow sensor
         // -------------
-        // We only allow the dude to jump when he's on the ground.
-        // Double jumping is not allowed.
-        //
-        // To determine whether or not the dude is on the ground,
-        // we create a thin sensor under his feet, which reports
-        // collisions with the world but has no collision response.
-        Vector2 sensorCenter = new Vector2(0, -getHeight() / 2);
+        Vector2 sensorCenter = new Vector2(0, -getHeight());
         FixtureDef sensorDef = new FixtureDef();
         sensorDef.density = data.getFloat("density",0);
         sensorDef.isSensor = true;
         sensorShape = new PolygonShape();
         JsonValue sensorjv = data.get("sensor");
-        sensorShape.setAsBox(sensorjv.getFloat("shrink",0)*getWidth()/2.0f,
-                sensorjv.getFloat("height",0), sensorCenter, 0.0f);
+
+        float size = BLOB_SHADOW_SIZE - 0.25f;
+        sensorShape.setAsBox(size, size / 2f, sensorCenter, 0.0f);
         sensorDef.shape = sensorShape;
 
         // Ground sensor to represent our feet
@@ -298,7 +304,6 @@ public class UrsaModel extends CapsuleObstacle {
 
         return true;
     }
-
 
     /**
      * Applies the force to the body of this dude
@@ -373,7 +378,7 @@ public class UrsaModel extends CapsuleObstacle {
         int xcenter = blobShadow.getWidth() / 2;
         int ycenter = blobShadow.getHeight() / 2;
         canvas.draw(blobShadow, Color.BLACK,xcenter,ycenter,
-            getX()*drawScale.x,(getY() ) * drawScale.y - 10.5f ,getAngle(),BLOB_SHADOW_SIZE / drawScale.x,
+            getX()*drawScale.x,(getY() - 0.8f) * drawScale.y,getAngle(),BLOB_SHADOW_SIZE / drawScale.x,
             (BLOB_SHADOW_SIZE / 2f) / drawScale.y);
     }
 

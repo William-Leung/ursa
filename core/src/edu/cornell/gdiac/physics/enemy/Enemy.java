@@ -23,6 +23,8 @@ import edu.cornell.gdiac.util.PooledList;
 
 public class Enemy extends BoxObstacle {
 
+
+	private static final float SIGHT_RANGE_INCREMENT = 0.35f;
 	private static final float BLOB_SHADOW_SIZE = 0.5f;
 
 	private static final int WALK_DAMPENING = 15;
@@ -74,6 +76,11 @@ public class Enemy extends BoxObstacle {
 		 */
 		private boolean hitPlayer = false;
 
+		/**
+		 * The point at which the raycast terminates, if interrupted by something.
+		 */
+		private Vector2 rayTerm;
+
 
 		/**
 		 * Constructs a new EnemyLoSCallback object used for raycasting.
@@ -83,20 +90,66 @@ public class Enemy extends BoxObstacle {
 			this.target = target;
 		}
 
+		private Vector2 getRayTerm() {
+			return rayTerm;
+		}
+
+		private void resetRayTerm() {
+			rayTerm = null;
+		}
+
 		@Override
 		public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
 			Body body = fixture.getBody();
 
 			if (body.getType() == BodyDef.BodyType.StaticBody) { // For simplicity's sake, we're considering all static bodies to be obstacles
 				hitPlayer = false;
+				rayTerm = point;
 				return 0;
 			} else if (body.equals(target)) { // The body is not static? Might be our target. Let's check to see if it is.
 				hitPlayer = true;
+				rayTerm = point;
 				return -1;
 			}
 			return -1; // Otherwise, ignore the fixture and continue
 		}
 	}
+
+	private static class ObstObstrctCallback implements RayCastCallback {
+
+		/**
+		 * The point at which the raycast terminates, if interrupted by something.
+		 */
+		private Vector2 rayTerm;
+
+		/**
+		 * Constructs a new EnemyLoSCallback object used for raycasting.
+		 */
+		private ObstObstrctCallback() {
+
+		}
+
+		private Vector2 getRayTerm() {
+			return rayTerm;
+		}
+
+		private void resetRayTerm() {
+			rayTerm = null;
+		}
+
+		@Override
+		public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
+			Body body = fixture.getBody();
+
+			if (body.getType() == BodyDef.BodyType.StaticBody) { // For simplicity's sake, we're considering all static bodies to be obstacles
+				rayTerm = point;
+				return 0;
+			} else {
+				return -1;
+			}
+		}
+	}
+
 	/**
 	 * The default range that the enemy can hear noise/footsteps around them
 	 */
@@ -117,6 +170,8 @@ public class Enemy extends BoxObstacle {
 	 * Indicates whether or not this enemy is stunned.
 	 */
 	private int stunDuration = 0;
+
+	private float detectionRange = ENEMY_DETECTION_RANGE_SIGHT;
 
 	public Enemy(float xStart,float yStart,float maxX, float minX,JsonValue data, float width, float height) {
 		// The shrink factors fit the image to a tigher hitbox
@@ -148,7 +203,7 @@ public class Enemy extends BoxObstacle {
 		redPixmap.dispose();
 		greenPixmap.dispose();
 		/** RED TEXTURE AND GREENTEXTURE ARE NOT DISPOSED*/
-		setName("ursa");
+		setName("enemy");
 	}
 
 	public void stun() {
@@ -248,6 +303,12 @@ public class Enemy extends BoxObstacle {
 	@Override
 	public void update(float dt) {
 		stunDuration = Math.max(stunDuration - 1, 0);
+
+		if (isInShadow()) {
+			detectionRange = Math.min(detectionRange + SIGHT_RANGE_INCREMENT, ENEMY_DETECTION_RANGE_SHADOW);
+		} else {
+			detectionRange = Math.max(detectionRange - SIGHT_RANGE_INCREMENT, ENEMY_DETECTION_RANGE_SIGHT);
+		}
 	}
 
 	/**
@@ -306,26 +367,54 @@ public class Enemy extends BoxObstacle {
 		Vector2 dirToVector = new Vector2(player.getPosition()).sub(pos).nor();
 		float angle = lookDirection.angleDeg(dirToVector);
 		boolean possiblyVisible;
-		if(isInShadow(playerPos.x * drawScale.x)) {
-			//dst <= ENEMY_DETECTION_RANGE_NOISE || (dst <= ENEMY_DETECTION_RANGE_SIGHT && (angle <= ENEMY_DETECTION_ANGLE_SIGHT || angle >= 360 - ENEMY_DETECTION_ANGLE_SIGHT));
-			possiblyVisible = dst <= ENEMY_DETECTION_RANGE_SHADOW && (angle <= ENEMY_DETECTION_ANGLE_SIGHT || angle >= 360 - ENEMY_DETECTION_ANGLE_SIGHT);
-		} else {
-			possiblyVisible = dst <= ENEMY_DETECTION_RANGE_SIGHT && (angle <= ENEMY_DETECTION_ANGLE_SIGHT || angle >= 360 - ENEMY_DETECTION_ANGLE_SIGHT);
-		}
-		/** ------ */
-
+		possiblyVisible = dst <= detectionRange && (angle <= ENEMY_DETECTION_ANGLE_SIGHT || angle >= 360 - ENEMY_DETECTION_ANGLE_SIGHT);
 
 		if (possiblyVisible) {
 			EnemyLoSCallback callback = new EnemyLoSCallback(player.getBody());
 			world.rayCast(callback, getPosition(), player.getPosition());
+
+			System.out.println(callback.getRayTerm());
+
 			if (callback.hitPlayer) {
 				playerCurrentInSight = true;
 				return true;
 			}
+
 		}
 		playerCurrentInSight = false;
 		return false;
 	}
+
+//	public boolean isObjectInLineOfSight(World world) {
+//		ObstObstrctCallback callback = new ObstObstrctCallback();
+//
+//		Vector2 pos = new Vector2(getPosition());
+//		float fov = 30f;
+//		int numRays = 10;
+//		float dtAng = fov / (numRays - 1);
+//		Vector2 dir = new Vector2(
+//                        (float) Math.cos(Math.toRadians(lookDirection.angleDeg())),
+//				(float) Math.sin(Math.toRadians(lookDirection.angleDeg()))).nor();
+//		float ang = -fov/2;
+//		Vector2 rayDir = dir.rotateDeg(ang);
+//		Vector2 rayPos = pos.cpy().add(rayDir.scl(40f));
+//		world.rayCast(callback, pos, rayPos);
+//		if (callback.getRayTerm() != null) {
+//			rayPos = callback.getRayTerm();
+//			callback.resetRayTerm();
+//		}
+//		Vector2 prevRay = rayPos.cpy();
+//		for (int i = 1; i < numRays; i++) {
+//			ang = -fov / 2 + dtAng * i;
+//			rayDir = dir.rotateDeg(ang);
+//			rayPos = pos.add(rayDir.scl(40f));
+//			if (callback.getRayTerm() != null) {
+//				rayPos = callback.getRayTerm();
+//				callback.resetRayTerm();
+//			}
+//
+//		}
+//	}
 
 
 	@Override
@@ -343,10 +432,7 @@ public class Enemy extends BoxObstacle {
 		canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),
 			(lookDirection.x > 0 ? 1 : -1) * .35f,.35f);
 
-		drawSightCone(canvas, ENEMY_DETECTION_RANGE_SIGHT, lookDirection, 8);
-		if(playerInShadow) {
-			drawSightCone(canvas, ENEMY_DETECTION_RANGE_SHADOW, lookDirection, 8);
-		}
+		drawSightCone(canvas, detectionRange, lookDirection, 8);
 
 		screenWidth = canvas.getWidth();
 	}
@@ -365,7 +451,9 @@ public class Enemy extends BoxObstacle {
 		vertices[0] = 0f;
 		vertices[1] = 0f;
 		float curr_angle = ENEMY_DETECTION_ANGLE_SIGHT + direction.angleDeg();
-		float angle_scale_factor =  (ENEMY_DETECTION_ANGLE_SIGHT)/ ((num_vertices - 2 ) / 2);
+		float angle_scale_factor =  (ENEMY_DETECTION_ANGLE_SIGHT)/ (
+                        (float) (num_vertices - 2) / 2);
+
 		for(int i = 2; i < vertices.length - 1; i += 2) {
 			vertices[i] = drawScale.x * range * (float) Math.cos(Math.toRadians(curr_angle));
 			vertices[i+1] = drawScale.y * range * (float) Math.sin(Math.toRadians(curr_angle));
@@ -393,12 +481,8 @@ public class Enemy extends BoxObstacle {
 		canvas.draw(polygonRegion, Color.WHITE, origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),1.0f,1.0f);
 	}
 
-	public boolean isInShadow(float x) {
-		float middleX = screenWidth / 2.0f;
-		float lineWidth = screenWidth;
-
-            playerInShadow = ShadowController.isNight() || playerInDynamicShadow;
-
+	public boolean isInShadow() {
+		playerInShadow = ShadowController.isNight() || playerInDynamicShadow;
 		return playerInShadow;
 	}
 
