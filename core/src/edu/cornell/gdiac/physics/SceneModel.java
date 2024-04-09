@@ -358,11 +358,9 @@ public class SceneModel extends WorldController implements ContactListener {
         dheight = enemyTexture.getRegionHeight()/scale.y;
 
         // place the enemies based on position in Tiled
-        System.out.println(jsonData.get("layers").get(3));
         for(int i = 0; i< jsonData.get("layers").get(3).get("objects").size;i++){
             float x = (jsonData.get("layers").get(3).get("objects").get(i).get(8).asFloat()) / (tileWidth * 512f);
             x = x * tileX + 5.5f;
-            System.out.println(jsonData.get("layers").get(3).get("objects").get(i));
             float y = (maxY - jsonData.get("layers").get(3).get("objects").get(i).get(9).asFloat())/(tileHeight * 512f);
             y = y * tileY +11.0f;
 
@@ -481,6 +479,7 @@ public class SceneModel extends WorldController implements ContactListener {
                 if(jsonData.get("layers").get(0).get(0).get(counter).asInt() == 1){
                     //tileTextures[0] = new TextureRegion(directory.getEntry("tiles:polar_middle",Texture.class));
                     canvas.draw(tileTextures[0], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
+
                 } else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 2) {
                     //tileTextures[1] = new TextureRegion(directory.getEntry("tiles:polar_corner_1",Texture.class));
                     canvas.draw(tileTextures[1], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
