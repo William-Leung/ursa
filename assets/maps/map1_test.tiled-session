@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "map2.tmx",
+    "activeFile": "map1.tmx",
     "expandedProjectPaths": [
         "."
     ],
@@ -86,7 +86,7 @@
             "selectedLayer": 3,
             "viewCenter": {
                 "x": 1534,
-                "y": 3322
+                "y": 3318
             }
         },
         "map1.tmx#Polar_Cliff_center": {
@@ -99,10 +99,10 @@
                 3
             ],
             "scale": 0.25,
-            "selectedLayer": 0,
+            "selectedLayer": 1,
             "viewCenter": {
                 "x": 1610,
-                "y": 2018
+                "y": 1906
             }
         },
         "player test.tsx": {
@@ -171,11 +171,11 @@
         "tundra_tree_snow_small.tsx",
         "polar_flower_1.tsx",
         "Polar_Cliff_center.tsx",
-        "map1.tmx",
-        "salmon_walk_2_small.tsx",
         "Polar_Cliff_Edge_6.tsx",
         "polar_cliff_edge_left_side.tsx",
         "map2.tmx",
+        "salmon_walk_2_small.tsx",
+        "map1.tmx",
         "tundra_tree_snow.tsx"
     ],
     "tileset.lastUsedFormat": "tsx",

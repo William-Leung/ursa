@@ -183,7 +183,7 @@ public class SceneModel extends WorldController implements ContactListener {
         tileX = tileWidth * 7f;
         tileY = tileHeight * 7f;
 
-        // System.out.println(jsonData.get("layers").get(5).get("objects").get(0).get(8).asFloat());
+         System.out.println(jsonData.get("layers").get(5).get("objects").get(0).get(8).asFloat());
 
         colors = new Color[9];
         colors[0] = new Color(0f,0f,0f,0.7f);
