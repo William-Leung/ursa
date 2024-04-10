@@ -493,7 +493,7 @@ public class SceneModel extends WorldController implements ContactListener {
 
         for (int i = 0; i < enemies.length; i++) {
             if (enemies[i] != null) {
-                controls.add(new AIController(enemies[i], avatar));
+                controls.add(new AIController(enemies[i], avatar, trees));
             }
         }
 

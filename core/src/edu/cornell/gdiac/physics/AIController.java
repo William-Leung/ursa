@@ -4,6 +4,8 @@ import com.badlogic.gdx.math.Vector2;
 import edu.cornell.gdiac.physics.enemy.Enemy;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.physics.player.UrsaModel;
+import edu.cornell.gdiac.physics.tree.Tree;
+import edu.cornell.gdiac.util.PooledList;
 import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.List;
@@ -71,6 +73,10 @@ public class AIController {
     private boolean hasWon = false;
     /** Vector representing this enemy's next move */
     private Vector2 action = new Vector2();
+    /** Vector of previous location of this enemy */
+    private Vector2 prevLoc;
+    /** Trees on the map */
+    private PooledList<Tree> trees;
 
     /** Ticks spent confused */
     private int ticks_confused = 0;
@@ -94,12 +100,17 @@ public class AIController {
     /** Current goal for the enemy */
     private Vector2 currGoal;
 
+    private boolean turnAround = false;
+    private Vector2 otherDir = new Vector2();
+
     /**
      * Creates an AIController for the ship with the given id.
      */
-    public AIController(Enemy enemy,  UrsaModel ursa) {
+    public AIController(Enemy enemy,  UrsaModel ursa, PooledList<Tree> trees) {
         this.enemy = enemy;
         this.ursa = ursa;
+        this.trees = trees;
+        this.prevLoc = new Vector2(enemy.getX(), enemy.getY());
 
         state = FSMState.SPAWN;
         ticks = 0;
@@ -289,6 +300,9 @@ public class AIController {
         changeStateIfApplicable();
         System.out.println(state.toString());
 
+        prevLoc.x = enemy.getX();
+        prevLoc.y = enemy.getY();
+
         // update stunned
         if (state == FSMState.STUNNED) {
             enemy.setStunned(true);
@@ -301,21 +315,66 @@ public class AIController {
                 break;
             case WANDER:
 
-                if (enemy.getX() >= currGoal.x - GOAL_DIST && enemy.getX() <= currGoal.x + GOAL_DIST &&
-                        enemy.getY() >= currGoal.y - GOAL_DIST && enemy.getY() <= currGoal.y + GOAL_DIST) {
-                    // they reached the goal, so add curr goal to end and make next goal the first in deque
-                    goalLocs.addLast(currGoal);
-                    currGoal = goalLocs.pop();
-                } else { // move enemy in direction of goal
-                    action.x = currGoal.x - enemy.getX();
-                    action.y = currGoal.y - enemy.getY();
-                    action = action.nor();
+               for (Tree t : trees) {
+                   if (Math.abs(t.getY() - enemy.getY()) <= t.getHeight() / 2 + enemy.getHeight() / 2 ) {
+                       if (t.getY() > enemy.getY()) {
+                           enemy.setVY(-2);
+                       } else {
+                           enemy.setVY(2);
+                       }
+                       return;
+                   }
 
-                    enemy.setVX(action.x * 3);
-                    enemy.setVY(action.y * 3);
-                    enemy.setLookDirection(action.x, action.y);
+//                   if (Math.abs(t.getX() - enemy.getX()) <= t.getWidth() / 2 + enemy.getWidth() / 2 ) {
+//                       if (Math.random() < 0.5) {
+//                           enemy.setVY(1);
+//                       } else {
+//                           enemy.setVY(-1);
+//                       }
+//                       return;
+//                   }
+               }
 
-                }
+//                if (Math.abs(prevLoc.x - enemy.getX()) <= 0.5) {
+//                    enemy.setY(enemy.getY() - 100);
+//                    System.out.println("teleporting down");
+//                }
+//
+//                if (Math.abs(prevLoc.x - enemy.getX()) <= 0.5) {
+//                    enemy.setY(enemy.getY() + 100);
+//                    System.out.println("teleporting up");
+//                }
+
+//               if (turnAround) {
+//                   System.out.println("turning around");
+//                   if (Math.abs(enemy.getVY()) == 0) {
+//                       if (Math.abs(prevLoc.x - enemy.getX()) <= 0.5 && Math.abs(prevLoc.x - enemy.getY()) <= 0.5) {
+//                           enemy.setVY(1000);
+//                       } else {
+//                           enemy.setVY(-10000);
+//                       }
+//                   } //else enemy.setVY(-enemy.getVY());
+//
+//                   if (Math.random() > 0.9) turnAround = false;
+//
+//               }
+
+               if (enemy.getX() >= currGoal.x - GOAL_DIST && enemy.getX() <= currGoal.x + GOAL_DIST /*||
+                       Math.abs(prevLoc.x - enemy.getX()) <= 0.5 && Math.abs(prevLoc.x - enemy.getY()) <= 0.5*/) {
+                   // they reached the goal, so add curr goal to end and make next goal the first in deque
+                   goalLocs.addLast(currGoal);
+                   currGoal = goalLocs.pop();
+               } else { // move enemy in direction of goal
+                   action.x = currGoal.x - enemy.getX();
+                   action.y = currGoal.y - enemy.getY();
+                   action = action.nor();
+
+                   enemy.setVX(action.x * 3);
+                   enemy.setVY(0);
+                   enemy.setLookDirection(action.x, action.y);
+
+               }
+
 
 
                 break;
@@ -381,6 +440,8 @@ public class AIController {
             case STUNNED:
 
                 rotateEnemy(360 / enemy.getMaxStun(), enemy.getAngle() + ROTATE_SPEED);
+                //enemy.setVX(0);
+                //enemy.setVY(0);
                 if (ticks % 20 == 0) {
                     enemy.setVX(7 * (float) Math.random());
                     enemy.setVY(7 * (float) Math.random());
