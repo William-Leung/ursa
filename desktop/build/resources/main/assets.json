@@ -87,6 +87,8 @@
         "player:ursaIdle": "player/Stand.png",
         "enemies:salmonUprightWalk": "enemies/Walk.png",
         "enemies:salmonConfused": "enemies/Lost.png",
+        "enemies:salmonIdle": "enemies/Stand.png",
+        "enemies:salmonDetected": "enemies/Detected.png",
         "object:cave": "object/Polar_Cave.png",
         "object:white": "object/white.png",
         "enemies:salmonWalk1":  "enemies/salmon_walk_2.png",
