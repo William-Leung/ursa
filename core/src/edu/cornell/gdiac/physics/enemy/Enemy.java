@@ -35,6 +35,9 @@ public class Enemy extends BoxObstacle {
 	/** A Pixmap used for drawing sightcones */
 	private TextureRegion redTextureRegion;
 	private TextureRegion greenTextureRegion;
+	private TextureRegion grayTextureRegion;
+	private TextureRegion yellowTextureRegion;
+	private TextureRegion orangeTextureRegion;
 	private final Vector2 forceCache = new Vector2();
 	private float maxSpeed;
 	private float damping;
@@ -48,6 +51,7 @@ public class Enemy extends BoxObstacle {
 	private float screenWidth = 1280f;
 	private boolean playerCurrentInSight;
 	private boolean playerInDynamicShadow = false;
+	private boolean stunned = false;
 
 	/** the vector to use to indicate the direction the enemy character
 	 * should go/face x and y should be either -15 or 15 or 0*/
@@ -199,6 +203,24 @@ public class Enemy extends BoxObstacle {
 		greenPixmap.fill();
 		Texture greenTexture = new Texture(greenPixmap);
 		greenTextureRegion = new TextureRegion(greenTexture);
+
+		Pixmap grayPixmap = new Pixmap(1, 1, Format.RGBA8888);
+		grayPixmap.setColor(new Color(181/255, 181/255, 181/255, 0.25f));
+		grayPixmap.fill();
+		Texture grayTexture = new Texture(grayPixmap);
+		grayTextureRegion = new TextureRegion(grayTexture);
+
+		Pixmap yellowPixmap = new Pixmap(1, 1, Format.RGBA8888);
+		yellowPixmap.setColor(new Color(1, 1, 0, 0.25f));
+		yellowPixmap.fill();
+		Texture yellowTexture = new Texture(yellowPixmap);
+		yellowTextureRegion = new TextureRegion(yellowTexture);
+
+		Pixmap orangePixmap = new Pixmap(1, 1, Format.RGBA8888);
+		orangePixmap.setColor(new Color(1, 1, 0, 0.25f));
+		orangePixmap.fill();
+		Texture orangeTexture = new Texture(orangePixmap);
+		orangeTextureRegion = new TextureRegion(orangeTexture);
 
 		redPixmap.dispose();
 		greenPixmap.dispose();
@@ -473,7 +495,9 @@ public class Enemy extends BoxObstacle {
 
 		// Create a polygonRegion with color dependent on alerted
 		PolygonRegion polygonRegion;
-		if(alerted) {
+		if (stunned) {
+			polygonRegion = new PolygonRegion(grayTextureRegion,vertices, triangles);
+		} else if(alerted) {
 			polygonRegion = new PolygonRegion(redTextureRegion,vertices, triangles);
 		} else {
 			polygonRegion = new PolygonRegion(greenTextureRegion,vertices, triangles);
@@ -491,4 +515,6 @@ public class Enemy extends BoxObstacle {
 	}
 
 	public float getMaxStun() { return STUN_DURATION; }
+
+	public void setStunned(boolean value) { stunned = value; }
 }
