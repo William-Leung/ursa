@@ -1180,13 +1180,13 @@ public class SceneModel extends WorldController implements ContactListener {
         if (complete && !failed) {
             displayFont.setColor(Color.YELLOW);
             canvas.begin(); // DO NOT SCALE
-            canvas.drawText("WINNER!",displayFont,avatar.getPosition().x * 31.9f, avatar.getPosition().x *31.9f);
+            canvas.drawText("WINNER!",displayFont,avatar.getPosition().x *31.9f, avatar.getPosition().y * 31.9f );
 
             canvas.end();
         } else if (failed) {
             displayFont.setColor(Color.RED);
             canvas.begin(); // DO NOT SCALE
-            canvas.drawText("WINNER!",displayFont,avatar.getPosition().x*31.9f, avatar.getPosition().y*31.9f);
+            canvas.drawText("Loser!",displayFont,avatar.getPosition().x*31.9f, avatar.getPosition().y*31.9f);
             canvas.end();
         }
     }
