@@ -336,13 +336,13 @@ public class SceneModel extends WorldController implements ContactListener {
         dwidth  = enemyTexture.getRegionWidth()/scale.x;
         dheight = enemyTexture.getRegionHeight()/scale.y;
 
-        // place the enemies based on position in Tiled
+        // place the cave
         System.out.println((jsonData.get("layers").get(6)));
         for(int i = 0; i< jsonData.get("layers").get(6).get("objects").size;i++){
             float x = (jsonData.get("layers").get(6).get("objects").get(i).get(8).asFloat()) / (tileWidth * 512f);
             x = x * tileX + 5.5f;
             float y = (maxY - jsonData.get("layers").get(6).get("objects").get(i).get(9).asFloat())/(tileHeight * 512f);
-            y = y * tileY +11.0f;
+            y = y * tileY +15 ;
 
             JsonValue goal = constants.get("goal");
             JsonValue goalpos = goal.get("pos");
@@ -369,12 +369,12 @@ public class SceneModel extends WorldController implements ContactListener {
             float x = (jsonData.get("layers").get(3).get("objects").get(i).get(8).asFloat()) / (tileWidth * 512f);
             x = x * tileX + 5.5f;
             float y = (maxY - jsonData.get("layers").get(3).get("objects").get(i).get(9).asFloat())/(tileHeight * 512f);
-            y = y * tileY +11.0f;
+            y = y * tileY +13.0f;
 
             float direction = 1;
             float maxX = 2500/60;
             float minX = 1250/60;
-            enemies[i] = new Enemy(x,y,maxX,minX,constants.get("enemy"), dwidth, dheight);
+            enemies[i] = new Enemy(x,y,maxX,minX,constants.get("enemy"), dwidth/2, dheight/2);
             enemies[i].setLookDirection(direction, 0);
             enemies[i].setDrawScale(scale);
             enemies[i].setTexture(salmonUprightWalkFilm);
