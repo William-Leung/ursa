@@ -26,6 +26,11 @@ import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.physics.cave.Cave;
 import edu.cornell.gdiac.physics.enemy.Enemy;
 import edu.cornell.gdiac.physics.obstacle.*;
+import edu.cornell.gdiac.physics.gameobjects.House;
+import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
+import edu.cornell.gdiac.physics.obstacle.Obstacle;
+import edu.cornell.gdiac.physics.obstacle.PolygonObstacle;
+import edu.cornell.gdiac.physics.obstacle.WheelObstacle;
 import edu.cornell.gdiac.physics.player.UrsaModel;
 import edu.cornell.gdiac.physics.shadows.ShadowController;
 import edu.cornell.gdiac.physics.shadows.ShadowModel;
@@ -94,6 +99,23 @@ public class SceneModel extends WorldController implements ContactListener {
     private TextureRegion tundraTreeWithSnow;
     private TextureRegion tundraTreeShadow;
     private TextureRegion tundraCaveShadow;
+
+    private TextureRegion polarHouse;
+    private TextureRegion polarRock1;
+    private TextureRegion polarRock2;
+    private TextureRegion polarRock3;
+    private TextureRegion polarRock4;
+    private TextureRegion polarTrunk1;
+    private TextureRegion polarTrunk2;
+
+    private TextureRegion polarHouseShadow;
+    private TextureRegion polarRock1Shadow;
+    private TextureRegion polarRock2Shadow;
+    private TextureRegion polarRock3Shadow;
+    private TextureRegion polarRock4Shadow;
+    private TextureRegion polarTrunk1Shadow;
+    private TextureRegion polarTrunk2Shadow;
+
     private TextureRegion backGround;
 
     /** The jump sound.  We only want to play once. */
@@ -128,21 +150,32 @@ public class SceneModel extends WorldController implements ContactListener {
      */
     private PooledList<Tree> trees = new PooledList<>();
 
+    /**
+     * List of all references to all houses
+     */
+    private PooledList<House> houses = new PooledList<>();
+
     private float timer = 0;
     private TextureRegion playerWalkTextureScript;
     private TextureRegion playerIdleTextureScript;
     private TextureRegion salmonUprightWalkScript;
     private TextureRegion salmonConfusedScript;
+    private TextureRegion salmonIdleScript;
+    private TextureRegion salmonDetectedScript;
     private TextureRegion polarCave;
     private TextureRegion whiteTexture;
     private FilmStrip playerWalkFilm;
     private FilmStrip salmonUprightWalkFilm;
     private FilmStrip playerIdleFilm;
     private FilmStrip salmonConfusedFilm;
+    private FilmStrip salmonIdleFilm;
+    private FilmStrip salmonDetectedFilm;
     private int playerWalkAnimIndex = 0;
     private int playerIdleAnimIndex =0;
     private int salmonWalkAnimIndex = 0;
     private int salmonConfusedAnimIndex = 0;
+    private int salmonIdleAnimIndex = 0;
+    private int salmonDetectedIndex = 0;
     /** Reference to the goalDoor (for collision detection) */
     private BoxObstacle goalDoor;
     /** Controller for all dynamic shadows */
@@ -183,8 +216,6 @@ public class SceneModel extends WorldController implements ContactListener {
         tileX = tileWidth * 7f;
         tileY = tileHeight * 7f;
 
-
-
         colors = new Color[9];
         colors[0] = new Color(0f,0f,0f,0.7f);
         colors[1] = new Color(0.486f, 0.435f, 0.467f,0.7f);
@@ -217,11 +248,28 @@ public class SceneModel extends WorldController implements ContactListener {
         bridgeTexture = new TextureRegion(directory.getEntry("platform:rope",Texture.class));
         shadowTexture = new TextureRegion(directory.getEntry("platform:shadow",Texture.class));
         backGround = new TextureRegion(directory.getEntry("platform:snowback",Texture.class));
+
         tundraTree = new TextureRegion(directory.getEntry("object:tundra_tree",Texture.class));
         tundraTreeWithSnow = new TextureRegion(directory.getEntry("object:tundra_tree_snow_small", Texture.class));
+        polarHouse = new TextureRegion(directory.getEntry("object:polar_house", Texture.class));
+        polarRock1 = new TextureRegion(directory.getEntry("object:polar_rock_1", Texture.class));
+        polarRock2 = new TextureRegion(directory.getEntry("object:polar_rock_2", Texture.class));
+        polarRock3 = new TextureRegion(directory.getEntry("object:polar_rock_3", Texture.class));
+        polarRock4 = new TextureRegion(directory.getEntry("object:polar_rock_4", Texture.class));
+        polarTrunk1 = new TextureRegion(directory.getEntry("object:polar_trunk_1", Texture.class));
+        polarTrunk2 = new TextureRegion(directory.getEntry("object:polar_trunk_2", Texture.class));
+
         tundraTreeShadow = new TextureRegion(directory.getEntry("shadows:polar_tree_shadow", Texture.class));
         tundraCaveShadow = new TextureRegion(directory.getEntry("shadows:polar_cave_shadow", Texture.class));
+        polarHouseShadow = new TextureRegion(directory.getEntry("shadows:polar_house_shadow", Texture.class));
+        polarRock1Shadow = new TextureRegion(directory.getEntry("shadows:polar_rock_1_shadow", Texture.class));
+        polarRock2Shadow = new TextureRegion(directory.getEntry("shadows:polar_rock_2_shadow", Texture.class));
+        polarRock3Shadow = new TextureRegion(directory.getEntry("shadows:polar_rock_3_shadow", Texture.class));
+        polarRock4Shadow = new TextureRegion(directory.getEntry("shadows:polar_rock_4_shadow", Texture.class));
+        polarTrunk1Shadow = new TextureRegion(directory.getEntry("shadows:polar_trunk_1_shadow", Texture.class));
+        polarTrunk2Shadow = new TextureRegion(directory.getEntry("shadows:polar_trunk_2_shadow", Texture.class));
         tundraTreeShadow.flip(true, true);
+
         whiteTexture = new TextureRegion(directory.getEntry("object:white", Texture.class));
         playerWalkTextureScript = new TextureRegion(directory.getEntry("player:ursaWalk",Texture.class));
         playerWalkFilm = new FilmStrip(playerWalkTextureScript.getTexture(),2,8);
@@ -236,6 +284,13 @@ public class SceneModel extends WorldController implements ContactListener {
         salmonConfusedScript = new TextureRegion(directory.getEntry("enemies:salmonConfused",Texture.class));
         salmonConfusedFilm = new FilmStrip(salmonConfusedScript.getTexture(),4,8);
         salmonUprightWalkFilm.setFrame(0);
+        salmonIdleScript = new TextureRegion(directory.getEntry("enemies:salmonIdle",Texture.class));
+        salmonIdleFilm = new FilmStrip(salmonIdleScript.getTexture(), 5, 8);
+        salmonIdleFilm.setFrame(0);
+        salmonDetectedScript = new TextureRegion(directory.getEntry("enemies:salmonDetected",Texture.class));
+        salmonDetectedFilm = new FilmStrip(salmonDetectedScript.getTexture(), 4, 8);
+        salmonConfusedFilm.setFrame(0);
+
         gatherTiles(directory);
 
         jumpSound = directory.getEntry( "platform:jump", Sound.class );
@@ -325,7 +380,7 @@ public class SceneModel extends WorldController implements ContactListener {
         //world.setGravity( new Vector2(0,defaults.getFloat("gravity",0)) );
 
         // Create ursa
-        dwidth  = playerIdleFilm.getRegionWidth()/50;
+        dwidth  = playerIdleFilm.getRegionWidth()/50f;
         dheight = playerIdleFilm.getRegionHeight()/100f;
         avatar = new UrsaModel(playerStartX * tileX + 5.5f,playerStartY * tileY +11.0f,constants.get("ursa"), dwidth, dheight);
         avatar.setDrawScale(scale);
@@ -407,6 +462,34 @@ public class SceneModel extends WorldController implements ContactListener {
             addObject(obj);
             trees.add(obj);
         }
+
+        //place houses in the level
+//        JsonValue housejv = constants.get("houses");
+//        String hname = "house";
+//
+//        for(int i = 0; i < jsonData.get("layers").get(7).get("objects").size; i++){
+//            float x = (jsonData.get("layers").get(7).get("objects").get(i).get(8).asFloat())/ (tileWidth * 512f);
+//            x = x * tileX + 5.5f;
+//            float y = (maxY - jsonData.get("layers").get(7).get("objects").get(i).get(9).asFloat())/(tileHeight * 512f);
+//            y = y * tileY + 11.0f;
+//
+//            House obj = new House(housejv.get(0).asFloatArray(),x,y);
+//            obj.setBodyType(BodyDef.BodyType.StaticBody);
+//            obj.setDensity(defaults.getFloat( "density", 0.0f ));
+//            obj.setFriction(defaults.getFloat( "friction", 0.0f ));
+//            obj.setRestitution(defaults.getFloat( "restitution", 0.0f ));
+//            obj.setDrawScale(scale);
+//            obj.setTexture(polarHouse);
+//            obj.setName(hname+i);
+//
+//            ShadowModel model = new ShadowModel(new Vector2(obj.getX(), obj.getY()), 0.75f, 0.75f,
+//                    polarHouseShadow, new Vector2(polarHouseShadow.getRegionWidth() / 2.0f, 85), scale);
+//            shadows.add(model);
+//            addObject(model);
+//
+//            addObject(obj);
+//            houses.add(obj);
+//        }
 
         for (int i = 0; i < enemies.length; i++) {
             if (enemies[i] != null) {
@@ -833,9 +916,15 @@ public class SceneModel extends WorldController implements ContactListener {
 
         for (AIController i : controls) {
             if (i != null) {
-                if (i.isStunned() || i.isConfused()) {
-                    // animate stunned
-
+                if (i.isWon()) {
+                    salmonDetectedFilm.setFrame(salmonDetectedIndex);
+                    i.getEnemy().setTexture(salmonDetectedFilm);
+                    salmonDetectedIndex = (salmonDetectedIndex + 1) % 30;
+                } else if (i.getEnemy().getVX() == 0 && i.getEnemy().getVY() == 0) {
+                    salmonIdleFilm.setFrame(salmonIdleAnimIndex);
+                    i.getEnemy().setTexture(salmonIdleFilm);
+                    salmonIdleAnimIndex = (salmonIdleAnimIndex + 1) % 40;
+                } else if (i.isStunned() || i.isConfused()) { // animate stunned
                     salmonConfusedFilm.setFrame(i.get_confused_anim_index());
                     i.getEnemy().setTexture(salmonConfusedFilm);
                     i.inc_anim_index();
@@ -963,7 +1052,12 @@ public class SceneModel extends WorldController implements ContactListener {
             }
         }
 
-        avatar.applyForce();
+        if (!isFailure()) {
+            avatar.applyForce();
+        } else {
+            avatar.setVX(0);
+            avatar.setVY(0);
+        }
         //enemies[0].applyForce();
         //enemies[1].applyForce();
 

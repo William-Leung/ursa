@@ -107,8 +107,13 @@ public class AIController {
         // add goal locs to player's deque
         goalLocs = new ArrayDeque<>();
 
+        if (enemy.getX() > 900) {
+            currGoal = new Vector2(enemy.getX() - 25, enemy.getY());
+        } else {
+            currGoal = new Vector2(enemy.getX() + 25, enemy.getY());
+        }
+
         goalLocs.addLast(new Vector2(enemy.getX(), enemy.getY()));
-        currGoal = new Vector2(enemy.getX() + 25, enemy.getY());
 
     }
 
@@ -144,7 +149,11 @@ public class AIController {
                 break;
 
             case WANDER:
-                if (isDetected()) {
+
+                if (ticks % 50 == 0 && Math.random() > 0.8) {
+                    ticks_looking = 0;
+                    state = FSMState.LOOKING;
+                } else if (isDetected()) {
                     if (lastDetection == null) {
                         lastDetection = new Vector2(ursa.getX(), ursa.getY());
                     } else {
@@ -169,6 +178,15 @@ public class AIController {
                 ticks_looking++;
 
                 if (isDetected()) {
+
+                    if (lastDetection == null) {
+                        lastDetection = new Vector2(ursa.getX(), ursa.getY());
+                    } else {
+                        lastDetection.x = ursa.getX();
+                        lastDetection.y = ursa.getY();
+                        last_time_detected = ticks;
+                    }
+
                     state = FSMState.CHASE;
                     ticks_looking = 0;
                 } else if (ticks_looking >= MAX_LOOKING || Math.random() * ticks_looking > MAX_LOOKING / 3) {
@@ -307,11 +325,14 @@ public class AIController {
                 enemy.setVX(0);
                 enemy.setVY(0);
 
-                if (enemy.getAngle() >= goalAngle - ROTATE_SPEED && enemy.getAngle() <= goalAngle + ROTATE_SPEED) {
-                    goalAngle = enemy.getAngle() - 30 + (float) (Math.random() * 60);
+                if (ticks_looking > CONFUSE_TIME) {
+                    if (enemy.getAngle() >= goalAngle - ROTATE_SPEED && enemy.getAngle() <= goalAngle + ROTATE_SPEED) {
+                        goalAngle = enemy.getAngle() - 30 + (float) (Math.random() * 60);
+                    }
+
+                    rotateEnemy((float) Math.random() * 4, goalAngle);
                 }
 
-                rotateEnemy((float) Math.random() * 4, goalAngle);
 
                 break;
 
@@ -350,7 +371,8 @@ public class AIController {
 
                 enemy.setVX(0);
                 enemy.setVY(0);
-                rotateEnemy(ROTATE_SPEED, enemy.getAngle() + ROTATE_SPEED);
+                enemy.setLookDirection(ursa.getX() - enemy.getX(), ursa.getY() - enemy.getY());
+                //rotateEnemy(ROTATE_SPEED, enemy.getAngle() + ROTATE_SPEED);
 
                 //enemy.setAngle(enemy.getAngle() + (360 / enemy.getMaxStun()));
 
