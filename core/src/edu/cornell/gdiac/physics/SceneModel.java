@@ -133,16 +133,22 @@ public class SceneModel extends WorldController implements ContactListener {
     private TextureRegion playerIdleTextureScript;
     private TextureRegion salmonUprightWalkScript;
     private TextureRegion salmonConfusedScript;
+    private TextureRegion salmonIdleScript;
+    private TextureRegion salmonDetectedScript;
     private TextureRegion polarCave;
     private TextureRegion whiteTexture;
     private FilmStrip playerWalkFilm;
     private FilmStrip salmonUprightWalkFilm;
     private FilmStrip playerIdleFilm;
     private FilmStrip salmonConfusedFilm;
+    private FilmStrip salmonIdleFilm;
+    private FilmStrip salmonDetectedFilm;
     private int playerWalkAnimIndex = 0;
     private int playerIdleAnimIndex =0;
     private int salmonWalkAnimIndex = 0;
     private int salmonConfusedAnimIndex = 0;
+    private int salmonIdleAnimIndex = 0;
+    private int salmonDetectedIndex = 0;
     /** Reference to the goalDoor (for collision detection) */
     private BoxObstacle goalDoor;
     /** Controller for all dynamic shadows */
@@ -236,6 +242,13 @@ public class SceneModel extends WorldController implements ContactListener {
         salmonConfusedScript = new TextureRegion(directory.getEntry("enemies:salmonConfused",Texture.class));
         salmonConfusedFilm = new FilmStrip(salmonConfusedScript.getTexture(),4,8);
         salmonUprightWalkFilm.setFrame(0);
+        salmonIdleScript = new TextureRegion(directory.getEntry("enemies:salmonIdle",Texture.class));
+        salmonIdleFilm = new FilmStrip(salmonIdleScript.getTexture(), 5, 8);
+        salmonIdleFilm.setFrame(0);
+        salmonDetectedScript = new TextureRegion(directory.getEntry("enemies:salmonDetected",Texture.class));
+        salmonDetectedFilm = new FilmStrip(salmonDetectedScript.getTexture(), 4, 8);
+        salmonConfusedFilm.setFrame(0);
+
         gatherTiles(directory);
 
         jumpSound = directory.getEntry( "platform:jump", Sound.class );
@@ -824,9 +837,15 @@ public class SceneModel extends WorldController implements ContactListener {
 
         for (AIController i : controls) {
             if (i != null) {
-                if (i.isStunned() || i.isConfused()) {
-                    // animate stunned
-
+                if (i.isWon()) {
+                    salmonDetectedFilm.setFrame(salmonDetectedIndex);
+                    i.getEnemy().setTexture(salmonDetectedFilm);
+                    salmonDetectedIndex = (salmonDetectedIndex + 1) % 30;
+                } else if (i.getEnemy().getVX() == 0 && i.getEnemy().getVY() == 0) {
+                    salmonIdleFilm.setFrame(salmonIdleAnimIndex);
+                    i.getEnemy().setTexture(salmonIdleFilm);
+                    salmonIdleAnimIndex = (salmonIdleAnimIndex + 1) % 40;
+                } else if (i.isStunned() || i.isConfused()) { // animate stunned
                     salmonConfusedFilm.setFrame(i.get_confused_anim_index());
                     i.getEnemy().setTexture(salmonConfusedFilm);
                     i.inc_anim_index();
@@ -951,7 +970,12 @@ public class SceneModel extends WorldController implements ContactListener {
             }
         }
 
-        avatar.applyForce();
+        if (!isFailure()) {
+            avatar.applyForce();
+        } else {
+            avatar.setVX(0);
+            avatar.setVY(0);
+        }
         //enemies[0].applyForce();
         //enemies[1].applyForce();
 
