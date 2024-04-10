@@ -193,13 +193,13 @@ public class Enemy extends BoxObstacle {
 
 		/** Creating the red and green texture regions */
 		Pixmap redPixmap = new Pixmap(1, 1, Format.RGBA8888);
-		redPixmap.setColor(new Color(1, 0, 0, 0.5f));
+		redPixmap.setColor(new Color(1, 0, 0, 0.3f));
 		redPixmap.fill();
 		Texture redTexture = new Texture(redPixmap);
 		redTextureRegion = new TextureRegion(redTexture);
 
 		Pixmap greenPixmap = new Pixmap(1, 1, Format.RGBA8888);
-		greenPixmap.setColor(new Color(0, 1, 0, 0.5f));
+		greenPixmap.setColor(new Color(0, 1, 0, 0.3f));
 		greenPixmap.fill();
 		Texture greenTexture = new Texture(greenPixmap);
 		greenTextureRegion = new TextureRegion(greenTexture);
@@ -224,6 +224,7 @@ public class Enemy extends BoxObstacle {
 
 		redPixmap.dispose();
 		greenPixmap.dispose();
+
 		/** RED TEXTURE AND GREENTEXTURE ARE NOT DISPOSED*/
 		setName("enemy");
 	}
@@ -395,7 +396,6 @@ public class Enemy extends BoxObstacle {
 			EnemyLoSCallback callback = new EnemyLoSCallback(player.getBody());
 			world.rayCast(callback, getPosition(), player.getPosition());
 
-			System.out.println(callback.getRayTerm());
 
 			if (callback.hitPlayer) {
 				playerCurrentInSight = true;

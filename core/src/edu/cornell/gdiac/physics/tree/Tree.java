@@ -18,6 +18,8 @@ public class Tree extends PolygonObstacle {
 	public static final float Y_SCALE = 0.3f;
 
 	private int shakeCooldown = 0;
+
+	private boolean hasShaken;
 	private int shakeAnimation = 0;
 
 	private int shakeAnimationInvert = 1;
@@ -25,15 +27,17 @@ public class Tree extends PolygonObstacle {
 	public Tree(float[] points, float x, float y) {
 		super(points, x, y);
 		setBodyType(BodyDef.BodyType.StaticBody);
+		hasShaken = false;
 	}
 
 	public boolean canShake() {
-		return shakeCooldown <= 0;
+		return !hasShaken;
 	}
 
 	public void putOnShakeCooldown() {
 		shakeCooldown = SHAKE_COOLDOWN;
 		shakeAnimation = SHAKE_ANIMATION_TIME;
+		hasShaken = true;
 	}
 
 	@Override
