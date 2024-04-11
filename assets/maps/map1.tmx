@@ -22,7 +22,7 @@
  <tileset firstgid="15" source="Ursa.tsx"/>
  <tileset firstgid="21" source="salmon_walk_2_small.tsx"/>
  <tileset firstgid="25" source="tundra_tree_snow_small.tsx"/>
- <tileset firstgid="26" source="polar_flower_1.tsx"/>
+ <tileset firstgid="57" source="polar_flower_1.tsx"/>
  <layer id="1" name="Tile Layer 1" width="6" height="13">
   <data encoding="csv">
 1,1,1,1,1,1,
@@ -49,35 +49,10 @@
   </properties>
  </group>
  <objectgroup id="3" name="Enemies">
-  <object id="23" gid="21" x="947.819" y="4234.18" width="258" height="280.485">
-   <properties>
-    <property name="direction" value="-1"/>
-    <property name="maxX" value="2571.27"/>
-    <property name="minX" value="1259.27"/>
-   </properties>
-  </object>
-  <object id="26" gid="21" x="1022.91" y="5043.03" width="358" height="332">
-   <properties>
-    <property name="direction" value="1"/>
-    <property name="maxX" value="2571.27"/>
-    <property name="minX" value="1259.27"/>
-   </properties>
-  </object>
+  <object id="23" gid="21" x="947.819" y="4234.18" width="258" height="280.485"/>
+  <object id="26" gid="21" x="1022.91" y="5043.03" width="358" height="332"/>
   <object id="48" gid="21" x="1452.82" y="5699.15" width="258" height="280.485"/>
-  <object id="49" gid="21" x="1432.58" y="5342.91" width="258" height="280.485">
-   <properties>
-    <property name="direction" value="1"/>
-    <property name="maxX" value="2571.27"/>
-    <property name="minX" value="1259.27"/>
-   </properties>
-  </object>
-  <object id="50" gid="21" x="901.182" y="3798.42" width="258" height="280.485">
-   <properties>
-    <property name="direction" value="-1"/>
-    <property name="maxX" value="2571.27"/>
-    <property name="minX" value="1259.27"/>
-   </properties>
-  </object>
+  <object id="49" gid="21" x="1432.58" y="5342.91" width="258" height="280.485"/>
  </objectgroup>
  <objectgroup id="5" name="Trees">
   <object id="29" gid="25" x="856" y="4632" width="512" height="512"/>
@@ -88,12 +63,12 @@
   <object id="53" gid="25" x="1328" y="4644" width="512" height="512"/>
  </objectgroup>
  <objectgroup id="6" name="objects">
-  <object id="38" gid="26" x="2262.55" y="5674.36" width="134" height="136"/>
-  <object id="41" gid="26" x="2317.33" y="5770.67" width="134" height="134"/>
-  <object id="45" gid="26" x="2393.81" y="5514.18" width="134" height="134"/>
-  <object id="46" gid="26" x="2532" y="5625.33" width="134" height="134"/>
-  <object id="47" gid="26" x="2532" y="5753.33" width="134" height="134"/>
-  <object id="54" gid="26" x="1842" y="5752" width="134" height="134"/>
-  <object id="55" gid="26" x="2022" y="5762" width="134" height="134"/>
+  <object id="38" gid="57" x="2262.55" y="5674.36" width="134" height="136"/>
+  <object id="41" gid="57" x="2317.33" y="5770.67" width="134" height="134"/>
+  <object id="45" gid="57" x="2393.81" y="5514.18" width="134" height="134"/>
+  <object id="46" gid="57" x="2532" y="5625.33" width="134" height="134"/>
+  <object id="47" gid="57" x="2532" y="5753.33" width="134" height="134"/>
+  <object id="54" gid="57" x="1842" y="5752" width="134" height="134"/>
+  <object id="55" gid="57" x="2022" y="5762" width="134" height="134"/>
  </objectgroup>
 </map>

@@ -211,8 +211,8 @@ public class SceneModel extends WorldController implements ContactListener {
         world.setContactListener(this);
         sensorFixtures = new ObjectSet<Fixture>();
         json = new JsonReader();
-
         jsonData = json.parse(Gdx.files.internal("level2.json"));
+        System.out.println(jsonData.get("tilesets").get(0));
         tileHeight = jsonData.get("layers").get(0).get(1).asFloat();
         tileWidth = jsonData.get("layers").get(0).get(7).asFloat();
         playerStartX = jsonData.get("layers").get(1).get("objects").get(0).get(8).asFloat();
@@ -368,6 +368,7 @@ public class SceneModel extends WorldController implements ContactListener {
      * Lays out the game geography.
      */
     private void populateLevel() {
+        System.out.println(jsonData.get("layers").get(0));
         tileHeight = jsonData.get("layers").get(0).get(1).asFloat();
         tileWidth = jsonData.get("layers").get(0).get(7).asFloat();
         playerStartX = jsonData.get("layers").get(1).get("objects").get(0).get(8).asFloat();
@@ -437,7 +438,7 @@ public class SceneModel extends WorldController implements ContactListener {
 
         for(int i = 0; i< jsonData.get("layers").get(3).get("objects").size;i++){
             float x = (jsonData.get("layers").get(3).get("objects").get(i).get(8).asFloat()) / (tileWidth * 512f);
-            x = x * tileX + 5.5f;
+            x = (x * (tileX + 5.5f))+2.5f;
             float y = (maxY - jsonData.get("layers").get(3).get("objects").get(i).get(9).asFloat())/(tileHeight * 512f);
             y = y * tileY +13.0f;
 
@@ -456,8 +457,9 @@ public class SceneModel extends WorldController implements ContactListener {
         String tname = "tree";
         System.out.println(jsonData.get("layers"));
         for(int i = 0; i < jsonData.get("layers").get(4).get("objects").size; i++){
+            System.out.println("new: " + jsonData.get("layers").get(4).get("objects").get(i).get(8).asFloat());
             float x = (jsonData.get("layers").get(4).get("objects").get(i).get(8).asFloat())/ (tileWidth * 512f);
-            x = x * tileX + 5.5f;
+            x = (x * (tileX + 5.5f))+2.5f;
             float y = (maxY - jsonData.get("layers").get(4).get("objects").get(i).get(9).asFloat())/(tileHeight * 512f);
             y = y * tileY +11.0f;
             Tree obj = new Tree(treejv.get(0).asFloatArray(),x,y);
@@ -611,22 +613,22 @@ public class SceneModel extends WorldController implements ContactListener {
 
                     canvas.draw(tileTextures[9], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
                 }
-                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 22) {
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 53) {
                     //tileTextures[8] = new TextureRegion(directory.getEntry("tiles:polar_corner_8",Texture.class));
 
                     canvas.draw(tileTextures[10], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
                 }
-                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 23) {
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 54) {
                     //tileTextures[9] = new TextureRegion(directory.getEntry("tiles:polar_edge_1",Texture.class));
 
                     canvas.draw(tileTextures[11], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
                 }
-                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 24) {
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 55) {
                     //tileTextures[13] = new TextureRegion(directory.getEntry("tiles:polar_edge_5",Texture.class));
 
                     canvas.draw(tileTextures[12], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
                 }
-                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 25) {
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 56) {
                     //tileTextures[11] = new TextureRegion(directory.getEntry("tiles:polar_edge_3",Texture.class));
 
                     canvas.draw(tileTextures[13], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
@@ -823,7 +825,7 @@ public class SceneModel extends WorldController implements ContactListener {
                     addObject(wall);
 
                 }
-                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 22) {
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 53) {
                     //tileTextures[8] = new TextureRegion(directory.getEntry("tiles:polar_corner_8",Texture.class));
                     wall = new InvivisbleWall( 6.2f +  (j* 8),4.7f+(i*8),3.5f,.3f);
                     wall.setDensity(0);
@@ -848,7 +850,7 @@ public class SceneModel extends WorldController implements ContactListener {
                     addObject(wall);
 
                 }
-                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 23) {
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 54) {
                     //tileTextures[9] = new TextureRegion(directory.getEntry("tiles:polar_edge_1",Texture.class));
                     wall = new InvivisbleWall( 5.8f +  (j* 8),3.3f+(i*8),4f,.3f);
                     wall.setDensity(0);
@@ -866,7 +868,7 @@ public class SceneModel extends WorldController implements ContactListener {
                     addObject(wall);
 
                 }
-                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 24) {
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 55) {
                     //tileTextures[13] = new TextureRegion(directory.getEntry("tiles:polar_edge_5",Texture.class));
                     wall = new InvivisbleWall( 2.3f +  (j* 8),4.7f+(i*8),4.5f,.3f);
                     wall.setDensity(0);
@@ -884,7 +886,7 @@ public class SceneModel extends WorldController implements ContactListener {
                     addObject(wall);
 
                 }
-                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 25) {
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == 56) {
                     //tileTextures[11] = new TextureRegion(directory.getEntry("tiles:polar_edge_3",Texture.class));
                     wall = new InvivisbleWall(5.2f + (j* 8),4f+(i*8),.3f,8f);
                     wall.setDensity(0);
@@ -1302,14 +1304,16 @@ public class SceneModel extends WorldController implements ContactListener {
         if (complete && !failed) {
             displayFont.setColor(Color.YELLOW);
             canvas.begin(); // DO NOT SCALE
-            canvas.drawText("WINNER!",displayFont,avatar.getPosition().x *31.9f, avatar.getPosition().y * 31.9f );
+            canvas.drawText("WIN!",displayFont,avatar.getPosition().x *31.9f, avatar.getPosition().y * 31.9f );
+
 
             canvas.end();
         } else if (failed) {
             displayFont.setColor(Color.RED);
             canvas.begin(); // DO NOT SCALE
-            canvas.drawText("Loser!",displayFont,avatar.getPosition().x*31.9f, avatar.getPosition().y*31.9f);
+            canvas.drawText("Lose!",displayFont,avatar.getPosition().x*31.9f, avatar.getPosition().y*31.9f);
             canvas.end();
+
         }
     }
 
