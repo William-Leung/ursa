@@ -379,8 +379,8 @@ public class SceneModel extends WorldController implements ContactListener {
         maxY = (jsonData.get("layers").get(0).get("height").asFloat()) * 512f;
         playerStartY =  (maxY - playerStartY)/(tileHeight * 512f);
         playerStartX = (playerStartX/(tileWidth * 512f));
-        tileX = tileWidth * 7f;
-        tileY = tileHeight * 7f;
+        tileX = tileWidth * 8f;
+        tileY = tileHeight * 8f;
         // Add level goal
         float dwidth  = goalTile.getRegionWidth()/scale.x;
         float dheight = goalTile.getRegionHeight()/scale.y;
@@ -401,7 +401,7 @@ public class SceneModel extends WorldController implements ContactListener {
         // Create ursa
         dwidth  = playerIdleFilm.getRegionWidth()/50f;
         dheight = playerIdleFilm.getRegionHeight()/100f;
-        avatar = new UrsaModel(playerStartX * tileX + 5.5f,playerStartY * tileY +11.0f,constants.get("ursa"), dwidth, dheight);
+        avatar = new UrsaModel(playerStartX * tileX + 3.5f,playerStartY * tileY +11.0f,constants.get("ursa"), dwidth, dheight);
         avatar.setDrawScale(scale);
 
 
