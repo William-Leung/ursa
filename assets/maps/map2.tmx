@@ -36,7 +36,7 @@
  </objectgroup>
  <objectgroup id="5" name="trees">
   <object id="2" gid="16" x="1315.52" y="2022.76" width="256" height="512"/>
-  <object id="3" gid="16" x="1536.92" y="2013.9" width="256" height="512"/>
+  <object id="3" gid="16" x="1668.92" y="2033.9" width="256" height="512"/>
  </objectgroup>
  <objectgroup id="6" name="objects"/>
  <objectgroup id="7" name="cave"/>

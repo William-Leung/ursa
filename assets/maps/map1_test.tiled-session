@@ -25,6 +25,7 @@
             "scaleInDock": 1
         },
         "Polar_Cliff_Corner_4.tsx": {
+            "dynamicWrapping": false,
             "scaleInDock": 1
         },
         "Polar_Cliff_Corner_5.tsx": {
@@ -87,14 +88,14 @@
         },
         "map1.tmx": {
             "expandedObjectLayers": [
-                3,
-                2
+                2,
+                3
             ],
-            "scale": 0.33,
+            "scale": 0.125,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 1624.2424242424245,
-                "y": 4416.666666666667
+                "x": 1328,
+                "y": 4044
             }
         },
         "map1.tmx#Polar_Cliff_center": {
@@ -102,29 +103,29 @@
         },
         "map2.tmx": {
             "expandedObjectLayers": [
-                3,
+                2,
                 5,
-                2
+                3
             ],
-            "scale": 0.25,
-            "selectedLayer": 1,
+            "scale": 0.125,
+            "selectedLayer": 0,
             "viewCenter": {
-                "x": 1758,
-                "y": 1758
+                "x": 1892,
+                "y": 2592
             }
         },
         "map3.tmx": {
             "expandedObjectLayers": [
-                5,
                 2,
-                7,
-                4
+                4,
+                5,
+                7
             ],
             "scale": 0.13173828125,
-            "selectedLayer": 6,
+            "selectedLayer": 0,
             "viewCenter": {
-                "x": 3059.095626389919,
-                "y": 3078.0726464047443
+                "x": 3890.289103039288,
+                "y": 3188.1393624907337
             }
         },
         "player test.tsx": {
@@ -153,6 +154,9 @@
             "scaleInDock": 1,
             "scaleInEditor": 1
         },
+        "tiles.tsx": {
+            "scaleInEditor": 1
+        },
         "tundra_tree_snow.tsx": {
             "dynamicWrapping": false,
             "scaleInDock": 1,
@@ -164,7 +168,7 @@
             "scaleInEditor": 0.33
         }
     },
-    "last.exportedFilePath": "C:/Users/video/Desktop/ursa/assets",
+    "last.exportedFilePath": "C:/Users/danbp/Desktop/School/Junioir year cornell/3152/ursa/assets",
     "last.imagePath": "C:/Users/video/Downloads",
     "map.height": 7,
     "map.lastUsedExportFilter": "JSON map files (*.tmj *.json)",
@@ -188,18 +192,18 @@
     ],
     "project": "map1_test.tiled-project",
     "recentFiles": [
-        "map2.tmx",
+        "cave.tsx",
+        "Polar_Cliff_Edge_6.tsx",
+        "polar_cliff_edge_left_side.tsx",
+        "salmon_walk_2_small.tsx",
         "Polar_Cliff_center.tsx",
+        "polar_flower_1.tsx",
         "Ursa.tsx",
         "player test.tsx",
         "Polar_Cliff_Corner_5.tsx",
-        "polar_cliff_edge_left_side.tsx",
-        "polar_flower_1.tsx",
         "tundra_tree_snow_small.tsx",
-        "cave.tsx",
-        "Polar_Cliff_Edge_6.tsx",
-        "salmon_walk_2_small.tsx",
-        "map1.tmx"
+        "map2.tmx",
+        "tiles.tsx"
     ],
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {
