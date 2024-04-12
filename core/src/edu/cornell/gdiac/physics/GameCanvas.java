@@ -169,11 +169,16 @@ public class GameCanvas {
 		camera.update();
 	}
 
-	public Vector3 getCameraPosition() {
-		return camera.position;
+	public float getCameraX() {
+		return camera.position.x;
 	}
 
-	
+	public float getCameraY() {
+		return camera.position.y;
+	}
+
+
+
 	/**
 	 * Returns the height of this canvas
 	 *

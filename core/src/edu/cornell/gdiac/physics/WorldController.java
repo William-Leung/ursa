@@ -482,16 +482,8 @@ public abstract class WorldController implements Screen {
 
 		canvas.begin();
 
-		// Draws white background over the canvas so we don't have a blue background
-		canvas.draw(whiteTexture, Color.WHITE, 0,0,canvas.getWidth(),canvas.getHeight());
-
-		// Draws backgrounds and shadows for static objects
+		// Draws backgrounds
 		preDraw(dt);
-
-		// Draws shadows for moving objects (enemy/player)
-		for(Obstacle obj : objects) {
-			obj.preDraw(canvas);
-		}
 
 		// Sort to draw higher-up objects first -> Pokemon 3/4
 		objects.sort(obstacleComparator);

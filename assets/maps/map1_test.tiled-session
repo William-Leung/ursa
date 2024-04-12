@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "map1.tmx",
+    "activeFile": "map2.tmx",
     "expandedProjectPaths": [
         "."
     ],
@@ -92,7 +92,7 @@
         },
         "map1.tmx": {
             "scale": 0.08182617187499999,
-            "selectedLayer": 6,
+            "selectedLayer": 3,
             "viewCenter": {
                 "x": 5126.721565819311,
                 "y": 5120.61105143812
@@ -103,30 +103,30 @@
         },
         "map2.tmx": {
             "expandedObjectLayers": [
-                4,
+                3,
                 5,
-                2,
-                3
+                4,
+                2
             ],
             "scale": 0.25,
-            "selectedLayer": 6,
+            "selectedLayer": 0,
             "viewCenter": {
-                "x": 1792,
-                "y": 1790
+                "x": 1408,
+                "y": 1070
             }
         },
         "map3.tmx": {
             "expandedObjectLayers": [
-                4,
                 5,
-                2,
-                7
+                4,
+                7,
+                2
             ],
-            "scale": 0.13173828125,
+            "scale": 0.13,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 2952.824314306894,
-                "y": 5271.816160118606
+                "x": 3069.230769230769,
+                "y": 3019.230769230769
             }
         },
         "player test.tsx": {
@@ -171,7 +171,7 @@
         }
     },
     "last.exportedFilePath": "C:/Users/danbp/Desktop/School/Junioir year cornell/3152/ursa/assets",
-    "last.imagePath": "C:/Users/danbp/Desktop/School/Junioir year cornell/3152/ursa/assets/tiles",
+    "last.imagePath": "C:/Users/video/Downloads",
     "map.height": 20,
     "map.lastUsedExportFilter": "JSON map files (*.tmj *.json)",
     "map.lastUsedFormat": "tmx",
@@ -180,14 +180,13 @@
     "map.width": 20,
     "openFiles": [
         "map3.tmx",
-        "map2.tmx",
-        "map1.tmx"
+        "map2.tmx"
     ],
     "project": "map1_test.tiled-project",
     "recentFiles": [
+        "map1.tmx",
         "map3.tmx",
         "map2.tmx",
-        "map1.tmx",
         "cave.tsx",
         "Polar_Cliff_Edge_6.tsx",
         "polar_cliff_edge_left_side.tsx",
@@ -200,7 +199,7 @@
     ],
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {
-        "height": 126,
-        "width": 126
+        "height": 512,
+        "width": 512
     }
 }

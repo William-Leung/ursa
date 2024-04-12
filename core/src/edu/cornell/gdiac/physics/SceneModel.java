@@ -53,7 +53,7 @@ public class SceneModel extends WorldController implements ContactListener {
 
     static {
         Pixmap pixmap = new Pixmap(BLOB_SHADOW_RESOLUTION * 2, BLOB_SHADOW_RESOLUTION * 2, Pixmap.Format.RGBA8888);
-        pixmap.setColor(Color.BLACK);
+        pixmap.setColor(new Color(0f,0f,0f,0.7f));
         int xcenter = pixmap.getWidth() / 2;
         int ycenter = pixmap.getHeight() / 2;
         pixmap.fillCircle(xcenter, ycenter, BLOB_SHADOW_RESOLUTION);
@@ -97,6 +97,8 @@ public class SceneModel extends WorldController implements ContactListener {
     private TextureRegion bridgeTexture;
     /** Texture asset for the shadows */
     private TextureRegion shadowTexture;
+
+    private Texture blankTexture;
     private TextureRegion tundraTree;
     private TextureRegion tundraTreeWithSnow;
     private TextureRegion tundraTreeShadow;
@@ -192,7 +194,7 @@ public class SceneModel extends WorldController implements ContactListener {
     protected Color backgroundColor = Color.BLACK;
 
     private final Color[] colors;
-    private float[] intervals = {0f,0.2f,0.8f,1f};
+    private float[] intervals;
 
     private int nextPointer = 1;
 
@@ -229,16 +231,20 @@ public class SceneModel extends WorldController implements ContactListener {
         intervals = new float[4];
         // Night
         colors[0] = new Color(0f,0f,0f,0.7f);
-        colors[1] = new Color(1f,1f,1f,1f);
+        colors[1] = new Color(1f,1f,1f,0f);
         intervals[1] = 0.2f;
         // Maintain the white
-        colors[2] = new Color(1f,1f,1f,1f);
-        intervals[2] = 0.85f;
+        colors[2] = new Color(1f,1f,1f,0f);
+        intervals[2] = 0.8f;
 // Sunset Colors
-        colors[3] = new Color(0f,0f,0f,0.8f);
+        colors[3] = new Color(0f,0f,0f,0.7f);
         intervals[3] = 1f;
 
-
+        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        pixmap.setColor(1, 1, 1, 1); // RGBA color with full opacity (white)
+        pixmap.fill();
+        blankTexture = new Texture(pixmap);
+        pixmap.dispose();
 
     }
     /**
@@ -1296,15 +1302,19 @@ public class SceneModel extends WorldController implements ContactListener {
 
     @Override
     public void preDraw(float dt) {
-
-
-        canvas.draw(snowBackGround,backgroundColor,0,0,tileWidth* 256, tileHeight*256);
+        canvas.draw(snowBackGround,Color.WHITE,0,0,tileWidth* 256, tileHeight*256);
         drawTiles();
         drawExtraObjects();
 
-        if(timeRatio <= 1) {
-            shadowController.drawAllShadows(canvas, this);
+        // Draws shadows for moving objects (enemy/player) and static objects
+        // If it's night, don't draw shadows
+        if(timeRatio > 1) {
+            return;
         }
+        for(Obstacle obj : objects) {
+            obj.preDraw(canvas);
+        }
+        //shadowController.drawAllShadows(canvas, this);
     }
 
     @Override
@@ -1328,16 +1338,11 @@ public class SceneModel extends WorldController implements ContactListener {
 
     public void postDraw(float dt) {
         super.postDraw(dt);
+
+        canvas.draw(blankTexture,backgroundColor, canvas.getCameraX() - canvas.getWidth() / 2, canvas.getCameraY() - canvas.getHeight() / 2, canvas.getWidth(), canvas.getHeight());
         float dwidth = dayNightTexture.getRegionWidth()  / 2;
         float dheight = dayNightTexture.getRegionHeight() / 2;
-        canvas.draw(dayNightTexture,  // TextureRegion to draw
-                Color.WHITE,  // Color tint (optional, can be Color.WHITE)
-                dwidth,  // Texture origin x-coordinate (in pixels)
-                dheight,  // Texture origin y-coordinate (in pixels)
-                avatar.getPosition().x * 31.9f - dwidth / 2,  // Screen x-coordinate
-                (avatar.getPosition().y * 31.9f) + canvas.getHeight() / 2 ,  // Screen y-coordinate
-                rotationAngle,  // Rotation angle (in degrees)
-                0.5f, 0.5f  // Scaling factors
-        );
+        canvas.draw(dayNightTexture, Color.WHITE, dwidth, dheight, avatar.getPosition().x * 32f, avatar.getPosition().y * 32f + canvas.getHeight() / 2 , rotationAngle, 0.8f, 0.8f);
+
     }
 }
