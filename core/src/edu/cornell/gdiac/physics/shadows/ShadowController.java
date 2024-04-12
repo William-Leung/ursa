@@ -107,6 +107,8 @@ public class ShadowController {
     /**
      * Draws shadows for all objects in the SceneModel.
      * If it is night, draws nothing.
+     *
+     * This method actually doesn't do anything right now. PreDraw draws the shadows
      * @param canvas GameCanvas
      * @param sceneModel SceneModel
      */

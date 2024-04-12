@@ -103,30 +103,30 @@
         },
         "map2.tmx": {
             "expandedObjectLayers": [
+                3,
                 5,
-                2,
                 4,
-                3
+                2
             ],
             "scale": 0.25,
-            "selectedLayer": 6,
+            "selectedLayer": 0,
             "viewCenter": {
-                "x": 1706,
-                "y": 2348
+                "x": 1408,
+                "y": 1070
             }
         },
         "map3.tmx": {
             "expandedObjectLayers": [
                 5,
-                2,
                 4,
-                7
+                7,
+                2
             ],
-            "scale": 0.13173828125,
+            "scale": 0.13,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 2615.033358042994,
-                "y": 3172.957746478873
+                "x": 3069.230769230769,
+                "y": 3019.230769230769
             }
         },
         "player test.tsx": {
