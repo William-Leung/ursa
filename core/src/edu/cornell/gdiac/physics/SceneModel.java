@@ -212,7 +212,7 @@ public class SceneModel extends WorldController implements ContactListener {
         world.setContactListener(this);
         sensorFixtures = new ObjectSet<Fixture>();
         json = new JsonReader();
-        jsonData = json.parse(Gdx.files.internal("level2.json"));
+        jsonData = json.parse(Gdx.files.internal("level3.json"));
         firstTileIndex = (jsonData.get("layers").get(0).get(0).get(0)).asFloat();
 
         tileHeight = jsonData.get("layers").get(0).get(1).asFloat();
@@ -443,7 +443,7 @@ public class SceneModel extends WorldController implements ContactListener {
             float x = (jsonData.get("layers").get(3).get("objects").get(i).get(8).asFloat()) / (tileWidth * 512f);
             x = (x * (tileX + 5.5f))+2.5f;
             float y = (maxY - jsonData.get("layers").get(3).get("objects").get(i).get(9).asFloat())/(tileHeight * 512f);
-            y = y * tileY +17.0f;
+            y = y * tileY +14.0f;
 
             float direction = 1;
             float maxX = 2500/60;
