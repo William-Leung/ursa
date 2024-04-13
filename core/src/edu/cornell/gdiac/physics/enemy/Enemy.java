@@ -174,7 +174,7 @@ public class Enemy extends BoxObstacle {
 
 	private float detectionRange = ENEMY_DETECTION_RANGE_SIGHT;
 
-	public Enemy(float xStart,float yStart,float maxX, float minX,JsonValue data, float width, float height) {
+	public Enemy(float xStart,float yStart,Vector2[] partolLocals,Float numMarkers, JsonValue data, float width, float height) {
 		// The shrink factors fit the image to a tigher hitbox
 		super(	xStart,
 				yStart,

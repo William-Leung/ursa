@@ -71,6 +71,7 @@ public class SceneModel extends WorldController implements ContactListener {
     private TextureRegion polarTreeShadow;
     /** Texture asset for a cave's shadow in the polar map */
     private TextureRegion polarCaveShadow;
+    private Vector2[] enemyPosList = new Vector2[10];
 
     private TextureRegion polarHouse;
     private TextureRegion polarRock1;
@@ -287,9 +288,9 @@ public class SceneModel extends WorldController implements ContactListener {
         super.gatherAssets(directory);
     }
     public void gatherTiles(AssetDirectory directory ){
-        System.out.println(jsonData.get("tilesets"));
+
         for(int i = 0; i < jsonData.get("tilesets").size;i++ ){
-            System.out.println(jsonData.get("tilesets").size);
+
         }
         tileTextures[0] = new TextureRegion(directory.getEntry("tiles:polar_middle",Texture.class));
         tileTextures[1] = new TextureRegion(directory.getEntry("tiles:polar_corner_1",Texture.class));
@@ -376,7 +377,7 @@ public class SceneModel extends WorldController implements ContactListener {
         dheight = bipedalSalmonTexture.getRegionHeight()/scale.y;
 
         // place the cave
-        System.out.println((jsonData.get("layers").get(6)));
+
         for(int i = 0; i< jsonData.get("layers").get(6).get("objects").size;i++){
             float x = (jsonData.get("layers").get(6).get("objects").get(i).get(8).asFloat()) / (tileWidth * 512f);
             x = x * tileX + 5.5f;
@@ -405,6 +406,9 @@ public class SceneModel extends WorldController implements ContactListener {
         }
 
         for(int i = 0; i< jsonData.get("layers").get(3).get("objects").size;i++){
+            float markerCounter = 0;
+            enemyPosList = new Vector2[10];
+            float enemyNumber = jsonData.get("layers").get(3).get("objects").get(i).get("name").asFloat();
             float x = (jsonData.get("layers").get(3).get("objects").get(i).get(8).asFloat()) / (tileWidth * 512f);
             x = (x * (tileX + 5.5f))+2.5f;
             float y = (maxY - jsonData.get("layers").get(3).get("objects").get(i).get(9).asFloat())/(tileHeight * 512f);
@@ -413,7 +417,21 @@ public class SceneModel extends WorldController implements ContactListener {
             float direction = 1;
             float maxX = 2500/60;
             float minX = 1250/60;
-            enemies[i] = new Enemy(x,y,maxX,minX,constants.get("enemy"), dwidth/2, dheight/2);
+
+            for(int e = 0; e < jsonData.get("layers").get(8).get("objects").size;e++){
+                float MarkerName = jsonData.get("layers").get(8).get("objects").get(e).get("name").asFloat();
+                if(MarkerName == enemyNumber ){
+                    int orderNum = (jsonData.get("layers").get(8).get("objects").get(e).get("type").asInt());
+                    float markerX = (jsonData.get("layers").get(8).get("objects").get(e).get("x").asFloat()) / (tileWidth * 512f);
+                    float markerY = (jsonData.get("layers").get(8).get("objects").get(e).get("y").asFloat()) / (tileWidth * 512f);
+                    markerX = (markerX * (tileX + 5.5f))+2.5f;
+                    markerX = markerX * tileY +14.0f;
+                    enemyPosList[orderNum-1] = new Vector2(markerX,markerY);
+                    markerCounter += 1;
+                }
+            }
+
+            enemies[i] = new Enemy(x,y,enemyPosList,markerCounter,constants.get("enemy"), dwidth/2, dheight/2);
             enemies[i].setLookDirection(direction, 0);
             enemies[i].setDrawScale(scale);
             enemies[i].setTexture(salmonUprightWalkFilm);
@@ -423,9 +441,8 @@ public class SceneModel extends WorldController implements ContactListener {
         //place trees in the level
         JsonValue treejv = constants.get("trees");
         String tname = "tree";
-        System.out.println(jsonData.get("layers"));
+
         for(int i = 0; i < jsonData.get("layers").get(4).get("objects").size; i++){
-            System.out.println("new: " + jsonData.get("layers").get(4).get("objects").get(i).get(8).asFloat());
             float x = (jsonData.get("layers").get(4).get("objects").get(i).get(8).asFloat())/ (tileWidth * 512f);
             x = (x * (tileX + 5.5f))+2.5f;
             float y = (maxY - jsonData.get("layers").get(4).get("objects").get(i).get(9).asFloat())/(tileHeight * 512f);
