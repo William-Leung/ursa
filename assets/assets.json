@@ -1,70 +1,30 @@
 {
 	"textures": {
-        "shared:earth" : {
-            "file":  "shared/earthtile.png",
-            "wrapU": "repeated",
-            "wrapV": "repeated"
-        },
-        "shared:goal":   "shared/goaldoor.png",
-        "rocket:rocket": "rocket/rocket.png",
-        "rocket:main":  {
-            "file" : "rocket/flames.png",
-            "sprites" : {
-                "fire": {
-                    "rows": 1,
-                    "cols": 4
-                }
-            }
-        },
-        "rocket:left": {
-            "file" : "rocket/flames-left.png",
-            "sprites" : {
-                "fire": {
-                    "rows": 1,
-                    "cols": 4
-                }
-            }
-        },
-        "rocket:right": {
-            "file" : "rocket/flames-right.png",
-            "sprites" : {
-                "fire": {
-                    "rows": 1,
-                    "cols": 4
-                }
-            }
-        },
-
+        "shared:goal": "loading/goaldoor.png",
         "object:tundra_tree": "object/tundra_tree.png",
         "object:tundra_tree_snow_small": "object/tundra_tree_snow_small.png",
         "object:polar_tree_1": "object/polar_tree_1.png",
         "object:polar_tree_shake": "object/Polar_Tree_Shake.png",
-      "object:daynight": "shared/UIDayNight.png",
+        "object:daynight": "loading/UIDayNight.png",
 
-      "object:polar_house": "object/Polar_House.png",
-      "object:polar_rock_1": "object/Polar_Rock_1.png",
-      "object:polar_rock_2": "object/Polar_Rock_2.png",
-      "object:polar_rock_3": "object/Polar_Rock_3.png",
-      "object:polar_rock_4": "object/Polar_Rock_4.png",
-      "object:polar_trunk_1": "object/Polar_Trunk_1.png",
-      "object:polar_trunk_2": "object/Polar_Trunk_2.png",
-
+        "object:polar_house": "object/Polar_House.png",
+        "object:polar_rock_1": "object/Polar_Rock_1.png",
+        "object:polar_rock_2": "object/Polar_Rock_2.png",
+        "object:polar_rock_3": "object/Polar_Rock_3.png",
+        "object:polar_rock_4": "object/Polar_Rock_4.png",
+        "object:polar_trunk_1": "object/Polar_Trunk_1.png",
+        "object:polar_trunk_2": "object/Polar_Trunk_2.png",
         "shadows:polar_tree_shadow": "shadows/polar_tree_shadow.png",
         "shadows:polar_cave_shadow": "shadows/Polar_Cave_Shadow.png",
-
-      "shadows:polar_house_shadow": "shadows/Polar_House_Shadow.png",
-      "shadows:polar_rock_1_shadow": "shadows/Polar_Rock_1_Shadow.png",
-      "shadows:polar_rock_2_shadow": "shadows/Polar_Rock_2_Shadow.png",
-      "shadows:polar_rock_3_shadow": "shadows/Polar_Rock_3_Shadow.png",
-      "shadows:polar_rock_4_shadow": "shadows/Polar_Rock_4_Shadow.png",
-      "shadows:polar_trunk_1_shadow": "shadows/Polar_Trunk_1_Shadow.png",
-      "shadows:polar_trunk_2_shadow": "shadows/Polar_Trunk_2_Shadow.png",
-
-        "rocket:crate01": "rocket/crate01.png",
-        "rocket:crate02": "rocket/crate02.png",
-        "platform:dude":  "platform/dude.png",
-        "platform:enemy":  "platform/salmon.png",
-        "platform:enemy2":  "platform/salmon2.png",
+        "shadows:polar_house_shadow": "shadows/Polar_House_Shadow.png",
+        "shadows:polar_rock_1_shadow": "shadows/Polar_Rock_1_Shadow.png",
+        "shadows:polar_rock_2_shadow": "shadows/Polar_Rock_2_Shadow.png",
+        "shadows:polar_rock_3_shadow": "shadows/Polar_Rock_3_Shadow.png",
+        "shadows:polar_rock_4_shadow": "shadows/Polar_Rock_4_Shadow.png",
+        "shadows:polar_trunk_1_shadow": "shadows/Polar_Trunk_1_Shadow.png",
+        "shadows:polar_trunk_2_shadow": "shadows/Polar_Trunk_2_Shadow.png",
+        "enemies:bipedalSalmon":  "enemies/bipedalSalmon.png",
+        "enemies:swimmingSalmon":  "enemies/swimmingSalmon.png",
         "platform:snowback": "platform/snow.png",
         "platform:snowbackground": "platform/Background.JPG",
         "tiles:polar_middle": "tiles/Polar_Cliff_center.png",
@@ -83,59 +43,20 @@
         "tiles:polar_edge_4": "tiles/Polar_Cliff_Edge_4.png",
         "tiles:polar_edge_5": "tiles/Polar_Cliff_Edge_5.png",
         "tiles:polar_edge_6": "tiles/Polar_Cliff_Edge_6.png",
-        "platform:ursa":  "platform/ursa2.png",
         "player:ursaWalk": "player/Walk.png",
         "player:ursaIdle": "player/Stand.png",
         "enemies:salmonUprightWalk": "enemies/Walk.png",
         "enemies:salmonConfused": "enemies/Lost.png",
         "enemies:salmonIdle": "enemies/Stand.png",
         "enemies:salmonDetected": "enemies/Detected.png",
-        "object:cave": "object/Polar_Cave.png",
-        "object:white": "object/white.png",
-        "enemies:salmonWalk1":  "enemies/salmon_walk_2.png",
-        "enemies:salmonWalk2":  "enemies/salmon_walk_6.png",
-        "enemies:salmonWalk3":  "enemies/salmon_walk_10.png",
-        "enemies:salmonWalk4":  "enemies/salmon_walk_14.png",
-        "enemies:salmonWalk5":  "enemies/salmon_walk_18.png",
-        "enemies:salmonWalk6":  "enemies/salmon_walk_22.png",
-        "enemies:salmonWalk7":  "enemies/salmon_walk_26.png",
-        "enemies:salmonWalk8":  "enemies/salmon_walk_30.png",
-        "platform:rope":  "platform/ropebridge.png",
-        "platform:barrier": "platform/barrier.png",
-        "platform:bullet":  "platform/bullet.png",
-        "platform:shadow": "platform/tux_arm.png",
-        "ragdoll:bubble": "ragdoll/bubble.png",
-        "ragdoll:torso":  "ragdoll/tux_body.png",
-        "ragdoll:head":   "ragdoll/ProfWhite.png",
-        "ragdoll:thigh":  "ragdoll/tux_thigh.png",
-        "ragdoll:shin":   "ragdoll/tux_shin.png",
-        "ragdoll:arm":    "ragdoll/tux_arm.png",
-        "ragdoll:forearm":    "ragdoll/tux_forearm.png",
-        "ragdoll:crosshair":  "ragdoll/crosshair.png",
-        "ragdoll:foreground": "ragdoll/foreground.png",
-        "ragdoll:background": "ragdoll/background.png"
+        "object:cave": "object/Polar_Cave.png"
     },
     "jsons"  : {
-        "rocket:constants":  "rocket/constants.json",
-        "platform:constants": "platform/constants.json",
-        "ragdoll:constants":  "ragdoll/constants.json"
-    },
-    "sounds" : {
-        "rocket:bump" : "rocket/bump.mp3",
-        "rocket:mainburn" : "rocket/afterburner.mp3",
-        "rocket:leftburn" : "rocket/sideburner-left.mp3",
-        "rocket:rightburn": "rocket/sideburner-right.mp3",
-        "platform:jump" : "platform/jump.mp3",
-        "platform:pew"  : "platform/pew.mp3",
-        "platform:plop" : "platform/plop.mp3",
-        "ragdoll:glub1" : "ragdoll/bubble01.mp3",
-        "ragdoll:glub2" : "ragdoll/bubble02.mp3",
-        "ragdoll:glub3" : "ragdoll/bubble03.mp3",
-        "ragdoll:glub4" : "ragdoll/bubble04.mp3"
+        "platform:constants": "platform/constants.json"
     },
     "fonts": {
         "shared:retro": {
-            "file": "shared/RetroGame.ttf",
+            "file": "loading/RetroGame.ttf",
             "size": 64
         }
     }

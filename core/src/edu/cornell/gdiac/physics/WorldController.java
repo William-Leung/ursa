@@ -299,7 +299,6 @@ public abstract class WorldController implements Screen {
 	public void gatherAssets(AssetDirectory directory) {
 		goalTile  = new TextureRegion(directory.getEntry( "shared:goal", Texture.class ));
 		fallingSnow = new TextureRegion(directory.getEntry("platform:snowback",Texture.class));
-		whiteTexture = new TextureRegion(directory.getEntry("object:white",Texture.class));
 		snowBackGround = new TextureRegion(directory.getEntry("platform:snowbackground",Texture.class));
 		displayFont = directory.getEntry( "shared:retro" ,BitmapFont.class);
 	}

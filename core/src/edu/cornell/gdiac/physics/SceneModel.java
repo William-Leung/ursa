@@ -59,45 +59,16 @@ public class SceneModel extends WorldController implements ContactListener {
         pixmap.fillCircle(xcenter, ycenter, BLOB_SHADOW_RESOLUTION);
         BLOB_SHADOW_TEXTURE = new Texture(pixmap);
         pixmap.dispose();
-
-
     }
 
-    /** Texture asset for character avatar */
-    private TextureRegion dayNightTexture;
-    private TextureRegion avatarTexture;
-    private TextureRegion ursaTexture;
-    private float maxY;
-    float firstTileIndex;
-    private TextureRegion enemyTexture;
-    private TextureRegion enemyTexture2;
-    private TextureRegion[] tileTextures = new TextureRegion[16];
-    private FilmStrip salmonFilmStrip;
-    private float playerStartX;
-    private float playerStartY;
-    private float tileY;
-    private float tileX;
-    private float tileWidth;
-    private float tileHeight;
-    private float timeRatio;
-
-    private JsonReader json;
-    private JsonValue jsonData;
-
-    private Tree shakingTree = null;
-
-    private OrthogonalTiledMapRenderer renderer;
-    /** Texture asset for the spinning barrier */
-    private TextureRegion barrierTexture;
-    /** Texture asset for the bullet */
-    private TextureRegion bulletTexture;
-    private TextureRegion[] backgroundTextures = new TextureRegion[3];
-
-    /** Texture asset for the bridge plank */
-    private TextureRegion bridgeTexture;
-    /** Texture asset for the shadows */
-    private TextureRegion shadowTexture;
-
+    /** =========== Textures =========== */
+    /** Texture asset for day night UI */
+    private TextureRegion dayNightUITexture;
+    /** Texture asset for bipedal (2 legs) salmon */
+    private TextureRegion bipedalSalmonTexture;
+    /** Texture asset for swimming salmon */
+    private TextureRegion swimmingSalmonTexture;
+    /** Texture asset for tint over the whole screen */
     private Texture blankTexture;
     private TextureRegion tundraTree;
     private TextureRegion tundraTreeWithSnow;
@@ -120,19 +91,29 @@ public class SceneModel extends WorldController implements ContactListener {
     private TextureRegion polarTrunk1Shadow;
     private TextureRegion polarTrunk2Shadow;
 
-    private TextureRegion backGround;
 
-    /** The jump sound.  We only want to play once. */
-    private Sound jumpSound;
-    private long jumpId = -1;
-    /** The weapon fire sound.  We only want to play once. */
-    private Sound fireSound;
-    private long fireId = -1;
-    /** The weapon pop sound.  We only want to play once. */
-    private Sound plopSound;
-    private long plopId = -1;
-    /** The default sound volume */
-    private float volume;
+    private TextureRegion[] backgroundTextures = new TextureRegion[3];
+
+    private float maxY;
+    float firstTileIndex;
+    private TextureRegion[] tileTextures = new TextureRegion[16];
+    private FilmStrip salmonFilmStrip;
+    private float playerStartX;
+    private float playerStartY;
+    private float tileY;
+    private float tileX;
+    private float tileWidth;
+    private float tileHeight;
+    private float timeRatio;
+
+    private JsonReader json;
+    private JsonValue jsonData;
+
+    private Tree shakingTree = null;
+
+    private OrthogonalTiledMapRenderer renderer;
+
+
 
     // Physics objects for the game
     /** Physics constants for initialization */
@@ -159,7 +140,6 @@ public class SceneModel extends WorldController implements ContactListener {
      */
     private PooledList<House> houses = new PooledList<>();
 
-    private float timer = 0;
     private TextureRegion playerWalkTextureScript;
     private TextureRegion playerIdleTextureScript;
     private TextureRegion salmonUprightWalkScript;
@@ -168,7 +148,6 @@ public class SceneModel extends WorldController implements ContactListener {
     private TextureRegion salmonDetectedScript;
     private TextureRegion treeShakeScript;
     private TextureRegion polarCave;
-    private TextureRegion whiteTexture;
     private FilmStrip playerWalkFilm;
     private FilmStrip salmonUprightWalkFilm;
     private FilmStrip playerIdleFilm;
@@ -245,7 +224,6 @@ public class SceneModel extends WorldController implements ContactListener {
         pixmap.fill();
         blankTexture = new Texture(pixmap);
         pixmap.dispose();
-
     }
     /**
      * Gather the assets for this controller.
@@ -256,16 +234,9 @@ public class SceneModel extends WorldController implements ContactListener {
      * @param directory	Reference to global asset manager.
      */
     public void gatherAssets(AssetDirectory directory) {
-        dayNightTexture = new TextureRegion(directory.getEntry("object:daynight", Texture.class));
-        avatarTexture  = new TextureRegion(directory.getEntry("platform:dude", Texture.class));
-        ursaTexture = new TextureRegion(directory.getEntry("platform:ursa", Texture.class));
-        enemyTexture = new TextureRegion(directory.getEntry("platform:enemy", Texture.class));
-        enemyTexture2 = new TextureRegion(directory.getEntry("platform:enemy2", Texture.class));
-        barrierTexture = new TextureRegion(directory.getEntry("platform:barrier",Texture.class));
-        bulletTexture = new TextureRegion(directory.getEntry("platform:bullet",Texture.class));
-        bridgeTexture = new TextureRegion(directory.getEntry("platform:rope",Texture.class));
-        shadowTexture = new TextureRegion(directory.getEntry("platform:shadow",Texture.class));
-        backGround = new TextureRegion(directory.getEntry("platform:snowback",Texture.class));
+        dayNightUITexture = new TextureRegion(directory.getEntry("object:daynight", Texture.class));
+        bipedalSalmonTexture = new TextureRegion(directory.getEntry("enemies:bipedalSalmon", Texture.class));
+        swimmingSalmonTexture = new TextureRegion(directory.getEntry("enemies:swimmingSalmon", Texture.class));
 
         tundraTree = new TextureRegion(directory.getEntry("object:tundra_tree",Texture.class));
         tundraTreeWithSnow = new TextureRegion(directory.getEntry("object:tundra_tree_snow_small", Texture.class));
@@ -288,7 +259,6 @@ public class SceneModel extends WorldController implements ContactListener {
         polarTrunk2Shadow = new TextureRegion(directory.getEntry("shadows:polar_trunk_2_shadow", Texture.class));
         tundraTreeShadow.flip(true, true);
 
-        whiteTexture = new TextureRegion(directory.getEntry("object:white", Texture.class));
         playerWalkTextureScript = new TextureRegion(directory.getEntry("player:ursaWalk",Texture.class));
         playerWalkFilm = new FilmStrip(playerWalkTextureScript.getTexture(),2,8);
         playerWalkFilm.setFrame(0);
@@ -316,9 +286,6 @@ public class SceneModel extends WorldController implements ContactListener {
 
         gatherTiles(directory);
 
-        jumpSound = directory.getEntry( "platform:jump", Sound.class );
-        fireSound = directory.getEntry( "platform:pew", Sound.class );
-        plopSound = directory.getEntry( "platform:plop", Sound.class );
         constants = directory.getEntry( "platform:constants", JsonValue.class );
         super.gatherAssets(directory);
     }
@@ -413,8 +380,8 @@ public class SceneModel extends WorldController implements ContactListener {
 
         avatar.setTexture(playerWalkFilm);
         addObject(avatar);
-        dwidth  = enemyTexture.getRegionWidth()/scale.x;
-        dheight = enemyTexture.getRegionHeight()/scale.y;
+        dwidth  = bipedalSalmonTexture.getRegionWidth()/scale.x;
+        dheight = bipedalSalmonTexture.getRegionHeight()/scale.y;
 
         // place the cave
         System.out.println((jsonData.get("layers").get(6)));
@@ -522,8 +489,6 @@ public class SceneModel extends WorldController implements ContactListener {
                 controls.add(new AIController(enemies[i], avatar, trees));
             }
         }
-
-        volume = constants.getFloat("volume", 1.0f);
         drawWalls();
     }
 
@@ -556,10 +521,8 @@ public class SceneModel extends WorldController implements ContactListener {
         canvas.draw(backgroundTextures[0], Color.WHITE,0,0,1000,100,avatar.getAngle(), 0.1f,0.1f);
         for(int i = 0; i < jsonData.get("layers").get(5).get("objects").size;i++){
             float x = (jsonData.get("layers").get(5).get("objects").get(i).get(8).asFloat())/2;
-            // System.out.println(x);
             float y = (maxY - jsonData.get("layers").get(5).get("objects").get(i).get(9).asFloat())/1.3f;
 
-            // System.out.println(y);
             canvas.draw(backgroundTextures[0], Color.WHITE,0,0,x,y,avatar.getAngle(), 0.15f,0.15f);
         }
     }
@@ -951,32 +914,9 @@ public class SceneModel extends WorldController implements ContactListener {
         }
         salmonWalkAnimIndex = (salmonWalkAnimIndex + 1) % 21;
 
-
-//        if(salmonWalkAnimIndex == 0 || salmonWalkAnimIndex == 21){
-//            salmonWalkAnimIndex = 0;
-//            salmonUprightWalkFilm.setFrame(0);
-//            for (Enemy enemy:enemies) {
-//                if(enemy != null){
-//                    enemy.setTexture(salmonUprightWalkFilm);
-//                }
-//
-//            }
-//            salmonWalkAnimIndex +=1;
-////
-//        }
-//        else {
-//            salmonUprightWalkFilm.setFrame(salmonWalkAnimIndex);
-//            salmonWalkAnimIndex +=1;
-//            for (Enemy enemy:enemies) {
-//                if(enemy != null){
-//                    enemy.setTexture(salmonUprightWalkFilm);
-//                }
-//
-//            }
-//        }
     }
 
-    /*
+    /**
     Animates the player model based on the conidtions of the player
      */
     private void animatePlayerModel(){
@@ -1023,7 +963,6 @@ public class SceneModel extends WorldController implements ContactListener {
                 framesSinceTreeAnimation++;
                 if(framesSinceTreeAnimation == 3) { framesSinceTreeAnimation = 0;}
             }
-            System.out.println(treeShakeIndex);
 
             if(treeShakeIndex == 11) {
                 shakingTree.setTexture(tundraTree);
@@ -1048,7 +987,6 @@ public class SceneModel extends WorldController implements ContactListener {
     public void update(float dt) {
         rotationAngle = timeRatio * 3.14159265359f  + 3.14159265359f;
 
-        System.out.println(timeRatio);
         timeRatio = shadowController.getTimeRatio();
         if(timeRatio > 1) {
             nextPointer = 1;
@@ -1066,7 +1004,6 @@ public class SceneModel extends WorldController implements ContactListener {
         // Process actions in object model
         float xVal = InputController.getInstance().getHorizontal() *avatar.getForce();
         float yVal = InputController.getInstance().getVertical() *avatar.getForce();
-        timer += 1;
         avatar.setMovement(xVal,yVal);
         // avatar.setJumping(InputController.getInstance().didPrimary());
         //avatar.setShooting(InputController.getInstance().didSecondary());
@@ -1113,10 +1050,6 @@ public class SceneModel extends WorldController implements ContactListener {
 
         }
 
-        if (avatar.isJumping()) {
-            jumpId = playSound( jumpSound, jumpId, volume );
-        }
-
         for (Enemy enemy : enemies) {
             if(enemy != null) {
                 if (enemy.isPlayerInLineOfSight(world,avatar)) {
@@ -1147,42 +1080,6 @@ public class SceneModel extends WorldController implements ContactListener {
         }
     }
 
-    /**
-     * Add a new bullet to the world and send it in the right direction.
-     */
-    private void createBullet() {
-        JsonValue bulletjv = constants.get("bullet");
-        float offset = bulletjv.getFloat("offset",0);
-        offset *= (avatar.isFacingRight() ? 1 : -1);
-        float radius = bulletTexture.getRegionWidth()/(2.0f*scale.x);
-        WheelObstacle bullet = new WheelObstacle(avatar.getX()+offset, avatar.getY(), radius);
-
-        bullet.setName("bullet");
-        bullet.setDensity(bulletjv.getFloat("density", 0));
-        bullet.setDrawScale(scale);
-        bullet.setTexture(bulletTexture);
-        bullet.setBullet(true);
-        bullet.setGravityScale(0);
-
-        // Compute position and velocity
-        float speed = bulletjv.getFloat( "speed", 0 );
-        speed  *= (avatar.isFacingRight() ? 1 : -1);
-        bullet.setVX(speed);
-        addQueuedObject(bullet);
-
-        fireId = playSound( fireSound, fireId );
-    }
-
-    /**
-     * Remove a new bullet from the world.
-     *
-     * @param  bullet   the bullet to remove
-     */
-    public void removeBullet(Obstacle bullet) {
-        bullet.markRemoved(true);
-        plopId = playSound( plopSound, plopId );
-    }
-
 
     /**
      * Callback method for the start of a collision
@@ -1206,15 +1103,6 @@ public class SceneModel extends WorldController implements ContactListener {
         try {
             Obstacle bd1 = (Obstacle)body1.getUserData();
             Obstacle bd2 = (Obstacle)body2.getUserData();
-
-            // Test bullet collision with world
-            if (bd1.getName().equals("bullet") && bd2 != avatar) {
-                removeBullet(bd1);
-            }
-
-            if (bd2.getName().equals("bullet") && bd1 != avatar) {
-                removeBullet(bd2);
-            }
 
             // See if we have landed on the ground.
             if ((avatar.getSensorName().equals(fd2) && bd1.getName().equals("shadow")) ||
@@ -1272,17 +1160,6 @@ public class SceneModel extends WorldController implements ContactListener {
     /** Unused ContactListener method */
     public void preSolve(Contact contact, Manifold oldManifold) {}
 
-    /**
-     * Called when the Screen is paused.
-     *
-     * We need this method to stop all sounds when we pause.
-     * Pausing happens when we switch game modes.
-     */
-    public void pause() {
-        // jumpSound.stop(jumpId);
-        plopSound.stop(plopId);
-        fireSound.stop(fireId);
-    }
 
     /**
      * Invariant: intervals.length == colors.length
@@ -1291,9 +1168,6 @@ public class SceneModel extends WorldController implements ContactListener {
      * @param timeRatio
      */
     private void updateBackgroundColor(float startTime, float timeRatio) {
-        // Prevent IndexOutBoundsException
-        //System.out.println("Red: " + (colors[nextPointer - 1].r + (colors[nextPointer].r - colors[nextPointer - 1].r) * (timeRatio - startTime) * 2f));
-
         backgroundColor.r = colors[nextPointer - 1].r + (colors[nextPointer].r - colors[nextPointer - 1].r) * (timeRatio - startTime) / (intervals[nextPointer] - intervals[nextPointer - 1]);
         backgroundColor.g = colors[nextPointer - 1].g + (colors[nextPointer].g - colors[nextPointer - 1].g) * (timeRatio - startTime) / (intervals[nextPointer] - intervals[nextPointer - 1]);
         backgroundColor.b = colors[nextPointer - 1].b + (colors[nextPointer].b - colors[nextPointer - 1].b) * (timeRatio - startTime) / (intervals[nextPointer] - intervals[nextPointer - 1]);
@@ -1340,9 +1214,9 @@ public class SceneModel extends WorldController implements ContactListener {
         super.postDraw(dt);
 
         canvas.draw(blankTexture,backgroundColor, canvas.getCameraX() - canvas.getWidth() / 2, canvas.getCameraY() - canvas.getHeight() / 2, canvas.getWidth(), canvas.getHeight());
-        float dwidth = dayNightTexture.getRegionWidth()  / 2;
-        float dheight = dayNightTexture.getRegionHeight() / 2;
-        canvas.draw(dayNightTexture, Color.WHITE, dwidth, dheight, avatar.getPosition().x * 32f, avatar.getPosition().y * 32f + canvas.getHeight() / 2 , rotationAngle, 0.8f, 0.8f);
+        float dwidth = dayNightUITexture.getRegionWidth()  / 2;
+        float dheight = dayNightUITexture.getRegionHeight() / 2;
+        canvas.draw(dayNightUITexture, Color.WHITE, dwidth, dheight, avatar.getPosition().x * 32f, avatar.getPosition().y * 32f + canvas.getHeight() / 2 , rotationAngle, 0.8f, 0.8f);
 
     }
 }
