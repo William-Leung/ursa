@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="12" height="12" tilewidth="512" tileheight="512" infinite="0" nextlayerid="9" nextobjectid="102">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="12" height="12" tilewidth="512" tileheight="512" infinite="0" nextlayerid="10" nextobjectid="117">
  <editorsettings>
   <export target="../level1.json" format="json"/>
  </editorsettings>
@@ -24,6 +24,7 @@
  <tileset firstgid="27" source="tundra_tree_snow_small.tsx"/>
  <tileset firstgid="28" source="cave.tsx"/>
  <tileset firstgid="29" source="tiles.tsx"/>
+ <tileset firstgid="44" source="marker.tsx"/>
  <layer id="1" name="Tile Layer 1" width="12" height="12">
   <data encoding="csv">
 29,29,29,29,29,29,29,29,29,29,29,29,
@@ -45,10 +46,10 @@
  </objectgroup>
  <group id="3" name="constants"/>
  <objectgroup id="4" name="enemies">
-  <object id="47" gid="17" x="950.938" y="3444.14" width="512" height="512"/>
-  <object id="48" gid="17" x="3061.18" y="4954.71" width="512" height="512"/>
-  <object id="49" gid="17" x="1421.57" y="4370.22" width="512" height="512"/>
-  <object id="51" gid="17" x="2863.82" y="2973.51" width="512" height="512"/>
+  <object id="47" name="2" gid="17" x="950.938" y="3444.14" width="512" height="512"/>
+  <object id="48" name="4" gid="17" x="3061.18" y="4954.71" width="512" height="512"/>
+  <object id="49" name="1" gid="17" x="1421.57" y="4370.22" width="512" height="512"/>
+  <object id="51" name="3" gid="17" x="2863.82" y="2973.51" width="512" height="512"/>
  </objectgroup>
  <objectgroup id="5" name="trees">
   <object id="74" gid="27" x="2771.69" y="3466.91" width="256" height="512"/>
@@ -80,4 +81,20 @@
   <object id="99" gid="28" x="4078.35" y="2495.29" width="512" height="512"/>
  </objectgroup>
  <objectgroup id="8" name="rock"/>
+ <objectgroup id="9" name="markers">
+  <object id="102" name="3" type="1" gid="44" x="3534.04" y="2842.24" width="128" height="128"/>
+  <object id="103" name="3" type="2" gid="44" x="4065.4" y="2857.42" width="128" height="128"/>
+  <object id="104" name="3" type="3" gid="44" x="4573.98" y="2842.24" width="128" height="128"/>
+  <object id="105" name="4" type="1" gid="44" x="3647.91" y="4732.35" width="128" height="128"/>
+  <object id="106" name="4" type="2" gid="44" x="4126.13" y="4694.39" width="128" height="128"/>
+  <object id="107" name="4" type="3" gid="44" x="4771.34" y="4709.57" width="128" height="128"/>
+  <object id="108" name="2" type="1" gid="44" x="1484.52" y="3267.32" width="128" height="128"/>
+  <object id="109" name="2" type="2" gid="44" x="1765.38" y="3267.32" width="128" height="128"/>
+  <object id="110" name="2" type="3" gid="44" x="1772.98" y="2918.14" width="128" height="128"/>
+  <object id="111" name="2" type="4" gid="44" x="1772.98" y="2622.1" width="128" height="128"/>
+  <object id="112" name="1" type="1" gid="44" x="1977.93" y="4223.76" width="128" height="128"/>
+  <object id="113" name="1" type="2" gid="44" x="1977.93" y="4679.21" width="128" height="128"/>
+  <object id="114" name="1" type="3" gid="44" x="945.577" y="4686.8" width="128" height="128"/>
+  <object id="116" name="1" type="4" gid="44" x="968.35" y="4223.76" width="128" height="128"/>
+ </objectgroup>
 </map>
