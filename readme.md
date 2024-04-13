@@ -16,8 +16,8 @@
 <p>Fortunately, players have a couple tools at their disposal to help them brave the wilderness. Ursa’s bright white fur camouflages her with the sunlit landscape but betrays her when in shadow. Thus, as night approaches, players become more vulnerable to enemies and must seek out caves where they can rest away the night. In addition, players can push over trees to distract guards and shorten shadow lengths.</p>
 
 ## How to Play
-* Use the **Arrow Keys** to move around the map ![treeShake](assets/gifs/polarTreeShake.gif)
-* Press **F** when close to trees to shake them, dropping snow on and confusing enemies close by ![ursaWalk](assets/gifs/ursaWalk.gif)
+* Use the **Arrow Keys** to move around the map <br>![ursaWalk](assets/gifs/ursaWalk.gif)
+* Press **F** when close to trees to shake them, dropping snow on and confusing enemies close by <br>![treeShake](assets/gifs/polarTreeShake.gif) ![ursaWalk](assets/gifs/salmonStun.gif)
 
 ## How To Download
 You can download the latest version of our game by going to <a href="https://github.com/William-Leung/ursa/releases">Releases</a> and downloading _prototype.zip._
