@@ -885,18 +885,18 @@ public class SceneModel extends WorldController implements ContactListener {
 
         for (AIController i : controls) {
             if (i != null) {
-                if (i.isWon()) {
+                if (i.isWon() || i.isSurprised()) {
                     salmonDetectedFilm.setFrame(salmonDetectedIndex);
                     i.getEnemy().setTexture(salmonDetectedFilm);
                     salmonDetectedIndex = (salmonDetectedIndex + 1) % 30;
+                } else if (i.isConfused() || i.isStunned()) {
+                    salmonConfusedFilm.setFrame(i.get_confused_anim_index());
+                    i.getEnemy().setTexture(salmonConfusedFilm);
+                    i.inc_anim_index();
                 } else if (i.getEnemy().getVX() == 0 && i.getEnemy().getVY() == 0) {
                     salmonIdleFilm.setFrame(salmonIdleAnimIndex);
                     i.getEnemy().setTexture(salmonIdleFilm);
                     salmonIdleAnimIndex = (salmonIdleAnimIndex + 1) % 40;
-                } else if (i.isStunned() || i.isConfused()) { // animate stunned
-                    salmonConfusedFilm.setFrame(i.get_confused_anim_index());
-                    i.getEnemy().setTexture(salmonConfusedFilm);
-                    i.inc_anim_index();
                 } else {
                     i.reset_anim_index();
                     salmonUprightWalkFilm.setFrame(salmonWalkAnimIndex);
