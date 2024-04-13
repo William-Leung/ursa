@@ -1,6 +1,6 @@
 {
 	"textures": {
-        "shared:goal":   "loading/goaldoor.png",
+        "shared:goal": "loading/goaldoor.png",
         "object:tundra_tree": "object/tundra_tree.png",
         "object:tundra_tree_snow_small": "object/tundra_tree_snow_small.png",
         "object:polar_tree_1": "object/polar_tree_1.png",

@@ -1,14 +1,10 @@
 package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.maps.tiled.TideMapLoader;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -23,22 +19,19 @@ import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.assets.AssetDirectory;
-import edu.cornell.gdiac.physics.cave.Cave;
+import edu.cornell.gdiac.physics.objects.Cave;
 import edu.cornell.gdiac.physics.enemy.Enemy;
 import edu.cornell.gdiac.physics.obstacle.*;
-import edu.cornell.gdiac.physics.gameobjects.House;
+import edu.cornell.gdiac.physics.objects.House;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
-import edu.cornell.gdiac.physics.obstacle.PolygonObstacle;
-import edu.cornell.gdiac.physics.obstacle.WheelObstacle;
 import edu.cornell.gdiac.physics.player.UrsaModel;
 import edu.cornell.gdiac.physics.shadows.ShadowController;
 import edu.cornell.gdiac.physics.shadows.ShadowModel;
-import edu.cornell.gdiac.physics.tree.Tree;
+import edu.cornell.gdiac.physics.objects.Tree;
 import edu.cornell.gdiac.util.FilmStrip;
 import edu.cornell.gdiac.util.PooledList;
 import java.util.LinkedList;
-import com.badlogic.gdx.maps.tiled.TiledMap;
 
 public class SceneModel extends WorldController implements ContactListener {
 
@@ -70,10 +63,14 @@ public class SceneModel extends WorldController implements ContactListener {
     private TextureRegion swimmingSalmonTexture;
     /** Texture asset for tint over the whole screen */
     private Texture blankTexture;
-    private TextureRegion tundraTree;
-    private TextureRegion tundraTreeWithSnow;
-    private TextureRegion tundraTreeShadow;
-    private TextureRegion tundraCaveShadow;
+    /** Texture asset for a tree without snow in the polar map */
+    private TextureRegion polarTreeNoSnow;
+    /** Texture asset for a tree with snow in the polar map */
+    private TextureRegion polarTreeWithSnow;
+    /** Texture asset for a tree's shadow in the polar map */
+    private TextureRegion polarTreeShadow;
+    /** Texture asset for a cave's shadow in the polar map */
+    private TextureRegion polarCaveShadow;
 
     private TextureRegion polarHouse;
     private TextureRegion polarRock1;
@@ -156,7 +153,7 @@ public class SceneModel extends WorldController implements ContactListener {
     private FilmStrip salmonDetectedFilm;
     private FilmStrip treeShakeFilm;
     private int playerWalkAnimIndex = 0;
-    private int playerIdleAnimIndex =0;
+    private int playerIdleAnimIndex = 0;
     private int salmonWalkAnimIndex = 0;
     private int salmonConfusedAnimIndex = 0;
     private int salmonIdleAnimIndex = 0;
@@ -193,7 +190,7 @@ public class SceneModel extends WorldController implements ContactListener {
         world.setContactListener(this);
         sensorFixtures = new ObjectSet<Fixture>();
         json = new JsonReader();
-        jsonData = json.parse(Gdx.files.internal("level3.json"));
+        jsonData = json.parse(Gdx.files.internal("level1.json"));
         firstTileIndex = (jsonData.get("layers").get(0).get(0).get(0)).asFloat();
 
         tileHeight = jsonData.get("layers").get(0).get(1).asFloat();
@@ -238,8 +235,8 @@ public class SceneModel extends WorldController implements ContactListener {
         bipedalSalmonTexture = new TextureRegion(directory.getEntry("enemies:bipedalSalmon", Texture.class));
         swimmingSalmonTexture = new TextureRegion(directory.getEntry("enemies:swimmingSalmon", Texture.class));
 
-        tundraTree = new TextureRegion(directory.getEntry("object:tundra_tree",Texture.class));
-        tundraTreeWithSnow = new TextureRegion(directory.getEntry("object:tundra_tree_snow_small", Texture.class));
+        polarTreeNoSnow = new TextureRegion(directory.getEntry("object:tundra_tree",Texture.class));
+        polarTreeWithSnow = new TextureRegion(directory.getEntry("object:tundra_tree_snow_small", Texture.class));
         polarHouse = new TextureRegion(directory.getEntry("object:polar_house", Texture.class));
         polarRock1 = new TextureRegion(directory.getEntry("object:polar_rock_1", Texture.class));
         polarRock2 = new TextureRegion(directory.getEntry("object:polar_rock_2", Texture.class));
@@ -248,8 +245,8 @@ public class SceneModel extends WorldController implements ContactListener {
         polarTrunk1 = new TextureRegion(directory.getEntry("object:polar_trunk_1", Texture.class));
         polarTrunk2 = new TextureRegion(directory.getEntry("object:polar_trunk_2", Texture.class));
 
-        tundraTreeShadow = new TextureRegion(directory.getEntry("shadows:polar_tree_shadow", Texture.class));
-        tundraCaveShadow = new TextureRegion(directory.getEntry("shadows:polar_cave_shadow", Texture.class));
+        polarTreeShadow = new TextureRegion(directory.getEntry("shadows:polar_tree_shadow", Texture.class));
+        polarCaveShadow = new TextureRegion(directory.getEntry("shadows:polar_cave_shadow", Texture.class));
         polarHouseShadow = new TextureRegion(directory.getEntry("shadows:polar_house_shadow", Texture.class));
         polarRock1Shadow = new TextureRegion(directory.getEntry("shadows:polar_rock_1_shadow", Texture.class));
         polarRock2Shadow = new TextureRegion(directory.getEntry("shadows:polar_rock_2_shadow", Texture.class));
@@ -257,7 +254,7 @@ public class SceneModel extends WorldController implements ContactListener {
         polarRock4Shadow = new TextureRegion(directory.getEntry("shadows:polar_rock_4_shadow", Texture.class));
         polarTrunk1Shadow = new TextureRegion(directory.getEntry("shadows:polar_trunk_1_shadow", Texture.class));
         polarTrunk2Shadow = new TextureRegion(directory.getEntry("shadows:polar_trunk_2_shadow", Texture.class));
-        tundraTreeShadow.flip(true, true);
+        polarTreeShadow.flip(true, true);
 
         playerWalkTextureScript = new TextureRegion(directory.getEntry("player:ursaWalk",Texture.class));
         playerWalkFilm = new FilmStrip(playerWalkTextureScript.getTexture(),2,8);
@@ -355,8 +352,8 @@ public class SceneModel extends WorldController implements ContactListener {
         tileX = tileWidth * 8f;
         tileY = tileHeight * 8f;
         // Add level goal
-        float dwidth  = goalTile.getRegionWidth()/scale.x;
-        float dheight = goalTile.getRegionHeight()/scale.y;
+        float dwidth;
+        float dheight;
 
 
         // create shadow (idk if this does anything even)
@@ -365,11 +362,6 @@ public class SceneModel extends WorldController implements ContactListener {
         String wname = "wall";
         JsonValue walljv = constants.get("walls");
         JsonValue defaults = constants.get("defaults");
-
-
-
-        // This world is heavier
-        //world.setGravity( new Vector2(0,defaults.getFloat("gravity",0)) );
 
         // Create ursa
         dwidth  = playerIdleFilm.getRegionWidth()/50f;
@@ -404,7 +396,7 @@ public class SceneModel extends WorldController implements ContactListener {
             goalDoor.setName("goal");
 
             ShadowModel caveShadow = new ShadowModel(new Vector2(goalDoor.getX(), goalDoor.getY()), 0.75f, 0.75f,
-                    tundraCaveShadow, new Vector2(tundraCaveShadow.getRegionWidth() / 2.0f, 85), scale);
+                    polarCaveShadow, new Vector2(polarCaveShadow.getRegionWidth() / 2.0f, 85), scale);
             shadows.add(caveShadow);
             addObject(caveShadow);
 
@@ -444,11 +436,11 @@ public class SceneModel extends WorldController implements ContactListener {
             obj.setFriction(defaults.getFloat( "friction", 0.0f ));
             obj.setRestitution(defaults.getFloat( "restitution", 0.0f ));
             obj.setDrawScale(scale);
-            obj.setTexture(tundraTreeWithSnow);
+            obj.setTexture(polarTreeWithSnow);
             obj.setName(tname+i);
 
             ShadowModel model = new ShadowModel(new Vector2(obj.getX(), obj.getY()), 0.75f, 0.75f,
-                    tundraTreeShadow, new Vector2(tundraTreeShadow.getRegionWidth() / 2.0f, 85), scale);
+                    polarTreeShadow, new Vector2(polarTreeShadow.getRegionWidth() / 2.0f, 85), scale);
             shadows.add(model);
             addObject(model);
 
@@ -917,7 +909,7 @@ public class SceneModel extends WorldController implements ContactListener {
     }
 
     /**
-    Animates the player model based on the conidtions of the player
+     Animates the player model based on the conditions of the player
      */
     private void animatePlayerModel(){
         if(avatar.getXMovement() != 0 || avatar.getyMovement() != 0){
@@ -965,7 +957,7 @@ public class SceneModel extends WorldController implements ContactListener {
             }
 
             if(treeShakeIndex == 11) {
-                shakingTree.setTexture(tundraTree);
+                shakingTree.setTexture(polarTreeNoSnow);
                 treeShakeIndex = 0;
                 framesSinceTreeAnimation = 0;
                 shakingTree = null;
@@ -1069,7 +1061,7 @@ public class SceneModel extends WorldController implements ContactListener {
     private void shakeTree(Tree tree) {
         if (tree.canShake()) {
             tree.putOnShakeCooldown();
-            tree.setTexture(tundraTree);
+            tree.setTexture(polarTreeNoSnow);
             shakingTree = tree;
 
             for (Enemy enemy : enemies) {
@@ -1126,7 +1118,7 @@ public class SceneModel extends WorldController implements ContactListener {
      * Callback method for the start of a collision
      *
      * This method is called when two objects cease to touch.  The main use of this method
-     * is to determine when the characer is NOT on the ground.  This is how we prevent
+     * is to determine when the character is NOT on the ground.  This is how we prevent
      * double jumping.
      */
     public void endContact(Contact contact) {
@@ -1211,12 +1203,13 @@ public class SceneModel extends WorldController implements ContactListener {
     }
 
     public void postDraw(float dt) {
+        canvas.draw(blankTexture,backgroundColor, canvas.getCameraX() - canvas.getWidth() / 2, canvas.getCameraY() - canvas.getHeight() / 2, canvas.getWidth(), canvas.getHeight());
+
         super.postDraw(dt);
 
-        canvas.draw(blankTexture,backgroundColor, canvas.getCameraX() - canvas.getWidth() / 2, canvas.getCameraY() - canvas.getHeight() / 2, canvas.getWidth(), canvas.getHeight());
         float dwidth = dayNightUITexture.getRegionWidth()  / 2;
         float dheight = dayNightUITexture.getRegionHeight() / 2;
-        canvas.draw(dayNightUITexture, Color.WHITE, dwidth, dheight, avatar.getPosition().x * 32f, avatar.getPosition().y * 32f + canvas.getHeight() / 2 , rotationAngle, 0.8f, 0.8f);
+        canvas.draw(dayNightUITexture, Color.WHITE, dwidth, dheight, canvas.getCameraX(), canvas.getCameraY() + canvas.getHeight() / 2 , rotationAngle, 0.8f, 0.8f);
 
     }
 }

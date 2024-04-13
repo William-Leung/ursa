@@ -1,4 +1,4 @@
-package edu.cornell.gdiac.physics.cave;
+package edu.cornell.gdiac.physics.objects;
 
 import com.badlogic.gdx.graphics.Color;
 import edu.cornell.gdiac.physics.GameCanvas;

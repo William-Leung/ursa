@@ -2,13 +2,10 @@ package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.math.Vector2;
 import edu.cornell.gdiac.physics.enemy.Enemy;
-import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.physics.player.UrsaModel;
-import edu.cornell.gdiac.physics.tree.Tree;
+import edu.cornell.gdiac.physics.objects.Tree;
 import edu.cornell.gdiac.util.PooledList;
 import java.util.ArrayDeque;
-import java.util.HashMap;
-import java.util.List;
 
 public class AIController {
 

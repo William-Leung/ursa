@@ -169,6 +169,13 @@ public class PolygonObstacle extends SimpleObstacle {
 	}
 
 	/**
+	 * Gets the points for this polygon obstacle
+	 */
+	public float[] getPoints() {
+		return vertices;
+	}
+
+	/**
 	 * Initializes the bounding box (and drawing scale) for this polygon
 	 */
 	private void initBounds() {

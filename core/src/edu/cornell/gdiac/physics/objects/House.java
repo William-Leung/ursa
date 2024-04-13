@@ -1,4 +1,4 @@
-package edu.cornell.gdiac.physics.gameobjects;
+package edu.cornell.gdiac.physics.objects;
 
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
