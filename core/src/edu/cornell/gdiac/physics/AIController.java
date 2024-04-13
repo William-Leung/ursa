@@ -37,13 +37,13 @@ public class AIController {
     /** Time when enemy spawns where they cannot do anything */
     private static final int SPAWN_TICKS = 30;
     /** Time in range before changing confused to attack */
-    private static final int CONFUSE_TIME = 40;
+    private static final int CONFUSE_TIME = 50;
     /** ticks enemy will stay engaged in if chasing but not in cone */
     private static final int CHASE_MEMORY = 40;
     /** Amount of uninterrupted time player can spend in cone before losing */
     private static final int LIFE_TIME = 500;
     /** Maximum amount of time enemy can spend looking around in one time */
-    private static final float MAX_LOOKING = 200;
+    private static final float MAX_LOOKING = 500;
     /** Ticks Ursa can be within range before being detected */
     private static final int DETECTION_DELAY = 20;
 
@@ -169,7 +169,7 @@ public class AIController {
 
             case WANDER:
 
-                if (ticks % 50 == 0 && Math.random() > 0.8) {
+                if (ticks % 50 == 0 && Math.random() > 0.95) {
                     ticks_looking = 0;
                     state = FSMState.LOOKING;
                 } else if (ticks_detected >= DETECTION_DELAY) {
@@ -253,7 +253,7 @@ public class AIController {
                     state = FSMState.CHASE;
                 } else {
                     if (ticks - last_time_detected >= CHASE_MEMORY) {
-                        state = FSMState.CONFUSED;
+                        state = FSMState.LOOKING;
                     }
                 }
 
@@ -411,25 +411,25 @@ public class AIController {
                 break;
             case CHASE:
 
-                System.out.println("CHASE");
+                //System.out.println("CHASE");
                 action.x = lastDetection.x - enemy.getX();
                 action.y = lastDetection.y - enemy.getY();
                 action = action.nor();
 
-                enemy.setVX(action.x * 6);
-                enemy.setVY(action.y * 6);
+                enemy.setVX(action.x * 5);
+                enemy.setVY(action.y * 5);
                 enemy.setLookDirection(action.x, action.y);
 
                 break;
 
             case ATTACK:
-                System.out.println("ATTACK");
+                //System.out.println("ATTACK");
                 action.x = ursa.getX() - enemy.getX();
                 action.y = ursa.getY() - enemy.getY();
                 action = action.nor();
 
-                enemy.setVX(action.x * 4);
-                enemy.setVY(action.y * 4);
+                enemy.setVX(action.x * 7);
+                enemy.setVY(action.y * 7);
                 enemy.setLookDirection(action.x, action.y);
 
                 break;
@@ -451,8 +451,8 @@ public class AIController {
                 //enemy.setVX(0);
                 //enemy.setVY(0);
                 if (ticks % 20 == 0) {
-                    enemy.setVX(7 * (float) Math.random());
-                    enemy.setVY(7 * (float) Math.random());
+                    enemy.setVX(4 * (float) Math.random());
+                    enemy.setVY(4 * (float) Math.random());
                 }
 
                 break;
