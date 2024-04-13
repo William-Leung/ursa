@@ -394,10 +394,10 @@ public class SceneModel extends WorldController implements ContactListener {
             goalDoor.setSensor(true);
             goalDoor.setDrawScale(scale);
             goalDoor.setTexture(polarCave);
-            goalDoor.setName("goal");
+            goalDoor.setName("cave");
 
             ShadowModel caveShadow = new ShadowModel(new Vector2(goalDoor.getX(), goalDoor.getY()), 0.75f, 0.75f,
-                    polarCaveShadow, new Vector2(polarCaveShadow.getRegionWidth() / 2.0f, 85), scale);
+                    goalDoor.getName(), goalDoor.getDrawOrigin(), scale);
             shadows.add(caveShadow);
             addObject(caveShadow);
 
@@ -457,7 +457,7 @@ public class SceneModel extends WorldController implements ContactListener {
             obj.setName(tname+i);
 
             ShadowModel model = new ShadowModel(new Vector2(obj.getX(), obj.getY()), 0.75f, 0.75f,
-                    polarTreeShadow, new Vector2(polarTreeShadow.getRegionWidth() / 2.0f, 85), scale);
+                    tname, new Vector2(polarTreeShadow.getRegionWidth() / 2.0f, 85), scale);
             shadows.add(model);
             addObject(model);
 
