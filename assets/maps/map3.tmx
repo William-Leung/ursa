@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="12" height="12" tilewidth="512" tileheight="512" infinite="0" nextlayerid="9" nextobjectid="102">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="12" height="12" tilewidth="512" tileheight="512" infinite="0" nextlayerid="10" nextobjectid="117">
  <editorsettings>
   <export target="../level1.json" format="json"/>
  </editorsettings>
@@ -20,64 +20,81 @@
  <tileset firstgid="15" source="Polar_Cliff_Edge_6.tsx"/>
  <tileset firstgid="16" source="polar_cliff_edge_left_side.tsx"/>
  <tileset firstgid="17" source="salmon_walk_2_small.tsx"/>
- <tileset firstgid="21" source="Ursa.tsx"/>
- <tileset firstgid="27" source="tundra_tree_snow_small.tsx"/>
- <tileset firstgid="28" source="cave.tsx"/>
- <tileset firstgid="29" source="tiles.tsx"/>
+ <tileset firstgid="18" source="Ursa.tsx"/>
+ <tileset firstgid="24" source="tundra_tree_snow_small.tsx"/>
+ <tileset firstgid="25" source="cave.tsx"/>
+ <tileset firstgid="26" source="tiles.tsx"/>
+ <tileset firstgid="41" source="marker.tsx"/>
  <layer id="1" name="Tile Layer 1" width="12" height="12">
   <data encoding="csv">
-29,29,29,29,29,29,29,29,29,29,29,29,
-29,29,29,29,29,29,29,29,29,29,29,29,
-29,29,29,37,30,29,29,37,30,29,29,29,
-29,37,39,35,38,29,29,40,33,39,30,29,
-29,32,34,0,33,39,39,35,0,43,31,29,
-29,37,35,0,0,0,0,0,0,33,30,29,
-29,40,0,0,0,0,0,0,0,0,42,29,
-29,41,0,0,0,0,0,0,0,0,42,29,
-29,40,0,0,0,0,0,0,0,0,38,29,
-29,41,0,43,36,34,0,43,34,0,38,29,
-29,32,36,31,29,32,36,31,32,36,31,29,
-29,29,29,29,29,29,29,29,29,29,29,29
+26,26,26,26,26,26,26,26,26,26,26,26,
+26,26,26,26,26,26,26,26,26,26,26,26,
+26,26,26,34,27,26,26,34,27,26,26,26,
+26,34,36,32,35,26,26,37,30,36,27,26,
+26,29,31,0,30,36,36,32,0,40,28,26,
+26,34,32,0,0,0,0,0,0,30,27,26,
+26,37,0,0,0,0,0,0,0,0,39,26,
+26,38,0,0,0,0,0,0,0,0,39,26,
+26,37,0,0,0,0,0,0,0,0,35,26,
+26,38,0,40,33,31,0,40,31,0,35,26,
+26,29,33,28,26,29,33,28,29,33,28,26,
+26,26,26,26,26,26,26,26,26,26,26,26
 </data>
  </layer>
  <objectgroup id="2" name="player">
-  <object id="100" gid="21" x="988.888" y="2229.61" width="256" height="256"/>
+  <object id="100" gid="18" x="988.888" y="2229.61" width="256" height="256"/>
  </objectgroup>
  <group id="3" name="constants"/>
  <objectgroup id="4" name="enemies">
-  <object id="47" gid="17" x="950.938" y="3444.14" width="512" height="512"/>
-  <object id="48" gid="17" x="3061.18" y="4954.71" width="512" height="512"/>
-  <object id="49" gid="17" x="1421.57" y="4370.22" width="512" height="512"/>
-  <object id="51" gid="17" x="2863.82" y="2973.51" width="512" height="512"/>
+  <object id="47" name="2" gid="17" x="950.938" y="3444.14" width="512" height="512"/>
+  <object id="48" name="4" gid="17" x="3061.18" y="4954.71" width="512" height="512"/>
+  <object id="49" name="1" gid="17" x="1421.57" y="4370.22" width="512" height="512"/>
+  <object id="51" name="3" gid="17" x="2863.82" y="2973.51" width="512" height="512"/>
  </objectgroup>
  <objectgroup id="5" name="trees">
-  <object id="74" gid="27" x="2771.69" y="3466.91" width="256" height="512"/>
-  <object id="75" gid="27" x="2786.87" y="3709.82" width="256" height="512"/>
-  <object id="76" gid="27" x="2802.05" y="3869.22" width="256" height="512"/>
-  <object id="77" gid="27" x="2809.64" y="4051.4" width="256" height="512"/>
-  <object id="80" gid="27" x="2688.19" y="3702.23" width="256" height="512"/>
-  <object id="81" gid="27" x="2483.24" y="3558" width="256" height="512"/>
-  <object id="82" gid="27" x="2392.15" y="3459.32" width="256" height="512"/>
-  <object id="83" gid="27" x="2604.69" y="3633.91" width="256" height="512"/>
-  <object id="84" gid="27" x="2612.28" y="3778.13" width="256" height="512"/>
-  <object id="85" gid="27" x="2430.1" y="3755.36" width="256" height="512"/>
-  <object id="86" gid="27" x="2270.7" y="3725" width="256" height="512"/>
-  <object id="87" gid="27" x="2695.78" y="3854.04" width="256" height="512"/>
-  <object id="88" gid="27" x="2528.78" y="3998.27" width="256" height="512"/>
-  <object id="89" gid="27" x="2376.97" y="4134.9" width="256" height="512"/>
-  <object id="90" gid="27" x="2961.46" y="3633.91" width="256" height="512"/>
-  <object id="91" gid="27" x="3105.68" y="3474.5" width="256" height="512"/>
-  <object id="92" gid="27" x="3227.14" y="3391" width="256" height="512"/>
-  <object id="93" gid="27" x="2961.46" y="3755.36" width="256" height="512"/>
-  <object id="94" gid="27" x="3136.05" y="3755.36" width="256" height="512"/>
-  <object id="95" gid="27" x="3272.68" y="3755.36" width="256" height="512"/>
-  <object id="96" gid="27" x="2969.05" y="3914.77" width="256" height="512"/>
-  <object id="97" gid="27" x="3098.09" y="4051.4" width="256" height="512"/>
-  <object id="98" gid="27" x="3151.23" y="4096.95" width="256" height="512"/>
+  <object id="74" gid="24" x="2771.69" y="3466.91" width="256" height="512"/>
+  <object id="75" gid="24" x="2786.87" y="3709.82" width="256" height="512"/>
+  <object id="76" gid="24" x="2802.05" y="3869.22" width="256" height="512"/>
+  <object id="77" gid="24" x="2809.64" y="4051.4" width="256" height="512"/>
+  <object id="80" gid="24" x="2688.19" y="3702.23" width="256" height="512"/>
+  <object id="81" gid="24" x="2483.24" y="3558" width="256" height="512"/>
+  <object id="82" gid="24" x="1331.41" y="2565.83" width="256" height="512"/>
+  <object id="83" gid="24" x="2604.69" y="3633.91" width="256" height="512"/>
+  <object id="84" gid="24" x="2612.28" y="3778.13" width="256" height="512"/>
+  <object id="85" gid="24" x="2430.1" y="3755.36" width="256" height="512"/>
+  <object id="86" gid="24" x="2270.7" y="3725" width="256" height="512"/>
+  <object id="87" gid="24" x="2695.78" y="3854.04" width="256" height="512"/>
+  <object id="88" gid="24" x="2528.78" y="3998.27" width="256" height="512"/>
+  <object id="89" gid="24" x="2376.97" y="4134.9" width="256" height="512"/>
+  <object id="90" gid="24" x="2961.46" y="3633.91" width="256" height="512"/>
+  <object id="91" gid="24" x="3105.68" y="3474.5" width="256" height="512"/>
+  <object id="92" gid="24" x="3227.14" y="3391" width="256" height="512"/>
+  <object id="93" gid="24" x="2961.46" y="3755.36" width="256" height="512"/>
+  <object id="94" gid="24" x="3136.05" y="3755.36" width="256" height="512"/>
+  <object id="95" gid="24" x="3272.68" y="3755.36" width="256" height="512"/>
+  <object id="96" gid="24" x="2969.05" y="3914.77" width="256" height="512"/>
+  <object id="97" gid="24" x="3098.09" y="4051.4" width="256" height="512"/>
+  <object id="98" gid="24" x="3151.23" y="4096.95" width="256" height="512"/>
  </objectgroup>
  <objectgroup id="6" name="object"/>
  <objectgroup id="7" name="cave">
-  <object id="99" gid="28" x="4078.35" y="2495.29" width="512" height="512"/>
+  <object id="99" gid="25" x="4593.73" y="5126.06" width="512" height="512"/>
  </objectgroup>
  <objectgroup id="8" name="rock"/>
+ <objectgroup id="9" name="markers">
+  <object id="102" name="3" type="1" gid="41" x="3534.04" y="2842.24" width="128" height="128"/>
+  <object id="103" name="3" type="2" gid="41" x="4065.4" y="2857.42" width="128" height="128"/>
+  <object id="104" name="3" type="3" gid="41" x="4573.98" y="2842.24" width="128" height="128"/>
+  <object id="105" name="4" type="1" gid="41" x="3647.91" y="4732.35" width="128" height="128"/>
+  <object id="106" name="4" type="2" gid="41" x="4126.13" y="4694.39" width="128" height="128"/>
+  <object id="107" name="4" type="3" gid="41" x="4771.34" y="4709.57" width="128" height="128"/>
+  <object id="108" name="2" type="1" gid="41" x="1484.52" y="3267.32" width="128" height="128"/>
+  <object id="109" name="2" type="2" gid="41" x="1765.38" y="3267.32" width="128" height="128"/>
+  <object id="110" name="2" type="3" gid="41" x="1772.98" y="2918.14" width="128" height="128"/>
+  <object id="111" name="2" type="4" gid="41" x="1772.98" y="2622.1" width="128" height="128"/>
+  <object id="112" name="1" type="1" gid="41" x="1977.93" y="4223.76" width="128" height="128"/>
+  <object id="113" name="1" type="2" gid="41" x="1977.93" y="4679.21" width="128" height="128"/>
+  <object id="114" name="1" type="3" gid="41" x="945.577" y="4686.8" width="128" height="128"/>
+  <object id="116" name="1" type="4" gid="41" x="968.35" y="4223.76" width="128" height="128"/>
+ </objectgroup>
 </map>

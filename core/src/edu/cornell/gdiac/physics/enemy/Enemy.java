@@ -16,14 +16,11 @@ import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.physics.GameCanvas;
 import edu.cornell.gdiac.physics.SceneModel;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
+import edu.cornell.gdiac.physics.obstacle.PolygonObstacle;
 import edu.cornell.gdiac.physics.obstacle.SimpleObstacle;
 import edu.cornell.gdiac.physics.shadows.ShadowController;
-import edu.cornell.gdiac.physics.shadows.ShadowModel;
-import edu.cornell.gdiac.util.PooledList;
 
 public class Enemy extends BoxObstacle {
-
-
 	private static final float SIGHT_RANGE_INCREMENT = 0.35f;
 	private static final float BLOB_SHADOW_SIZE = 0.5f;
 
@@ -177,7 +174,7 @@ public class Enemy extends BoxObstacle {
 
 	private float detectionRange = ENEMY_DETECTION_RANGE_SIGHT;
 
-	public Enemy(float xStart,float yStart,float maxX, float minX,JsonValue data, float width, float height) {
+	public Enemy(float xStart,float yStart,Vector2[] partolLocals,Float numMarkers, JsonValue data, float width, float height) {
 		// The shrink factors fit the image to a tigher hitbox
 		super(	xStart,
 				yStart,
@@ -405,6 +402,13 @@ public class Enemy extends BoxObstacle {
 		}
 		playerCurrentInSight = false;
 		return false;
+	}
+
+	public void generateVertices(PolygonObstacle[] obstacles) {
+		float[] points;
+		for(PolygonObstacle po: obstacles) {
+			points = po.getPoints();
+		}
 	}
 
 //	public boolean isObjectInLineOfSight(World world) {

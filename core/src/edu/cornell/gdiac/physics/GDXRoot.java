@@ -16,7 +16,6 @@ package edu.cornell.gdiac.physics;
 import com.badlogic.gdx.*;
 import edu.cornell.gdiac.util.*;
 import edu.cornell.gdiac.assets.*;
-import edu.cornell.gdiac.physics.platform.*;
 
 /**
  * Root class for a LibGDX.  
@@ -34,7 +33,7 @@ public class GDXRoot extends Game implements ScreenListener {
 	private GameCanvas canvas;
 	/** Player mode for the asset loading screen (CONTROLLER CLASS) */
 	private LoadingMode loading;
-	/** Player mode for the the game proper (CONTROLLER CLASS) */
+	/** Player mode for the game proper (CONTROLLER CLASS) */
 	private int current;
 	/** List of all WorldControllers */
 	private WorldController[] controllers;

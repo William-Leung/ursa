@@ -112,15 +112,35 @@ public class ShadowModel extends PolygonObstacle {
 
     public void setDirection (Vector2 newDirec) { direction.set(newDirec); }
 
-    public ShadowModel(Vector2 anchor, float sx, float sy, TextureRegion texture, Vector2 textureOrigin, Vector2 drawScale) {
-        super(new float[] {
-            0, -1f,
-            -1f, -0.25f,
-            -1.5f, 0.15f,
-            0, 5f,
-            1.5f, 0.15f,
-            1f, -0.25f,
-        }, anchor.x, anchor.y);
+    public static float[] ShadowPolygon(String texture) {
+        float[] tree = new float[] {
+                0, -1f,
+                -1f, -0.25f,
+                -1.5f, 0.15f,
+                0, 5f,
+                1.5f, 0.15f,
+                1f, -0.25f,
+        };
+        float[] cave = new float[] {
+                0, -2f,
+                -2f, 0,
+                -3f, 2f,
+                0, 4f,
+                3f, 2f,
+                3f, 0f,
+        };
+        switch (texture) {
+            case "tree":
+                return tree;
+            case "cave":
+                return cave;
+            default:
+                return tree;
+        }
+    }
+
+    public ShadowModel(Vector2 anchor, float sx, float sy, String texture, Vector2 textureOrigin, Vector2 drawScale) {
+        super(ShadowPolygon(texture), anchor.x, anchor.y);
         this.initial_height = 0;
         this.initial_width = 0;
         this.shadow_anchor = anchor;

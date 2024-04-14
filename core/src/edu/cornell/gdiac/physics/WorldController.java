@@ -116,6 +116,8 @@ public abstract class WorldController implements Screen {
 	/** Comparator to determine hierarchy of drawing for Pokémon 3/4 */
 	private Comparator<Obstacle> obstacleComparator = (o1, o2) -> Float.compare(o2.getY(), o1.getY());
 
+	private Color tinting = Color.WHITE;
+
 	/**
 	 * Returns true if debug mode is active.
 	 *
@@ -299,7 +301,6 @@ public abstract class WorldController implements Screen {
 	public void gatherAssets(AssetDirectory directory) {
 		goalTile  = new TextureRegion(directory.getEntry( "shared:goal", Texture.class ));
 		fallingSnow = new TextureRegion(directory.getEntry("platform:snowback",Texture.class));
-		whiteTexture = new TextureRegion(directory.getEntry("object:white",Texture.class));
 		snowBackGround = new TextureRegion(directory.getEntry("platform:snowbackground",Texture.class));
 		displayFont = directory.getEntry( "shared:retro" ,BitmapFont.class);
 	}
@@ -488,6 +489,7 @@ public abstract class WorldController implements Screen {
 		// Sort to draw higher-up objects first -> Pokemon 3/4
 		objects.sort(obstacleComparator);
 		for(Obstacle obj : objects) {
+			obj.updateTint(tinting);
 			obj.draw(canvas);
 		}
 
@@ -661,4 +663,7 @@ public abstract class WorldController implements Screen {
 		this.listener = listener;
 	}
 
+	public void updateTinting(Color color) {
+		tinting = color;
+	}
 }

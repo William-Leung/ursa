@@ -2,13 +2,10 @@ package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.math.Vector2;
 import edu.cornell.gdiac.physics.enemy.Enemy;
-import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.physics.player.UrsaModel;
-import edu.cornell.gdiac.physics.tree.Tree;
+import edu.cornell.gdiac.physics.objects.Tree;
 import edu.cornell.gdiac.util.PooledList;
 import java.util.ArrayDeque;
-import java.util.HashMap;
-import java.util.List;
 
 public class AIController {
 
@@ -40,13 +37,15 @@ public class AIController {
     /** Time when enemy spawns where they cannot do anything */
     private static final int SPAWN_TICKS = 30;
     /** Time in range before changing confused to attack */
-    private static final int CONFUSE_TIME = 32;
+    private static final int CONFUSE_TIME = 50;
     /** ticks enemy will stay engaged in if chasing but not in cone */
     private static final int CHASE_MEMORY = 40;
     /** Amount of uninterrupted time player can spend in cone before losing */
     private static final int LIFE_TIME = 500;
     /** Maximum amount of time enemy can spend looking around in one time */
-    private static final float MAX_LOOKING = 200;
+    private static final float MAX_LOOKING = 500;
+    /** Ticks Ursa can be within range before being detected */
+    private static final int DETECTION_DELAY = 20;
 
 
     /** Degrees enemy can rotate per tick */
@@ -88,6 +87,8 @@ public class AIController {
     private Vector2 lastDetection = null;
     /** Last time ursa was detected */
     private long last_time_detected = 0;
+    /** Ticks spent detected (consecutive) */
+    private int ticks_detected = 0;
 
     private int confused_anim_index = 0;
 
@@ -137,12 +138,19 @@ public class AIController {
 
 
     private void changeStateIfApplicable() {
+
+        if (isDetected()) {
+            ticks_detected++;
+        } else {
+            ticks_detected = 0;
+        }
+
         switch(state) {
             case SPAWN:
                 if (ticks < SPAWN_TICKS) {
                     state = FSMState.SPAWN;
                 } else {
-                    if (isDetected()) {
+                    if (ticks_detected >= DETECTION_DELAY) {
                         if (lastDetection == null) {
                             lastDetection = new Vector2(ursa.getX(), ursa.getY());
                         } else {
@@ -161,10 +169,10 @@ public class AIController {
 
             case WANDER:
 
-                if (ticks % 50 == 0 && Math.random() > 0.8) {
+                if (ticks % 50 == 0 && Math.random() > 0.95) {
                     ticks_looking = 0;
                     state = FSMState.LOOKING;
-                } else if (isDetected()) {
+                } else if (ticks_detected >= DETECTION_DELAY) {
                     if (lastDetection == null) {
                         lastDetection = new Vector2(ursa.getX(), ursa.getY());
                     } else {
@@ -188,7 +196,7 @@ public class AIController {
 
                 ticks_looking++;
 
-                if (isDetected()) {
+                if (ticks_detected >= DETECTION_DELAY) {
 
                     if (lastDetection == null) {
                         lastDetection = new Vector2(ursa.getX(), ursa.getY());
@@ -245,7 +253,7 @@ public class AIController {
                     state = FSMState.CHASE;
                 } else {
                     if (ticks - last_time_detected >= CHASE_MEMORY) {
-                        state = FSMState.CONFUSED;
+                        state = FSMState.LOOKING;
                     }
                 }
 
@@ -298,7 +306,7 @@ public class AIController {
         ticks++;
 
         changeStateIfApplicable();
-        System.out.println(state.toString());
+        //System.out.println(state.toString());
 
         prevLoc.x = enemy.getX();
         prevLoc.y = enemy.getY();
@@ -403,25 +411,25 @@ public class AIController {
                 break;
             case CHASE:
 
-                System.out.println("CHASE");
+                //System.out.println("CHASE");
                 action.x = lastDetection.x - enemy.getX();
                 action.y = lastDetection.y - enemy.getY();
                 action = action.nor();
 
-                enemy.setVX(action.x * 6);
-                enemy.setVY(action.y * 6);
+                enemy.setVX(action.x * 5);
+                enemy.setVY(action.y * 5);
                 enemy.setLookDirection(action.x, action.y);
 
                 break;
 
             case ATTACK:
-                System.out.println("ATTACK");
+                //System.out.println("ATTACK");
                 action.x = ursa.getX() - enemy.getX();
                 action.y = ursa.getY() - enemy.getY();
                 action = action.nor();
 
-                enemy.setVX(action.x * 4);
-                enemy.setVY(action.y * 4);
+                enemy.setVX(action.x * 7);
+                enemy.setVY(action.y * 7);
                 enemy.setLookDirection(action.x, action.y);
 
                 break;
@@ -443,8 +451,8 @@ public class AIController {
                 //enemy.setVX(0);
                 //enemy.setVY(0);
                 if (ticks % 20 == 0) {
-                    enemy.setVX(7 * (float) Math.random());
-                    enemy.setVY(7 * (float) Math.random());
+                    enemy.setVX(4 * (float) Math.random());
+                    enemy.setVY(4 * (float) Math.random());
                 }
 
                 break;
@@ -494,11 +502,11 @@ public class AIController {
     }
 
     public boolean isConfused() {
-        return state == FSMState.CONFUSED;
+        return (state == FSMState.CONFUSED);
     }
 
     public boolean isStunned() {
-        return state == FSMState.STUNNED;
+        return (state == FSMState.STUNNED);
     }
 
     public boolean isChase() { return state == FSMState.CHASE; }
@@ -507,7 +515,12 @@ public class AIController {
         return confused_anim_index;
     }
 
-    public int inc_anim_index() { return confused_anim_index = (confused_anim_index + 1) % 30; }
+    public int inc_anim_index() {
+        if (isStunned()) {
+            return confused_anim_index = (confused_anim_index + 1) % 30;
+        }
+        return confused_anim_index = Math.min(confused_anim_index + 1, 24);
+    }
 
     public void reset_anim_index() { confused_anim_index = 0; }
 
@@ -518,5 +531,9 @@ public class AIController {
 //
 //        rotateEnemy(Math.abs(goalAngle - enemy.getAngle()) / 20, goalAngle);
 //    }
+
+    public boolean isSurprised() {
+        return isDetected() && state == FSMState.ATTACK && ticks_attacked <= 20;
+    }
 
 }
