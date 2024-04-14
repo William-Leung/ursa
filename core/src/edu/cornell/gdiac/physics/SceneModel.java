@@ -67,35 +67,80 @@ public class SceneModel extends WorldController implements ContactListener {
     private TextureRegion polarTreeNoSnow;
     /** Texture asset for a tree with snow in the polar map */
     private TextureRegion polarTreeWithSnow;
+    /** Texture asset for a house in the polar map */
+    private TextureRegion polarHouse;
+    /** Texture asset for the first rock in the polar map */
+    private TextureRegion polarRock1;
+    /** Texture asset for the second rock in the polar map */
+    private TextureRegion polarRock2;
+    /** Texture asset for the third rock in the polar map */
+    private TextureRegion polarRock3;
+    /** Texture asset for the fourth rock in the polar map */
+    private TextureRegion polarRock4;
+    /** Texture asset for the first trunk in the polar map */
+    private TextureRegion polarTrunk1;
+    /** Texture asset for the second trunk in the polar map */
+    private TextureRegion polarTrunk2;
+    /** Texture asset for the cave in the polar map */
+    private TextureRegion polarCave;
+
+    /** =========== Shadow Textures =========== */
     /** Texture asset for a tree's shadow in the polar map */
     private TextureRegion polarTreeShadow;
     /** Texture asset for a cave's shadow in the polar map */
     private TextureRegion polarCaveShadow;
-    private Vector2[] enemyPosList = new Vector2[10];
-
-    private TextureRegion polarHouse;
-    private TextureRegion polarRock1;
-    private TextureRegion polarRock2;
-    private TextureRegion polarRock3;
-    private TextureRegion polarRock4;
-    private TextureRegion polarTrunk1;
-    private TextureRegion polarTrunk2;
-
+    /** Texture asset for a house's shadow in the polar map */
     private TextureRegion polarHouseShadow;
+    /** Texture asset for the first rock's shadow in the polar map */
     private TextureRegion polarRock1Shadow;
+    /** Texture asset for the second rock's shadow in the polar map */
     private TextureRegion polarRock2Shadow;
+    /** Texture asset for the third rock's shadow in the polar map */
     private TextureRegion polarRock3Shadow;
+    /** Texture asset for the fourth rock's shadow in the polar map */
     private TextureRegion polarRock4Shadow;
+    /** Texture asset for the first trunk's shadow in the polar map */
     private TextureRegion polarTrunk1Shadow;
+    /** Texture asset for the second trunk's shadow in the polar map */
     private TextureRegion polarTrunk2Shadow;
 
+    /** =========== Animation Textures =========== */
+    /** Texture asset for player walking animation */
+    private TextureRegion playerWalkTextureAnimation;
+    /** Texture asset for player idle animation */
+    private TextureRegion playerIdleTextureAnimation;
+    /** Texture asset for salmon walking animation */
+    private TextureRegion salmonUprightWalkAnimation;
+    /** Texture asset for salmon confused animation */
+    private TextureRegion salmonConfusedAnimation;
+    /** Texture asset for salmon idle animation */
+    private TextureRegion salmonIdleAnimation;
+    /** Texture asset for salmon detecting animation */
+    private TextureRegion salmonDetectedAnimation;
+    /** Texture asset for tree shaking animation */
+    private TextureRegion treeShakeAnimation;
+
+    /** =========== Film Strips =========== */
+    /** Filmstrip for player walking animation */
+    private FilmStrip playerWalkFilm;
+    /** Filmstrip for salmon walking animation */
+    private FilmStrip salmonUprightWalkFilm;
+    /** Filmstrip for player idling animation */
+    private FilmStrip playerIdleFilm;
+    /** Filmstrip for salmon confused animation */
+    private FilmStrip salmonConfusedFilm;
+    /** Filmstrip for salmon idling animation */
+    private FilmStrip salmonIdleFilm;
+    /** Filmstrip for salmon detecting animation */
+    private FilmStrip salmonDetectedFilm;
+    /** Filmstrip for tree shaking animation */
+    private FilmStrip treeShakeFilm;
 
     private TextureRegion[] backgroundTextures = new TextureRegion[3];
 
     private float maxY;
     float firstTileIndex;
     private TextureRegion[] tileTextures = new TextureRegion[16];
-    private FilmStrip salmonFilmStrip;
     private float playerStartX;
     private float playerStartY;
     private float tileY;
@@ -103,14 +148,11 @@ public class SceneModel extends WorldController implements ContactListener {
     private float tileWidth;
     private float tileHeight;
     private float timeRatio;
-
+    private Vector2[] enemyPosList = new Vector2[10];
     private JsonReader json;
     private JsonValue jsonData;
 
     private Tree shakingTree = null;
-
-    private OrthogonalTiledMapRenderer renderer;
-
 
 
     // Physics objects for the game
@@ -138,21 +180,6 @@ public class SceneModel extends WorldController implements ContactListener {
      */
     private PooledList<House> houses = new PooledList<>();
 
-    private TextureRegion playerWalkTextureScript;
-    private TextureRegion playerIdleTextureScript;
-    private TextureRegion salmonUprightWalkScript;
-    private TextureRegion salmonConfusedScript;
-    private TextureRegion salmonIdleScript;
-    private TextureRegion salmonDetectedScript;
-    private TextureRegion treeShakeScript;
-    private TextureRegion polarCave;
-    private FilmStrip playerWalkFilm;
-    private FilmStrip salmonUprightWalkFilm;
-    private FilmStrip playerIdleFilm;
-    private FilmStrip salmonConfusedFilm;
-    private FilmStrip salmonIdleFilm;
-    private FilmStrip salmonDetectedFilm;
-    private FilmStrip treeShakeFilm;
     private int playerWalkAnimIndex = 0;
     private int playerIdleAnimIndex = 0;
     private int salmonWalkAnimIndex = 0;
@@ -166,8 +193,10 @@ public class SceneModel extends WorldController implements ContactListener {
     /** Controller for all dynamic shadows */
     private ShadowController shadowController;
 
+
     /** Mark set to handle more sophisticated collision callbacks */
     protected ObjectSet<Fixture> sensorFixtures;
+    /** */
     protected Color backgroundColor = Color.BLACK;
 
     private final Color[] colors;
@@ -175,7 +204,10 @@ public class SceneModel extends WorldController implements ContactListener {
 
     private int nextPointer = 1;
 
-    private float rotationAngle = 0f;
+    private float uiRotationAngle = 0f;
+    private float uiYOffset = 0f;
+    private float uiRisingDuration = 0.05f;
+    private float uiDrawScale = 0.1f;
 
 
     /**
@@ -191,7 +223,7 @@ public class SceneModel extends WorldController implements ContactListener {
         world.setContactListener(this);
         sensorFixtures = new ObjectSet<Fixture>();
         json = new JsonReader();
-        jsonData = json.parse(Gdx.files.internal("level1.json"));
+        jsonData = json.parse(Gdx.files.internal("level4.json"));
         firstTileIndex = (jsonData.get("layers").get(0).get(0).get(0)).asFloat();
 
         tileHeight = jsonData.get("layers").get(0).get(1).asFloat();
@@ -207,14 +239,14 @@ public class SceneModel extends WorldController implements ContactListener {
         colors = new Color[4];
         intervals = new float[4];
         // Night
-        colors[0] = new Color(0f,0f,0f,0.7f);
+        colors[0] = new Color(0f,0f,0f,0.5f);
         colors[1] = new Color(1f,1f,1f,0f);
         intervals[1] = 0.2f;
         // Maintain the white
         colors[2] = new Color(1f,1f,1f,0f);
         intervals[2] = 0.8f;
 // Sunset Colors
-        colors[3] = new Color(0f,0f,0f,0.7f);
+        colors[3] = new Color(0f,0f,0f,0.5f);
         intervals[3] = 1f;
 
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
@@ -232,7 +264,7 @@ public class SceneModel extends WorldController implements ContactListener {
      * @param directory	Reference to global asset manager.
      */
     public void gatherAssets(AssetDirectory directory) {
-        dayNightUITexture = new TextureRegion(directory.getEntry("object:daynight", Texture.class));
+        dayNightUITexture = new TextureRegion(directory.getEntry("ui:dayNightUI", Texture.class));
         bipedalSalmonTexture = new TextureRegion(directory.getEntry("enemies:bipedalSalmon", Texture.class));
         swimmingSalmonTexture = new TextureRegion(directory.getEntry("enemies:swimmingSalmon", Texture.class));
 
@@ -257,28 +289,28 @@ public class SceneModel extends WorldController implements ContactListener {
         polarTrunk2Shadow = new TextureRegion(directory.getEntry("shadows:polar_trunk_2_shadow", Texture.class));
         polarTreeShadow.flip(true, true);
 
-        playerWalkTextureScript = new TextureRegion(directory.getEntry("player:ursaWalk",Texture.class));
-        playerWalkFilm = new FilmStrip(playerWalkTextureScript.getTexture(),2,8);
+        playerWalkTextureAnimation = new TextureRegion(directory.getEntry("player:ursaWalk",Texture.class));
+        playerWalkFilm = new FilmStrip(playerWalkTextureAnimation.getTexture(),2,8);
         playerWalkFilm.setFrame(0);
         polarCave = new TextureRegion(directory.getEntry("object:cave",Texture.class));
-        playerIdleTextureScript = new TextureRegion(directory.getEntry("player:ursaIdle",Texture.class));
-        playerIdleFilm = new FilmStrip(playerIdleTextureScript.getTexture(),4,8);
+        playerIdleTextureAnimation = new TextureRegion(directory.getEntry("player:ursaIdle",Texture.class));
+        playerIdleFilm = new FilmStrip(playerIdleTextureAnimation.getTexture(),4,8);
         playerIdleFilm.setFrame(0);
-        salmonUprightWalkScript = new TextureRegion(directory.getEntry("enemies:salmonUprightWalk",Texture.class));
-        salmonUprightWalkFilm = new FilmStrip(salmonUprightWalkScript.getTexture(),3,8);
+        salmonUprightWalkAnimation = new TextureRegion(directory.getEntry("enemies:salmonUprightWalk",Texture.class));
+        salmonUprightWalkFilm = new FilmStrip(salmonUprightWalkAnimation.getTexture(),3,8);
         salmonUprightWalkFilm.setFrame(0);
-        salmonConfusedScript = new TextureRegion(directory.getEntry("enemies:salmonConfused",Texture.class));
-        salmonConfusedFilm = new FilmStrip(salmonConfusedScript.getTexture(),4,8);
+        salmonConfusedAnimation = new TextureRegion(directory.getEntry("enemies:salmonConfused",Texture.class));
+        salmonConfusedFilm = new FilmStrip(salmonConfusedAnimation.getTexture(),4,8);
         salmonUprightWalkFilm.setFrame(0);
-        salmonIdleScript = new TextureRegion(directory.getEntry("enemies:salmonIdle",Texture.class));
-        salmonIdleFilm = new FilmStrip(salmonIdleScript.getTexture(), 5, 8);
+        salmonIdleAnimation = new TextureRegion(directory.getEntry("enemies:salmonIdle",Texture.class));
+        salmonIdleFilm = new FilmStrip(salmonIdleAnimation.getTexture(), 5, 8);
         salmonIdleFilm.setFrame(0);
-        salmonDetectedScript = new TextureRegion(directory.getEntry("enemies:salmonDetected",Texture.class));
-        salmonDetectedFilm = new FilmStrip(salmonDetectedScript.getTexture(), 4, 8);
+        salmonDetectedAnimation = new TextureRegion(directory.getEntry("enemies:salmonDetected",Texture.class));
+        salmonDetectedFilm = new FilmStrip(salmonDetectedAnimation.getTexture(), 4, 8);
         salmonConfusedFilm.setFrame(0);
 
-        treeShakeScript = new TextureRegion(directory.getEntry("object:polar_tree_shake",Texture.class));
-        treeShakeFilm = new FilmStrip(treeShakeScript.getTexture(), 2, 8);
+        treeShakeAnimation = new TextureRegion(directory.getEntry("object:polar_tree_shake",Texture.class));
+        treeShakeFilm = new FilmStrip(treeShakeAnimation.getTexture(), 2, 8);
         treeShakeFilm.setFrame(0);
 
 
@@ -418,7 +450,7 @@ public class SceneModel extends WorldController implements ContactListener {
             float maxX = 2500/60;
             float minX = 1250/60;
 
-            for(int e = 0; e < jsonData.get("layers").get(8).get("objects").size;e++){
+            /**for(int e = 0; e < jsonData.get("layers").get(8).get("objects").size;e++){
                 float MarkerName = jsonData.get("layers").get(8).get("objects").get(e).get("name").asFloat();
                 if(MarkerName == enemyNumber ){
                     int orderNum = (jsonData.get("layers").get(8).get("objects").get(e).get("type").asInt());
@@ -429,7 +461,7 @@ public class SceneModel extends WorldController implements ContactListener {
                     enemyPosList[orderNum-1] = new Vector2(markerX,markerY);
                     markerCounter += 1;
                 }
-            }
+            }*/
 
             enemies[i] = new Enemy(x,y,enemyPosList,markerCounter,constants.get("enemy"), dwidth/2, dheight/2);
             enemies[i].setLookDirection(direction, 0);
@@ -994,7 +1026,19 @@ public class SceneModel extends WorldController implements ContactListener {
      * @param dt	Number of seconds since last animation frame
      */
     public void update(float dt) {
-        rotationAngle = timeRatio * 3.14159265359f  + 3.14159265359f;
+        if(timeRatio < uiRisingDuration) {
+            uiYOffset = timeRatio / uiRisingDuration;
+        } else if(timeRatio > 1f){
+            uiRotationAngle = -timeRatio * (float) Math.PI + (float) Math.PI;
+        } else if(timeRatio > 1f - uiRisingDuration){
+            uiYOffset = (1f - timeRatio) / uiRisingDuration;
+        }
+
+        if(timeRatio == 0f) {
+            uiRotationAngle = (float) Math.PI;
+        } else if(timeRatio == 1f - uiRisingDuration) {
+            uiRotationAngle = 0f;
+        }
 
         timeRatio = shadowController.getTimeRatio();
         if(timeRatio > 1) {
@@ -1188,6 +1232,9 @@ public class SceneModel extends WorldController implements ContactListener {
         canvas.draw(snowBackGround,Color.WHITE,0,0,tileWidth* 256, tileHeight*256);
         drawTiles();
         drawExtraObjects();
+        System.out.println(backgroundColor.r + " " + backgroundColor.g + " " + backgroundColor.b + " " + backgroundColor.a);
+        canvas.draw(blankTexture,backgroundColor, canvas.getCameraX() - canvas.getWidth() / 2, canvas.getCameraY() - canvas.getHeight() / 2, canvas.getWidth(), canvas.getHeight());
+        super.updateTinting(backgroundColor);
 
         // Draws shadows for moving objects (enemy/player) and static objects
         // If it's night, don't draw shadows
@@ -1220,13 +1267,11 @@ public class SceneModel extends WorldController implements ContactListener {
     }
 
     public void postDraw(float dt) {
-        canvas.draw(blankTexture,backgroundColor, canvas.getCameraX() - canvas.getWidth() / 2, canvas.getCameraY() - canvas.getHeight() / 2, canvas.getWidth(), canvas.getHeight());
-
         super.postDraw(dt);
 
         float dwidth = dayNightUITexture.getRegionWidth()  / 2;
         float dheight = dayNightUITexture.getRegionHeight() / 2;
-        canvas.draw(dayNightUITexture, Color.WHITE, dwidth, dheight, canvas.getCameraX(), canvas.getCameraY() + canvas.getHeight() / 2 , rotationAngle, 0.8f, 0.8f);
 
+        canvas.draw(dayNightUITexture, Color.WHITE, dwidth, dheight, canvas.getCameraX(), canvas.getCameraY() + canvas.getHeight() / 2 + uiYOffset * uiDrawScale * dheight, uiRotationAngle, uiDrawScale, uiDrawScale);
     }
 }

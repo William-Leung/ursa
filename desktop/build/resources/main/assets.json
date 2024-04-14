@@ -5,7 +5,7 @@
         "object:tundra_tree_snow_small": "object/tundra_tree_snow_small.png",
         "object:polar_tree_1": "object/polar_tree_1.png",
         "object:polar_tree_shake": "object/Polar_Tree_Shake.png",
-        "object:daynight": "loading/UIDayNight.png",
+        "ui:dayNightUI": "ui/dayNightUI.png",
 
         "object:polar_house": "object/Polar_House.png",
         "object:polar_rock_1": "object/Polar_Rock_1.png",

@@ -56,6 +56,7 @@
             "scaleInDock": 1
         },
         "Polar_Cliff_Edge_4.tsx": {
+            "dynamicWrapping": false,
             "scaleInDock": 1
         },
         "Polar_Cliff_Edge_5.tsx": {
@@ -97,11 +98,11 @@
             "expandedObjectLayers": [
                 2
             ],
-            "scale": 0.0625,
-            "selectedLayer": 0,
+            "scale": 0.15,
+            "selectedLayer": 4,
             "viewCenter": {
-                "x": 4624,
-                "y": 4344
+                "x": 3920.0000000000005,
+                "y": 4970
             }
         },
         "map1.tmx#Polar_Cliff_center": {
@@ -110,29 +111,46 @@
         "map2.tmx": {
             "expandedObjectLayers": [
                 2,
-                5,
-                4
+                4,
+                5
             ],
             "scale": 0.125,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 2576,
-                "y": 1932
+                "x": 2744,
+                "y": 2372
             }
         },
         "map3.tmx": {
             "expandedObjectLayers": [
                 2,
-                7,
+                4,
                 5,
-                4
+                7
             ],
-            "scale": 0.13173828125,
-            "selectedLayer": 7,
+            "scale": 0.2272,
+            "selectedLayer": 4,
             "viewCenter": {
-                "x": 3484.1808747220166,
-                "y": 3199.525574499629
+                "x": 2297.5352112676055,
+                "y": 3105.193661971831
             }
+        },
+        "map4.tmx": {
+            "expandedObjectLayers": [
+                2,
+                4,
+                5,
+                7
+            ],
+            "scale": 0.2255,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 2137.4722838137473,
+                "y": 3381.3747228381376
+            }
+        },
+        "marker.tsx": {
+            "scaleInDock": 1
         },
         "player test.tsx": {
             "dynamicWrapping": false,
@@ -161,8 +179,9 @@
             "scaleInEditor": 1
         },
         "tiles.tsx": {
+            "dynamicWrapping": false,
             "scaleInDock": 1,
-            "scaleInEditor": 1
+            "scaleInEditor": 0.12
         },
         "tundra_tree_snow.tsx": {
             "dynamicWrapping": false,
@@ -175,7 +194,8 @@
             "scaleInEditor": 0.33
         }
     },
-    "last.exportedFilePath": "C:/Users/danbp/Desktop/School/Junioir year cornell/3152/ursa/assets",
+    "last.exportedFilePath": "/Users/williamleung/Documents/GitHub/ursa/assets",
+    "last.externalTilesetPath": "/Users/williamleung/Documents/GitHub/ursa/assets/maps",
     "last.imagePath": "C:/Users/video/Desktop/ursa/assets/tiles",
     "map.height": 20,
     "map.lastUsedExportFilter": "JSON map files (*.tmj *.json)",
@@ -190,7 +210,6 @@
         "cave.tsx",
         "tundra_tree_snow_small.tsx",
         "map3.tmx",
-        "Polar_Cliff_Corner_7.tsx",
         "Polar_Cliff_Corner_7_large.tsx",
         "map2.tmx",
         "tiles.tsx"
@@ -200,16 +219,17 @@
         "tiles.tsx",
         "map2.tmx",
         "Polar_Cliff_Corner_7_large.tsx",
-        "Polar_Cliff_Corner_7.tsx",
         "map3.tmx",
         "tundra_tree_snow_small.tsx",
         "cave.tsx",
         "Polar_Cliff_Edge_6.tsx",
         "salmon_walk_2_small.tsx",
         "map1.tmx",
+        "Polar_Cliff_Corner_7.tsx",
         "Polar_Cliff_center.tsx",
         "Ursa.tsx"
     ],
+    "tileset.lastUsedFilter": "Tiled tileset files (*.tsx *.xml)",
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {
         "height": 128,

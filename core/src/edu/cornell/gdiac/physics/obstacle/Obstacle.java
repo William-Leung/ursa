@@ -17,6 +17,7 @@
  */
 package edu.cornell.gdiac.physics.obstacle;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -51,6 +52,7 @@ public abstract class Obstacle {
 	/** Drawing scale to convert physics units to pixels */
 	protected Vector2 drawScale;
 
+	protected Color tint;
 	/// Track garbage collection status
 	/** Whether the object should be removed from the world on next pass */
 	private boolean toRemove;
@@ -1006,5 +1008,9 @@ public abstract class Obstacle {
 	 * @param canvas Drawing context
 	 */
 	public abstract void drawDebug(GameCanvas canvas);
+
+	public void updateTint(Color color) {
+		tint = color;
+	}
 
 }

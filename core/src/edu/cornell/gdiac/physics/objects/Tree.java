@@ -62,7 +62,7 @@ public class Tree extends PolygonObstacle {
 			.translate(getX() * drawScale.x, getY() * drawScale.y)
 			.scale(X_SCALE, Y_SCALE)
 			.shear(shakeAnimationInvert * SHAKE_STRENGTH * ((float) shakeAnimation / SHAKE_ANIMATION_TIME), 0);
-		canvas.draw(texture, Color.WHITE,origin.x, origin.y, affine);
+		canvas.draw(texture, Color.WHITE ,origin.x, origin.y, affine);
 	}
 
 }

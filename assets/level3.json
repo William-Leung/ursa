@@ -1,4 +1,4 @@
- { "compressionlevel":-1,
+{ "compressionlevel":-1,
  "height":20,
  "infinite":false,
  "layers":[
@@ -143,7 +143,7 @@
          "name":"trees",
          "objects":[
                 {
-                 "gid":28,
+                 "gid":25,
                  "height":512,
                  "id":7,
                  "name":"",
@@ -155,7 +155,7 @@
                  "y":7906.36
                 }, 
                 {
-                 "gid":28,
+                 "gid":25,
                  "height":512,
                  "id":8,
                  "name":"",
@@ -167,7 +167,7 @@
                  "y":7930.81
                 }, 
                 {
-                 "gid":28,
+                 "gid":25,
                  "height":512,
                  "id":9,
                  "name":"",
@@ -179,7 +179,7 @@
                  "y":7918.59
                 }, 
                 {
-                 "gid":28,
+                 "gid":25,
                  "height":512,
                  "id":10,
                  "name":"",
@@ -191,7 +191,7 @@
                  "y":8004.13
                 }, 
                 {
-                 "gid":28,
+                 "gid":25,
                  "height":512,
                  "id":11,
                  "name":"",
@@ -203,7 +203,7 @@
                  "y":8004.13
                 }, 
                 {
-                 "gid":28,
+                 "gid":25,
                  "height":512,
                  "id":12,
                  "name":"",
@@ -215,7 +215,7 @@
                  "y":8028.57
                 }, 
                 {
-                 "gid":28,
+                 "gid":25,
                  "height":512,
                  "id":13,
                  "name":"",
@@ -227,7 +227,7 @@
                  "y":7784.15
                 }, 
                 {
-                 "gid":28,
+                 "gid":25,
                  "height":512,
                  "id":14,
                  "name":"",
@@ -239,7 +239,7 @@
                  "y":7796.37
                 }, 
                 {
-                 "gid":28,
+                 "gid":25,
                  "height":512,
                  "id":15,
                  "name":"",
@@ -251,7 +251,7 @@
                  "y":7979.69
                 }, 
                 {
-                 "gid":28,
+                 "gid":25,
                  "height":512,
                  "id":16,
                  "name":"",
@@ -263,7 +263,7 @@
                  "y":7930.81
                 }, 
                 {
-                 "gid":28,
+                 "gid":25,
                  "height":512,
                  "id":17,
                  "name":"",
@@ -275,7 +275,7 @@
                  "y":7258.65
                 }, 
                 {
-                 "gid":28,
+                 "gid":25,
                  "height":512,
                  "id":18,
                  "name":"",
@@ -287,7 +287,7 @@
                  "y":7270.87
                 }, 
                 {
-                 "gid":28,
+                 "gid":25,
                  "height":512,
                  "id":19,
                  "name":"",
@@ -299,7 +299,7 @@
                  "y":7270.87
                 }, 
                 {
-                 "gid":28,
+                 "gid":25,
                  "height":512,
                  "id":20,
                  "name":"",
@@ -311,7 +311,7 @@
                  "y":7270.87
                 }, 
                 {
-                 "gid":28,
+                 "gid":25,
                  "height":512,
                  "id":21,
                  "name":"",
@@ -323,7 +323,7 @@
                  "y":7270.87
                 }, 
                 {
-                 "gid":28,
+                 "gid":25,
                  "height":512,
                  "id":22,
                  "name":"",
@@ -335,7 +335,7 @@
                  "y":7160.88
                 }, 
                 {
-                 "gid":28,
+                 "gid":25,
                  "height":512,
                  "id":23,
                  "name":"",
@@ -347,7 +347,7 @@
                  "y":7148.66
                 }, 
                 {
-                 "gid":28,
+                 "gid":25,
                  "height":512,
                  "id":24,
                  "name":"",
@@ -359,7 +359,7 @@
                  "y":7148.66
                 }, 
                 {
-                 "gid":28,
+                 "gid":25,
                  "height":512,
                  "id":25,
                  "name":"",
@@ -371,7 +371,7 @@
                  "y":7136.44
                 }, 
                 {
-                 "gid":28,
+                 "gid":25,
                  "height":512,
                  "id":26,
                  "name":"",
@@ -384,7 +384,7 @@
                 },
             
                 {
-                 "gid":28,
+                 "gid":25,
                  "height":512,
                  "id":27,
                  "name":"",
@@ -396,7 +396,7 @@
                  "y":7063.11
                 }, 
                 {
-                 "gid":28,
+                 "gid":25,
                  "height":512,
                  "id":28,
                  "name":"",
@@ -430,7 +430,7 @@
          "name":"cave",
          "objects":[
                 {
-                 "gid":60,
+                 "gid":26,
                  "height":512,
                  "id":29,
                  "name":"",
@@ -458,7 +458,7 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":11,
+ "nextlayerid":13,
  "nextobjectid":30,
  "orientation":"orthogonal",
  "renderorder":"right-down",
@@ -486,11 +486,11 @@
          "source":"maps\/salmon_walk_2_small.tsx"
         }, 
         {
-         "firstgid":28,
+         "firstgid":25,
          "source":"maps\/tundra_tree_snow_small.tsx"
         }, 
         {
-         "firstgid":60,
+         "firstgid":26,
          "source":"maps\/cave.tsx"
         }],
  "tilewidth":512,
