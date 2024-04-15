@@ -33,6 +33,7 @@ public class GDXRoot extends Game implements ScreenListener {
 	private GameCanvas canvas;
 	/** Player mode for the asset loading screen (CONTROLLER CLASS) */
 	private LoadingMode loading;
+	private LevelSelector levelSelector;
 	/** Player mode for the game proper (CONTROLLER CLASS) */
 	private int current;
 	/** List of all WorldControllers */
@@ -55,6 +56,7 @@ public class GDXRoot extends Game implements ScreenListener {
 	public void create() {
 		canvas  = new GameCanvas();
 		loading = new LoadingMode("assets.json",canvas,1);
+
 		// Initialize the three game worlds
 		controllers = new WorldController[1];
 		controllers[0] = new SceneModel();
@@ -115,21 +117,26 @@ public class GDXRoot extends Game implements ScreenListener {
 	 */
 	public void exitScreen(Screen screen, int exitCode) {
 		if (screen == loading) {
+			directory = loading.getAssets();
+			levelSelector = new LevelSelector(canvas);
+			levelSelector.gatherAssets(directory);
+			levelSelector.setScreenListener(this);
 			for(int ii = 0; ii < controllers.length; ii++) {
 				directory = loading.getAssets();
 				controllers[ii].gatherAssets(directory);
 				controllers[ii].setScreenListener(this);
 				controllers[ii].setCanvas(canvas);
 			}
-			controllers[current].reset();
-			setScreen(controllers[current]);
+			//controllers[current].reset();
+			setScreen(levelSelector);
+			levelSelector.setActive(true);
 
 			loading.dispose();
 			loading = null;
-		} else if (exitCode == WorldController.EXIT_NEXT) {
-			//current = (current+1) % controllers.length;
-			//controllers[current].reset();
-			//setScreen(controllers[current]);
+		} else if (screen == levelSelector && exitCode == 1) {
+
+			controllers[0].reset();
+			setScreen(controllers[0]);
 		} else if (exitCode == WorldController.EXIT_PREV) {
 			//current = (current+controllers.length-1) % controllers.length;
 			//controllers[current].reset();
