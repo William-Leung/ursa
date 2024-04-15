@@ -58,11 +58,12 @@ public class GDXRoot extends Game implements ScreenListener {
 		loading = new LoadingMode("assets.json",canvas,1);
 
 		// Initialize the three game worlds
-		controllers = new WorldController[1];
-		controllers[0] = new SceneModel();
+		controllers = new WorldController[3];
+		controllers[0] = new SceneModel("level4.json");
+		controllers[1] = new SceneModel("level3.json");
+		controllers[2] = new SceneModel("level2.json");
 
-		//controllers[1] = new PlatformController();
-		//controllers[2] = new RagdollController();
+
 		current = 0;
 		loading.setScreenListener(this);
 		setScreen(loading);
@@ -137,10 +138,18 @@ public class GDXRoot extends Game implements ScreenListener {
 
 			controllers[0].reset();
 			setScreen(controllers[0]);
-		} else if (exitCode == WorldController.EXIT_PREV) {
-			//current = (current+controllers.length-1) % controllers.length;
-			//controllers[current].reset();
-			//setScreen(controllers[current]);
+			levelSelector.dispose();
+			loading = null;
+		} else if (screen == levelSelector && exitCode == 2) {
+			controllers[1].reset();
+			setScreen(controllers[1]);
+			levelSelector.dispose();
+			loading = null;
+		}else if (screen == levelSelector && exitCode == 3) {
+			controllers[2].reset();
+			setScreen(controllers[2]);
+			levelSelector.dispose();
+			loading = null;
 		} else if (exitCode == WorldController.EXIT_QUIT) {
 			// We quit the main application
 			Gdx.app.exit();

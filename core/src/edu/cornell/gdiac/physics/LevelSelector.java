@@ -88,6 +88,22 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         if(formula < radius){
             listener.exitScreen(this, 1);
         }
+        centerX = 511;
+        centerY = 92;
+        formula = (screenX-centerX)*(screenX-centerX)+(screenY-centerY)*(screenY-centerY);
+        formula = (float) Math.sqrt(formula);
+        if(formula < radius){
+
+            listener.exitScreen(this, 2);
+        }
+        centerX = 958;
+        centerY = 92;
+        formula = (screenX-centerX)*(screenX-centerX)+(screenY-centerY)*(screenY-centerY);
+        formula = (float) Math.sqrt(formula);
+        if(formula < radius){
+
+            listener.exitScreen(this, 3);
+        }
         return false;
     }
 
