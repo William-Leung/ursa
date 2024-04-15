@@ -1026,6 +1026,7 @@ public class SceneModel extends WorldController implements ContactListener {
      * @param dt	Number of seconds since last animation frame
      */
     public void update(float dt) {
+
         if(timeRatio < uiRisingDuration) {
             uiYOffset = timeRatio / uiRisingDuration;
         } else if(timeRatio > 1f){

@@ -138,8 +138,7 @@ public class GDXRoot extends Game implements ScreenListener {
 
 			controllers[0].reset();
 			setScreen(controllers[0]);
-			levelSelector.dispose();
-			loading = null;
+
 		} else if (screen == levelSelector && exitCode == 2) {
 			controllers[1].reset();
 			setScreen(controllers[1]);
@@ -150,7 +149,16 @@ public class GDXRoot extends Game implements ScreenListener {
 			setScreen(controllers[2]);
 			levelSelector.dispose();
 			loading = null;
-		} else if (exitCode == WorldController.EXIT_QUIT) {
+		}
+		else if (exitCode == 30) {
+			levelSelector = new LevelSelector(canvas);
+			levelSelector.gatherAssets(directory);
+			levelSelector.setScreenListener(this);
+			setScreen(levelSelector);
+
+
+
+		}else if (exitCode == WorldController.EXIT_QUIT) {
 			// We quit the main application
 			Gdx.app.exit();
 		}
