@@ -168,6 +168,11 @@ public class GameCanvas {
 		camera.position.y = y * 31.9f;
 		camera.update();
 	}
+	protected void setCam(float x, float y){
+		camera.position.x = x ;
+		camera.position.y = y ;
+		camera.update();
+	}
 
 	public float getCameraX() {
 		return camera.position.x;

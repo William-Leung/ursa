@@ -46,6 +46,9 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
     }
 
     private void draw(){
+
+        canvas.clear();
+
         canvas.begin();
         canvas.draw(background,0,0);
         canvas.draw(buttons[0],0,0);
@@ -134,7 +137,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
 
     @Override
     public void show() {
-
+        active = true;
     }
 
     @Override
@@ -173,7 +176,8 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
 
     @Override
     public void dispose() {
-
+        active = false;
+        canvas = null;
     }
 
     @Override

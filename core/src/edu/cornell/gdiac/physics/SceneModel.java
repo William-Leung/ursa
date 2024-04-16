@@ -1230,6 +1230,8 @@ public class SceneModel extends WorldController implements ContactListener {
 
     @Override
     public void preDraw(float dt) {
+        System.out.println("Scene model drawing");
+
         canvas.draw(snowBackGround,Color.WHITE,0,0,tileWidth* 256, tileHeight*256);
         drawTiles();
         drawExtraObjects();

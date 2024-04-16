@@ -276,6 +276,7 @@ public abstract class WorldController implements Screen {
 	 * Dispose of all (non-static) resources allocated to this mode.
 	 */
 	public void dispose() {
+
 		for(Obstacle obj : objects) {
 			obj.deactivatePhysics(world);
 		}
@@ -390,8 +391,7 @@ public abstract class WorldController implements Screen {
 			listener.exitScreen(this, EXIT_NEXT);
 			return false;
 		} else if (input.didRetreat()) {
-			pause();
-			listener.exitScreen(this, 30);
+			listener.exitScreen(this, 32);
 			return false;
 		} else if (countdown > 0) {
 			countdown--;
@@ -479,6 +479,10 @@ public abstract class WorldController implements Screen {
 	 * @param dt	Number of seconds since last animation frame
 	 */
 	public void draw(float dt) {
+		if(!active)
+		{
+			return;
+		}
 		canvas.clear();
 
 		canvas.begin();
@@ -610,11 +614,13 @@ public abstract class WorldController implements Screen {
 	 * @param delta Number of seconds since last animation frame
 	 */
 	public void render(float delta) {
+
 		if (active) {
 			if (preUpdate(delta)) {
 				update(delta); // This is the one that must be defined.
 				postUpdate(delta);
 			}
+
 			draw(delta);
 		}
 	}

@@ -31,6 +31,8 @@ public class GDXRoot extends Game implements ScreenListener {
 	AssetDirectory directory;
 	/** Drawing context to display graphics (VIEW CLASS) */
 	private GameCanvas canvas;
+	private float camX;
+	private float camY;
 	/** Player mode for the asset loading screen (CONTROLLER CLASS) */
 	private LoadingMode loading;
 	private LevelSelector levelSelector;
@@ -56,12 +58,11 @@ public class GDXRoot extends Game implements ScreenListener {
 	public void create() {
 		canvas  = new GameCanvas();
 		loading = new LoadingMode("assets.json",canvas,1);
-
+		camX = canvas.getCameraX();
+		camY = canvas.getCameraY();
 		// Initialize the three game worlds
-		controllers = new WorldController[3];
-		controllers[0] = new SceneModel("level4.json");
-		controllers[1] = new SceneModel("level3.json");
-		controllers[2] = new SceneModel("level2.json");
+		controllers = new WorldController[25];
+
 
 
 		current = 0;
@@ -117,17 +118,14 @@ public class GDXRoot extends Game implements ScreenListener {
 	 * @param exitCode The state of the screen upon exit
 	 */
 	public void exitScreen(Screen screen, int exitCode) {
+		System.out.println("EXit screen called");
 		if (screen == loading) {
 			directory = loading.getAssets();
 			levelSelector = new LevelSelector(canvas);
 			levelSelector.gatherAssets(directory);
 			levelSelector.setScreenListener(this);
-			for(int ii = 0; ii < controllers.length; ii++) {
 				directory = loading.getAssets();
-				controllers[ii].gatherAssets(directory);
-				controllers[ii].setScreenListener(this);
-				controllers[ii].setCanvas(canvas);
-			}
+
 			//controllers[current].reset();
 			setScreen(levelSelector);
 			levelSelector.setActive(true);
@@ -135,28 +133,54 @@ public class GDXRoot extends Game implements ScreenListener {
 			loading.dispose();
 			loading = null;
 		} else if (screen == levelSelector && exitCode == 1) {
+			current = 1;
+			controllers[current-1] = new SceneModel("level4.json");
+			controllers[current-1].gatherAssets(directory);
+			controllers[current-1].setScreenListener(this);
+			controllers[current-1].setCanvas(canvas);
+			controllers[current-1].reset();
+			setScreen(controllers[current-1]);
+			controllers[current-1].active = true;
 
-			controllers[0].reset();
-			setScreen(controllers[0]);
+			levelSelector.setActive(false);
 
 		} else if (screen == levelSelector && exitCode == 2) {
-			controllers[1].reset();
-			setScreen(controllers[1]);
-			levelSelector.dispose();
-			loading = null;
+			current = 2;
+			controllers[current-1] = new SceneModel("level3.json");
+			controllers[current-1].gatherAssets(directory);
+			controllers[current-1].setScreenListener(this);
+			controllers[current-1].setCanvas(canvas);
+			controllers[current-1].reset();
+			setScreen(controllers[current-1]);
+			controllers[current-1].active = true;
+
+			levelSelector.setActive(false);
+
 		}else if (screen == levelSelector && exitCode == 3) {
-			controllers[2].reset();
-			setScreen(controllers[2]);
-			levelSelector.dispose();
-			loading = null;
+			current = 3;
+			controllers[current-1] = new SceneModel("level2.json");
+			controllers[current-1].gatherAssets(directory);
+			controllers[current-1].setScreenListener(this);
+			controllers[current-1].setCanvas(canvas);
+			controllers[current-1].reset();
+			setScreen(controllers[current-1]);
+			controllers[current-1].active = true;
+
+			levelSelector.setActive(false);
+
 		}
-		else if (exitCode == 30) {
-			levelSelector = new LevelSelector(canvas);
-			levelSelector.gatherAssets(directory);
-			levelSelector.setScreenListener(this);
+		else if (exitCode == 32 && screen != levelSelector && screen != loading) {
+			canvas.setCam(camX,camY);
 			setScreen(levelSelector);
+			levelSelector.setActive(true);
+			controllers[current-1].active = false;
+			controllers[current-1].dispose();
+
+			controllers[current-1] = null;
 
 
+
+			current = -1;
 
 		}else if (exitCode == WorldController.EXIT_QUIT) {
 			// We quit the main application
