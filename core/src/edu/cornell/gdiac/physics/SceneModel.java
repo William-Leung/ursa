@@ -1230,7 +1230,7 @@ public class SceneModel extends WorldController implements ContactListener {
 
     @Override
     public void preDraw(float dt) {
-        System.out.println("Scene model drawing");
+
 
         canvas.draw(snowBackGround,Color.WHITE,0,0,tileWidth* 256, tileHeight*256);
         drawTiles();
@@ -1253,17 +1253,17 @@ public class SceneModel extends WorldController implements ContactListener {
     @Override
     public void draw(float dt) {
         super.draw(dt);
-        if (complete && !failed) {
+        if (complete && !failed && active) {
             displayFont.setColor(Color.YELLOW);
             canvas.begin(); // DO NOT SCALE
-            canvas.drawText("WIN!",displayFont,avatar.getPosition().x *31.9f, avatar.getPosition().y * 31.9f );
+            canvas.drawText("WIN!: Press r to restart, p to return to level select",displayFont,avatar.getPosition().x *31.9f, avatar.getPosition().y * 31.9f );
 
 
             canvas.end();
-        } else if (failed) {
+        } else if (failed&&active) {
             displayFont.setColor(Color.RED);
             canvas.begin(); // DO NOT SCALE
-            canvas.drawText("Lose!",displayFont,avatar.getPosition().x*31.9f, avatar.getPosition().y*31.9f);
+            canvas.drawText("Lose!:",displayFont,avatar.getPosition().x*31.9f, avatar.getPosition().y*31.9f);
             canvas.end();
 
         }

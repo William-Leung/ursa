@@ -391,9 +391,16 @@ public abstract class WorldController implements Screen {
 			listener.exitScreen(this, EXIT_NEXT);
 			return false;
 		} else if (input.didRetreat()) {
-			listener.exitScreen(this, 32);
+			if(complete || failed){
+				listener.exitScreen(this, 32);
+				return false;
+			}
+
+		} else if(complete || failed){
+
+			listener.exitScreen(this, 12);
 			return false;
-		} else if (countdown > 0) {
+		}else if (countdown > 0) {
 			countdown--;
 		} else if (countdown == 0) {
 			if (failed) {

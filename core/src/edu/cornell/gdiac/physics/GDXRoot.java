@@ -36,6 +36,7 @@ public class GDXRoot extends Game implements ScreenListener {
 	/** Player mode for the asset loading screen (CONTROLLER CLASS) */
 	private LoadingMode loading;
 	private LevelSelector levelSelector;
+	private RetryMenu retryMenu;
 	/** Player mode for the game proper (CONTROLLER CLASS) */
 	private int current;
 	/** List of all WorldControllers */
@@ -61,8 +62,11 @@ public class GDXRoot extends Game implements ScreenListener {
 		camX = canvas.getCameraX();
 		camY = canvas.getCameraY();
 		// Initialize the three game worlds
-		controllers = new WorldController[25];
 
+		controllers = new WorldController[25];
+		controllers[0] = new SceneModel("level4.json");
+		controllers[1] = new SceneModel("level3.json");
+		controllers[2] = new SceneModel("level2.json");
 
 
 		current = 0;
@@ -79,7 +83,10 @@ public class GDXRoot extends Game implements ScreenListener {
 		// Call dispose on our children
 		setScreen(null);
 		for(int ii = 0; ii < controllers.length; ii++) {
-			controllers[ii].dispose();
+			if(controllers[ii] != null){
+				controllers[ii].dispose();
+			}
+
 		}
 
 		canvas.dispose();
@@ -118,13 +125,13 @@ public class GDXRoot extends Game implements ScreenListener {
 	 * @param exitCode The state of the screen upon exit
 	 */
 	public void exitScreen(Screen screen, int exitCode) {
-		System.out.println("EXit screen called");
+
 		if (screen == loading) {
 			directory = loading.getAssets();
 			levelSelector = new LevelSelector(canvas);
 			levelSelector.gatherAssets(directory);
 			levelSelector.setScreenListener(this);
-				directory = loading.getAssets();
+
 
 			//controllers[current].reset();
 			setScreen(levelSelector);
@@ -143,6 +150,8 @@ public class GDXRoot extends Game implements ScreenListener {
 			controllers[current-1].active = true;
 
 			levelSelector.setActive(false);
+			levelSelector.dispose();
+			levelSelector = null;
 
 		} else if (screen == levelSelector && exitCode == 2) {
 			current = 2;
@@ -155,6 +164,8 @@ public class GDXRoot extends Game implements ScreenListener {
 			controllers[current-1].active = true;
 
 			levelSelector.setActive(false);
+			levelSelector.dispose();
+			levelSelector = null;
 
 		}else if (screen == levelSelector && exitCode == 3) {
 			current = 3;
@@ -167,6 +178,8 @@ public class GDXRoot extends Game implements ScreenListener {
 			controllers[current-1].active = true;
 
 			levelSelector.setActive(false);
+			levelSelector.dispose();
+			levelSelector = null;
 
 		}
 		else if (exitCode == 32 && screen != levelSelector && screen != loading) {
@@ -174,13 +187,50 @@ public class GDXRoot extends Game implements ScreenListener {
 			setScreen(levelSelector);
 			levelSelector.setActive(true);
 			controllers[current-1].active = false;
-			controllers[current-1].dispose();
-
-			controllers[current-1] = null;
 
 
 
+
+
+
+		}
+		else if (exitCode == 12 && screen != levelSelector && screen != loading) {
+
+			retryMenu = new RetryMenu(canvas);
+			retryMenu.gatherAssets(directory);
+			retryMenu.setScreenListener(this);
+			canvas.setCam(camX,camY);
+			setScreen(retryMenu);
+			retryMenu.setActive(true);
+			controllers[current-1].active = false;
+
+
+
+
+
+
+		}else if(screen == retryMenu && exitCode ==1){
+			controllers[current-1].setScreenListener(this);
+			controllers[current-1].setCanvas(canvas);
+			controllers[current-1].reset();
+			setScreen(controllers[current-1]);
+			controllers[current-1].active = true;
+			retryMenu.setActive(false);
+			retryMenu.dispose();
+			retryMenu = null;
+
+
+
+		}else if(exitCode == 2 && screen == retryMenu){
 			current = -1;
+			levelSelector = new LevelSelector(canvas);
+			levelSelector.gatherAssets(directory);
+			levelSelector.setScreenListener(this);
+			setScreen(levelSelector);
+			levelSelector.setActive(true);
+			retryMenu.setActive(false);
+			retryMenu.dispose();
+			retryMenu = null;
 
 		}else if (exitCode == WorldController.EXIT_QUIT) {
 			// We quit the main application
