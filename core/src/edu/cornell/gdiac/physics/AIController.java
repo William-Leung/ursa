@@ -107,7 +107,7 @@ public class AIController {
     /**
      * Creates an AIController for the ship with the given id.
      */
-    public AIController(Enemy enemy,  UrsaModel ursa, PooledList<Tree> trees) {
+    public AIController(Enemy enemy,  UrsaModel ursa, PooledList<Tree> trees, Vector2[] patrol) {
         this.enemy = enemy;
         this.ursa = ursa;
         this.trees = trees;
@@ -118,15 +118,21 @@ public class AIController {
 
         // add goal locs to player's deque
         goalLocs = new ArrayDeque<>();
-
-        if (enemy.getX() > 900) {
-            currGoal = new Vector2(enemy.getX() - 25, enemy.getY());
-        } else {
-            currGoal = new Vector2(enemy.getX() + 25, enemy.getY());
+        for(Vector2 point: patrol) {
+            if(point != null) {
+                goalLocs.addLast(point);
+            }
         }
-
-        goalLocs.addLast(new Vector2(enemy.getX(), enemy.getY()));
-
+        if(goalLocs.size() > 0) {
+            currGoal = goalLocs.peek();
+        } else {
+            if (enemy.getX() > 900) {
+                currGoal = new Vector2(enemy.getX() - 25, enemy.getY());
+            } else {
+                currGoal = new Vector2(enemy.getX() + 25, enemy.getY());
+            }
+        }
+        System.out.println(currGoal);
     }
 
     public void reset() {
@@ -306,7 +312,6 @@ public class AIController {
         ticks++;
 
         changeStateIfApplicable();
-        //System.out.println(state.toString());
 
         prevLoc.x = enemy.getX();
         prevLoc.y = enemy.getY();

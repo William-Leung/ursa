@@ -393,7 +393,6 @@ public class Enemy extends BoxObstacle {
 			EnemyLoSCallback callback = new EnemyLoSCallback(player.getBody());
 			world.rayCast(callback, getPosition(), player.getPosition());
 
-
 			if (callback.hitPlayer) {
 				playerCurrentInSight = true;
 				return true;

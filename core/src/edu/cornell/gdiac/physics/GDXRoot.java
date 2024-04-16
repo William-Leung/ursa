@@ -56,8 +56,10 @@ public class GDXRoot extends Game implements ScreenListener {
 		canvas  = new GameCanvas();
 		loading = new LoadingMode("assets.json",canvas,1);
 		// Initialize the three game worlds
-		controllers = new WorldController[1];
-		controllers[0] = new SceneModel();
+		controllers = new WorldController[3];
+		controllers[0] = new SceneModel("level5.json");
+		controllers[1] = new SceneModel("level3.json");
+		controllers[2] = new SceneModel("level2.json");
 
 		//controllers[1] = new PlatformController();
 		//controllers[2] = new RagdollController();

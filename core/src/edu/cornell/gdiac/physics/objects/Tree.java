@@ -34,6 +34,8 @@ public class Tree extends PolygonObstacle {
 		return !hasShaken;
 	}
 
+	public void reset() { hasShaken = false; }
+
 	public void putOnShakeCooldown() {
 		shakeCooldown = SHAKE_COOLDOWN;
 		shakeAnimation = SHAKE_ANIMATION_TIME;
