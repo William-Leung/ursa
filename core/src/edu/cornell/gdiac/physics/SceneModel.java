@@ -136,7 +136,6 @@ public class SceneModel extends WorldController implements ContactListener {
     /** Filmstrip for tree shaking animation */
     private FilmStrip treeShakeFilm;
 
-
     private TextureRegion[] backgroundTextures = new TextureRegion[3];
 
     private float maxY;
@@ -448,7 +447,6 @@ public class SceneModel extends WorldController implements ContactListener {
             y = y * tileY +14.0f;
 
             float direction = 1;
-
 
             /**for(int e = 0; e < jsonData.get("layers").get(8).get("objects").size;e++){
                 float MarkerName = jsonData.get("layers").get(8).get("objects").get(e).get("name").asFloat();
@@ -1026,7 +1024,6 @@ public class SceneModel extends WorldController implements ContactListener {
      * @param dt	Number of seconds since last animation frame
      */
     public void update(float dt) {
-
         if(timeRatio < uiRisingDuration) {
             uiYOffset = timeRatio / uiRisingDuration;
         } else if(timeRatio > 1f){
