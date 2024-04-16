@@ -16,11 +16,14 @@ import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.physics.GameCanvas;
 import edu.cornell.gdiac.physics.SceneModel;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
-import edu.cornell.gdiac.physics.obstacle.PolygonObstacle;
 import edu.cornell.gdiac.physics.obstacle.SimpleObstacle;
 import edu.cornell.gdiac.physics.shadows.ShadowController;
+import edu.cornell.gdiac.physics.shadows.ShadowModel;
+import edu.cornell.gdiac.util.PooledList;
 
 public class Enemy extends BoxObstacle {
+
+
 	private static final float SIGHT_RANGE_INCREMENT = 0.35f;
 	private static final float BLOB_SHADOW_SIZE = 0.5f;
 
@@ -174,7 +177,7 @@ public class Enemy extends BoxObstacle {
 
 	private float detectionRange = ENEMY_DETECTION_RANGE_SIGHT;
 
-	public Enemy(float xStart,float yStart,Vector2[] partolLocals,Float numMarkers, JsonValue data, float width, float height) {
+	public Enemy(float xStart,float yStart,float maxX, float minX,JsonValue data, float width, float height) {
 		// The shrink factors fit the image to a tigher hitbox
 		super(	xStart,
 				yStart,
@@ -190,13 +193,13 @@ public class Enemy extends BoxObstacle {
 
 		/** Creating the red and green texture regions */
 		Pixmap redPixmap = new Pixmap(1, 1, Format.RGBA8888);
-		redPixmap.setColor(new Color(1, 0, 0, 0.3f));
+		redPixmap.setColor(new Color(1, 0, 0, 0.5f));
 		redPixmap.fill();
 		Texture redTexture = new Texture(redPixmap);
 		redTextureRegion = new TextureRegion(redTexture);
 
 		Pixmap greenPixmap = new Pixmap(1, 1, Format.RGBA8888);
-		greenPixmap.setColor(new Color(0, 1, 0, 0.3f));
+		greenPixmap.setColor(new Color(0, 1, 0, 0.5f));
 		greenPixmap.fill();
 		Texture greenTexture = new Texture(greenPixmap);
 		greenTextureRegion = new TextureRegion(greenTexture);
@@ -221,7 +224,6 @@ public class Enemy extends BoxObstacle {
 
 		redPixmap.dispose();
 		greenPixmap.dispose();
-
 		/** RED TEXTURE AND GREENTEXTURE ARE NOT DISPOSED*/
 		setName("enemy");
 	}
@@ -248,7 +250,7 @@ public class Enemy extends BoxObstacle {
 	public void getPlayerPos(Vector2 pos){
 		playerPos = pos;
 	}
-	
+
 	public void applyForce() {
 		if (!isActive()) {
 			return;
@@ -393,6 +395,7 @@ public class Enemy extends BoxObstacle {
 			EnemyLoSCallback callback = new EnemyLoSCallback(player.getBody());
 			world.rayCast(callback, getPosition(), player.getPosition());
 
+			System.out.println(callback.getRayTerm());
 
 			if (callback.hitPlayer) {
 				playerCurrentInSight = true;
@@ -402,13 +405,6 @@ public class Enemy extends BoxObstacle {
 		}
 		playerCurrentInSight = false;
 		return false;
-	}
-
-	public void generateVertices(PolygonObstacle[] obstacles) {
-		float[] points;
-		for(PolygonObstacle po: obstacles) {
-			points = po.getPoints();
-		}
 	}
 
 //	public boolean isObjectInLineOfSight(World world) {
@@ -448,15 +444,15 @@ public class Enemy extends BoxObstacle {
 		Texture blobShadow = SceneModel.BLOB_SHADOW_TEXTURE;
 		int xcenter = blobShadow.getWidth() / 2;
 		int ycenter = blobShadow.getHeight() / 2;
-		canvas.draw(blobShadow, new Color(1f,1f,1f,1f),xcenter,ycenter,
-			getX()*drawScale.x,(getY() - 1.25f) * drawScale.y,getAngle(),BLOB_SHADOW_SIZE / drawScale.x,
-			(BLOB_SHADOW_SIZE / 2f) / drawScale.y);
+		canvas.draw(blobShadow, Color.BLACK,xcenter,ycenter,
+				getX()*drawScale.x,(getY() - 1.25f) * drawScale.y,getAngle(),BLOB_SHADOW_SIZE / drawScale.x,
+				(BLOB_SHADOW_SIZE / 2f) / drawScale.y);
 	}
 
 	public void draw(GameCanvas canvas) {
 		Color color = alerted ? Color.RED : Color.GREEN;
 		canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),
-			(lookDirection.x > 0 ? 1 : -1) * .35f,.35f);
+				(lookDirection.x > 0 ? 1 : -1) * .35f,.35f);
 
 		drawSightCone(canvas, detectionRange, lookDirection, 8);
 
@@ -478,7 +474,7 @@ public class Enemy extends BoxObstacle {
 		vertices[1] = 0f;
 		float curr_angle = ENEMY_DETECTION_ANGLE_SIGHT + direction.angleDeg();
 		float angle_scale_factor =  (ENEMY_DETECTION_ANGLE_SIGHT)/ (
-                        (float) (num_vertices - 2) / 2);
+				(float) (num_vertices - 2) / 2);
 
 		for(int i = 2; i < vertices.length - 1; i += 2) {
 			vertices[i] = drawScale.x * range * (float) Math.cos(Math.toRadians(curr_angle));

@@ -3,13 +3,13 @@
  "infinite":false,
  "layers":[
         {
-         "data":[21, 21, 21, 21, 21, 21, 21,
-            21, 29, 31, 31, 31, 22, 21,
-            21, 32, 0, 0, 0, 30, 21,
-            21, 32, 0, 0, 0, 30, 21,
-            21, 32, 0, 0, 0, 30, 21,
-            21, 24, 28, 28, 28, 23, 21,
-            21, 21, 21, 21, 21, 21, 21],
+         "data":[10, 10, 10, 10, 10, 10, 10,
+            10, 18, 20, 20, 20, 11, 10,
+            10, 21, 0, 0, 0, 19, 10,
+            10, 21, 0, 0, 0, 19, 10,
+            10, 21, 0, 0, 0, 19, 10,
+            10, 13, 17, 17, 17, 12, 10,
+            10, 10, 10, 10, 10, 10, 10],
          "height":7,
          "id":1,
          "name":"Tile Layer 1",
@@ -26,7 +26,7 @@
          "name":"player",
          "objects":[
                 {
-                 "gid":10,
+                 "gid":2,
                  "height":256,
                  "id":1,
                  "name":"",
@@ -34,7 +34,7 @@
                  "type":"",
                  "visible":true,
                  "width":256,
-                 "x":1623.124,
+                 "x":1623.12,
                  "y":2697.08
                 }],
          "opacity":1,
@@ -59,10 +59,10 @@
          "name":"enemies",
          "objects":[
                 {
-                 "gid":17,
+                 "gid":9,
                  "height":512,
                  "id":4,
-                 "name":"",
+                 "name":"2",
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -71,10 +71,10 @@
                  "y":2442.25
                 }, 
                 {
-                 "gid":17,
+                 "gid":9,
                  "height":512,
                  "id":6,
-                 "name":"",
+                 "name":"1",
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -94,7 +94,7 @@
          "name":"trees",
          "objects":[
                 {
-                 "gid":16,
+                 "gid":8,
                  "height":512,
                  "id":3,
                  "name":"",
@@ -114,7 +114,7 @@
         {
          "draworder":"topdown",
          "id":6,
-         "name":"objects",
+         "name":"BackgroundObjects",
          "objects":[],
          "opacity":1,
          "type":"objectgroup",
@@ -128,7 +128,7 @@
          "name":"cave",
          "objects":[
                 {
-                 "gid":36,
+                 "gid":25,
                  "height":512,
                  "id":13,
                  "name":"",
@@ -149,7 +149,101 @@
         {
          "draworder":"topdown",
          "id":8,
-         "name":"rocks",
+         "name":"rock",
+         "objects":[],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":9,
+         "name":"markers",
+         "objects":[
+                {
+                 "gid":26,
+                 "height":128,
+                 "id":16,
+                 "name":"2",
+                 "rotation":0,
+                 "type":"2",
+                 "visible":true,
+                 "width":128,
+                 "x":832,
+                 "y":2368
+                }, 
+                {
+                 "gid":26,
+                 "height":128,
+                 "id":17,
+                 "name":"2",
+                 "rotation":0,
+                 "type":"1",
+                 "visible":true,
+                 "width":128,
+                 "x":2568,
+                 "y":2384
+                }, 
+                {
+                 "gid":26,
+                 "height":128,
+                 "id":18,
+                 "name":"1",
+                 "rotation":0,
+                 "type":"1",
+                 "visible":true,
+                 "width":128,
+                 "x":1656,
+                 "y":1472
+                }, 
+                {
+                 "gid":26,
+                 "height":128,
+                 "id":19,
+                 "name":"1",
+                 "rotation":0,
+                 "type":"2",
+                 "visible":true,
+                 "width":128,
+                 "x":2552,
+                 "y":1904
+                }, 
+                {
+                 "gid":26,
+                 "height":128,
+                 "id":20,
+                 "name":"1",
+                 "rotation":0,
+                 "type":"3",
+                 "visible":true,
+                 "width":128,
+                 "x":1688,
+                 "y":2272
+                }, 
+                {
+                 "gid":26,
+                 "height":128,
+                 "id":21,
+                 "name":"1",
+                 "rotation":0,
+                 "type":"4",
+                 "visible":true,
+                 "width":128,
+                 "x":1048,
+                 "y":1832
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":10,
+         "name":"WorldObjects",
          "objects":[],
          "opacity":1,
          "type":"objectgroup",
@@ -157,8 +251,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":9,
- "nextobjectid":14,
+ "nextlayerid":11,
+ "nextobjectid":22,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.10.2",
@@ -173,53 +267,58 @@
          "source":"maps\/Polar_Cliff_Corner_1.tsx"
         }, 
         {
-         "firstgid":3,
+         "firstgid":2,
          "source":"maps\/Polar_Cliff_Corner_2.tsx"
         }, 
         {
-         "firstgid":4,
+         "firstgid":2,
          "source":"maps\/Polar_Cliff_Corner_3.tsx"
         }, 
         {
-         "firstgid":5,
+         "firstgid":2,
          "source":"maps\/Polar_Cliff_Corner_4.tsx"
         }, 
         {
-         "firstgid":6,
+         "firstgid":2,
          "source":"maps\/Polar_Cliff_Edge_5.tsx"
         }, 
         {
-         "firstgid":7,
+         "firstgid":2,
          "source":"maps\/Polar_Cliff_Edge_4.tsx"
         },
     
         {
-         "firstgid":8,
+         "firstgid":2,
          "source":"maps\/Polar_Cliff_Edge_3.tsx"
         }, 
         {
-         "firstgid":9,
+         "firstgid":2,
          "source":"maps\/Polar_Cliff_Edge_1.tsx"
         }, 
         {
-         "firstgid":10,
+         "firstgid":2,
          "source":"maps\/Ursa.tsx"
         }, 
         {
-         "firstgid":16,
+         "firstgid":8,
          "source":"maps\/tundra_tree_snow_small.tsx"
         }, 
         {
-         "firstgid":17,
+         "firstgid":9,
          "source":"maps\/salmon_walk_2_small.tsx"
         }, 
         {
-         "firstgid":21,
+         "firstgid":10,
          "source":"maps\/tiles.tsx"
         }, 
         {
-         "firstgid":36,
+         "firstgid":25,
          "source":"maps\/cave.tsx"
+        },
+    
+        {
+         "firstgid":26,
+         "source":"maps\/marker.tsx"
         }],
  "tilewidth":512,
  "type":"map",

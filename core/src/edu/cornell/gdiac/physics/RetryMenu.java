@@ -16,7 +16,7 @@ import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.util.ScreenListener;
 
 
-public class LevelSelector implements Screen, InputProcessor, ControllerListener {
+public class RetryMenu implements Screen, InputProcessor, ControllerListener {
 
     private TextureRegion[] buttons = new TextureRegion[20];
     private TextureRegion background = new TextureRegion();
@@ -24,7 +24,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
     private float buttonWidth;
     GameCanvas canvas;
     private boolean active;
-    public LevelSelector(GameCanvas NewCanvas){
+    public RetryMenu(GameCanvas NewCanvas){
         canvas = NewCanvas;
         active = false;
         Gdx.input.setInputProcessor( this );
@@ -38,7 +38,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         buttons[0] = new TextureRegion(directory.getEntry("levelSelect:Level1", Texture.class));
         buttons[1] = new TextureRegion(directory.getEntry("levelSelect:Level2", Texture.class));
         buttons[2] = new TextureRegion(directory.getEntry("levelSelect:Level3", Texture.class));
-        background = new TextureRegion(directory.getEntry("levelSelect:background", Texture.class));
+        background = new TextureRegion(directory.getEntry("levelSelect:retry", Texture.class));
 
     }
     private void update(float delta){
@@ -51,9 +51,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
 
         canvas.begin();
         canvas.draw(background,0,0);
-        canvas.draw(buttons[0],0,0);
-        canvas.draw(buttons[1],canvas.getWidth()/2.5f,0);
-        canvas.draw(buttons[2],canvas.getWidth()/1.2f,0);
+
 
         canvas.end();
     }
@@ -78,38 +76,18 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        if(active){
-            System.out.println("Screen x + L: " + screenX);
-            System.out.println("Screen y: " + (canvas.getHeight()-screenY));
-            float radius = buttons[0].getRegionWidth()/2.0f;
-            System.out.println("RAdius is: " + radius);
-            float centerX = 99f;
-            float centerY = 92f;
-            screenY = canvas.getHeight()-screenY;
-            float formula = (screenX-centerX)*(screenX-centerX)+(screenY-centerY)*(screenY-centerY);
-            formula = (float) Math.sqrt(formula);
-            System.out.println("Formula: "+ formula);
-            if(formula < radius){
-                listener.exitScreen(this, 1);
+        if(active) {
+            System.out.println("Screen x toasted: " + screenX);
+            System.out.println("Screen y: " + (canvas.getHeight() - screenY));
+            screenY = canvas.getHeight() - screenY;
+            if(screenX >= 373 && screenX <=700 && screenY >= 380 && screenY <= 565){
+                listener.exitScreen(this,1);
             }
-            centerX = 511;
-            centerY = 92;
-            formula = (screenX-centerX)*(screenX-centerX)+(screenY-centerY)*(screenY-centerY);
-            formula = (float) Math.sqrt(formula);
-            if(formula < radius){
-
-                listener.exitScreen(this, 2);
+            if(screenX >= 355 && screenX <= 712 && screenY >= 199 && screenY <= 358){
+                listener.exitScreen(this,2);
             }
-            centerX = 958;
-            centerY = 92;
-            formula = (screenX-centerX)*(screenX-centerX)+(screenY-centerY)*(screenY-centerY);
-            formula = (float) Math.sqrt(formula);
-            if(formula < radius){
-
-                listener.exitScreen(this, 3);
-            }
-
         }
+
 
         return false;
     }

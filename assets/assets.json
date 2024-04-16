@@ -47,6 +47,7 @@
         "levelSelect:Level1": "levelSelect/level1test.png",
         "levelSelect:Level2": "levelSelect/level2test.png",
         "levelSelect:Level3": "levelSelect/level3test.png",
+        "levelSelect:retry": "levelSelect/retryMenu.png",
         "player:ursaWalk": "player/Walk.png",
         "player:ursaIdle": "player/Stand.png",
         "enemies:salmonUprightWalk": "enemies/Walk.png",
