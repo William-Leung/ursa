@@ -139,42 +139,42 @@ public class GDXRoot extends Game implements ScreenListener {
 			loading.dispose();
 			loading = null;
 		} else if (screen == levelSelector && exitCode == 1) {
-			current = 1;
-			controllers[current-1] = new SceneModel("level4.json");
-			controllers[current-1].gatherAssets(directory);
-			controllers[current-1].setScreenListener(this);
-			controllers[current-1].setCanvas(canvas);
-			controllers[current-1].reset();
-			setScreen(controllers[current-1]);
-			controllers[current-1].active = true;
+			current = 0;
+			controllers[current] = new SceneModel("level4.json");
+			controllers[current].gatherAssets(directory);
+			controllers[current].setScreenListener(this);
+			controllers[current].setCanvas(canvas);
+			controllers[current].reset();
+			setScreen(controllers[current]);
+			controllers[current].active = true;
 
 			levelSelector.setActive(false);
 			levelSelector.dispose();
 			levelSelector = null;
 
 		} else if (screen == levelSelector && exitCode == 2) {
-			current = 2;
-			controllers[current-1] = new SceneModel("level3.json");
-			controllers[current-1].gatherAssets(directory);
-			controllers[current-1].setScreenListener(this);
-			controllers[current-1].setCanvas(canvas);
-			controllers[current-1].reset();
-			setScreen(controllers[current-1]);
-			controllers[current-1].active = true;
+			current = 1;
+			controllers[current] = new SceneModel("level3.json");
+			controllers[current].gatherAssets(directory);
+			controllers[current].setScreenListener(this);
+			controllers[current].setCanvas(canvas);
+			controllers[current].reset();
+			setScreen(controllers[current]);
+			controllers[current].active = true;
 
 			levelSelector.setActive(false);
 			levelSelector.dispose();
 			levelSelector = null;
 
 		}else if (screen == levelSelector && exitCode == 3) {
-			current = 3;
-			controllers[current-1] = new SceneModel("level2.json");
-			controllers[current-1].gatherAssets(directory);
-			controllers[current-1].setScreenListener(this);
-			controllers[current-1].setCanvas(canvas);
-			controllers[current-1].reset();
-			setScreen(controllers[current-1]);
-			controllers[current-1].active = true;
+			current = 2;
+			controllers[current] = new SceneModel("level2.json");
+			controllers[current].gatherAssets(directory);
+			controllers[current].setScreenListener(this);
+			controllers[current].setCanvas(canvas);
+			controllers[current].reset();
+			setScreen(controllers[current]);
+			controllers[current].active = true;
 
 			levelSelector.setActive(false);
 			levelSelector.dispose();
@@ -185,7 +185,7 @@ public class GDXRoot extends Game implements ScreenListener {
 			canvas.setCam(camX,camY);
 			setScreen(levelSelector);
 			levelSelector.setActive(true);
-			controllers[current-1].active = false;
+			controllers[current].active = false;
 
 
 
@@ -201,7 +201,7 @@ public class GDXRoot extends Game implements ScreenListener {
 			canvas.setCam(camX,camY);
 			setScreen(retryMenu);
 			retryMenu.setActive(true);
-			controllers[current-1].active = false;
+			controllers[current].active = false;
 
 
 
@@ -209,11 +209,11 @@ public class GDXRoot extends Game implements ScreenListener {
 
 
 		}else if(screen == retryMenu && exitCode ==1){
-			controllers[current-1].setScreenListener(this);
-			controllers[current-1].setCanvas(canvas);
-			controllers[current-1].reset();
-			setScreen(controllers[current-1]);
-			controllers[current-1].active = true;
+			controllers[current].setScreenListener(this);
+			controllers[current].setCanvas(canvas);
+			controllers[current].reset();
+			setScreen(controllers[current]);
+			controllers[current].active = true;
 			retryMenu.setActive(false);
 			retryMenu.dispose();
 			retryMenu = null;

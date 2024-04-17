@@ -348,6 +348,7 @@ public class SceneModel extends WorldController implements ContactListener {
      * This method disposes of the world and creates a new one.
      */
     public void reset() {
+        uiRotationAngle = 0;
         Vector2 gravity = new Vector2(0,0 );
 
         for(Obstacle obj : objects) {
