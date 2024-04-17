@@ -914,6 +914,59 @@ public class SceneModel extends WorldController implements ContactListener {
                     addObject(wall);
 
                 }
+                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == firstTileIndex+6){
+                    wall = new InvivisbleWall( (j* 8),3+ (i*8),1f,.3f);
+                    wall.setDensity(0);
+                    wall.setFriction(0);
+                    wall.setRestitution(0);
+                    wall.setDrawScale(scale);
+                    wall.setName("invis wall " + (i + j));
+                    addObject(wall);
+                    wall = new InvivisbleWall( 1+(j* 8),3.2f+ (i*8),1f,.3f);
+                    wall.setDensity(0);
+                    wall.setFriction(0);
+                    wall.setRestitution(0);
+                    wall.setDrawScale(scale);
+                    wall.setName("invis wall " + (i + j));
+                    addObject(wall);
+                    wall = new InvivisbleWall( 1.8f+(j* 8),3.5f+ (i*8),1f,.3f);
+                    wall.setDensity(0);
+                    wall.setFriction(0);
+                    wall.setRestitution(0);
+                    wall.setDrawScale(scale);
+                    wall.setName("invis wall " + (i + j));
+                    addObject(wall);
+                    wall = new InvivisbleWall( 2.8f+(j* 8),4.0f+ (i*8),1f,.3f);
+                    wall.setDensity(0);
+                    wall.setFriction(0);
+                    wall.setRestitution(0);
+                    wall.setDrawScale(scale);
+                    wall.setName("invis wall " + (i + j));
+                    addObject(wall);
+                    wall = new InvivisbleWall( 3.5f+(j* 8),4.5f+ (i*8),1f,.3f);
+                    wall.setDensity(0);
+                    wall.setFriction(0);
+                    wall.setRestitution(0);
+                    wall.setDrawScale(scale);
+                    wall.setName("invis wall " + (i + j));
+                    addObject(wall);
+                    wall = new InvivisbleWall( 4.5f+(j* 8),5.2f+ (i*8),.1f,2f);
+                    wall.setDensity(0);
+                    wall.setFriction(0);
+                    wall.setRestitution(0);
+                    wall.setDrawScale(scale);
+                    wall.setName("invis wall " + (i + j));
+                    wall.setAngle(-0.523599f);
+                    addObject(wall);
+                    wall = new InvivisbleWall( 5.15f+(j* 8),6.9f+ (i*8),.1f,2f);
+                    wall.setDensity(0);
+                    wall.setFriction(0);
+                    wall.setRestitution(0);
+                    wall.setDrawScale(scale);
+                    wall.setName("invis wall " + (i + j));
+                    wall.setAngle(-.2f);
+                    addObject(wall);
+                }
                 counter += 1;
 
 
