@@ -509,7 +509,7 @@ public class SceneModel extends WorldController implements ContactListener {
 
                     System.out.println(markerY * tileY);
                     System.out.println(maxY * tileY);
-                    enemyPosList[orderNum-1] = new Vector2(markerX,markerY);
+                    enemyPosList[orderNum-1] = new Vector2(markerX  ,markerY);
                     markerCounter += 1;
                 }
             }
