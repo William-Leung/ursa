@@ -5,6 +5,7 @@ import edu.cornell.gdiac.physics.enemy.Enemy;
 import edu.cornell.gdiac.physics.player.UrsaModel;
 import edu.cornell.gdiac.physics.objects.Tree;
 import edu.cornell.gdiac.util.PooledList;
+import java.lang.reflect.Array;
 import java.util.ArrayDeque;
 
 public class AIController {
@@ -104,6 +105,10 @@ public class AIController {
     private boolean turnAround = false;
     private Vector2 otherDir = new Vector2();
 
+    private Vector2 firstGoal;
+
+    private boolean isStupid = false;
+
     /**
      * Creates an AIController for the ship with the given id.
      */
@@ -124,16 +129,27 @@ public class AIController {
             }
         }
         currGoal = goalLocs.peek();
-
+        firstGoal = currGoal;
     }
+
+    public AIController(Enemy enemy,  UrsaModel ursa, PooledList<Tree> trees, Vector2[] patrolLocs, boolean stupid) {
+        this(enemy, ursa, trees, patrolLocs);
+        isStupid = stupid;
+    }
+
+
 
     public void reset() {
         hasWon = false;
         state = FSMState.SPAWN;
         ticks_confused = 0;
         ticks_attacked = 0;
+        currGoal = firstGoal;
     }
 
+    public ArrayDeque<Vector2> getPatrol() {
+        return goalLocs;
+    }
 
     private void changeStateIfApplicable() {
 
@@ -143,7 +159,6 @@ public class AIController {
             ticks_detected = 0;
         }
 
-        System.out.println(state);
         switch(state) {
             case SPAWN:
                 if (ticks < SPAWN_TICKS) {
@@ -304,8 +319,11 @@ public class AIController {
     public void getAction() {
         ticks++;
 
-        changeStateIfApplicable();
-        //System.out.println(state.toString());
+        if(!isStupid) {
+            changeStateIfApplicable();
+        } else {
+            this.state = FSMState.WANDER;
+        }
 
         prevLoc.x = enemy.getX();
         prevLoc.y = enemy.getY();

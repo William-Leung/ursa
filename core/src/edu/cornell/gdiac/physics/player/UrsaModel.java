@@ -397,7 +397,6 @@ public class UrsaModel extends CapsuleObstacle {
             scaleX = -.45f;
         }
         canvas.draw(texture, isShaded ? Color.BLUE : Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y+20,getAngle(),scaleX,0.45f);
-
     }
 
     /**

@@ -58,6 +58,17 @@ public abstract class WorldController implements Screen {
 	/** The texture for the exit condition */
 	protected TextureRegion goalTile;
 
+	protected static TextureRegion redTextureRegion;
+	private static int CIRCLE_RADIUS = 500;
+
+	static {
+		Pixmap pixmap = new Pixmap(2 * CIRCLE_RADIUS + 1, 2 * CIRCLE_RADIUS + 1, Pixmap.Format.RGBA8888);
+		pixmap.setColor(Color.RED); // Set the color to red
+		pixmap.fillCircle(CIRCLE_RADIUS, CIRCLE_RADIUS, CIRCLE_RADIUS); // Fill a circle in the pixmap
+		redTextureRegion = new TextureRegion(new Texture(pixmap)); // Create a texture region from the pixmap
+		pixmap.dispose();
+	}
+
 	/** The font for giving messages to the player */
 	protected BitmapFont displayFont;
 
@@ -117,6 +128,7 @@ public abstract class WorldController implements Screen {
 	private Comparator<Obstacle> obstacleComparator = (o1, o2) -> Float.compare(o2.getY(), o1.getY());
 
 	private Color tinting = Color.WHITE;
+
 
 	/**
 	 * Returns true if debug mode is active.
@@ -290,6 +302,7 @@ public abstract class WorldController implements Screen {
 		world  = null;
 		canvas = null;
 	}
+
 
 	/**
 	 * Gather the assets for this controller.
@@ -522,6 +535,7 @@ public abstract class WorldController implements Screen {
 
 		// Doesn't do anything right now
 		postDraw(dt);
+
 
 		canvas.end();
 

@@ -247,6 +247,8 @@ public class SceneModel extends WorldController implements ContactListener {
     private float uiDrawScale = 0.1f;
 
 
+
+
     /**
      * Creates and initialize a new instance of the platformer game
      *
@@ -314,6 +316,7 @@ public class SceneModel extends WorldController implements ContactListener {
         polarRock4 = new TextureRegion(directory.getEntry("object:polar_rock_4", Texture.class));
         polarTrunk1 = new TextureRegion(directory.getEntry("object:polar_trunk_1", Texture.class));
         polarTrunk2 = new TextureRegion(directory.getEntry("object:polar_trunk_2", Texture.class));
+        polarCave = new TextureRegion(directory.getEntry("object:cave",Texture.class));
 
         polarTreeShadow = new TextureRegion(directory.getEntry("shadows:polar_tree_shadow", Texture.class));
         polarCaveShadow = new TextureRegion(directory.getEntry("shadows:polar_cave_shadow", Texture.class));
@@ -328,27 +331,20 @@ public class SceneModel extends WorldController implements ContactListener {
 
         playerWalkTextureAnimation = new TextureRegion(directory.getEntry("player:ursaWalk",Texture.class));
         playerWalkFilm = new FilmStrip(playerWalkTextureAnimation.getTexture(),2,8);
-        playerWalkFilm.setFrame(0);
-        polarCave = new TextureRegion(directory.getEntry("object:cave",Texture.class));
         playerIdleTextureAnimation = new TextureRegion(directory.getEntry("player:ursaIdle",Texture.class));
         playerIdleFilm = new FilmStrip(playerIdleTextureAnimation.getTexture(),4,8);
-        playerIdleFilm.setFrame(0);
+
         salmonUprightWalkAnimation = new TextureRegion(directory.getEntry("enemies:salmonUprightWalk",Texture.class));
         salmonUprightWalkFilm = new FilmStrip(salmonUprightWalkAnimation.getTexture(),3,8);
-        salmonUprightWalkFilm.setFrame(0);
         salmonConfusedAnimation = new TextureRegion(directory.getEntry("enemies:salmonConfused",Texture.class));
         salmonConfusedFilm = new FilmStrip(salmonConfusedAnimation.getTexture(),4,8);
-        salmonUprightWalkFilm.setFrame(0);
         salmonIdleAnimation = new TextureRegion(directory.getEntry("enemies:salmonIdle",Texture.class));
         salmonIdleFilm = new FilmStrip(salmonIdleAnimation.getTexture(), 5, 8);
-        salmonIdleFilm.setFrame(0);
         salmonDetectedAnimation = new TextureRegion(directory.getEntry("enemies:salmonDetected",Texture.class));
         salmonDetectedFilm = new FilmStrip(salmonDetectedAnimation.getTexture(), 4, 8);
-        salmonConfusedFilm.setFrame(0);
 
         treeShakeAnimation = new TextureRegion(directory.getEntry("object:polar_tree_shake",Texture.class));
         treeShakeFilm = new FilmStrip(treeShakeAnimation.getTexture(), 2, 8);
-        treeShakeFilm.setFrame(0);
 
 
         gatherTiles(directory);
@@ -398,6 +394,8 @@ public class SceneModel extends WorldController implements ContactListener {
         colorNextPointer = 1;
         uiRotationAngle = 0;
         currentFrame = 0;
+        shakingTree = null;
+        treeShakeIndex = 0;
 
         for(Tree t: trees) {
             t.reset();
@@ -411,6 +409,7 @@ public class SceneModel extends WorldController implements ContactListener {
         setComplete(false);
         setFailure(false);
         populateLevel();
+        System.out.println(" ====== Reset ===== ");
     }
 
     /**
@@ -455,9 +454,13 @@ public class SceneModel extends WorldController implements ContactListener {
 
         for(int i = 0; i< jsonData.get("layers").get(6).get("objects").size;i++){
             float x = (jsonData.get("layers").get(6).get("objects").get(i).get(8).asFloat()) / (tileWidth * 512f);
-            x = x * tileX + 5.5f;
+
             float y = (maxY - jsonData.get("layers").get(6).get("objects").get(i).get(9).asFloat())/(tileHeight * 512f);
-            y = y * tileY +15 ;
+
+            x = x * tileX + 5.5f;
+            y = y * tileY + 15 ;
+
+
 
             JsonValue goal = constants.get("goal");
             JsonValue goalpos = goal.get("pos");
@@ -497,8 +500,10 @@ public class SceneModel extends WorldController implements ContactListener {
                     int orderNum = (jsonData.get("layers").get(8).get("objects").get(e).get("type").asInt());
                     float markerX = (jsonData.get("layers").get(8).get("objects").get(e).get("x").asFloat()) / (tileWidth * 512f);
                     float markerY = (jsonData.get("layers").get(8).get("objects").get(e).get("y").asFloat()) / (tileWidth * 512f);
-                    markerX = (markerX * (tileX + 5.5f))+2.5f;
-                    markerY = markerY * tileY +14.0f;
+                    markerX = (markerX * (tileX ));
+                    markerY = markerY * tileY;
+                    System.out.println(markerY * tileY);
+                    System.out.println(maxY * tileY);
                     enemyPosList[orderNum-1] = new Vector2(markerX,markerY);
                     markerCounter += 1;
                 }
@@ -510,8 +515,17 @@ public class SceneModel extends WorldController implements ContactListener {
             enemies[i].setTexture(salmonUprightWalkFilm);
             addObject(enemies[i]);
 
+            if(i == 2) {
+                for(Vector2 v: enemyPosList) {
+                    System.out.println(v);
+                }
+            }
             if (enemies[i] != null) {
-                controls.add(new AIController(enemies[i], avatar, trees, enemyPosList));
+                if(i == 0) {
+                    controls.add(new AIController(enemies[i], avatar, trees, enemyPosList, true));
+                } else {
+                    controls.add(new AIController(enemies[i], avatar, trees, enemyPosList));
+                }
             }
         }
 
@@ -1098,6 +1112,8 @@ public class SceneModel extends WorldController implements ContactListener {
         if (shakingTree == null) {
             return;
         }
+        System.out.println(treeShakeIndex);
+
         treeShakeFilm.setFrame(treeShakeIndex);
         shakingTree.setTexture(treeShakeFilm);
         // Increment the film by one every 3 frames
@@ -1105,6 +1121,7 @@ public class SceneModel extends WorldController implements ContactListener {
             treeShakeIndex = (treeShakeIndex + 1) % 12;
         }
 
+        System.out.println(shakingTree.getTexture());
         if(treeShakeIndex == 11) {
             // Change the shakingTree to no snow texture
             shakingTree.setTexture(polarTreeNoSnow);
@@ -1222,9 +1239,11 @@ public class SceneModel extends WorldController implements ContactListener {
 
 
     private void shakeTree(Tree tree) {
+        System.out.println("Attempting to shake tree...");
         if (tree.canShake()) {
+            System.out.println("Shaking tree..");
             tree.putOnShakeCooldown();
-            tree.setTexture(polarTreeNoSnow);
+            //tree.setTexture(polarTreeNoSnow);
             shakingTree = tree;
 
             for (Enemy enemy : enemies) {
@@ -1345,6 +1364,15 @@ public class SceneModel extends WorldController implements ContactListener {
         for(Obstacle obj : objects) {
             obj.preDraw(canvas);
         }
+
+        /**for(AIController control: controls) {
+            for(Vector2 v: control.getPatrol()) {
+                if(v != null) {
+                    canvas.draw(redTextureRegion,Color.WHITE, v.x * 32f,
+                            v.y * 32f, 10,10);
+                }
+            }
+        }*/
         //shadowController.drawAllShadows(canvas, this);
     }
 
@@ -1356,14 +1384,12 @@ public class SceneModel extends WorldController implements ContactListener {
             canvas.begin(); // DO NOT SCALE
             canvas.drawText("WIN!: Press r to restart, p to return to level select",displayFont,avatar.getPosition().x *31.9f, avatar.getPosition().y * 31.9f );
 
-
             canvas.end();
         } else if (failed&&active) {
             displayFont.setColor(Color.RED);
             canvas.begin(); // DO NOT SCALE
             canvas.drawText("Lose!:",displayFont,avatar.getPosition().x*31.9f, avatar.getPosition().y*31.9f);
             canvas.end();
-
         }
     }
 
