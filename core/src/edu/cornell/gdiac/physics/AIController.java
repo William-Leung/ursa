@@ -107,7 +107,7 @@ public class AIController {
     /**
      * Creates an AIController for the ship with the given id.
      */
-    public AIController(Enemy enemy,  UrsaModel ursa, PooledList<Tree> trees) {
+    public AIController(Enemy enemy,  UrsaModel ursa, PooledList<Tree> trees, Vector2[] patrolLocs) {
         this.enemy = enemy;
         this.ursa = ursa;
         this.trees = trees;
@@ -118,14 +118,12 @@ public class AIController {
 
         // add goal locs to player's deque
         goalLocs = new ArrayDeque<>();
-
-        if (enemy.getX() > 900) {
-            currGoal = new Vector2(enemy.getX() - 25, enemy.getY());
-        } else {
-            currGoal = new Vector2(enemy.getX() + 25, enemy.getY());
+        for(Vector2 v: patrolLocs) {
+            if(v != null) {
+                goalLocs.addLast(v);
+            }
         }
-
-        goalLocs.addLast(new Vector2(enemy.getX(), enemy.getY()));
+        currGoal = goalLocs.peek();
 
     }
 
@@ -145,6 +143,7 @@ public class AIController {
             ticks_detected = 0;
         }
 
+        System.out.println(state);
         switch(state) {
             case SPAWN:
                 if (ticks < SPAWN_TICKS) {
@@ -323,7 +322,7 @@ public class AIController {
                 break;
             case WANDER:
 
-               for (Tree t : trees) {
+               /**for (Tree t : trees) {
                    if (Math.abs(t.getY() - enemy.getY()) <= t.getHeight() / 2 + enemy.getHeight() / 2 ) {
                        if (t.getY() > enemy.getY()) {
                            enemy.setVY(-2);
@@ -341,7 +340,7 @@ public class AIController {
 //                       }
 //                       return;
 //                   }
-               }
+               }*/
 
 //                if (Math.abs(prevLoc.x - enemy.getX()) <= 0.5) {
 //                    enemy.setY(enemy.getY() - 100);
@@ -378,7 +377,7 @@ public class AIController {
                    action = action.nor();
 
                    enemy.setVX(action.x * 3);
-                   enemy.setVY(0);
+                   enemy.setVY(action.y * 3);
                    enemy.setLookDirection(action.x, action.y);
 
                }
