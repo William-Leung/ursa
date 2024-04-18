@@ -442,6 +442,8 @@ public class SceneModel extends WorldController implements ContactListener {
         dwidth  = playerIdleFilm.getRegionWidth()/50f;
         dheight = playerIdleFilm.getRegionHeight()/100f;
         avatar = new UrsaModel(playerStartX * tileX + 3.5f,playerStartY * tileY +11.0f,constants.get("ursa"), dwidth, dheight);
+        System.out.println("player x is: " + playerStartX * tileX + 3.5f);
+        System.out.println("player y is: " + playerStartY * tileY +11.0f);
         avatar.setDrawScale(scale);
 
 
@@ -499,9 +501,12 @@ public class SceneModel extends WorldController implements ContactListener {
                 if(MarkerName == enemyNumber ){
                     int orderNum = (jsonData.get("layers").get(8).get("objects").get(e).get("type").asInt());
                     float markerX = (jsonData.get("layers").get(8).get("objects").get(e).get("x").asFloat()) / (tileWidth * 512f);
-                    float markerY = (jsonData.get("layers").get(8).get("objects").get(e).get("y").asFloat()) / (tileWidth * 512f);
+                    float markerY = ((maxY - jsonData.get("layers").get(8).get("objects").get(e).get("y").asFloat())) / (tileWidth * 512f);
                     markerX = (markerX * (tileX ));
-                    markerY = markerY * tileY;
+                    System.out.println("Marker x is: " + markerX);
+                    markerY = markerY * tileY -2 ;
+                    System.out.println("Marker y is: " + markerY);
+
                     System.out.println(markerY * tileY);
                     System.out.println(maxY * tileY);
                     enemyPosList[orderNum-1] = new Vector2(markerX,markerY);

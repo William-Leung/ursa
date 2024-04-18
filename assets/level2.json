@@ -3,13 +3,13 @@
  "infinite":false,
  "layers":[
         {
-         "data":[10, 10, 10, 10, 10, 10, 10,
-            10, 18, 20, 20, 20, 11, 10,
-            10, 21, 0, 0, 0, 19, 10,
-            10, 21, 0, 0, 0, 19, 10,
-            10, 21, 0, 0, 0, 19, 10,
-            10, 13, 17, 17, 17, 12, 10,
-            10, 10, 10, 10, 10, 10, 10],
+         "data":[9, 9, 9, 9, 9, 9, 9,
+            9, 17, 19, 19, 19, 10, 9,
+            9, 20, 0, 0, 0, 18, 9,
+            9, 20, 0, 0, 0, 18, 9,
+            9, 20, 0, 0, 0, 18, 9,
+            9, 12, 16, 16, 16, 11, 9,
+            9, 9, 9, 9, 9, 9, 9],
          "height":7,
          "id":1,
          "name":"Tile Layer 1",
@@ -26,7 +26,7 @@
          "name":"player",
          "objects":[
                 {
-                 "gid":2,
+                 "gid":1,
                  "height":256,
                  "id":1,
                  "name":"",
@@ -34,8 +34,8 @@
                  "type":"",
                  "visible":true,
                  "width":256,
-                 "x":1623.12,
-                 "y":2697.08
+                 "x":2007.12,
+                 "y":2441.08
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -59,19 +59,7 @@
          "name":"enemies",
          "objects":[
                 {
-                 "gid":9,
-                 "height":512,
-                 "id":4,
-                 "name":"2",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":512,
-                 "x":885.989,
-                 "y":2442.25
-                }, 
-                {
-                 "gid":9,
+                 "gid":8,
                  "height":512,
                  "id":6,
                  "name":"1",
@@ -94,7 +82,7 @@
          "name":"trees",
          "objects":[
                 {
-                 "gid":8,
+                 "gid":7,
                  "height":512,
                  "id":3,
                  "name":"",
@@ -128,7 +116,7 @@
          "name":"cave",
          "objects":[
                 {
-                 "gid":25,
+                 "gid":24,
                  "height":512,
                  "id":13,
                  "name":"",
@@ -163,31 +151,7 @@
          "name":"markers",
          "objects":[
                 {
-                 "gid":26,
-                 "height":128,
-                 "id":16,
-                 "name":"2",
-                 "rotation":0,
-                 "type":"2",
-                 "visible":true,
-                 "width":128,
-                 "x":832,
-                 "y":2368
-                }, 
-                {
-                 "gid":26,
-                 "height":128,
-                 "id":17,
-                 "name":"2",
-                 "rotation":0,
-                 "type":"1",
-                 "visible":true,
-                 "width":128,
-                 "x":2568,
-                 "y":2384
-                }, 
-                {
-                 "gid":26,
+                 "gid":25,
                  "height":128,
                  "id":18,
                  "name":"1",
@@ -195,44 +159,8 @@
                  "type":"1",
                  "visible":true,
                  "width":128,
-                 "x":1656,
-                 "y":1472
-                }, 
-                {
-                 "gid":26,
-                 "height":128,
-                 "id":19,
-                 "name":"1",
-                 "rotation":0,
-                 "type":"2",
-                 "visible":true,
-                 "width":128,
-                 "x":2552,
-                 "y":1904
-                }, 
-                {
-                 "gid":26,
-                 "height":128,
-                 "id":20,
-                 "name":"1",
-                 "rotation":0,
-                 "type":"3",
-                 "visible":true,
-                 "width":128,
-                 "x":1688,
-                 "y":2272
-                }, 
-                {
-                 "gid":26,
-                 "height":128,
-                 "id":21,
-                 "name":"1",
-                 "rotation":0,
-                 "type":"4",
-                 "visible":true,
-                 "width":128,
-                 "x":1048,
-                 "y":1832
+                 "x":2012,
+                 "y":2292
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -263,61 +191,61 @@
          "source":"maps\/Polar_Cliff_center.tsx"
         }, 
         {
-         "firstgid":2,
+         "firstgid":1,
          "source":"maps\/Polar_Cliff_Corner_1.tsx"
         }, 
         {
-         "firstgid":2,
+         "firstgid":1,
          "source":"maps\/Polar_Cliff_Corner_2.tsx"
         }, 
         {
-         "firstgid":2,
+         "firstgid":1,
          "source":"maps\/Polar_Cliff_Corner_3.tsx"
         }, 
         {
-         "firstgid":2,
+         "firstgid":1,
          "source":"maps\/Polar_Cliff_Corner_4.tsx"
         }, 
         {
-         "firstgid":2,
+         "firstgid":1,
          "source":"maps\/Polar_Cliff_Edge_5.tsx"
         }, 
         {
-         "firstgid":2,
+         "firstgid":1,
          "source":"maps\/Polar_Cliff_Edge_4.tsx"
         },
     
         {
-         "firstgid":2,
+         "firstgid":1,
          "source":"maps\/Polar_Cliff_Edge_3.tsx"
         }, 
         {
-         "firstgid":2,
+         "firstgid":1,
          "source":"maps\/Polar_Cliff_Edge_1.tsx"
         }, 
         {
-         "firstgid":2,
+         "firstgid":1,
          "source":"maps\/Ursa.tsx"
         }, 
         {
-         "firstgid":8,
+         "firstgid":7,
          "source":"maps\/tundra_tree_snow_small.tsx"
         }, 
         {
-         "firstgid":9,
+         "firstgid":8,
          "source":"maps\/salmon_walk_2_small.tsx"
         }, 
         {
-         "firstgid":10,
+         "firstgid":9,
          "source":"maps\/tiles.tsx"
         }, 
         {
-         "firstgid":25,
+         "firstgid":24,
          "source":"maps\/cave.tsx"
         },
     
         {
-         "firstgid":26,
+         "firstgid":25,
          "source":"maps\/marker.tsx"
         }],
  "tilewidth":512,
