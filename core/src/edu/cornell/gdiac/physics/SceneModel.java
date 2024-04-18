@@ -504,11 +504,10 @@ public class SceneModel extends WorldController implements ContactListener {
                     float markerY = ((maxY - jsonData.get("layers").get(8).get("objects").get(e).get("y").asFloat())) / (tileWidth * 512f);
                     markerX = (markerX * (tileX ));
                     System.out.println("Marker x is: " + markerX);
-                    markerY = markerY * tileY -2 ;
-                    System.out.println("Marker y is: " + markerY);
+                    markerY = markerY * tileY +10 ;
+                    System.out.println("Marker y is: " + markerY );
 
-                    System.out.println(markerY * tileY);
-                    System.out.println(maxY * tileY);
+
                     enemyPosList[orderNum-1] = new Vector2(markerX  ,markerY);
                     markerCounter += 1;
                 }

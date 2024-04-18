@@ -124,11 +124,11 @@
                 4,
                 5
             ],
-            "scale": 0.0691,
-            "selectedLayer": 0,
+            "scale": 0.25,
+            "selectedLayer": 8,
             "viewCenter": {
-                "x": 8726.483357452966,
-                "y": 4609.261939218524
+                "x": 1272,
+                "y": 1798
             }
         },
         "map3.tmx": {
@@ -167,7 +167,8 @@
             }
         },
         "marker.tsx": {
-            "dynamicWrapping": false
+            "dynamicWrapping": false,
+            "scaleInDock": 1
         },
         "player test.tsx": {
             "dynamicWrapping": false,
@@ -236,22 +237,25 @@
     "map.width": 20,
     "openFiles": [
         "map3.tmx",
-        "map2.tmx"
+        "map2.tmx",
+        "tutorial.tmx",
+        "map4.tmx",
+        "map1.tmx"
     ],
     "project": "map1_test.tiled-project",
     "recentFiles": [
-        "tiles.tsx",
+        "map3.tmx",
+        "map1.tmx",
         "map4.tmx",
+        "tutorial.tmx",
+        "map2.tmx",
+        "tiles.tsx",
         "map5.tmx",
         "C:/Users/williamleung/Documents/GitHub/ursa/assets/level4.json",
-        "map2.tmx",
-        "map1.tmx",
-        "map3.tmx",
         "cave.tsx",
         "Polar_Cliff_Edge_6.tsx",
         "polar_cliff_edge_left_side.tsx",
-        "salmon_walk_2_small.tsx",
-        "Polar_Cliff_center.tsx"
+        "salmon_walk_2_small.tsx"
     ],
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {

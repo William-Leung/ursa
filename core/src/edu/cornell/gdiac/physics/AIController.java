@@ -130,6 +130,7 @@ public class AIController {
         }
         currGoal = goalLocs.peek();
         firstGoal = currGoal;
+        System.out.println("current goal x " + currGoal.x + " y " + currGoal.y);
     }
 
     public AIController(Enemy enemy,  UrsaModel ursa, PooledList<Tree> trees, Vector2[] patrolLocs, boolean stupid) {
