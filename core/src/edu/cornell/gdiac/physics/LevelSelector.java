@@ -13,14 +13,27 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.World;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.util.FilmStrip;
 import edu.cornell.gdiac.util.ScreenListener;
 
 
 public class LevelSelector implements Screen, InputProcessor, ControllerListener {
 
     private TextureRegion[] buttons = new TextureRegion[20];
+    private boolean button1Pressed;
+    private boolean button2Pressed;
+    private boolean button3Pressed;
+    private boolean button1Locked;
+    private boolean button2Locked;
+    private boolean button3Locked;
+    private FilmStrip button1;
+    private FilmStrip button2;
+    private FilmStrip button3;
+    private FilmStrip button4;
     private TextureRegion background = new TextureRegion();
     private ScreenListener listener;
+    private final float ScreenWidthStart = 1024;
+    private final float ScreenHeightStart = 576;
     private float buttonWidth;
     GameCanvas canvas;
     private boolean active;
@@ -28,6 +41,8 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         canvas = NewCanvas;
         active = false;
         Gdx.input.setInputProcessor( this );
+        button1Pressed = false;
+        System.out.println("ScreenWidth is: " + this.canvas.getHeight());
 
 
     }
@@ -38,6 +53,17 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         buttons[0] = new TextureRegion(directory.getEntry("levelSelect:Level1", Texture.class));
         buttons[1] = new TextureRegion(directory.getEntry("levelSelect:Level2", Texture.class));
         buttons[2] = new TextureRegion(directory.getEntry("levelSelect:Level3", Texture.class));
+        buttons[3] = new TextureRegion(directory.getEntry("levelSelect:Level3", Texture.class));
+        button2Locked = true;
+        button3Locked = true;
+        button1 = new FilmStrip(buttons[0].getTexture(),1,2);
+        button1.setFrame(0);
+        button2 = new FilmStrip(buttons[1].getTexture(),1,5);
+        button2.setFrame(3);
+        button3 = new FilmStrip(buttons[2].getTexture(),1,5);
+        button3.setFrame(3);
+        button4 = new FilmStrip(buttons[3].getTexture(),1,5);
+        button4.setFrame(0);
         background = new TextureRegion(directory.getEntry("levelSelect:background", Texture.class));
 
     }
@@ -50,10 +76,31 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         canvas.clear();
 
         canvas.begin();
-        canvas.draw(background,0,0);
-        canvas.draw(buttons[0],0,0);
-        canvas.draw(buttons[1],canvas.getWidth()/2.5f,0);
-        canvas.draw(buttons[2],canvas.getWidth()/1.2f,0);
+
+        if(button1Pressed){
+            button1.setFrame(1);
+        }else {
+            button1.setFrame(0);
+        }
+        if(button2Pressed){
+            button2.setFrame(4);
+        }
+        else {
+            button2.setFrame(3);
+        }
+        if(button3Pressed){
+            button3.setFrame(4);
+        }
+        else {
+            button3.setFrame(3);
+        }
+
+        canvas.draw(background,Color.WHITE,0,0,background.getRegionWidth() * .25f,background.getRegionHeight() * .285f);
+        canvas.draw(button1,Color.WHITE,40,155,button1.getRegionWidth() * .6f,button1.getRegionHeight() * .6f);
+        canvas.draw(button2,Color.WHITE,152.5f,155,button1.getRegionWidth() * .6f,button1.getRegionHeight() * .6f);
+        canvas.draw(button3,Color.WHITE,152.5f,395,button1.getRegionWidth() * .6f,button1.getRegionHeight() * .6f);
+        canvas.draw(button4,Color.WHITE,285f,395,button1.getRegionWidth() * .6f,button1.getRegionHeight() * .6f);
+
 
         canvas.end();
     }
@@ -79,35 +126,36 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         if(active){
-            System.out.println("Screen x + L: " + screenX);
-            System.out.println("Screen y: " + (canvas.getHeight()-screenY));
-            float radius = buttons[0].getRegionWidth()/2.0f;
-            System.out.println("RAdius is: " + radius);
-            float centerX = 99f;
-            float centerY = 92f;
+            //System.out.println("Screen x + L: " + screenX);
+            //System.out.println("Screen y: " + (canvas.getHeight()-screenY));
+            float radius = (button1.getRegionWidth()/2.0f) -25;
+            //System.out.println("RAdius is: " + radius);
+            float centerX = 78f;
+            float centerY = 196f;
             screenY = canvas.getHeight()-screenY;
             float formula = (screenX-centerX)*(screenX-centerX)+(screenY-centerY)*(screenY-centerY);
             formula = (float) Math.sqrt(formula);
-            System.out.println("Formula: "+ formula);
+            //System.out.println("Formula: "+ formula);
             if(formula < radius){
-                listener.exitScreen(this, 1);
+                System.out.println("hit");
+                button1Pressed = true;
             }
-            centerX = 511;
-            centerY = 92;
+            centerX = 189f;
+            centerY = 196f;
             formula = (screenX-centerX)*(screenX-centerX)+(screenY-centerY)*(screenY-centerY);
             formula = (float) Math.sqrt(formula);
             if(formula < radius){
-
-                listener.exitScreen(this, 2);
+                button2Pressed = true;
             }
-            centerX = 958;
-            centerY = 92;
+            centerX = 189f;
+            centerY = 434;
             formula = (screenX-centerX)*(screenX-centerX)+(screenY-centerY)*(screenY-centerY);
             formula = (float) Math.sqrt(formula);
             if(formula < radius){
-
-                listener.exitScreen(this, 3);
+                System.out.println("Button 3");
+                button3Pressed = true;
             }
+
 
         }
 
@@ -115,7 +163,44 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
     }
 
     @Override
-    public boolean touchUp(int i, int i1, int i2, int i3) {
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+
+        if(active){
+            button3Pressed = false;
+            button2Pressed = false;
+            button1Pressed = false;
+            System.out.println("Screen x + L: " + screenX);
+            System.out.println("Screen y: " + (canvas.getHeight()-screenY));
+            float radius = (button1.getRegionWidth()/2.0f) -25;
+            System.out.println("RAdius is: " + radius);
+            float centerX = 78f;
+            float centerY = 196f;
+            screenY = canvas.getHeight()-screenY;
+            float formula = (screenX-centerX)*(screenX-centerX)+(screenY-centerY)*(screenY-centerY);
+            formula = (float) Math.sqrt(formula);
+            System.out.println("Formula: "+ formula);
+            if(formula < radius){
+
+               listener.exitScreen(this,1);
+            }
+            centerX = 189f;
+            centerY = 196f;
+            formula = (screenX-centerX)*(screenX-centerX)+(screenY-centerY)*(screenY-centerY);
+            formula = (float) Math.sqrt(formula);
+            if(formula < radius){
+               listener.exitScreen(this,2);
+            }
+            centerX = 189f;
+            centerY = 434;
+            formula = (screenX-centerX)*(screenX-centerX)+(screenY-centerY)*(screenY-centerY);
+            formula = (float) Math.sqrt(formula);
+            if(formula < radius){
+                listener.exitScreen(this,3);
+            }
+
+
+        }
+
         return false;
     }
 
