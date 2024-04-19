@@ -175,10 +175,13 @@ public class SceneModel extends WorldController implements ContactListener {
     private TextureRegion[] backgroundTextures = new TextureRegion[3];
 
     private float maxY;
+    private float maxX;
     float firstTileIndex;
     private TextureRegion[] tileTextures = new TextureRegion[16];
     private float playerStartX;
     private float playerStartY;
+    private float playerStartRatioX;
+    private float playerStartRatioY;
     private float tileY;
     private float tileX;
     private float tileWidth;
@@ -269,9 +272,17 @@ public class SceneModel extends WorldController implements ContactListener {
         tileWidth = jsonData.get("layers").get(0).get(7).asFloat();
         playerStartX = jsonData.get("layers").get(1).get("objects").get(0).get(8).asFloat();
         playerStartY = jsonData.get("layers").get(1).get("objects").get(0).get(9).asFloat();
-        maxY = (jsonData.get("layers").get(0).get("height").asFloat()) * 512f;
-        playerStartY = 1- (playerStartY/maxY);
-        playerStartX = (playerStartX/(tileWidth * 512f));
+
+        maxY = tileHeight * 512f;
+        maxX = tileWidth * 512f;
+        playerStartY = maxY - playerStartY;
+        System.out.println("player start y is: " + playerStartY);
+        System.out.println(maxY + " is max y");
+        playerStartRatioY = (playerStartY/maxY);
+        playerStartRatioX = playerStartX / maxX;
+        System.out.println("player ratio y " + playerStartRatioY);
+        System.out.println("player ratio x " + playerStartRatioX);
+
         tileX = tileWidth * 7f;
         tileY = tileHeight * 7f;
 
@@ -418,12 +429,10 @@ public class SceneModel extends WorldController implements ContactListener {
     private void populateLevel() {
 
         tileHeight = jsonData.get("layers").get(0).get(1).asFloat();
+        System.out.println("Tileheight is  "+ tileHeight);
         tileWidth = jsonData.get("layers").get(0).get(7).asFloat();
-        playerStartX = jsonData.get("layers").get(1).get("objects").get(0).get(8).asFloat();
-        playerStartY = jsonData.get("layers").get(1).get("objects").get(0).get(9).asFloat();
-        maxY = (jsonData.get("layers").get(0).get("height").asFloat()) * 512f;
-        playerStartY =  (maxY - playerStartY)/(tileHeight * 512f);
-        playerStartX = (playerStartX/(tileWidth * 512f));
+
+
         tileX = tileWidth * 8f;
         tileY = tileHeight * 8f;
         // Add level goal
@@ -441,9 +450,8 @@ public class SceneModel extends WorldController implements ContactListener {
         // Create ursa
         dwidth  = playerIdleFilm.getRegionWidth()/50f;
         dheight = playerIdleFilm.getRegionHeight()/100f;
-        avatar = new UrsaModel(playerStartX * tileX + 3.5f,playerStartY * tileY +11.0f,constants.get("ursa"), dwidth, dheight);
-        System.out.println("player x is: " + playerStartX * tileX + 3.5f);
-        System.out.println("player y is: " + playerStartY * tileY +11.0f);
+        avatar = new UrsaModel(playerStartRatioX *tileWidth *9f ,(playerStartRatioY * tileHeight * 9) + 8,constants.get("ursa"), dwidth, dheight);
+
         avatar.setDrawScale(scale);
 
 
@@ -455,18 +463,20 @@ public class SceneModel extends WorldController implements ContactListener {
         // place the cave
 
         for(int i = 0; i< jsonData.get("layers").get(6).get("objects").size;i++){
-            float x = (jsonData.get("layers").get(6).get("objects").get(i).get(8).asFloat()) / (tileWidth * 512f);
+            float x = (jsonData.get("layers").get(6).get("objects").get(i).get(8).asFloat()) ;
 
-            float y = (maxY - jsonData.get("layers").get(6).get("objects").get(i).get(9).asFloat())/(tileHeight * 512f);
+            float y = (maxY - jsonData.get("layers").get(6).get("objects").get(i).get(9).asFloat());
 
-            x = x * tileX + 5.5f;
-            y = y * tileY + 15 ;
+            float ratioX = x/maxX;
+            float ratioY = y/maxY;
+
+
 
 
 
             JsonValue goal = constants.get("goal");
             JsonValue goalpos = goal.get("pos");
-            goalDoor = new Cave(x,y,5,5);
+            goalDoor = new Cave(ratioX * tileWidth * 9,(ratioY * tileHeight * 9) + 8,5,5);
             goalDoor.setBodyType(BodyDef.BodyType.StaticBody);
             goalDoor.setDensity(goal.getFloat("density", 0));
             goalDoor.setFriction(goal.getFloat("friction", 0));
@@ -500,11 +510,11 @@ public class SceneModel extends WorldController implements ContactListener {
                 float MarkerName = jsonData.get("layers").get(8).get("objects").get(e).get("name").asFloat();
                 if(MarkerName == enemyNumber ){
                     int orderNum = (jsonData.get("layers").get(8).get("objects").get(e).get("type").asInt());
-                    float markerX = (jsonData.get("layers").get(8).get("objects").get(e).get("x").asFloat()) / (tileWidth * 512f);
-                    float markerY = ((maxY - jsonData.get("layers").get(8).get("objects").get(e).get("y").asFloat())) / (tileWidth * 512f);
-                    markerX = (markerX * (tileX ));
+                    float markerX = (jsonData.get("layers").get(8).get("objects").get(e).get("x").asFloat()) / (tileWidth * 256f);
+                    float markerY = ((maxY - jsonData.get("layers").get(8).get("objects").get(e).get("y").asFloat())) / (tileWidth * 256f);
+                    markerX = (markerX * (tileX ) -50);
                     System.out.println("Marker x is: " + markerX);
-                    markerY = markerY * tileY +10 ;
+                    markerY = markerY * (tileY ) ;
                     System.out.println("Marker y is: " + markerY );
 
 
@@ -1149,6 +1159,7 @@ public class SceneModel extends WorldController implements ContactListener {
     public void update(float dt) {
         // Increment the current frame (used for animation slow downs)
         currentFrame++;
+        System.out.println("player pos y is: " + avatar.getPosition().y);
 
         // Update the UI element to rise at sunrise and sunset and rotate if it's night
         if(timeRatio < uiRisingDuration) {
