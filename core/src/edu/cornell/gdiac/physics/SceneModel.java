@@ -450,7 +450,7 @@ public class SceneModel extends WorldController implements ContactListener {
         // Create ursa
         dwidth  = playerIdleFilm.getRegionWidth()/50f;
         dheight = playerIdleFilm.getRegionHeight()/100f;
-        avatar = new UrsaModel(playerStartRatioX *tileWidth *9f ,(playerStartRatioY * tileHeight * 9) + 8,constants.get("ursa"), dwidth, dheight);
+        avatar = new UrsaModel(playerStartRatioX *tileWidth *9f ,(playerStartRatioY * tileHeight * 8.5f) + 8,constants.get("ursa"), dwidth, dheight);
 
         avatar.setDrawScale(scale);
 
@@ -499,10 +499,11 @@ public class SceneModel extends WorldController implements ContactListener {
             float markerCounter = 0;
             enemyPosList = new Vector2[10];
             float enemyNumber = jsonData.get("layers").get(3).get("objects").get(i).get("name").asFloat();
-            float x = (jsonData.get("layers").get(3).get("objects").get(i).get(8).asFloat()) / (tileWidth * 512f);
-            x = (x * (tileX + 5.5f))+2.5f;
-            float y = (maxY - jsonData.get("layers").get(3).get("objects").get(i).get(9).asFloat())/(tileHeight * 512f);
-            y = y * tileY +14.0f;
+            float x = (jsonData.get("layers").get(3).get("objects").get(i).get(8).asFloat()) ;
+
+            float y = (maxY - jsonData.get("layers").get(3).get("objects").get(i).get(9).asFloat());
+            float ratioX = x/maxX;
+            float ratioY = y/maxY;
 
             float direction = 1;
 
@@ -510,20 +511,19 @@ public class SceneModel extends WorldController implements ContactListener {
                 float MarkerName = jsonData.get("layers").get(8).get("objects").get(e).get("name").asFloat();
                 if(MarkerName == enemyNumber ){
                     int orderNum = (jsonData.get("layers").get(8).get("objects").get(e).get("type").asInt());
-                    float markerX = (jsonData.get("layers").get(8).get("objects").get(e).get("x").asFloat()) / (tileWidth * 256f);
-                    float markerY = ((maxY - jsonData.get("layers").get(8).get("objects").get(e).get("y").asFloat())) / (tileWidth * 256f);
-                    markerX = (markerX * (tileX ) -50);
-                    System.out.println("Marker x is: " + markerX);
-                    markerY = markerY * (tileY ) ;
-                    System.out.println("Marker y is: " + markerY );
+                    float markerX = (jsonData.get("layers").get(8).get("objects").get(e).get("x").asFloat());
+                    float markerY = ((maxY - jsonData.get("layers").get(8).get("objects").get(e).get("y").asFloat())) ;
+                   float markerRatioX = markerX/maxX;
+                   float markerRatioY = markerY/maxY;
+                   System.out.println((markerRatioY *tileHeight * 9 + 8) + " marker ratioY");
+                    System.out.println((markerRatioY *tileHeight * 9) + " marker ratioX");
 
-
-                    enemyPosList[orderNum-1] = new Vector2(markerX  ,markerY);
+                    enemyPosList[orderNum-1] = new Vector2(markerRatioX * tileWidth * 9  ,(markerRatioY * tileWidth * 9) +8);
                     markerCounter += 1;
                 }
             }
 
-            enemies[i] = new Enemy(x,y,20,20,constants.get("enemy"), dwidth/2, dheight/2);
+            enemies[i] = new Enemy(ratioX * tileWidth * 9,(ratioY * tileHeight * 9) + 8,20,20,constants.get("enemy"), dwidth/2, dheight/2);
             enemies[i].setLookDirection(direction, 0);
             enemies[i].setDrawScale(scale);
             enemies[i].setTexture(salmonUprightWalkFilm);

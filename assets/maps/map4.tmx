@@ -41,7 +41,7 @@
 </data>
  </layer>
  <objectgroup id="2" name="player">
-  <object id="100" gid="2" x="1500.89" y="1717.61" width="256" height="256"/>
+  <object id="100" gid="2" x="1497.86" y="1708.52" width="256" height="256"/>
  </objectgroup>
  <group id="3" name="constants"/>
  <objectgroup id="4" name="enemies">
