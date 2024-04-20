@@ -126,15 +126,16 @@ public class Enemy extends BoxObstacle {
 		 */
 		private Vector2 rayTerm;
 
+		/** was the raycast blocked by an obstacle? */
+		private boolean blocked = false;
+
 		/**
 		 * Constructs a new EnemyLoSCallback object used for raycasting.
 		 */
-		private ObstObstrctCallback() {
+		private ObstObstrctCallback() { }
 
-		}
-
-		private Vector2 getRayTerm() {
-			return rayTerm;
+		public boolean wasBlocked() {
+			return blocked;
 		}
 
 		private void resetRayTerm() {
@@ -146,11 +147,11 @@ public class Enemy extends BoxObstacle {
 			Body body = fixture.getBody();
 
 			if (body.getType() == BodyDef.BodyType.StaticBody) { // For simplicity's sake, we're considering all static bodies to be obstacles
-				rayTerm = point;
-				return 0;
+				blocked = true;
 			} else {
-				return -1;
+				blocked = false;
 			}
+			return -1;
 		}
 	}
 
@@ -364,6 +365,7 @@ public class Enemy extends BoxObstacle {
 		this.playerInDynamicShadow = shadowed;
 	}
 
+
 	/**
 	 * Checks if the given player object is in line of sight. This checks based on their position, centered
 	 * around their body of mass.
@@ -436,6 +438,28 @@ public class Enemy extends BoxObstacle {
 //		}
 //	}
 
+
+/**
+	public void generateVertices(World world, PolygonObstacle[] obstacles) {
+		float[] points;
+		Vector2 currPos = this.getPosition();
+		Vector2 obstaclePos;
+		ObstObstrctCallback callback = new ObstObstrctCallback();
+		for(PolygonObstacle obstacle: obstacles) {
+			points = obstacle.getPoints();
+			for(int i = 0; i < points.length - 1; i += 2) {
+				obstaclePos = new Vector2(points[i], points[i+1]);
+				// If the point is out of range of the sight cone, there's no point in ray casting
+				if(currPos.dst(obstaclePos) > detectionRange) {
+					continue;
+				}
+				world.rayCast(callback, currPos, obstaclePos);
+				if(callback.wasBlocked()) {
+
+				}
+			}
+		}
+	}*/
 
 	@Override
 	public void preDraw(GameCanvas canvas) {

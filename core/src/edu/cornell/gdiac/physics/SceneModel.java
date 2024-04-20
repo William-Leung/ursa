@@ -401,16 +401,13 @@ public class SceneModel extends WorldController implements ContactListener {
         objects.clear();
         shadows.clear();
         addQueue.clear();
+        trees.clear();
         world.dispose();
         colorNextPointer = 1;
         uiRotationAngle = 0;
         currentFrame = 0;
         shakingTree = null;
         treeShakeIndex = 0;
-
-        for(Tree t: trees) {
-            t.reset();
-        }
 
         //for (AIController c : controls) c.reset();
         controls.clear();
@@ -1126,16 +1123,14 @@ public class SceneModel extends WorldController implements ContactListener {
         if (shakingTree == null) {
             return;
         }
-        System.out.println(treeShakeIndex);
 
         treeShakeFilm.setFrame(treeShakeIndex);
         shakingTree.setTexture(treeShakeFilm);
         // Increment the film by one every 3 frames
-        if((beganShakingTreeFrame - currentFrame) % treeShakeAnimBuffer == 0) {
+        if((currentFrame - beganShakingTreeFrame) % treeShakeAnimBuffer == 0) {
             treeShakeIndex = (treeShakeIndex + 1) % 12;
         }
 
-        System.out.println(shakingTree.getTexture());
         if(treeShakeIndex == 11) {
             // Change the shakingTree to no snow texture
             shakingTree.setTexture(polarTreeNoSnow);
@@ -1254,12 +1249,10 @@ public class SceneModel extends WorldController implements ContactListener {
 
 
     private void shakeTree(Tree tree) {
-        System.out.println("Attempting to shake tree...");
         if (tree.canShake()) {
-            System.out.println("Shaking tree..");
             tree.putOnShakeCooldown();
-            //tree.setTexture(polarTreeNoSnow);
             shakingTree = tree;
+            beganShakingTreeFrame = currentFrame;
 
             for (Enemy enemy : enemies) {
                 if (enemy != null && enemy.getPosition().dst(tree.getPosition()) < enemyStunDistance) {
