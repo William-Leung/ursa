@@ -129,11 +129,21 @@ public class ShadowModel extends PolygonObstacle {
                 3f, 2f,
                 3f, 0f,
         };
+        float[] rock = new float[] {
+                0, -1f,
+                -2f, -0.25f,
+                -2.5f, 3f,
+                0, 5f,
+                2.5f, 3f,
+                2f, -0.25f,
+        };
         switch (texture) {
             case "tree":
                 return tree;
             case "cave":
                 return cave;
+            case "rock":
+                return rock;
             default:
                 return tree;
         }

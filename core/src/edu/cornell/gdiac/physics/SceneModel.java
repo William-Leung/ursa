@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -18,11 +17,12 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectSet;
+import com.sun.tools.javac.jvm.Gen;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.physics.objects.Cave;
 import edu.cornell.gdiac.physics.enemy.Enemy;
 import edu.cornell.gdiac.physics.obstacle.*;
-import edu.cornell.gdiac.physics.objects.House;
+import edu.cornell.gdiac.physics.objects.GenericObstacle;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.physics.player.UrsaModel;
@@ -213,9 +213,9 @@ public class SceneModel extends WorldController implements ContactListener {
     private PooledList<Tree> trees = new PooledList<>();
 
     /**
-     * List of all references to all houses
+     * List of all references to all generic obstacles
      */
-    private PooledList<House> houses = new PooledList<>();
+    private PooledList<GenericObstacle> genericObstacles = new PooledList<>();
 
     private int framesSinceTreeAnimation = 0;
     /** Reference to the goalDoor (for collision detection) */
@@ -457,22 +457,19 @@ public class SceneModel extends WorldController implements ContactListener {
         dwidth  = bipedalSalmonTexture.getRegionWidth()/scale.x;
         dheight = bipedalSalmonTexture.getRegionHeight()/scale.y;
 
-        // place the cave
+        /**
+         * This loop renders each cave in a given map.
+         */
+        for(int i = 0; i< jsonData.get("layers").get(6).get("objects").size;i++) {
 
-        for(int i = 0; i< jsonData.get("layers").get(6).get("objects").size;i++){
             float x = (jsonData.get("layers").get(6).get("objects").get(i).get(8).asFloat()) ;
-
             float y = (maxY - jsonData.get("layers").get(6).get("objects").get(i).get(9).asFloat());
-
             float ratioX = x/maxX;
             float ratioY = y/maxY;
 
-
-
-
-
             JsonValue goal = constants.get("goal");
             JsonValue goalpos = goal.get("pos");
+
             goalDoor = new Cave(ratioX * tileWidth * 9,(ratioY * tileHeight * 9) + 8,5,5);
             goalDoor.setBodyType(BodyDef.BodyType.StaticBody);
             goalDoor.setDensity(goal.getFloat("density", 0));
@@ -483,15 +480,18 @@ public class SceneModel extends WorldController implements ContactListener {
             goalDoor.setTexture(polarCave);
             goalDoor.setName("cave");
 
+            // Cave shadows
             ShadowModel caveShadow = new ShadowModel(new Vector2(goalDoor.getX(), goalDoor.getY()), 0.75f, 0.75f,
                     goalDoor.getName(), goalDoor.getDrawOrigin(), scale);
             shadows.add(caveShadow);
+
             addObject(caveShadow);
-
             addObject(goalDoor);
-
         }
 
+        /**
+         * This loop renders each enemy in a given map.
+         */
         for(int i = 0; i< jsonData.get("layers").get(3).get("objects").size;i++){
             float markerCounter = 0;
             enemyPosList = new Vector2[10];
@@ -540,15 +540,18 @@ public class SceneModel extends WorldController implements ContactListener {
             }
         }
 
-        //place trees in the level
+        /**
+         * This loop renders each tree in a given map.
+         */
         JsonValue treejv = constants.get("trees");
         String tname = "tree";
+        for(int i = 0; i < jsonData.get("layers").get(4).get("objects").size; i++) {
 
-        for(int i = 0; i < jsonData.get("layers").get(4).get("objects").size; i++){
             float x = (jsonData.get("layers").get(4).get("objects").get(i).get(8).asFloat())/ (tileWidth * 512f);
             x = (x * (tileX + 5.5f))+2.5f;
             float y = (maxY - jsonData.get("layers").get(4).get("objects").get(i).get(9).asFloat())/(tileHeight * 512f);
             y = y * tileY +11.0f;
+
             Tree obj = new Tree(treejv.get(0).asFloatArray(),x,y);
             obj.setBodyType(BodyDef.BodyType.StaticBody);
             obj.setDensity(defaults.getFloat( "density", 0.0f ));
@@ -558,6 +561,7 @@ public class SceneModel extends WorldController implements ContactListener {
             obj.setTexture(polarTreeWithSnow);
             obj.setName(tname+i);
 
+            // Tree shadows
             ShadowModel model = new ShadowModel(new Vector2(obj.getX(), obj.getY()), 0.75f, 0.75f,
                     tname, new Vector2(polarTreeShadow.getRegionWidth() / 2.0f, 85), scale);
             shadows.add(model);
@@ -567,33 +571,34 @@ public class SceneModel extends WorldController implements ContactListener {
             trees.add(obj);
         }
 
-        //place houses in the level
-//        JsonValue housejv = constants.get("houses");
-//        String hname = "house";
-//
-//        for(int i = 0; i < jsonData.get("layers").get(7).get("objects").size; i++){
-//            float x = (jsonData.get("layers").get(7).get("objects").get(i).get(8).asFloat())/ (tileWidth * 512f);
-//            x = x * tileX + 5.5f;
-//            float y = (maxY - jsonData.get("layers").get(7).get("objects").get(i).get(9).asFloat())/(tileHeight * 512f);
-//            y = y * tileY + 11.0f;
-//
-//            House obj = new House(housejv.get(0).asFloatArray(),x,y);
-//            obj.setBodyType(BodyDef.BodyType.StaticBody);
-//            obj.setDensity(defaults.getFloat( "density", 0.0f ));
-//            obj.setFriction(defaults.getFloat( "friction", 0.0f ));
-//            obj.setRestitution(defaults.getFloat( "restitution", 0.0f ));
-//            obj.setDrawScale(scale);
-//            obj.setTexture(polarHouse);
-//            obj.setName(hname+i);
-//
-//            ShadowModel model = new ShadowModel(new Vector2(obj.getX(), obj.getY()), 0.75f, 0.75f,
-//                    polarHouseShadow, new Vector2(polarHouseShadow.getRegionWidth() / 2.0f, 85), scale);
-//            shadows.add(model);
-//            addObject(model);
-//
-//            addObject(obj);
-//            houses.add(obj);
-//        }
+        /**
+         * This loop renders each rock in a given map.
+         */
+        for(int i = 0; i< jsonData.get("layers").get(7).get("objects").size; i++) {
+
+            float x = (jsonData.get("layers").get(7).get("objects").get(i).get(8).asFloat());
+            float y = (maxY - jsonData.get("layers").get(7).get("objects").get(i).get(9).asFloat());
+            float ratioX = x/maxX;
+            float ratioY = y/maxY;
+
+            GenericObstacle rock = new GenericObstacle(ratioX * tileWidth * 9,(ratioY * tileHeight * 9) + 8,3,3);
+            rock.setBodyType(BodyDef.BodyType.StaticBody);
+            rock.setDensity(defaults.getFloat("density", 0));
+            rock.setFriction(defaults.getFloat("friction", 0));
+            rock.setRestitution(defaults.getFloat("restitution", 0));
+            rock.setDrawScale(scale);
+            rock.setTexture(polarRock1);
+            rock.setName("rock"+i);
+
+            // Cave shadows
+            ShadowModel rockShadow = new ShadowModel(new Vector2(rock.getX(), rock.getY()), 0.75f, 0.75f,
+                    "rock", rock.getDrawOrigin(), scale);
+            shadows.add(rockShadow);
+
+            addObject(rockShadow);
+            addObject(rock);
+        }
+
         drawWalls();
     }
 

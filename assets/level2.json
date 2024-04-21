@@ -138,7 +138,43 @@
          "draworder":"topdown",
          "id":8,
          "name":"rock",
-         "objects":[],
+         "objects":[
+                {
+                 "gid":26,
+                 "height":256,
+                 "id":26,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":256,
+                 "x":1057.95101615425,
+                 "y":1734.16988014591
+                }, 
+                {
+                 "gid":26,
+                 "height":256,
+                 "id":27,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":256,
+                 "x":2057.13809275664,
+                 "y":1973.09431995831
+                }, 
+                {
+                 "gid":26,
+                 "height":256,
+                 "id":28,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":256,
+                 "x":964.569046378322,
+                 "y":2514.70974465868
+                }],
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
@@ -204,7 +240,7 @@
          "y":0
         }],
  "nextlayerid":11,
- "nextobjectid":25,
+ "nextobjectid":29,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.10.2",
@@ -271,6 +307,10 @@
         {
          "firstgid":25,
          "source":"maps\/marker.tsx"
+        }, 
+        {
+         "firstgid":26,
+         "source":"maps\/Polar_Rock_1.tsx"
         }],
  "tilewidth":512,
  "type":"map",
