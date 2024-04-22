@@ -141,7 +141,7 @@ public class GDXRoot extends Game implements ScreenListener {
 		} else if (screen == levelSelector && exitCode == 1) {
 			current = 0;
 			controllers[current].dispose();
-			controllers[current] = new SceneModel("level4.json");
+			controllers[current] = new SceneModel("tutorial.json");
 			controllers[current].gatherAssets(directory);
 			controllers[current].setScreenListener(this);
 			controllers[current].setCanvas(canvas);
@@ -155,7 +155,7 @@ public class GDXRoot extends Game implements ScreenListener {
 
 		} else if (screen == levelSelector && exitCode == 2) {
 			current = 1;
-			controllers[current] = new SceneModel("level2.json");
+			controllers[current] = new SceneModel("level1.json");
 			controllers[current].gatherAssets(directory);
 			controllers[current].setScreenListener(this);
 			controllers[current].setCanvas(canvas);

@@ -27,6 +27,7 @@ public class Tree extends PolygonObstacle {
 		return !hasShaken;
 	}
 
+
 	public void putOnShakeCooldown() {
 		hasShaken = true;
 	}
