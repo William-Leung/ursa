@@ -47,7 +47,6 @@
  <objectgroup id="9" name="markers">
   <object id="18" name="1" type="1" gid="25" x="1996" y="2644" width="128" height="128"/>
   <object id="22" name="1" type="2" gid="25" x="2028" y="1052" width="128" height="128"/>
-  <object id="24" name="1" type="3" gid="25" x="2424" y="1928" width="128" height="128"/>
  </objectgroup>
  <objectgroup id="10" name="WorldObjects"/>
 </map>

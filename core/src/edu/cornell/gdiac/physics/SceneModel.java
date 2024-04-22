@@ -171,7 +171,7 @@ public class SceneModel extends WorldController implements ContactListener {
     /** How far away the player must be to interact with trees (screen coords) */
     private float treeInteractionRange = 3;
     /** Within what distance will the enemy be stunned upon tree shaking */
-    private float enemyStunDistance = 4;
+    private float enemyStunDistance = 5;
 
     private TextureRegion[] backgroundTextures = new TextureRegion[3];
 
@@ -535,7 +535,7 @@ public class SceneModel extends WorldController implements ContactListener {
                    System.out.println((markerRatioY *tileHeight * 9 + 8) + " marker ratioY");
                     System.out.println((markerRatioY *tileHeight * 9) + " marker ratioX");
 
-                    enemyPosList[orderNum-1] = new Vector2(markerRatioX * tileWidth * 9  ,(markerRatioY * tileWidth * 9) +8);
+                    enemyPosList[orderNum-1] = new Vector2(markerRatioX * tileWidth * 9  ,(markerRatioY * tileWidth * 9));
                     markerCounter += 1;
                 }
             }
@@ -552,11 +552,8 @@ public class SceneModel extends WorldController implements ContactListener {
                 }
             }
             if (enemies[i] != null) {
-                if(i == 0) {
-                    controls.add(new AIController(enemies[i], avatar, trees, enemyPosList, true));
-                } else {
                     controls.add(new AIController(enemies[i], avatar, trees, enemyPosList));
-                }
+
             }
         }
 
@@ -578,7 +575,12 @@ public class SceneModel extends WorldController implements ContactListener {
             obj.setFriction(defaults.getFloat( "friction", 0.0f ));
             obj.setRestitution(defaults.getFloat( "restitution", 0.0f ));
             obj.setDrawScale(scale);
-            obj.setTexture(polarTreeWithSnow);
+            if(jsonData.get("layers").get(4).get("objects").get(i).get(5).asFloat() == 1) {
+                obj.setTexture(polarTreeWithSnow);
+            } else {
+                obj.setTexture(polarTreeNoSnow);
+                obj.putOnShakeCooldown();
+            }
             obj.setName(tname+i);
 
             // Tree shadows
@@ -1237,7 +1239,6 @@ public class SceneModel extends WorldController implements ContactListener {
             float tempDistance;
             for (Tree tree : trees) {
                 tempDistance = avatar.getPosition().dst(tree.getPosition());
-                // This 3 is a hard coded constant for interactionrange
                 if (tree.canShake() && tempDistance < treeInteractionRange && (nearest == null || tempDistance < minDistance)) {
                     nearest = tree;
                     minDistance = tempDistance;
@@ -1340,6 +1341,7 @@ public class SceneModel extends WorldController implements ContactListener {
             for (Enemy enemy : enemies) {
                 if (enemy != null && enemy.getPosition().dst(tree.getPosition()) < enemyStunDistance) {
                     enemy.stun();
+                    System.out.println("Stunning");
                 }
             }
         }
@@ -1456,14 +1458,14 @@ public class SceneModel extends WorldController implements ContactListener {
             obj.preDraw(canvas);
         }
 
-        /**for(AIController control: controls) {
+        for(AIController control: controls) {
             for(Vector2 v: control.getPatrol()) {
                 if(v != null) {
                     canvas.draw(redTextureRegion,Color.WHITE, v.x * 32f,
                             v.y * 32f, 10,10);
                 }
             }
-        }*/
+        }
         //shadowController.drawAllShadows(canvas, this);
     }
 

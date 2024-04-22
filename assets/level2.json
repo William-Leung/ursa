@@ -138,43 +138,7 @@
          "draworder":"topdown",
          "id":8,
          "name":"rock",
-         "objects":[
-                {
-                 "gid":26,
-                 "height":256,
-                 "id":26,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":256,
-                 "x":1057.95101615425,
-                 "y":1734.16988014591
-                }, 
-                {
-                 "gid":26,
-                 "height":256,
-                 "id":27,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":256,
-                 "x":2057.13809275664,
-                 "y":1973.09431995831
-                }, 
-                {
-                 "gid":26,
-                 "height":256,
-                 "id":28,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":256,
-                 "x":964.569046378322,
-                 "y":2514.70974465868
-                }],
+         "objects":[],
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
@@ -209,18 +173,6 @@
                  "width":128,
                  "x":2028,
                  "y":1052
-                }, 
-                {
-                 "gid":25,
-                 "height":128,
-                 "id":24,
-                 "name":"1",
-                 "rotation":0,
-                 "type":"3",
-                 "visible":true,
-                 "width":128,
-                 "x":2424,
-                 "y":1928
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -240,7 +192,7 @@
          "y":0
         }],
  "nextlayerid":11,
- "nextobjectid":29,
+ "nextobjectid":25,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.10.2",
@@ -307,10 +259,6 @@
         {
          "firstgid":25,
          "source":"maps\/marker.tsx"
-        }, 
-        {
-         "firstgid":26,
-         "source":"maps\/Polar_Rock_1.tsx"
         }],
  "tilewidth":512,
  "type":"map",

@@ -127,8 +127,8 @@
             "scale": 0.08,
             "selectedLayer": 7,
             "viewCenter": {
-                "x": 4937.5,
-                "y": 2987.5
+                "x": 3506.25,
+                "y": 6293.75
             }
         },
         "map1.tmx#Polar_Cliff_center": {
@@ -136,41 +136,41 @@
         },
         "map2.tmx": {
             "expandedObjectLayers": [
-                5,
-                3,
-                8,
-                4,
                 9,
-                7,
-                2
+                2,
+                4,
+                8,
+                3,
+                5,
+                7
             ],
-            "scale": 0.25,
-            "selectedLayer": 7,
+            "scale": 0.0798,
+            "selectedLayer": 8,
             "viewCenter": {
-                "x": 1788,
-                "y": 1624
+                "x": 1497.4937343358397,
+                "y": 1572.6817042606513
             }
         },
         "map3.tmx": {
             "expandedObjectLayers": [
+                2,
                 4,
                 5,
-                7,
-                2
+                7
             ],
             "scale": 0.15,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 3060,
-                "y": 2166.666666666667
+                "x": 2143.3333333333335,
+                "y": 3276.666666666667
             }
         },
         "map4.tmx": {
             "scale": 0.33,
             "selectedLayer": 8,
             "viewCenter": {
-                "x": 3327.272727272727,
-                "y": 2815.151515151515
+                "x": 3325.757575757576,
+                "y": 2813.6363636363635
             }
         },
         "map5.tmx": {
@@ -234,16 +234,16 @@
         },
         "tutorial.tmx": {
             "expandedObjectLayers": [
-                5,
                 9,
+                2,
                 4,
-                2
+                5
             ],
-            "scale": 0.1037,
+            "scale": 0.142,
             "selectedLayer": 3,
             "viewCenter": {
-                "x": 3240.115718418515,
-                "y": 3625.8437801350046
+                "x": 2859.1549295774653,
+                "y": 3390.845070422535
             }
         }
     },
@@ -265,11 +265,11 @@
     "project": "map1_test.tiled-project",
     "recentFiles": [
         "map2.tmx",
+        "tiles.tsx",
+        "tutorial.tmx",
         "map1.tmx",
         "map4.tmx",
-        "tutorial.tmx",
         "map3.tmx",
-        "tiles.tsx",
         "map5.tmx",
         "C:/Users/williamleung/Documents/GitHub/ursa/assets/level4.json",
         "cave.tsx",
