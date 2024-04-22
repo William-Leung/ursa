@@ -45,7 +45,7 @@ public class Board {
         tiles = new TileState[width][height];
         populateTiles(obstacles);
 
-        printTiles();
+        //printTiles();
     }
 
     public int width() { return this.width; }
@@ -61,16 +61,16 @@ public class Board {
         float min_y = Float.MAX_VALUE;
         float max_y = Float.MIN_VALUE;
 
-        if (obstacles.isEmpty()) System.out.println("empty");
+        //if (obstacles.isEmpty()) System.out.println("empty");
 
         for (GenericObstacle o : obstacles) {
 
-            System.out.println("o.getX(): " + o.getX());
-            System.out.println("o.getWidth(): " + o.getWidth());
-            System.out.println("o.getHeight(): " + o.getHeight());
-
-            System.out.println("max x of this is: " + o.getX() + (o.getWidth() / 2));
-            System.out.println("max y of this is: " + o.getY() + (o.getHeight() / 2));
+//            System.out.println("o.getX(): " + o.getX());
+//            System.out.println("o.getWidth(): " + o.getWidth());
+//            System.out.println("o.getHeight(): " + o.getHeight());
+//
+//            System.out.println("max x of this is: " + o.getX() + (o.getWidth() / 2));
+//            System.out.println("max y of this is: " + o.getY() + (o.getHeight() / 2));
 
 
             if (o.getX() - (o.getWidth() / 2) < min_x) min_x = o.getX() - (o.getWidth() / 2);
@@ -79,10 +79,10 @@ public class Board {
             if (o.getY() + (o.getHeight() / 2) > max_y) max_y = o.getY() + (o.getHeight() / 2);
         }
 
-        System.out.println("min_x is: " + min_x);
-        System.out.println("max_x is: " + max_x);
-        System.out.println("min_y is: " + min_y);
-        System.out.println("max_y is: " + max_y);
+//        System.out.println("min_x is: " + min_x);
+//        System.out.println("max_x is: " + max_x);
+//        System.out.println("min_y is: " + min_y);
+//        System.out.println("max_y is: " + max_y);
 
         dims = new Vector2(max_x, max_y);
     }
@@ -112,7 +112,7 @@ public class Board {
         // make tiles with obstacle in them false
         for (GenericObstacle o : obstacles) {
 
-            System.out.println("This object's tile is: " + getXTile(o.getX()) + ", " + getYTile(o.getY()));
+            //System.out.println("This object's tile is: " + getXTile(o.getX()) + ", " + getYTile(o.getY()));
 
             int min_x_tile = getXTile(o.getX() - (o.getWidth() / 2));
             int max_x_tile = getXTile(o.getX() + (o.getWidth() / 2));

@@ -522,6 +522,8 @@ public class SceneModel extends WorldController implements ContactListener {
             // ===================
         }
 
+
+
         /**
          * This loop renders each enemy in a given map.
          */
@@ -1306,7 +1308,7 @@ public class SceneModel extends WorldController implements ContactListener {
                     salmonDetectedFilm.setFrame(salmonDetectedIndex);
                     i.getEnemy().setTexture(salmonDetectedFilm);
                     salmonDetectedIndex = (salmonDetectedIndex + 1) % 30;
-                } else if (i.isConfused() || i.isStunned()) {
+                } else if (i.isConfused() || i.isStunned() || i.earlyLooking()) {
                     salmonConfusedFilm.setFrame(i.get_confused_anim_index());
                     i.getEnemy().setTexture(salmonConfusedFilm);
                     i.inc_anim_index();

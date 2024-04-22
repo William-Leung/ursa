@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.Stack;
 
 public class AIController {
 
@@ -43,15 +44,15 @@ public class AIController {
     /** Time when enemy spawns where they cannot do anything */
     private static final int SPAWN_TICKS = 30;
     /** Time in range before changing confused to attack */
-    private static final int CONFUSE_TIME = 50;
+    private static final int CONFUSE_TIME = 70;
     /** ticks enemy will stay engaged in if chasing but not in cone */
-    private static final int CHASE_MEMORY = 40;
+    private static final int CHASE_MEMORY = 80;
     /** Amount of uninterrupted time player can spend in cone before losing */
     private static final int LIFE_TIME = 500;
     /** Maximum amount of time enemy can spend looking around in one time */
-    private static final float MAX_LOOKING = 500;
+    private static final float MAX_LOOKING = 700;
     /** Ticks Ursa can be within range before being detected */
-    private static final int DETECTION_DELAY = 20;
+    private static final int DETECTION_DELAY = 30;
 
 
     /** Degrees enemy can rotate per tick */
@@ -59,9 +60,9 @@ public class AIController {
     /** Distance from goal enemy needs to get to */
     private static final float GOAL_DIST = 2f;
     /** Distance from enemy that if player is within, they lose. */
-    private static final float COLLISION_ERROR = 0f;
+    private static final float COLLISION_ERROR = 1.5f;
     /** Distance that enemy can detect a player regardless of where they are facing */
-    private static final float ENEMY_RADIUS = 2f;
+    private static final float ENEMY_RADIUS = 3f;
     /** Distance that if chasing the player, the enemy will still attack them */
     private static final float CHASE_RADIUS = 2f;
 
@@ -78,8 +79,15 @@ public class AIController {
     private boolean hasWon = false;
     /** Vector representing this enemy's next move */
     private Vector2 action = new Vector2();
-    /** Vector of previous location of this enemy */
-    private Vector2 prevLoc;
+
+    /** Last locations where Ursa was spotted */
+    private ArrayDeque<Vector2> locs_spotted;
+    /** Maximum number of locations where ursa was spotted an enemy can detect */
+    private static final int MAX_SPOTTED = 5;
+    /** Amount of times Ursa must be spotted before enemies start patrolling her locations */
+    private static final int MIN_PATROL_CHANGE = 3;
+    /** Amount of time since the last spotting that enemies will continue patrolling old locations */
+    private static final int ADAPTIVE_AI_MEM = 500;
 
     /** Ticks spent confused */
     private int ticks_confused = 0;
@@ -93,8 +101,18 @@ public class AIController {
     private long last_time_detected = 0;
     /** Ticks spent detected (consecutive) */
     private int ticks_detected = 0;
+    /** Ticks spent spotted (consecutive) */
+    private int ticks_spotted = 0;
+    /** Ticks spent colliding (consecutive) */
+    private int ticks_collided = 0;
 
     private int confused_anim_index = 0;
+
+    /* WANDER STATE DATA STRUCTURES */
+    LinkedList<Coordinate> queue;
+    HashMap<Coordinate, Coordinate> backpack;
+    Coordinate[] adjacents = new Coordinate[8];
+
 
     /** The goal angle to face, used to prevent cone snapping */
     private float goalAngle = 0;
@@ -107,17 +125,11 @@ public class AIController {
 
     private int times_detected;
 
-    private boolean turnAround = false;
-    private Vector2 otherDir = new Vector2();
-
     private Vector2 firstGoal;
 
     private boolean isStupid = false;
 
     private Board board;
-
-    //Coordinate[] adjacents = new Coordinate[8];
-
 
     /**
      * Creates an AIController for the ship with the given id.
@@ -131,6 +143,7 @@ public class AIController {
         state = FSMState.SPAWN;
         ticks = 0;
         this.times_detected = 0;
+        locs_spotted  = new ArrayDeque<>();
 
         // add goal locs to player's deque
         goalLocs = new ArrayDeque<>();
@@ -142,9 +155,12 @@ public class AIController {
         currGoal = goalLocs.peek();
         firstGoal = currGoal;
 
-//        for (int i = 0; i < adjacents.length; i++) {
-//            adjacents[i] = new Coordinate();
-//        }
+        queue = new LinkedList<>();
+        backpack = new HashMap<>();
+
+        for (int i = 0; i < adjacents.length; i++) {
+            adjacents[i] = new Coordinate();
+        }
     }
 
     public AIController(Enemy enemy,  UrsaModel ursa, Board board, Vector2[] patrolLocs, boolean stupid) {
@@ -177,23 +193,28 @@ public class AIController {
             ticks_detected = 0;
         }
 
+        if (ticks_detected == DETECTION_DELAY) times_detected++;
+
+        if (enemy.isAlerted()) {
+            ticks_spotted++;
+        } else {
+            ticks_spotted = 0;
+        }
+
+        if (checkRange(null)) state = FSMState.ATTACK;
+
         switch(state) {
             case SPAWN:
                 if (ticks < SPAWN_TICKS) {
                     state = FSMState.SPAWN;
                 } else {
                     if (ticks_detected >= DETECTION_DELAY) {
-                        if (lastDetection == null) {
-                            lastDetection = new Vector2(ursa.getX(), ursa.getY());
-                        } else {
-                            lastDetection.x = ursa.getX();
-                            lastDetection.y = ursa.getY();
-                        }
                         state = FSMState.CONFUSED;
                         last_time_detected = ticks;
                         ticks_confused = 1;
                     } else {
                         state = FSMState.LOOKING;
+                        ticks_looking = 26;
                     }
                 }
 
@@ -202,16 +223,13 @@ public class AIController {
             case WANDER:
 
                 if (ticks % 50 == 0 && Math.random() > 0.95) {
+                    ticks_looking = 26;
+                    state = FSMState.LOOKING;
+                } else if (times_detected >= MIN_PATROL_CHANGE &&
+                        ticks % 30 == 0 && Math.random() > 0.85) {
                     ticks_looking = 0;
                     state = FSMState.LOOKING;
                 } else if (ticks_detected >= DETECTION_DELAY) {
-                    if (lastDetection == null) {
-                        lastDetection = new Vector2(ursa.getX(), ursa.getY());
-                    } else {
-                        lastDetection.x = ursa.getX();
-                        lastDetection.y = ursa.getY();
-                        last_time_detected = ticks;
-                    }
                     state = FSMState.CONFUSED;
                     ticks_confused = 1;
                 } else {
@@ -220,6 +238,7 @@ public class AIController {
 
                 if (enemy.isStunned()) {
                     state = FSMState.STUNNED;
+                    times_detected--;
                 }
 
                 break;
@@ -228,19 +247,11 @@ public class AIController {
 
                 ticks_looking++;
 
-                if (ticks_detected >= DETECTION_DELAY) {
-
-                    if (lastDetection == null) {
-                        lastDetection = new Vector2(ursa.getX(), ursa.getY());
-                    } else {
-                        lastDetection.x = ursa.getX();
-                        lastDetection.y = ursa.getY();
-                        last_time_detected = ticks;
-                    }
-
+                if (checkSpotted()) {
                     state = FSMState.CHASE;
                     ticks_looking = 0;
-                    times_detected++;
+                } else if (isDetected() || ticks - last_time_detected <= CONFUSE_TIME) {
+                    state = FSMState.LOOKING;
                 } else if (ticks_looking >= MAX_LOOKING || Math.random() * ticks_looking > MAX_LOOKING / 3) {
                     state = FSMState.WANDER;
                 }
@@ -249,15 +260,16 @@ public class AIController {
 
             case CONFUSED:
 
-                if (ticks_confused == 0) {
+                if (ticks_confused == 0 || (ticks_confused >= CONFUSE_TIME
+                        && ticks - last_time_detected >= CONFUSE_TIME)) {
                     state = FSMState.LOOKING;
-                } else if (ticks_confused >= CONFUSE_TIME && isDetected()) {
-                    times_detected++;
-                    state = FSMState.CHASE;
+                } else if (ticks_confused >= CONFUSE_TIME) {
+                    if (checkSpotted()) {
+                        state = FSMState.CHASE;
+                    } else state = FSMState.LOOKING;
+
                 } else if (isDetected()) {
                     ticks_confused++;
-                    lastDetection.x = ursa.getX();
-                    lastDetection.y = ursa.getY();
                     last_time_detected = ticks;
                     state = FSMState.CONFUSED;
                 } else {
@@ -274,41 +286,36 @@ public class AIController {
 
             case CHASE:
 
-                if (isDetected()) {
-                    last_time_detected = ticks;
-                    lastDetection.x = ursa.getX();
-                    lastDetection.y = ursa.getY();
-                    if (enemy.isAlerted()) {
-                        state = FSMState.ATTACK;
-                        ticks_attacked = 1;
-                    } else {
-                        state = FSMState.CHASE;
-                    }
+                if (checkSpotted()) {
+                    state = FSMState.ATTACK;
+                    ticks_attacked = 1;
                 } else if (checkRange(CHASE_RADIUS)){
                     state = FSMState.CHASE;
                 } else {
                     if (ticks - last_time_detected >= CHASE_MEMORY) {
-                        state = FSMState.LOOKING;
-                    }
+                        state = FSMState.CONFUSED;
+                    } else state = FSMState.LOOKING;
                 }
 
                 if (enemy.isStunned()) {
                     state = FSMState.STUNNED;
+                    times_detected--;
                 }
 
                 break;
 
             case ATTACK:
-                if (ticks_attacked >= LIFE_TIME || checkRange(null)) {
-                    state = FSMState.WON;
-                } else if (enemy.isAlerted() || checkRange(ENEMY_RADIUS)) {
-                    last_time_detected = ticks;
-                    lastDetection.x = ursa.getX();
-                    lastDetection.y = ursa.getY();
+                if (checkRange(null)) {
+                    if (ticks_collided >= DETECTION_DELAY * 0.75) {
+                        state = FSMState.WON;
+                    } else {
+                        ticks_collided++;
+                    }
+                } else if (checkSpotted()) {
                     ticks_attacked++;
                     state = FSMState.ATTACK;
                 } else {
-                    ticks_attacked--;
+                    ticks_attacked = 0;
                     state = FSMState.CHASE;
                 }
 
@@ -348,6 +355,8 @@ public class AIController {
         } else {
             this.state = FSMState.WANDER;
         }
+
+        isAdaptive();
 
         //prevLoc.x = enemy.getX();
         //prevLoc.y = enemy.getY();
@@ -454,12 +463,12 @@ public class AIController {
             case CHASE:
 
                 //System.out.println("CHASE");
-                action.x = lastDetection.x - enemy.getX();
-                action.y = lastDetection.y - enemy.getY();
+                action.x = locs_spotted.getLast().x - enemy.getX();
+                action.y = locs_spotted.getLast().y - enemy.getY();
                 action = action.nor();
 
-                enemy.setVX(action.x * 3);
-                enemy.setVY(action.y * 3);
+                enemy.setVX(action.x * 5);
+                enemy.setVY(action.y * 5);
                 enemy.setLookDirection(action.x, action.y);
 
                 break;
@@ -470,8 +479,8 @@ public class AIController {
                 action.y = ursa.getY() - enemy.getY();
                 action = action.nor();
 
-                enemy.setVX(action.x * 3);
-                enemy.setVY(action.y * 3);
+                enemy.setVX(action.x * 5);
+                enemy.setVY(action.y * 5);
                 enemy.setLookDirection(action.x, action.y);
 
                 break;
@@ -503,33 +512,45 @@ public class AIController {
 
     public void wanderMove() {
         //System.out.println("begin wander move");
-        if (ticks % 20 != 0) return;
+        if (ticks % 40 != 0) return;
 
 
         board.clearMarks();
         Vector2 nxtGoal = goalLocs.peek();
         Coordinate nextGoal = setNextGoal();
 
-        System.out.println("   nextGoal: " + nextGoal.x + ", " + nextGoal.y);
-        System.out.println("   currTile: " + board.getXTile(enemy.getX()) + ", " + board.getYTile(enemy.getY()));
-        System.out.println("   playerLoc: " + ursa.getX() + ", " + ursa.getY());
-
+//        System.out.println("   nextGoal: " + nextGoal.x + ", " + nextGoal.y);
+//        System.out.println("   currTile: " + board.getXTile(enemy.getX()) + ", " + board.getYTile(enemy.getY()));
+//        System.out.println("   playerLoc: " + ursa.getX() + ", " + ursa.getY());
 
         if (board.getTile(board.getXTile(enemy.getX()), board.getYTile(enemy.getY())) ==
                 board.getTile(nextGoal.x, nextGoal.y)) {
-            System.out.println("REACHED GOAL");
-            Vector2 temp = goalLocs.pop();
-            goalLocs.addLast(temp);
-            nxtGoal = goalLocs.peek();
-            System.out.println("nxtGoal: " + nxtGoal.x + ", " + nxtGoal.y);
-            nextGoal = new Coordinate(board.getXTile(nxtGoal.x), board.getYTile(nxtGoal.y));
-            System.out.println("nextGoal: " + nextGoal.x + ", " + nextGoal.y);
+
+            if (times_detected >= MIN_PATROL_CHANGE && ticks - last_time_detected <= ADAPTIVE_AI_MEM) {
+                locs_spotted.pop();
+            } else {
+                //System.out.println("REACHED GOAL");
+                Vector2 temp = goalLocs.pop();
+                goalLocs.addLast(temp);
+                nxtGoal = goalLocs.peek();
+                //System.out.println("nxtGoal: " + nxtGoal.x + ", " + nxtGoal.y);
+                nextGoal = new Coordinate(board.getXTile(nxtGoal.x), board.getYTile(nxtGoal.y));
+                //System.out.println("nextGoal: " + nextGoal.x + ", " + nextGoal.y);
+            }
+        }
+
+        if (times_detected >= MIN_PATROL_CHANGE && ticks - last_time_detected <= ADAPTIVE_AI_MEM
+                && !locs_spotted.isEmpty()) {
+            nxtGoal = locs_spotted.getLast();
+            nextGoal.x = board.getXTile(nxtGoal.x);
+            nextGoal.x = board.getXTile(nxtGoal.x);
         }
 
         board.setGoal(nextGoal.x, nextGoal.y, true);
 
-        LinkedList<Coordinate> queue = new LinkedList<>();
-        HashMap<Coordinate, Coordinate> backpack = new HashMap<>();
+        // clear data structures
+        queue.clear();
+        backpack.clear();
 
         Coordinate currTile = new Coordinate(board.getXTile(enemy.getX()), board.getYTile(enemy.getY()));
 
@@ -537,7 +558,7 @@ public class AIController {
             queue.add(currTile);
             backpack.put(currTile, null);
         } else {
-            System.out.println("Not on safe tile");
+            //System.out.println("Not on safe tile");
             moveToSafeTile(currTile);
         }
 
@@ -548,7 +569,7 @@ public class AIController {
         //System.out.println("about to start bfs while loop");
         // loop for BFS
         while (!foundGoal && !queue.isEmpty()) {
-            System.out.println("bfs while loop iteration");
+            //System.out.println("bfs while loop iteration");
             Coordinate nextTile = queue.poll(); // get first item in queue
             // System.out.println(ship.getId() + " current tile is " + nextTile.x + " " + nextTile.y);
 
@@ -598,14 +619,14 @@ public class AIController {
         }
 
         if (!foundGoal) {
-            System.out.println("CANNOT FIND GOAL");
+            //System.out.println("CANNOT FIND GOAL");
             return; // pick random direction
         } else { // if we found a goal, backtrace to find the first step to get there
             Coordinate this_tile = closest_goal;
             Coordinate prev_tile = backpack.get(this_tile);
 
             while (prev_tile != null && (prev_tile.x != currTile.x || prev_tile.y != currTile.y)) {
-                System.out.println(prev_tile.x + ", " + prev_tile.y);
+                //System.out.println(prev_tile.x + ", " + prev_tile.y);
                 this_tile = prev_tile;
                 prev_tile = backpack.get(this_tile);
             }
@@ -705,7 +726,7 @@ public class AIController {
 
         if (range == null) {
             range = COLLISION_ERROR;
-        }
+        } else range += ENEMY_RADIUS;
 
 //        boolean checkX = Math.abs(ursa.getX() - enemy.getX()) <=
 //                ENEMY_RADIUS + range;
@@ -715,7 +736,7 @@ public class AIController {
 //        return checkX || checkY;
 
         return Math.sqrt(Math.pow(ursa.getX() - enemy.getX(), 2) +
-                Math.pow(ursa.getY() - enemy.getY(), 2)) <= ENEMY_RADIUS + range;
+                Math.pow(ursa.getY() - enemy.getY(), 2)) <= range;
 
     }
 
@@ -735,6 +756,27 @@ public class AIController {
 
     public boolean isConfused() {
         return (state == FSMState.CONFUSED);
+    }
+
+    public boolean earlyLooking() {
+        return (state == FSMState.LOOKING && ticks_looking <= 25);
+    }
+
+    public boolean checkSpotted() {
+        if (enemy.isAlerted() && ticks_spotted >= DETECTION_DELAY) {
+            if (locs_spotted.size() >= MAX_SPOTTED) {
+                Vector2 temp = locs_spotted.pollFirst();
+                temp.x = ursa.getX();
+                temp.y = ursa.getY();
+                locs_spotted.add(temp);
+            } else {
+                locs_spotted.add(new Vector2(ursa.getX(), ursa.getY()));
+            }
+            return true;
+        } else if (enemy.isAlerted()) { ticks_spotted++; }
+
+        if (!enemy.isAlerted()) ticks_spotted = 0;
+        return false;
     }
 
     public boolean isStunned() {
@@ -785,6 +827,15 @@ public class AIController {
 
     public boolean isSurprised() {
         return isDetected() && state == FSMState.ATTACK && ticks_attacked <= 20;
+    }
+
+    public void isAdaptive() {
+        if (times_detected >= MIN_PATROL_CHANGE &&
+                ticks - last_time_detected <= ADAPTIVE_AI_MEM && !locs_spotted.isEmpty()) {
+            enemy.setAdaptive(true);
+        } else {
+            enemy.setAdaptive(false);
+        }
     }
 
     private class Coordinate {

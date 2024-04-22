@@ -36,8 +36,7 @@ public class Enemy extends BoxObstacle {
 	private TextureRegion redTextureRegion;
 	private TextureRegion greenTextureRegion;
 	private TextureRegion grayTextureRegion;
-	private TextureRegion yellowTextureRegion;
-	private TextureRegion orangeTextureRegion;
+	private TextureRegion purpleTextureRegion;
 	private final Vector2 forceCache = new Vector2();
 	private float maxSpeed;
 	private float damping;
@@ -52,6 +51,7 @@ public class Enemy extends BoxObstacle {
 	private boolean playerCurrentInSight;
 	private boolean playerInDynamicShadow = false;
 	private boolean stunned = false;
+	private boolean adaptive = false;
 
 	/** the vector to use to indicate the direction the enemy character
 	 * should go/face x and y should be either -15 or 15 or 0*/
@@ -160,11 +160,11 @@ public class Enemy extends BoxObstacle {
 	 */
 	private static final float ENEMY_DETECTION_RANGE_NOISE = 3;
 
-	private static final float ENEMY_DETECTION_RANGE_SIGHT = 5f;
+	private static final float ENEMY_DETECTION_RANGE_SIGHT = 6f;
 
 	private static final float ENEMY_DETECTION_RANGE_SHADOW = 10;
 
-	private static final float ENEMY_DETECTION_ANGLE_SIGHT = 30;
+	private static final float ENEMY_DETECTION_ANGLE_SIGHT = 25;
 
 	/**
 	 * The boolean for whether or not this enemy is alerted by the player
@@ -205,23 +205,18 @@ public class Enemy extends BoxObstacle {
 		Texture greenTexture = new Texture(greenPixmap);
 		greenTextureRegion = new TextureRegion(greenTexture);
 
+		Pixmap purplePixmap = new Pixmap(1, 1, Format.RGBA8888);
+		purplePixmap.setColor(new Color(166/255, 95/255, 207/255, 0.5f));
+		purplePixmap.fill();
+		Texture purpleTexture = new Texture(purplePixmap);
+		purpleTextureRegion = new TextureRegion(purpleTexture);
+
 		Pixmap grayPixmap = new Pixmap(1, 1, Format.RGBA8888);
 		grayPixmap.setColor(new Color(181/255, 181/255, 181/255, 0.25f));
 		grayPixmap.fill();
 		Texture grayTexture = new Texture(grayPixmap);
 		grayTextureRegion = new TextureRegion(grayTexture);
 
-		Pixmap yellowPixmap = new Pixmap(1, 1, Format.RGBA8888);
-		yellowPixmap.setColor(new Color(1, 1, 0, 0.25f));
-		yellowPixmap.fill();
-		Texture yellowTexture = new Texture(yellowPixmap);
-		yellowTextureRegion = new TextureRegion(yellowTexture);
-
-		Pixmap orangePixmap = new Pixmap(1, 1, Format.RGBA8888);
-		orangePixmap.setColor(new Color(1, 1, 0, 0.25f));
-		orangePixmap.fill();
-		Texture orangeTexture = new Texture(orangePixmap);
-		orangeTextureRegion = new TextureRegion(orangeTexture);
 
 		redPixmap.dispose();
 		greenPixmap.dispose();
@@ -244,6 +239,8 @@ public class Enemy extends BoxObstacle {
 	public boolean isStunned() {
 		return stunDuration > 0;
 	}
+
+	public void setAdaptive(boolean v) { adaptive = v; }
 
 	/**
 	 * gets the player position to move towards
@@ -521,6 +518,8 @@ public class Enemy extends BoxObstacle {
 			polygonRegion = new PolygonRegion(grayTextureRegion,vertices, triangles);
 		} else if(alerted) {
 			polygonRegion = new PolygonRegion(redTextureRegion,vertices, triangles);
+		} else if (adaptive) {
+			polygonRegion = new PolygonRegion(purpleTextureRegion,vertices, triangles);
 		} else {
 			polygonRegion = new PolygonRegion(greenTextureRegion,vertices, triangles);
 		}
