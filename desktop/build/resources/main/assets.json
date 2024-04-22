@@ -67,6 +67,7 @@
         "enemies:salmonIdle": "enemies/Stand.png",
         "enemies:salmonDetected": "enemies/Detected.png",
         "object:cave": "object/Polar_Cave.png"
+
     },
     "jsons"  : {
         "platform:constants": "platform/constants.json"
@@ -76,5 +77,12 @@
             "file": "loading/RetroGame.ttf",
             "size": 64
         }
-    }
+    },
+        "music": {
+                "soundtracks:level_track": "soundtracks/level_track.mp3",
+                "soundtracks:level_track_night": "soundtracks/level_track_night.mp3",
+                "soundtracks:level_track_tense": "soundtracks/level_track_tense.mp3",
+                "soundtracks:level_select": "soundtracks/level_select.mp3",
+                "soundtracks:level_retry": "soundtracks/level_retry.mp3"
+        }
 }
