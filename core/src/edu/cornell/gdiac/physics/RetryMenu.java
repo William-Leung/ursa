@@ -1,17 +1,13 @@
 package edu.cornell.gdiac.physics;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.ContactListener;
-import com.badlogic.gdx.physics.box2d.World;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.util.ScreenListener;
 
@@ -24,6 +20,7 @@ public class RetryMenu implements Screen, InputProcessor, ControllerListener {
     private float buttonWidth;
     GameCanvas canvas;
     private boolean active;
+    private Music levelRetryMusic;
     public RetryMenu(GameCanvas NewCanvas){
         canvas = NewCanvas;
         active = false;
@@ -39,6 +36,7 @@ public class RetryMenu implements Screen, InputProcessor, ControllerListener {
         buttons[1] = new TextureRegion(directory.getEntry("levelSelect:Level2", Texture.class));
         buttons[2] = new TextureRegion(directory.getEntry("levelSelect:Level3", Texture.class));
         background = new TextureRegion(directory.getEntry("levelSelect:retry", Texture.class));
+        levelRetryMusic = directory.getEntry("soundtracks:level_retry", Music.class);
 
     }
     private void update(float delta){
@@ -120,6 +118,8 @@ public class RetryMenu implements Screen, InputProcessor, ControllerListener {
     @Override
     public void show() {
         active = true;
+        levelRetryMusic.setLooping(true);
+        levelRetryMusic.play();
     }
 
     @Override
@@ -153,7 +153,7 @@ public class RetryMenu implements Screen, InputProcessor, ControllerListener {
 
     @Override
     public void hide() {
-
+        levelRetryMusic.stop();
     }
 
     @Override

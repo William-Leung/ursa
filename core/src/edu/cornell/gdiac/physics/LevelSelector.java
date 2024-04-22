@@ -4,6 +4,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.graphics.Color;
@@ -37,6 +38,8 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
     private float buttonWidth;
     GameCanvas canvas;
     private boolean active;
+
+    private Music levelSelectMusic;
     public LevelSelector(GameCanvas NewCanvas){
         canvas = NewCanvas;
         active = false;
@@ -65,6 +68,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         button4 = new FilmStrip(buttons[3].getTexture(),1,5);
         button4.setFrame(0);
         background = new TextureRegion(directory.getEntry("levelSelect:background", Texture.class));
+        levelSelectMusic = directory.getEntry("soundtracks:level_select", Music.class);
 
     }
     private void update(float delta){
@@ -226,6 +230,8 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
 
     @Override
     public void show() {
+        levelSelectMusic.setLooping(true);
+        levelSelectMusic.play();
         active = true;
     }
 
@@ -260,7 +266,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
 
     @Override
     public void hide() {
-
+        levelSelectMusic.stop();
     }
 
     @Override

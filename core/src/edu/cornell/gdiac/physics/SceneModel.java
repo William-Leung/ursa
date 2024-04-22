@@ -1,6 +1,7 @@
 package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -17,6 +18,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectSet;
+import com.sun.tools.javac.jvm.Gen;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.physics.objects.Cave;
 import edu.cornell.gdiac.physics.enemy.Enemy;
@@ -256,7 +258,12 @@ public class SceneModel extends WorldController implements ContactListener {
     private float uiDrawScale = 0.1f;
 
 
+    /** =========== Soundtrack assets =========== */
+    private Music levelMusic;
 
+    private Music levelMusicNight;
+
+    private Music levelMusicTense;
 
     /**
      * Creates and initialize a new instance of the platformer game
@@ -363,6 +370,10 @@ public class SceneModel extends WorldController implements ContactListener {
         treeShakeAnimation = new TextureRegion(directory.getEntry("object:polar_tree_shake",Texture.class));
         treeShakeFilm = new FilmStrip(treeShakeAnimation.getTexture(), 2, 8);
 
+        levelMusic = directory.getEntry("soundtracks:level_track", Music.class);
+        levelMusicNight = directory.getEntry("soundtracks:level_track_night", Music.class);
+        levelMusicTense = directory.getEntry("soundtracks:level_track_tense", Music.class);
+
 
         gatherTiles(directory);
 
@@ -422,6 +433,16 @@ public class SceneModel extends WorldController implements ContactListener {
         world.setContactListener(this);
         setComplete(false);
         setFailure(false);
+        levelMusicNight.stop();
+        levelMusic.stop();
+        levelMusicTense.stop();
+        levelMusicNight.setPosition(0);
+        levelMusicTense.setVolume(0);
+        levelMusic.setPosition(0);
+        levelMusicTense.setPosition(0);
+        levelMusicTense.setVolume(0);
+        levelMusic.setOnCompletionListener(music -> levelMusicNight.setPosition(0));
+
         populateLevel();
         System.out.println(" ====== Reset ===== ");
     }
@@ -623,6 +644,13 @@ public class SceneModel extends WorldController implements ContactListener {
         }
 
         drawWalls();
+
+        // Music stuff
+        levelMusicNight.play();
+        levelMusicTense.play();
+        levelMusic.setVolume(1.0f);
+        levelMusic.setLooping(true);
+        levelMusic.play();
 
         // make gameboard
 
@@ -1377,7 +1405,7 @@ public class SceneModel extends WorldController implements ContactListener {
     public void update(float dt) {
         // Increment the current frame (used for animation slow downs)
         currentFrame++;
-        System.out.println("player pos y is: " + avatar.getPosition().y);
+        //System.out.println("player pos y is: " + avatar.getPosition().y);
 
         // Update the UI element to rise at sunrise and sunset and rotate if it's night
         if(timeRatio < uiRisingDuration) {
@@ -1400,7 +1428,11 @@ public class SceneModel extends WorldController implements ContactListener {
         // If it's night, reset the tinting
         if(timeRatio > 1) {
             colorNextPointer = 1;
+            if (!isComplete()) {
+                levelMusicNight.setVolume(Math.max(0, levelMusicNight.getVolume() + 0.01f));
+            }
         } else {
+            levelMusicNight.setVolume(Math.max(0, levelMusicNight.getVolume() - 0.01f));
             // Update colorNextPointer to next interval
             if(timeRatio > intervals[colorNextPointer]) {
                 colorNextPointer++;
@@ -1449,10 +1481,14 @@ public class SceneModel extends WorldController implements ContactListener {
             avatar.setVY(0);
         }
 
+        boolean alerted = false;
         for (AIController c : controls) {
             c.getAction();
             Enemy thisEnemy = c.getEnemy();
             thisEnemy.setAlerted(thisEnemy.isPlayerInLineOfSight(world, avatar));
+            if (!alerted && thisEnemy.isAlerted()) {
+                alerted = true;
+            }
 
             if (c.isWon()) setFailure(true);
         }
@@ -1466,10 +1502,53 @@ public class SceneModel extends WorldController implements ContactListener {
             }
         }
 
+        if (alerted) {
+            levelMusicTense.setVolume(Math.min(levelMusicTense.getVolume() + 0.01f, 1f));
+        } else {
+            levelMusicTense.setVolume(Math.max(levelMusicTense.getVolume() - 0.01f, 0f));
+        }
+
         canvas.clear();
         shadowController.update(this);
     }
 
+    @Override
+    public void hide() {
+        super.hide();
+        levelMusic.stop();
+        levelMusicTense.stop();
+        levelMusicNight.stop();
+//        if (levelMusic != null) {
+//            new Thread(new Runnable() {
+//                float vol = levelMusic.getVolume();
+//
+//                @Override
+//                public void run() {
+//
+//                    while (true) {
+//                        vol -= 0.007f;
+//                        Gdx.app.postRunnable(() -> {
+//                            levelMusic.setVolume(vol);
+//                            levelMusicNight.setVolume(levelMusicNight.getVolume() * vol);
+//                            levelMusicTense.setVolume(levelMusicTense.getVolume() * vol);
+//                            if (vol <= 0) {
+//
+//                            }
+//                        });
+//                        if (vol <= 0) {
+//                            break;
+//                        }
+//                        try {
+//                            Thread.sleep(16);
+//                        } catch (InterruptedException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//
+//                }
+//            }).start();
+//        }
+    }
 
     private void shakeTree(Tree tree) {
         if (tree.canShake()) {
@@ -1613,7 +1692,7 @@ public class SceneModel extends WorldController implements ContactListener {
         if (complete && !failed && active) {
             displayFont.setColor(Color.YELLOW);
             canvas.begin(); // DO NOT SCALE
-            canvas.drawText("WIN!: Press r to restart, p to return to level select",displayFont,avatar.getPosition().x *31.9f, avatar.getPosition().y * 31.9f );
+            // canvas.drawText("WIN!: Press r to restart, p to return to level select",displayFont,avatar.getPosition().x *31.9f, avatar.getPosition().y * 31.9f );
 
             canvas.end();
         } else if (failed&&active) {
