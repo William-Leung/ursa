@@ -164,6 +164,11 @@ public class ShadowModel extends PolygonObstacle {
         setName("shadow");
     }
 
+    public void reset() {
+        this.setHeight(initial_height);
+        this.setWidth(initial_width);
+    }
+
 //    @Override
 //    public void createFixtures() {
 //        // Ground Sensor

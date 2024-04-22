@@ -230,6 +230,8 @@ public class SceneModel extends WorldController implements ContactListener {
     private BoxObstacle goalDoor;
     /** Controller for all dynamic shadows */
     private ShadowController shadowController;
+    /** rock to be used to reset the day if interacted with */
+    private GenericObstacle specialRock = null;
 
 
     /** Mark set to handle more sophisticated collision callbacks */
@@ -630,6 +632,8 @@ public class SceneModel extends WorldController implements ContactListener {
             rock.setDrawScale(scale);
             rock.setTexture(polarRock1);
             rock.setName("rock"+i);
+
+            if (specialRock == null) { specialRock = rock; }
 
             // Cave shadows
             ShadowModel rockShadow = new ShadowModel(new Vector2(rock.getX(), rock.getY()), 0.75f, 0.75f,
@@ -1469,6 +1473,21 @@ public class SceneModel extends WorldController implements ContactListener {
                 shakeTree(nearest);
             }
         }
+
+        // reset day if interact w special rock
+        if (InputController.getInstance().didInteract()
+                && avatar.getPosition().dst(specialRock.getPosition()) <= treeInteractionRange) {
+            for (ShadowModel s : shadows) {
+                s.rotateDirection((float) (-1 * shadowController.getTime() * (360 / 240)/5));
+            }
+            System.out.println(shadowController.getTime());
+            shadowController.setTime(0);
+            System.out.println(shadowController.getTime());
+//            shadowController.update(this);
+//            shadowController.reset(this);
+            for (AIController i : controls) { i.reset(); }
+        }
+
 
         // Animate the players, trees, and enemies
         animatePlayerModel();

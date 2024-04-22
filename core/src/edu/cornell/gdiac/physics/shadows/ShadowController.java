@@ -104,6 +104,12 @@ public class ShadowController {
         }
     }
 
+    public void reset(SceneModel sm) {
+        this.time = 0;
+        this.isNight = false;
+        update(sm);
+    }
+
     /**
      * Draws shadows for all objects in the SceneModel.
      * If it is night, draws nothing.
@@ -125,4 +131,10 @@ public class ShadowController {
     public static boolean isNight() { return isNight; }
 
     //public boolean checkOverlap(Vector2 ursa_tl, Vector2 ursa_br, ShadowModel sh) {}
+
+    /** Sets the time of day */
+    public void setTime(int time) { this.time = time % 3600; }
+
+    /** Gets the time of day */
+    public int getTime() { return this.time; }
 }

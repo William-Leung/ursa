@@ -44,7 +44,7 @@ public class AIController {
     /** Time when enemy spawns where they cannot do anything */
     private static final int SPAWN_TICKS = 30;
     /** Time in range before changing confused to attack */
-    private static final int CONFUSE_TIME = 70;
+    private static final int CONFUSE_TIME = 30;
     /** ticks enemy will stay engaged in if chasing but not in cone */
     private static final int CHASE_MEMORY = 80;
     /** Amount of uninterrupted time player can spend in cone before losing */
@@ -52,7 +52,7 @@ public class AIController {
     /** Maximum amount of time enemy can spend looking around in one time */
     private static final float MAX_LOOKING = 700;
     /** Ticks Ursa can be within range before being detected */
-    private static final int DETECTION_DELAY = 30;
+    private static final int DETECTION_DELAY = 20;
 
 
     /** Degrees enemy can rotate per tick */
@@ -248,8 +248,11 @@ public class AIController {
                 ticks_looking++;
 
                 if (checkSpotted()) {
-                    state = FSMState.CHASE;
-                    ticks_looking = 0;
+                        state = FSMState.CHASE;
+                        ticks_looking = 0;
+                } else if (enemy.isAlerted() && ticks_spotted >= DETECTION_DELAY) {
+                    state = FSMState.CONFUSED;
+                    ticks_confused = 1;
                 } else if (isDetected() || ticks - last_time_detected <= CONFUSE_TIME) {
                     state = FSMState.LOOKING;
                 } else if (ticks_looking >= MAX_LOOKING || Math.random() * ticks_looking > MAX_LOOKING / 3) {
@@ -260,8 +263,7 @@ public class AIController {
 
             case CONFUSED:
 
-                if (ticks_confused == 0 || (ticks_confused >= CONFUSE_TIME
-                        && ticks - last_time_detected >= CONFUSE_TIME)) {
+                if (ticks_confused == 0) {
                     state = FSMState.LOOKING;
                 } else if (ticks_confused >= CONFUSE_TIME) {
                     if (checkSpotted()) {
@@ -526,7 +528,8 @@ public class AIController {
         if (board.getTile(board.getXTile(enemy.getX()), board.getYTile(enemy.getY())) ==
                 board.getTile(nextGoal.x, nextGoal.y)) {
 
-            if (times_detected >= MIN_PATROL_CHANGE && ticks - last_time_detected <= ADAPTIVE_AI_MEM) {
+            if (times_detected >= MIN_PATROL_CHANGE && ticks - last_time_detected <= ADAPTIVE_AI_MEM
+                    && !locs_spotted.isEmpty()) {
                 locs_spotted.pop();
             } else {
                 //System.out.println("REACHED GOAL");
