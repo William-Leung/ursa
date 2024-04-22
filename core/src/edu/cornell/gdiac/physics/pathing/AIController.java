@@ -131,6 +131,8 @@ public class AIController {
 
     private Board board;
 
+    private Vector2 startLoc;
+
     /**
      * Creates an AIController for the ship with the given id.
      */
@@ -161,6 +163,8 @@ public class AIController {
         for (int i = 0; i < adjacents.length; i++) {
             adjacents[i] = new Coordinate();
         }
+
+        startLoc = new Vector2(enemy.getX(), enemy.getY());
     }
 
     public AIController(Enemy enemy,  UrsaModel ursa, Board board, Vector2[] patrolLocs, boolean stupid) {
@@ -179,6 +183,8 @@ public class AIController {
         ticks_attacked = 0;
         currGoal = firstGoal;
         times_detected = 0;
+        enemy.setX(startLoc.x);
+        enemy.setY(startLoc.y);
     }
 
     public ArrayDeque<Vector2> getPatrol() {
@@ -469,8 +475,8 @@ public class AIController {
                 action.y = locs_spotted.getLast().y - enemy.getY();
                 action = action.nor();
 
-                enemy.setVX(action.x * 5);
-                enemy.setVY(action.y * 5);
+                enemy.setVX(action.x * 4);
+                enemy.setVY(action.y * 4);
                 enemy.setLookDirection(action.x, action.y);
 
                 break;
@@ -481,8 +487,8 @@ public class AIController {
                 action.y = ursa.getY() - enemy.getY();
                 action = action.nor();
 
-                enemy.setVX(action.x * 5);
-                enemy.setVY(action.y * 5);
+                enemy.setVX(action.x * 4);
+                enemy.setVY(action.y * 4);
                 enemy.setLookDirection(action.x, action.y);
 
                 break;
