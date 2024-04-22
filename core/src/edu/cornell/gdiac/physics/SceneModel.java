@@ -1458,14 +1458,14 @@ public class SceneModel extends WorldController implements ContactListener {
             obj.preDraw(canvas);
         }
 
-        for(AIController control: controls) {
+        /**for(AIController control: controls) {
             for(Vector2 v: control.getPatrol()) {
                 if(v != null) {
                     canvas.draw(redTextureRegion,Color.WHITE, v.x * 32f,
                             v.y * 32f, 10,10);
                 }
             }
-        }
+        }*/
         //shadowController.drawAllShadows(canvas, this);
     }
 

@@ -9,6 +9,14 @@
     ],
     "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
+        "/Users/williamleung/Documents/GitHub/ursa/assets/level2.json": {
+            "scale": 0.3192,
+            "selectedLayer": 8,
+            "viewCenter": {
+                "x": 2089.5989974937347,
+                "y": 1116.8546365914788
+            }
+        },
         "/Users/ykhadir/3300/p2/ursa/assets/level3.json": {
             "scale": 0.037480468749999996,
             "selectedLayer": 0,
@@ -123,12 +131,23 @@
                 "y": -632
             }
         },
+        "level1.tmx": {
+            "expandedObjectLayers": [
+                2
+            ],
+            "scale": 0.156,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 3762.820512820513,
+                "y": 2554.48717948718
+            }
+        },
         "map1.tmx": {
             "scale": 0.08,
             "selectedLayer": 7,
             "viewCenter": {
-                "x": 3506.25,
-                "y": 6293.75
+                "x": 3887.5,
+                "y": 5168.75
             }
         },
         "map1.tmx#Polar_Cliff_center": {
@@ -147,8 +166,8 @@
             "scale": 0.0798,
             "selectedLayer": 8,
             "viewCenter": {
-                "x": 1497.4937343358397,
-                "y": 1572.6817042606513
+                "x": 1503.759398496241,
+                "y": 3489.9749373433588
             }
         },
         "map3.tmx": {
@@ -161,16 +180,16 @@
             "scale": 0.15,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 2143.3333333333335,
-                "y": 3276.666666666667
+                "x": 3766.666666666667,
+                "y": 3783.3333333333335
             }
         },
         "map4.tmx": {
             "scale": 0.33,
             "selectedLayer": 8,
             "viewCenter": {
-                "x": 3325.757575757576,
-                "y": 2813.6363636363635
+                "x": 4057.5757575757575,
+                "y": 3037.878787878788
             }
         },
         "map5.tmx": {
@@ -237,13 +256,14 @@
                 9,
                 2,
                 4,
-                5
+                5,
+                7
             ],
-            "scale": 0.142,
-            "selectedLayer": 3,
+            "scale": 0.1757,
+            "selectedLayer": 7,
             "viewCenter": {
-                "x": 2859.1549295774653,
-                "y": 3390.845070422535
+                "x": 2595.332953898691,
+                "y": 2142.857142857143
             }
         }
     },
@@ -265,6 +285,8 @@
     "project": "map1_test.tiled-project",
     "recentFiles": [
         "map2.tmx",
+        "/Users/williamleung/Documents/GitHub/ursa/assets/level2.json",
+        "tundra_tree_snow_small.tsx",
         "tiles.tsx",
         "tutorial.tmx",
         "map1.tmx",
@@ -273,9 +295,7 @@
         "map5.tmx",
         "C:/Users/williamleung/Documents/GitHub/ursa/assets/level4.json",
         "cave.tsx",
-        "Polar_Cliff_Edge_6.tsx",
-        "polar_cliff_edge_left_side.tsx",
-        "salmon_walk_2_small.tsx"
+        "Polar_Cliff_Edge_6.tsx"
     ],
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {

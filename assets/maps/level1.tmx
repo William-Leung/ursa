@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="12" height="12" tilewidth="512" tileheight="512" infinite="0" nextlayerid="10" nextobjectid="127">
+ <editorsettings>
+  <export target="../level1.json" format="json"/>
+ </editorsettings>
+ <tileset firstgid="1" source="Polar_Cliff_center.tsx"/>
+ <tileset firstgid="1" source="Polar_Cliff_Corner_1.tsx"/>
+ <tileset firstgid="1" source="Polar_Cliff_Edge_4.tsx"/>
+ <tileset firstgid="1" source="Polar_Cliff_Corner_2.tsx"/>
+ <tileset firstgid="1" source="Polar_Cliff_Corner_6.tsx"/>
+ <tileset firstgid="1" source="Polar_Cliff_Corner_5.tsx"/>
+ <tileset firstgid="1" source="Polar_Cliff_Corner_4.tsx"/>
+ <tileset firstgid="1" source="Polar_Cliff_Corner_3.tsx"/>
+ <tileset firstgid="1" source="Polar_Cliff_Corner_7_large.tsx"/>
+ <tileset firstgid="1" source="Polar_Cliff_Edge_2.tsx"/>
+ <tileset firstgid="1" source="Polar_Cliff_Edge_3.tsx"/>
+ <tileset firstgid="1" source="Polar_Cliff_Edge_1.tsx"/>
+ <tileset firstgid="1" source="Polar_Cliff_Corner_8.tsx"/>
+ <tileset firstgid="1" source="Polar_Cliff_Edge_5.tsx"/>
+ <tileset firstgid="1" source="Polar_Cliff_Edge_6.tsx"/>
+ <tileset firstgid="1" source="polar_cliff_edge_left_side.tsx"/>
+ <tileset firstgid="1" source="salmon_walk_2_small.tsx"/>
+ <tileset firstgid="2" source="Ursa.tsx"/>
+ <tileset firstgid="8" source="tundra_tree_snow_small.tsx"/>
+ <tileset firstgid="9" source="cave.tsx"/>
+ <tileset firstgid="10" source="tiles.tsx"/>
+ <tileset firstgid="25" source="marker.tsx"/>
+ <layer id="1" name="Tile Layer 1" width="12" height="12">
+  <data encoding="csv">
+10,10,10,10,10,10,10,10,10,10,10,10,
+10,10,10,10,10,10,10,10,10,10,10,10,
+10,10,18,20,11,10,10,18,11,10,10,10,
+10,10,13,15,19,18,20,20,11,20,11,10,
+10,10,10,21,14,16,0,0,0,24,12,10,
+10,18,16,13,17,15,0,0,0,14,11,10,
+10,21,0,0,0,13,17,17,0,0,23,10,
+10,22,0,0,0,0,0,0,0,0,23,10,
+10,21,0,0,0,0,0,0,0,0,19,10,
+10,22,0,24,17,15,0,24,15,0,19,10,
+10,13,17,12,10,13,17,12,13,17,12,10,
+10,10,10,10,10,10,10,10,10,10,10,10
+</data>
+ </layer>
+ <objectgroup id="2" name="player">
+  <object id="100" gid="2" x="2974.76" y="2630.17" width="256" height="256"/>
+ </objectgroup>
+ <group id="3" name="constants"/>
+ <objectgroup id="4" name="enemies">
+  <object id="124" type="1" gid="1" x="2912.59" y="2081.43" width="264.89" height="248.947"/>
+ </objectgroup>
+ <objectgroup id="5" name="trees">
+  <object id="117" type="2" gid="8" x="3601.92" y="2278.61" width="256" height="512"/>
+  <object id="118" type="2" gid="8" x="3447.25" y="2457.07" width="256" height="512"/>
+  <object id="119" type="2" gid="8" x="3685.21" y="2576.05" width="256" height="512"/>
+  <object id="120" type="2" gid="8" x="3441.3" y="2784.26" width="256" height="512"/>
+  <object id="121" type="2" gid="8" x="3655.46" y="2831.85" width="256" height="512"/>
+  <object id="122" type="2" gid="8" x="3506.74" y="3046.01" width="256" height="512"/>
+  <object id="123" type="2" gid="8" x="3732.8" y="3170.93" width="256" height="512"/>
+ </objectgroup>
+ <objectgroup id="6" name="object"/>
+ <objectgroup id="7" name="cave"/>
+ <objectgroup id="8" name="rock"/>
+ <objectgroup id="9" name="markers">
+  <object id="125" name="1" type="1" gid="25" x="2945.17" y="2311.91" width="128" height="128"/>
+  <object id="126" name="1" type="2" gid="25" x="3993.39" y="2335.82" width="128" height="128"/>
+ </objectgroup>
+</map>
