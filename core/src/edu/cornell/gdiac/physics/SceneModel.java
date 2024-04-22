@@ -17,7 +17,6 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectSet;
-import com.sun.tools.javac.jvm.Gen;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.physics.objects.Cave;
 import edu.cornell.gdiac.physics.enemy.Enemy;
@@ -25,6 +24,8 @@ import edu.cornell.gdiac.physics.obstacle.*;
 import edu.cornell.gdiac.physics.objects.GenericObstacle;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
+import edu.cornell.gdiac.physics.pathing.AIController;
+import edu.cornell.gdiac.physics.pathing.Board;
 import edu.cornell.gdiac.physics.player.UrsaModel;
 import edu.cornell.gdiac.physics.shadows.ShadowController;
 import edu.cornell.gdiac.physics.shadows.ShadowModel;
@@ -211,6 +212,11 @@ public class SceneModel extends WorldController implements ContactListener {
      * List of all references to all trees
      */
     private PooledList<Tree> trees = new PooledList<>();
+
+    /**
+     * Information about the gameboard used for pathfinding
+     */
+    private Board gameBoard;
 
     /**
      * List of all references to all generic obstacles
@@ -487,6 +493,12 @@ public class SceneModel extends WorldController implements ContactListener {
 
             addObject(caveShadow);
             addObject(goalDoor);
+
+
+            // ===================
+            genericObstacles.add(new GenericObstacle(goalDoor.getX(), goalDoor.getY(),
+                    goalDoor.getWidth(), goalDoor.getHeight()));
+            // ===================
         }
 
         /**
@@ -532,10 +544,11 @@ public class SceneModel extends WorldController implements ContactListener {
                 }
             }
             if (enemies[i] != null) {
+                Board board = new Board(genericObstacles, enemies);
                 if(i == 0) {
-                    controls.add(new AIController(enemies[i], avatar, trees, enemyPosList, true));
+                    controls.add(new AIController(enemies[i], avatar, null, enemyPosList, true));
                 } else {
-                    controls.add(new AIController(enemies[i], avatar, trees, enemyPosList));
+                    controls.add(new AIController(enemies[i], avatar, null, enemyPosList));
                 }
             }
         }
@@ -569,6 +582,11 @@ public class SceneModel extends WorldController implements ContactListener {
 
             addObject(obj);
             trees.add(obj);
+
+            // ===================
+            genericObstacles.add(new GenericObstacle(obj.getX(), obj.getY(),
+                    obj.getWidth(), obj.getHeight()));
+            // ===================
         }
 
         /**
@@ -597,9 +615,21 @@ public class SceneModel extends WorldController implements ContactListener {
 
             addObject(rockShadow);
             addObject(rock);
+
+            // ===================
+            genericObstacles.add(new GenericObstacle(rock.getX(), rock.getY(),
+                    rock.getWidth(), rock.getHeight()));
+            // ===================
         }
 
         drawWalls();
+
+        // make gameboard
+
+        // populate genericObjects
+
+        gameBoard = new Board(genericObstacles, enemies);
+        for (AIController i : controls) { i.setGameBoard(gameBoard); }
     }
 
     /**
@@ -757,6 +787,12 @@ public class SceneModel extends WorldController implements ContactListener {
                     wall.setDrawScale(scale);
                     wall.setName("invis wall " + (i + j));
                     addObject(wall);
+
+                    // ===================
+                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
+                            wall.getWidth(), wall.getHeight()));
+                    // ===================
+
                     wall = new InvivisbleWall(5.5f + (j* 8),1+(i*8),.3f,2f);
                     wall.setDensity(0);
                     wall.setFriction(0);
@@ -764,6 +800,12 @@ public class SceneModel extends WorldController implements ContactListener {
                     wall.setDrawScale(scale);
                     wall.setName("invis wall " + (i + j));
                     addObject(wall);
+
+                    // ===================
+                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
+                            wall.getWidth(), wall.getHeight()));
+                    // ===================
+
                     wall = new InvivisbleWall(6.5f + (j* 8),2.8f+(i*8),2.5f,.3f);
                     wall.setDensity(0);
                     wall.setFriction(0);
@@ -773,7 +815,10 @@ public class SceneModel extends WorldController implements ContactListener {
                     addObject(wall);
 
 
-
+                    // ===================
+                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
+                            wall.getWidth(), wall.getHeight()));
+                    // ===================
 
                 }
                 else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == firstTileIndex +1) {
@@ -785,6 +830,12 @@ public class SceneModel extends WorldController implements ContactListener {
                     wall.setDrawScale(scale);
                     wall.setName("invis wall " + (i + j));
                     addObject(wall);
+
+                    // ===================
+                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
+                            wall.getWidth(), wall.getHeight()));
+                    // ===================
+
                     wall = new InvivisbleWall(3f + (j* 8),1.4f+(i*8),.3f,2.8f);
                     wall.setDensity(0);
                     wall.setFriction(0);
@@ -792,6 +843,11 @@ public class SceneModel extends WorldController implements ContactListener {
                     wall.setDrawScale(scale);
                     wall.setName("invis wall " + (i + j));
                     addObject(wall);
+
+                    // ===================
+                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
+                            wall.getWidth(), wall.getHeight()));
+                    // ===================
 
                 }
                 else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == firstTileIndex +2) {
@@ -803,6 +859,12 @@ public class SceneModel extends WorldController implements ContactListener {
                     wall.setDrawScale(scale);
                     wall.setName("invis wall " + (i + j));
                     addObject(wall);
+
+                    // ===================
+                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
+                            wall.getWidth(), wall.getHeight()));
+                    // ===================
+
                     wall = new InvivisbleWall(2.5f + (j* 8),6.8f+(i*8),.3f,2.3f);
                     wall.setDensity(0);
                     wall.setFriction(0);
@@ -810,6 +872,11 @@ public class SceneModel extends WorldController implements ContactListener {
                     wall.setDrawScale(scale);
                     wall.setName("invis wall " + (i + j));
                     addObject(wall);
+
+                    // ===================
+                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
+                            wall.getWidth(), wall.getHeight()));
+                    // ===================
 
                 }
                 else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == firstTileIndex+3) {
@@ -821,6 +888,12 @@ public class SceneModel extends WorldController implements ContactListener {
                     wall.setDrawScale(scale);
                     wall.setName("invis wall " + (i + j));
                     addObject(wall);
+
+                    // ===================
+                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
+                            wall.getWidth(), wall.getHeight()));
+                    // ===================
+
                     wall = new InvivisbleWall(5.5f + (j* 8),6.8f+(i*8),.3f,2.3f);
                     wall.setDensity(0);
                     wall.setFriction(0);
@@ -828,6 +901,11 @@ public class SceneModel extends WorldController implements ContactListener {
                     wall.setDrawScale(scale);
                     wall.setName("invis wall " + (i + j));
                     addObject(wall);
+
+                    // ===================
+                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
+                            wall.getWidth(), wall.getHeight()));
+                    // ===================
 
                 }
                 else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == firstTileIndex+9) {
@@ -840,6 +918,11 @@ public class SceneModel extends WorldController implements ContactListener {
                     wall.setName("invis wall " + (i + j));
                     addObject(wall);
 
+                    // ===================
+                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
+                            wall.getWidth(), wall.getHeight()));
+                    // ===================
+
                 }
                 else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == firstTileIndex+13) {
                     //tileTextures[10] = new TextureRegion(directory.getEntry("tiles:polar_edge_2",Texture.class));
@@ -850,6 +933,12 @@ public class SceneModel extends WorldController implements ContactListener {
                     wall.setDrawScale(scale);
                     wall.setName("invis wall " + (i + j));
                     addObject(wall);
+
+                    // ===================
+                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
+                            wall.getWidth(), wall.getHeight()));
+                    // ===================
+
                     wall = new InvivisbleWall(2.5f + (j* 8),7f+(i*8),.3f,2f);
                     wall.setDensity(0);
                     wall.setFriction(0);
@@ -857,6 +946,12 @@ public class SceneModel extends WorldController implements ContactListener {
                     wall.setDrawScale(scale);
                     wall.setName("invis wall " + (i + j));
                     addObject(wall);
+
+                    // ===================
+                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
+                            wall.getWidth(), wall.getHeight()));
+                    // ===================
+
                     wall = new InvivisbleWall(3.7f + (j* 8),3.7f+(i*8),.3f,4f);
                     wall.setDensity(0);
                     wall.setFriction(0);
@@ -864,6 +959,11 @@ public class SceneModel extends WorldController implements ContactListener {
                     wall.setDrawScale(scale);
                     wall.setName("invis wall " + (i + j));
                     addObject(wall);
+
+                    // ===================
+                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
+                            wall.getWidth(), wall.getHeight()));
+                    // ===================
 
                 }
                 else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == firstTileIndex+10) {
@@ -876,6 +976,11 @@ public class SceneModel extends WorldController implements ContactListener {
                     wall.setName("invis wall " + (i + j));
                     addObject(wall);
 
+                    // ===================
+                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
+                            wall.getWidth(), wall.getHeight()));
+                    // ===================
+
                 }
                 else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == firstTileIndex + 11) {
                     //tileTextures[14] = new TextureRegion(directory.getEntry("tiles:polar_edge_6",Texture.class));
@@ -886,6 +991,12 @@ public class SceneModel extends WorldController implements ContactListener {
                     wall.setDrawScale(scale);
                     wall.setName("invis wall " + (i + j));
                     addObject(wall);
+
+                    // ===================
+                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
+                            wall.getWidth(), wall.getHeight()));
+                    // ===================
+
                     wall = new InvivisbleWall( 3.9f + (j* 8),3.8f+(i*8),.3f,2.5f);
                     wall.setDensity(0);
                     wall.setFriction(0);
@@ -893,6 +1004,12 @@ public class SceneModel extends WorldController implements ContactListener {
                     wall.setDrawScale(scale);
                     wall.setName("invis wall " + (i + j));
                     addObject(wall);
+
+                    // ===================
+                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
+                            wall.getWidth(), wall.getHeight()));
+                    // ===================
+
                     wall = new InvivisbleWall( 5.3f + (j* 8),1.1f+(i*8),.3f,2.0f);
                     wall.setDensity(0);
                     wall.setFriction(0);
@@ -900,6 +1017,11 @@ public class SceneModel extends WorldController implements ContactListener {
                     wall.setDrawScale(scale);
                     wall.setName("invis wall " + (i + j));
                     addObject(wall);
+
+                    // ===================
+                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
+                            wall.getWidth(), wall.getHeight()));
+                    // ===================
 
                 }
                 else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == firstTileIndex + 7) {
@@ -912,6 +1034,11 @@ public class SceneModel extends WorldController implements ContactListener {
                     wall.setName("invis wall " + (i + j));
                     addObject(wall);
 
+                    // ===================
+                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
+                            wall.getWidth(), wall.getHeight()));
+                    // ===================
+
                 }
                 else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == firstTileIndex + 14) {
                     //tileTextures[8] = new TextureRegion(directory.getEntry("tiles:polar_corner_8",Texture.class));
@@ -922,6 +1049,12 @@ public class SceneModel extends WorldController implements ContactListener {
                     wall.setDrawScale(scale);
                     wall.setName("invis wall " + (i + j));
                     addObject(wall);
+
+                    // ===================
+                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
+                            wall.getWidth(), wall.getHeight()));
+                    // ===================
+
                     wall = new InvivisbleWall(3f + (j* 8),1.3f+(i*8),.3f,2.3f);
                     wall.setDensity(0);
                     wall.setFriction(0);
@@ -929,6 +1062,12 @@ public class SceneModel extends WorldController implements ContactListener {
                     wall.setDrawScale(scale);
                     wall.setName("invis wall " + (i + j));
                     addObject(wall);
+
+                    // ===================
+                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
+                            wall.getWidth(), wall.getHeight()));
+                    // ===================
+
                     wall = new InvivisbleWall(3.8f + (j* 8),3.3f+(i*8),.3f,1.3f);
                     wall.setDensity(0);
                     wall.setFriction(0);
@@ -936,6 +1075,11 @@ public class SceneModel extends WorldController implements ContactListener {
                     wall.setDrawScale(scale);
                     wall.setName("invis wall " + (i + j));
                     addObject(wall);
+
+                    // ===================
+                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
+                            wall.getWidth(), wall.getHeight()));
+                    // ===================
 
                 }
                 else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == firstTileIndex+4) {
@@ -947,6 +1091,12 @@ public class SceneModel extends WorldController implements ContactListener {
                     wall.setDrawScale(scale);
                     wall.setName("invis wall " + (i + j));
                     addObject(wall);
+
+                    // ===================
+                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
+                            wall.getWidth(), wall.getHeight()));
+                    // ===================
+
                     wall = new InvivisbleWall(3f + (j* 8),6.3f+(i*8),.3f,4.3f);
                     wall.setDensity(0);
                     wall.setFriction(0);
@@ -954,6 +1104,11 @@ public class SceneModel extends WorldController implements ContactListener {
                     wall.setDrawScale(scale);
                     wall.setName("invis wall " + (i + j));
                     addObject(wall);
+
+                    // ===================
+                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
+                            wall.getWidth(), wall.getHeight()));
+                    // ===================
 
                 }
                 else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == firstTileIndex+5) {
@@ -965,6 +1120,12 @@ public class SceneModel extends WorldController implements ContactListener {
                     wall.setDrawScale(scale);
                     wall.setName("invis wall " + (i + j));
                     addObject(wall);
+
+                    // ===================
+                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
+                            wall.getWidth(), wall.getHeight()));
+                    // ===================
+
                     wall = new InvivisbleWall(5.2f + (j* 8),2.5f+(i*8),.3f,4.3f);
                     wall.setDensity(0);
                     wall.setFriction(0);
@@ -972,6 +1133,11 @@ public class SceneModel extends WorldController implements ContactListener {
                     wall.setDrawScale(scale);
                     wall.setName("invis wall " + (i + j));
                     addObject(wall);
+
+                    // ===================
+                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
+                            wall.getWidth(), wall.getHeight()));
+                    // ===================
 
                 }
                 else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == firstTileIndex+12) {
@@ -984,6 +1150,11 @@ public class SceneModel extends WorldController implements ContactListener {
                     wall.setName("invis wall " + (i + j));
                     addObject(wall);
 
+                    // ===================
+                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
+                            wall.getWidth(), wall.getHeight()));
+                    // ===================
+
                 }
                 else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == firstTileIndex+6){
                     wall = new InvivisbleWall( (j* 8),3+ (i*8),1f,.3f);
@@ -993,6 +1164,13 @@ public class SceneModel extends WorldController implements ContactListener {
                     wall.setDrawScale(scale);
                     wall.setName("invis wall " + (i + j));
                     addObject(wall);
+
+                    // ===================
+                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
+                            wall.getWidth(), wall.getHeight()));
+                    // ===================
+
+
                     wall = new InvivisbleWall( 1+(j* 8),3.2f+ (i*8),1f,.3f);
                     wall.setDensity(0);
                     wall.setFriction(0);
@@ -1000,6 +1178,13 @@ public class SceneModel extends WorldController implements ContactListener {
                     wall.setDrawScale(scale);
                     wall.setName("invis wall " + (i + j));
                     addObject(wall);
+
+                    // ===================
+                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
+                            wall.getWidth(), wall.getHeight()));
+                    // ===================
+
+
                     wall = new InvivisbleWall( 1.8f+(j* 8),3.5f+ (i*8),1f,.3f);
                     wall.setDensity(0);
                     wall.setFriction(0);
@@ -1007,6 +1192,13 @@ public class SceneModel extends WorldController implements ContactListener {
                     wall.setDrawScale(scale);
                     wall.setName("invis wall " + (i + j));
                     addObject(wall);
+
+                    // ===================
+                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
+                            wall.getWidth(), wall.getHeight()));
+                    // ===================
+
+
                     wall = new InvivisbleWall( 2.8f+(j* 8),4.0f+ (i*8),1f,.3f);
                     wall.setDensity(0);
                     wall.setFriction(0);
@@ -1014,6 +1206,13 @@ public class SceneModel extends WorldController implements ContactListener {
                     wall.setDrawScale(scale);
                     wall.setName("invis wall " + (i + j));
                     addObject(wall);
+
+                    // ===================
+                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
+                            wall.getWidth(), wall.getHeight()));
+                    // ===================
+
+
                     wall = new InvivisbleWall( 3.5f+(j* 8),4.5f+ (i*8),1f,.3f);
                     wall.setDensity(0);
                     wall.setFriction(0);
@@ -1021,6 +1220,13 @@ public class SceneModel extends WorldController implements ContactListener {
                     wall.setDrawScale(scale);
                     wall.setName("invis wall " + (i + j));
                     addObject(wall);
+
+                    // ===================
+                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
+                            wall.getWidth(), wall.getHeight()));
+                    // ===================
+
+
                     wall = new InvivisbleWall( 4.5f+(j* 8),5.2f+ (i*8),.1f,2f);
                     wall.setDensity(0);
                     wall.setFriction(0);
@@ -1029,6 +1235,13 @@ public class SceneModel extends WorldController implements ContactListener {
                     wall.setName("invis wall " + (i + j));
                     wall.setAngle(-0.523599f);
                     addObject(wall);
+
+                    // ===================
+                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
+                            wall.getWidth(), wall.getHeight()));
+                    // ===================
+
+
                     wall = new InvivisbleWall( 5.15f+(j* 8),6.9f+ (i*8),.1f,2f);
                     wall.setDensity(0);
                     wall.setFriction(0);
@@ -1037,6 +1250,11 @@ public class SceneModel extends WorldController implements ContactListener {
                     wall.setName("invis wall " + (i + j));
                     wall.setAngle(-.2f);
                     addObject(wall);
+
+                    // ===================
+                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
+                            wall.getWidth(), wall.getHeight()));
+                    // ===================
                 }
                 counter += 1;
 
