@@ -48,6 +48,8 @@ public class Board {
         //printTiles();
     }
 
+    public TileState[][] getBoard() { return tiles; }
+
     public int width() { return this.width; }
     public int height() { return this.height; }
     public float maxX() { return dims.x; }
