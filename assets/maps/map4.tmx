@@ -45,7 +45,7 @@
  </objectgroup>
  <group id="3" name="constants"/>
  <objectgroup id="4" name="enemies">
-  <object id="47" name="2" gid="1" x="742.726" y="2852.49" width="512" height="512"/>
+  <object id="47" name="2" gid="1" x="1018.73" y="2716.49" width="164" height="200"/>
  </objectgroup>
  <objectgroup id="5" name="trees">
   <object id="82" gid="8" x="1742.18" y="2102.25" width="198.782" height="269.923"/>
@@ -64,6 +64,6 @@
  </objectgroup>
  <objectgroup id="8" name="rock"/>
  <objectgroup id="9" name="markers">
-  <object id="108" name="2" type="1" gid="25" x="1915.89" y="4402.36" width="128" height="128"/>
+  <object id="108" name="2" type="1" gid="25" x="939.89" y="2562.36" width="128" height="128"/>
  </objectgroup>
 </map>

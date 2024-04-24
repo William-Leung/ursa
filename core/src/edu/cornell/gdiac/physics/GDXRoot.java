@@ -196,7 +196,22 @@ public class GDXRoot extends Game implements ScreenListener {
 		}
 		else if (exitCode == 12 && screen != levelSelector && screen != loading) {
 
-			retryMenu = new RetryMenu(canvas);
+			retryMenu = new RetryMenu(canvas,true);
+			retryMenu.gatherAssets(directory);
+			retryMenu.setScreenListener(this);
+			canvas.setCam(camX,camY);
+			setScreen(retryMenu);
+			retryMenu.setActive(true);
+			controllers[current].active = false;
+
+
+
+
+
+
+		}else if (exitCode == 13 && screen != levelSelector && screen != loading) {
+
+			retryMenu = new RetryMenu(canvas,false);
 			retryMenu.gatherAssets(directory);
 			retryMenu.setScreenListener(this);
 			canvas.setCam(camX,camY);
