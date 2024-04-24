@@ -228,11 +228,11 @@ public class AIController {
 
             case WANDER:
 
-                if (ticks % 50 == 0 && Math.random() > 0.95) {
+                if (ticks % 100 == 0 && Math.random() > 0.98) {
                     ticks_looking = 26;
                     state = FSMState.LOOKING;
                 } else if (times_detected >= MIN_PATROL_CHANGE &&
-                        ticks % 30 == 0 && Math.random() > 0.85) {
+                        ticks % 50 == 0 && Math.random() > 0.90) {
                     ticks_looking = 0;
                     state = FSMState.LOOKING;
                 } else if (ticks_detected >= DETECTION_DELAY) {
