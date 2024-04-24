@@ -1470,7 +1470,7 @@ public class SceneModel extends WorldController implements ContactListener {
         }
 
         // reset day if interact w special rock
-        if (InputController.getInstance().didInteract()
+        if (specialRock != null && InputController.getInstance().didInteract()
                 && avatar.getPosition().dst(specialRock.getPosition()) <= treeInteractionRange) {
             for (ShadowModel s : shadows) {
                 s.rotateDirection((float) (-1 * shadowController.getTime() * (360 / 240)/5));

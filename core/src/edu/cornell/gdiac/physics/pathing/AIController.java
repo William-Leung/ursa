@@ -587,28 +587,28 @@ public class AIController {
 
                 board.setVisited((int) nextTile.x, (int) nextTile.y, true);
 
-                if (!board.getVisited((int) nextTile.x + 1, (int) nextTile.y + 1)) {
+                if (board.inBounds((int) nextTile.x + 1, (int) nextTile.y + 1) && !board.getVisited((int) nextTile.x + 1, (int) nextTile.y + 1)) {
                     adjacents.add(new Vector2((int) nextTile.x + 1, (int) nextTile.y + 1));
                 }
-                if (!board.getVisited((int) nextTile.x + 1, (int) nextTile.y - 1)) {
+                if (board.inBounds((int) nextTile.x + 1, (int) nextTile.y - 1) && !board.getVisited((int) nextTile.x + 1, (int) nextTile.y - 1)) {
                     adjacents.add(new Vector2((int) nextTile.x + 1, (int) nextTile.y - 1));
                 }
-                if (!board.getVisited((int) nextTile.x - 1, (int) nextTile.y + 1)) {
+                if (board.inBounds((int) nextTile.x - 1, (int) nextTile.y + 1) && !board.getVisited((int) nextTile.x - 1, (int) nextTile.y + 1)) {
                     adjacents.add(new Vector2((int) nextTile.x - 1, (int) nextTile.y + 1));
                 }
-                if (!board.getVisited((int) nextTile.x - 1, (int) nextTile.y - 1)) {
+                if (board.inBounds((int) nextTile.x - 1, (int) nextTile.y - 1) && !board.getVisited((int) nextTile.x - 1, (int) nextTile.y - 1)) {
                     adjacents.add(new Vector2((int) nextTile.x - 1, (int) nextTile.y - 1));
                 }
-                if (!board.getVisited((int) nextTile.x + 1, (int) nextTile.y)) {
+                if (board.inBounds((int) nextTile.x + 1, (int) nextTile.y) && !board.getVisited((int) nextTile.x + 1, (int) nextTile.y)) {
                     adjacents.add(new Vector2((int) nextTile.x + 1, (int) nextTile.y));
                 }
-                if (!board.getVisited((int) nextTile.x, (int) nextTile.y)) {
-                    adjacents.add(new Vector2((int) nextTile.x, (int) nextTile.y));
+                if (board.inBounds((int) nextTile.x, (int) nextTile.y + 1) && !board.getVisited((int) nextTile.x, (int) nextTile.y)) {
+                    adjacents.add(new Vector2((int) nextTile.x, (int) nextTile.y + 1));
                 }
-                if (!board.getVisited((int) nextTile.x - 1, (int) nextTile.y + 1)) {
-                    adjacents.add(new Vector2((int) nextTile.x - 1, (int) nextTile.y + 1));
+                if (board.inBounds((int) nextTile.x - 1, (int) nextTile.y) && !board.getVisited((int) nextTile.x - 1, (int) nextTile.y + 1)) {
+                    adjacents.add(new Vector2((int) nextTile.x - 1, (int) nextTile.y));
                 }
-                if (!board.getVisited((int) nextTile.x, (int) nextTile.y - 1)) {
+                if (board.inBounds((int) nextTile.x, (int) nextTile.y - 1) && !board.getVisited((int) nextTile.x, (int) nextTile.y - 1)) {
                     adjacents.add(new Vector2((int) nextTile.x, (int) nextTile.y - 1));
                 }
 
@@ -718,6 +718,8 @@ public class AIController {
         if (!board.getBlocked((int) currTile.x - 1, (int) currTile.y + 1)) {
             safeTiles.add(new Vector2((int) currTile.x - 1, (int) currTile.y + 1));
         }
+
+        if (safeTiles.isEmpty()) return;
 
         Vector2 nextTile = safeTiles.get((int) Math.random() * safeTiles.size());
 
