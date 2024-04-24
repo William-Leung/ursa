@@ -476,7 +476,7 @@ public class SceneModel extends WorldController implements ContactListener {
         // Create ursa
         dwidth  = playerIdleFilm.getRegionWidth()/50f;
         dheight = playerIdleFilm.getRegionHeight()/100f;
-        avatar = new UrsaModel(playerStartRatioX *tileWidth *9f ,(playerStartRatioY * tileHeight * 8.5f) + 8,constants.get("ursa"), dwidth, dheight);
+        avatar = new UrsaModel(playerStartRatioX *tileWidth *8f ,(playerStartRatioY * tileHeight * 8.5f) + 8,constants.get("ursa"), dwidth, dheight);
 
         avatar.setDrawScale(scale);
 
@@ -552,7 +552,7 @@ public class SceneModel extends WorldController implements ContactListener {
                    System.out.println((markerRatioY *tileHeight * 9 + 8) + " marker ratioY");
                     System.out.println((markerRatioY *tileHeight * 9) + " marker ratioX");
 
-                    enemyPosList[orderNum-1] = new Vector2(markerRatioX * tileWidth * 9  ,(markerRatioY * tileWidth * 9) +8);
+                    enemyPosList[orderNum-1] = new Vector2(markerRatioX * tileWidth * 9  ,(markerRatioY * tileWidth * 8) +8);
                     markerCounter += 1;
                 }
             }
@@ -719,8 +719,6 @@ public class SceneModel extends WorldController implements ContactListener {
 
                 } else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == firstTileIndex + 8) {
                     //tileTextures[1] = polar corner 1
-
-
                     canvas.draw(tileTextures[1], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
                 }
                 else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == firstTileIndex + 1) {
@@ -786,9 +784,6 @@ public class SceneModel extends WorldController implements ContactListener {
                     canvas.draw(tileTextures[14], Color.WHITE,0,0,8f * j*scale.x,i * 8f * scale.y,avatar.getAngle(), 0.5f,0.5f);
                 }
                 counter += 1;
-
-
-
             }
 
             //draw the background objects
@@ -1696,14 +1691,14 @@ public class SceneModel extends WorldController implements ContactListener {
             obj.preDraw(canvas);
         }
 
-        /**for(AIController control: controls) {
+        for(AIController control: controls) {
             for(Vector2 v: control.getPatrol()) {
                 if(v != null) {
                     canvas.draw(redTextureRegion,Color.WHITE, v.x * 32f,
                             v.y * 32f, 10,10);
                 }
             }
-        }*/
+        }
         //shadowController.drawAllShadows(canvas, this);
     }
 
