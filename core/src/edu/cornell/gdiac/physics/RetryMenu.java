@@ -9,20 +9,28 @@ import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import edu.cornell.gdiac.assets.AssetDirectory;
+import edu.cornell.gdiac.util.FilmStrip;
 import edu.cornell.gdiac.util.ScreenListener;
 
 
 public class RetryMenu implements Screen, InputProcessor, ControllerListener {
 
-    private TextureRegion[] buttons = new TextureRegion[20];
-    private TextureRegion background = new TextureRegion();
+
+    private TextureRegion backgroundWin = new TextureRegion();
+    private  TextureRegion backgroundLose = new TextureRegion();
+    private TextureRegion retryButton;
+    private TextureRegion selectButton;
+    private FilmStrip retryFilm;
+    private FilmStrip levelSelectFilm;
     private ScreenListener listener;
     private float buttonWidth;
+    private boolean win;
     GameCanvas canvas;
     private boolean active;
     private Music levelRetryMusic;
-    public RetryMenu(GameCanvas NewCanvas){
+    public RetryMenu(GameCanvas NewCanvas,boolean win){
         canvas = NewCanvas;
+        this.win = win;
         active = false;
         Gdx.input.setInputProcessor( this );
 
@@ -32,10 +40,14 @@ public class RetryMenu implements Screen, InputProcessor, ControllerListener {
         active = b;
     }
     public void gatherAssets(AssetDirectory directory) {
-        buttons[0] = new TextureRegion(directory.getEntry("levelSelect:Level1", Texture.class));
-        buttons[1] = new TextureRegion(directory.getEntry("levelSelect:Level2", Texture.class));
-        buttons[2] = new TextureRegion(directory.getEntry("levelSelect:Level3", Texture.class));
-        background = new TextureRegion(directory.getEntry("levelSelect:retry", Texture.class));
+       retryButton = new TextureRegion(directory.getEntry("levelSelect:retryUI", Texture.class));
+        selectButton = new TextureRegion(directory.getEntry("levelSelect:levelSelectUI", Texture.class));
+        retryFilm = new FilmStrip(retryButton.getTexture(),1,2);
+        retryFilm.setFrame(0);
+        levelSelectFilm =  new FilmStrip(selectButton.getTexture(),1,2);
+        levelSelectFilm.setFrame(0);
+        backgroundLose = new TextureRegion(directory.getEntry("levelSelect:lose", Texture.class));
+        backgroundWin = new TextureRegion(directory.getEntry("levelSelect:win", Texture.class));
         levelRetryMusic = directory.getEntry("soundtracks:level_retry", Music.class);
 
     }
@@ -48,7 +60,16 @@ public class RetryMenu implements Screen, InputProcessor, ControllerListener {
         canvas.clear();
 
         canvas.begin();
-        canvas.draw(background,0,0);
+        if(win){
+            canvas.draw(backgroundWin,0,0);
+        }
+        else {
+            canvas.draw(backgroundLose,0,0);
+        }
+        canvas.draw(retryFilm,75,225);
+        canvas.draw(levelSelectFilm,75,150);
+
+
 
 
         canvas.end();
@@ -78,11 +99,11 @@ public class RetryMenu implements Screen, InputProcessor, ControllerListener {
             System.out.println("Screen x toasted: " + screenX);
             System.out.println("Screen y: " + (canvas.getHeight() - screenY));
             screenY = canvas.getHeight() - screenY;
-            if(screenX >= 373 && screenX <=700 && screenY >= 380 && screenY <= 565){
-                listener.exitScreen(this,1);
+            if(screenX >= 133 && screenX <=274 && screenY >= 330 && screenY <= 385){
+                retryFilm.setFrame(1);
             }
-            if(screenX >= 355 && screenX <= 712 && screenY >= 199 && screenY <= 358){
-                listener.exitScreen(this,2);
+            if(screenX >= 130 && screenX <= 272 && screenY >= 250 && screenY <= 305){
+                levelSelectFilm.setFrame(1);
             }
         }
 
@@ -91,7 +112,16 @@ public class RetryMenu implements Screen, InputProcessor, ControllerListener {
     }
 
     @Override
-    public boolean touchUp(int i, int i1, int i2, int i3) {
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        screenY = canvas.getHeight() - screenY;
+        if(screenX >= 133 && screenX <=274 && screenY >= 330 && screenY <= 385){
+            listener.exitScreen(this,1);
+        }
+        if(screenX >= 130 && screenX <= 272 && screenY >= 250 && screenY <= 305){
+            listener.exitScreen(this,2);
+        }
+        retryFilm.setFrame(0);
+        levelSelectFilm.setFrame(0);
         return false;
     }
 

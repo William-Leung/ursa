@@ -568,7 +568,7 @@ public class AIController {
             backpack.put(currTile, null);
         } else {
             //System.out.println("Not on safe tile");
-            moveToSafeTile(currTile);
+              moveToSafeTile(currTile);
         }
 
         boolean foundGoal = false; // determines whether we have found a goal tile yet

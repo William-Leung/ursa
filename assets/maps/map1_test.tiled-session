@@ -9,14 +9,6 @@
     ],
     "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
-        "/Users/ykhadir/3300/p2/ursa/assets/level3.json": {
-            "scale": 0.037480468749999996,
-            "selectedLayer": 0,
-            "viewCenter": {
-                "x": 5122.6680562793135,
-                "y": 5122.6680562793135
-            }
-        },
         "C:/Users/williamleung/Documents/GitHub/ursa/assets/level4.json": {
             "scale": 0.07499186197916666,
             "selectedLayer": 0,
@@ -27,6 +19,14 @@
         },
         "C:/Users/williamleung/Documents/GitHub/ursa/assets/level4.json#tiles": {
             "scaleInDock": 1
+        },
+        "C:/Users/ykhadir/3300/p2/ursa/assets/level3.json": {
+            "scale": 0.037480468749999996,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 5122.6680562793135,
+                "y": 5122.6680562793135
+            }
         },
         "Polar_Cave.tsx": {
             "scaleInDock": 1,
@@ -87,6 +87,7 @@
             "scaleInDock": 1
         },
         "Polar_Cliff_Edge_6.tsx": {
+            "dynamicWrapping": false,
             "scaleInDock": 1,
             "scaleInEditor": 1
         },
@@ -123,12 +124,20 @@
                 "y": -632
             }
         },
+        "level1.tmx": {
+            "scale": 0.08473307291666665,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 3068.45946984249,
+                "y": 3062.558586246639
+            }
+        },
         "map1.tmx": {
             "scale": 0.08,
-            "selectedLayer": 7,
+            "selectedLayer": 0,
             "viewCenter": {
-                "x": 4937.5,
-                "y": 2987.5
+                "x": 5112.5,
+                "y": 5118.75
             }
         },
         "map1.tmx#Polar_Cliff_center": {
@@ -136,41 +145,45 @@
         },
         "map2.tmx": {
             "expandedObjectLayers": [
-                5,
+                2,
+                9,
                 3,
                 8,
                 4,
-                9,
-                7,
-                2
+                5,
+                7
             ],
-            "scale": 0.25,
-            "selectedLayer": 7,
+            "scale": 0.125,
+            "selectedLayer": 9,
             "viewCenter": {
-                "x": 1788,
-                "y": 1624
+                "x": 1792,
+                "y": 1796
             }
         },
         "map3.tmx": {
             "expandedObjectLayers": [
+                2,
                 4,
                 5,
-                7,
-                2
+                7
             ],
             "scale": 0.15,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 3060,
-                "y": 2166.666666666667
+                "x": 3066.666666666667,
+                "y": 2050
             }
         },
         "map4.tmx": {
-            "scale": 0.33,
+            "expandedObjectLayers": [
+                9,
+                4
+            ],
+            "scale": 0.25,
             "selectedLayer": 8,
             "viewCenter": {
-                "x": 3327.272727272727,
-                "y": 2815.151515151515
+                "x": 3294,
+                "y": 2782
             }
         },
         "map5.tmx": {
@@ -234,16 +247,16 @@
         },
         "tutorial.tmx": {
             "expandedObjectLayers": [
-                5,
+                2,
                 9,
                 4,
-                2
+                5
             ],
             "scale": 0.1037,
             "selectedLayer": 3,
             "viewCenter": {
-                "x": 3240.115718418515,
-                "y": 3625.8437801350046
+                "x": 3326.904532304725,
+                "y": 1798.457087753134
             }
         }
     },
@@ -260,22 +273,23 @@
         "map2.tmx",
         "tutorial.tmx",
         "map4.tmx",
-        "map1.tmx"
+        "map1.tmx",
+        "level1.tmx"
     ],
     "project": "map1_test.tiled-project",
     "recentFiles": [
-        "map2.tmx",
-        "map1.tmx",
         "map4.tmx",
-        "tutorial.tmx",
         "map3.tmx",
+        "level1.tmx",
+        "map1.tmx",
+        "tutorial.tmx",
+        "map2.tmx",
         "tiles.tsx",
         "map5.tmx",
         "C:/Users/williamleung/Documents/GitHub/ursa/assets/level4.json",
         "cave.tsx",
         "Polar_Cliff_Edge_6.tsx",
-        "polar_cliff_edge_left_side.tsx",
-        "salmon_walk_2_small.tsx"
+        "polar_cliff_edge_left_side.tsx"
     ],
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {

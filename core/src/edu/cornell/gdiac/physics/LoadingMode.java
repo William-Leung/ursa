@@ -85,12 +85,13 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	/** Ration of the bar height to the screen */
 	private static float BAR_HEIGHT_RATIO = 0.25f;	
 	/** Height of the progress bar */
-	private static float BUTTON_SCALE  = 0.75f;
+	private static float BUTTON_SCALE  = 1.5f;
 	
 	/** Reference to GameCanvas created by the root */
 	private GameCanvas canvas;
 	/** Listener that will update the player mode when we are done */
 	private ScreenListener listener;
+	private FilmStrip startFilm;
 
 	/** The width of the progress bar */
 	private int width;
@@ -253,6 +254,9 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 			if (progress >= 1.0f) {
 				this.progress = 1.0f;
 				playButton = internal.getEntry("play",Texture.class);
+				startFilm = new FilmStrip(playButton,1,2);
+				startFilm.setFrame(0);
+
 			}
 		}
 	}
@@ -266,12 +270,13 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 */
 	private void draw() {
 		canvas.begin();
-		canvas.draw(background, 0, 0);
+		canvas.draw(background,Color.WHITE,0,0,0,0,0,.25f,.3f);
+
 		if (playButton == null) {
 			drawProgress(canvas);
 		} else {
 			Color tint = (pressState == 1 ? Color.GRAY: Color.WHITE);
-			canvas.draw(playButton, tint, playButton.getWidth()/2, playButton.getHeight()/2, 
+			canvas.draw(startFilm, tint, startFilm.getRegionWidth()/2, startFilm.getRegionHeight()/2,
 						centerX, centerY, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 		}
 		canvas.end();
@@ -506,7 +511,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	/** 
 	 * Called when a key is typed (UNSUPPORTED)
 	 *
-	 * @param keycode the key typed
+
 	 * @return whether to hand the event to other listeners. 
 	 */
 	public boolean keyTyped(char character) { 
