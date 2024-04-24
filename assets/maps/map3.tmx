@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="12" height="12" tilewidth="512" tileheight="512" infinite="0" nextlayerid="10" nextobjectid="117">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="12" height="12" tilewidth="512" tileheight="512" infinite="0" nextlayerid="10" nextobjectid="118">
  <editorsettings>
   <export target="../level1.json" format="json"/>
  </editorsettings>
@@ -50,6 +50,7 @@
   <object id="48" name="4" gid="1" x="3061.18" y="4954.71" width="512" height="512"/>
   <object id="49" name="1" gid="1" x="1421.57" y="4370.22" width="512" height="512"/>
   <object id="51" name="3" gid="1" x="2863.82" y="2973.51" width="512" height="512"/>
+  <object id="117" gid="2" x="4190.67" y="3802.67" width="256" height="256"/>
  </objectgroup>
  <objectgroup id="5" name="trees">
   <object id="74" gid="8" x="2771.69" y="3466.91" width="256" height="512"/>

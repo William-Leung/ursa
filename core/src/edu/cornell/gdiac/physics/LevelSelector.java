@@ -13,6 +13,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.JsonReader;
+import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.util.FilmStrip;
 import edu.cornell.gdiac.util.ScreenListener;
@@ -22,8 +24,11 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
 
     private TextureRegion[] buttons = new TextureRegion[20];
     private boolean button1Pressed;
+    private JsonReader json;
+    private JsonValue jsonData;
     private boolean button2Pressed;
     private boolean button3Pressed;
+    private float[] completedLevels;
     private boolean button1Locked;
     private boolean button2Locked;
     private boolean button3Locked;
@@ -45,7 +50,15 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         active = false;
         Gdx.input.setInputProcessor( this );
         button1Pressed = false;
-        System.out.println("ScreenWidth is: " + this.canvas.getHeight());
+        json = new JsonReader();
+        jsonData = json.parse(Gdx.files.internal("saveData.json"));
+        completedLevels = new float[20];
+
+        for (int i = 0;i<jsonData.get("completed").size;i++){
+            completedLevels[i] = jsonData.get("completed").get(i).asFloat();
+
+        }
+
 
 
     }
@@ -62,9 +75,9 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         button1 = new FilmStrip(buttons[0].getTexture(),1,2);
         button1.setFrame(0);
         button2 = new FilmStrip(buttons[1].getTexture(),1,5);
-        button2.setFrame(3);
+        button2.setFrame(0);
         button3 = new FilmStrip(buttons[2].getTexture(),1,5);
-        button3.setFrame(3);
+        button3.setFrame(0);
         button4 = new FilmStrip(buttons[3].getTexture(),1,5);
         button4.setFrame(0);
         background = new TextureRegion(directory.getEntry("levelSelect:background", Texture.class));
@@ -72,6 +85,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
 
     }
     private void update(float delta){
+
 
     }
 
@@ -90,13 +104,13 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
             button2.setFrame(4);
         }
         else {
-            button2.setFrame(3);
+            button2.setFrame(0);
         }
         if(button3Pressed){
             button3.setFrame(4);
         }
         else {
-            button3.setFrame(3);
+            button3.setFrame(0);
         }
 
         canvas.draw(background,Color.WHITE,0,0,background.getRegionWidth() * .25f,background.getRegionHeight() * .285f);
