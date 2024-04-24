@@ -3,12 +3,46 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "map3.tmx",
+    "activeFile": "/Users/ykhadir/3300/p2/ursa/assets/tutorial.json",
     "expandedProjectPaths": [
         "."
     ],
     "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
+        "/Users/ykhadir/3300/p2/ursa/assets/Polar_House.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "/Users/ykhadir/3300/p2/ursa/assets/Polar_Rock_1.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "/Users/ykhadir/3300/p2/ursa/assets/level1.json": {
+            "scale": 0.09,
+            "selectedLayer": 9,
+            "viewCenter": {
+                "x": 3077.7777777777774,
+                "y": 4894.444444444444
+            }
+        },
+        "/Users/ykhadir/3300/p2/ursa/assets/level2.json": {
+            "scale": 0.12,
+            "selectedLayer": 9,
+            "viewCenter": {
+                "x": 2375,
+                "y": 2070.8333333333335
+            }
+        },
+        "/Users/ykhadir/3300/p2/ursa/assets/tutorial.json": {
+            "scale": 0.0834,
+            "selectedLayer": 9,
+            "viewCenter": {
+                "x": 3884.8920863309354,
+                "y": 3950.8393285371703
+            }
+        },
         "C:/Users/williamleung/Documents/GitHub/ursa/assets/level4.json": {
             "scale": 0.07499186197916666,
             "selectedLayer": 0,
@@ -34,12 +68,12 @@
         },
         "Polar_Cliff_Corner_1.tsx": {
             "dynamicWrapping": false,
-            "scaleInDock": 0.5,
+            "scaleInDock": 1,
             "scaleInEditor": 1
         },
         "Polar_Cliff_Corner_2.tsx": {
             "dynamicWrapping": true,
-            "scaleInDock": 0.5,
+            "scaleInDock": 1,
             "scaleInEditor": 1
         },
         "Polar_Cliff_Corner_3.tsx": {
@@ -57,7 +91,7 @@
         },
         "Polar_Cliff_Corner_6.tsx": {
             "dynamicWrapping": true,
-            "scaleInDock": 0.5,
+            "scaleInDock": 1,
             "scaleInEditor": 1
         },
         "Polar_Cliff_Corner_7_large.tsx": {
@@ -96,12 +130,17 @@
             "scaleInDock": 1,
             "scaleInEditor": 1
         },
-        "Polar_Rock_1.tsx": {
+        "Polar_House.tsx": {
             "dynamicWrapping": false
+        },
+        "Polar_Rock_1.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 0.1519,
+            "scaleInEditor": 1
         },
         "Ursa.tsx": {
             "dynamicWrapping": true,
-            "scaleInDock": 0.25,
+            "scaleInDock": 1,
             "scaleInEditor": 1
         },
         "backgroundTest.tsx": {
@@ -128,16 +167,16 @@
             "scale": 0.08473307291666665,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 3033.0541682673843,
-                "y": 4844.625432193624
+                "x": 3080.261237034192,
+                "y": 4856.427199385325
             }
         },
         "map1.tmx": {
             "scale": 0.08,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 5075,
-                "y": 5443.75
+                "x": 5112.5,
+                "y": 5118.75
             }
         },
         "map1.tmx#Polar_Cliff_center": {
@@ -145,45 +184,45 @@
         },
         "map2.tmx": {
             "expandedObjectLayers": [
-                2,
-                9,
                 3,
-                8,
                 4,
                 5,
-                7
+                7,
+                8,
+                2,
+                9
             ],
             "scale": 0.25,
             "selectedLayer": 9,
             "viewCenter": {
-                "x": 1856,
-                "y": 2302
+                "x": 1792,
+                "y": 1790
             }
         },
         "map3.tmx": {
             "expandedObjectLayers": [
-                2,
                 4,
                 5,
-                7
+                7,
+                2
             ],
             "scale": 0.15,
             "selectedLayer": 3,
             "viewCenter": {
-                "x": 3053.333333333333,
-                "y": 3863.333333333333
+                "x": 3046.666666666667,
+                "y": 4870
             }
         },
         "map4.tmx": {
             "expandedObjectLayers": [
-                9,
-                4
+                4,
+                9
             ],
             "scale": 0.25,
             "selectedLayer": 8,
             "viewCenter": {
-                "x": 3284,
-                "y": 3382
+                "x": 3328,
+                "y": 2814
             }
         },
         "map5.tmx": {
@@ -210,7 +249,7 @@
         },
         "polar_cliff_edge_left_side.tsx": {
             "dynamicWrapping": true,
-            "scaleInDock": 0.5,
+            "scaleInDock": 1,
             "scaleInEditor": 1
         },
         "polar_flower_1.tsx": {
@@ -232,7 +271,7 @@
         },
         "tiles.tsx": {
             "dynamicWrapping": false,
-            "scaleInDock": 0.0625,
+            "scaleInDock": 1,
             "scaleInEditor": 0.07
         },
         "tundra_tree_snow.tsx": {
@@ -247,21 +286,22 @@
         },
         "tutorial.tmx": {
             "expandedObjectLayers": [
-                2,
-                9,
                 4,
-                5
+                5,
+                2,
+                9
             ],
             "scale": 0.1037,
             "selectedLayer": 3,
             "viewCenter": {
-                "x": 3307.6181292189003,
-                "y": 3254.580520732883
+                "x": 3326.904532304725,
+                "y": 1788.8138862102214
             }
         }
     },
     "last.exportedFilePath": "/Users/williamleung/Documents/GitHub/ursa/assets",
-    "last.imagePath": "C:/Users/video/Downloads",
+    "last.externalTilesetPath": "/Users/ykhadir/3300/p2/ursa/assets/maps",
+    "last.imagePath": "/Users/ykhadir/3300/p2/ursa/assets/object",
     "map.height": 20,
     "map.lastUsedExportFilter": "JSON map files (*.tmj *.json)",
     "map.lastUsedFormat": "tmx",
@@ -269,28 +309,26 @@
     "map.tileWidth": 512,
     "map.width": 20,
     "openFiles": [
-        "map3.tmx",
-        "map2.tmx",
-        "tutorial.tmx",
-        "map4.tmx",
-        "map1.tmx",
-        "level1.tmx"
+        "/Users/ykhadir/3300/p2/ursa/assets/tutorial.json",
+        "/Users/ykhadir/3300/p2/ursa/assets/level1.json",
+        "/Users/ykhadir/3300/p2/ursa/assets/level2.json"
     ],
     "project": "map1_test.tiled-project",
     "recentFiles": [
-        "level1.tmx",
-        "map1.tmx",
-        "map4.tmx",
-        "tutorial.tmx",
-        "map2.tmx",
-        "map3.tmx",
+        "/Users/ykhadir/3300/p2/ursa/assets/tutorial.json",
+        "/Users/ykhadir/3300/p2/ursa/assets/level1.json",
+        "Polar_Rock_1.tsx",
+        "/Users/ykhadir/3300/p2/ursa/assets/level2.json",
         "tiles.tsx",
-        "map5.tmx",
-        "C:/Users/williamleung/Documents/GitHub/ursa/assets/level4.json",
-        "cave.tsx",
-        "Polar_Cliff_Edge_6.tsx",
-        "polar_cliff_edge_left_side.tsx"
+        "/Users/ykhadir/3300/p2/ursa/assets/Polar_Rock_1.tsx",
+        "/Users/ykhadir/3300/p2/ursa/assets/Polar_House.tsx",
+        "map3.tmx",
+        "map2.tmx",
+        "tutorial.tmx",
+        "map4.tmx",
+        "map1.tmx"
     ],
+    "tileset.lastUsedFilter": "Tiled tileset files (*.tsx *.xml)",
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {
         "height": 512,

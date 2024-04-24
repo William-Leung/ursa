@@ -451,6 +451,20 @@ public class SceneModel extends WorldController implements ContactListener {
         System.out.println(" ====== Reset ===== ");
     }
 
+    private TextureRegion getRockTexture(String type) {
+        switch (type) {
+            case "1":
+                return polarRock1;
+            case "2":
+                return polarRock2;
+            case "3":
+                return polarRock3;
+            case "4":
+                return polarRock4;
+        }
+        return polarRock1;
+    }
+
     /**
      * Lays out the game geography.
      */
@@ -619,6 +633,7 @@ public class SceneModel extends WorldController implements ContactListener {
         /**
          * This loop renders each rock in a given map.
          */
+
         for(int i = 0; i< jsonData.get("layers").get(7).get("objects").size; i++) {
 
             float x = (jsonData.get("layers").get(7).get("objects").get(i).get(8).asFloat());
@@ -626,13 +641,14 @@ public class SceneModel extends WorldController implements ContactListener {
             float ratioX = x/maxX;
             float ratioY = y/maxY;
 
-            GenericObstacle rock = new GenericObstacle(ratioX * tileWidth * 9,(ratioY * tileHeight * 9) + 8,3,3);
+            GenericObstacle rock = new GenericObstacle(ratioX * tileWidth * 9,(ratioY * tileHeight * 9) + 8,3,3, 0.3f, 0.3f, 20);
             rock.setBodyType(BodyDef.BodyType.StaticBody);
             rock.setDensity(defaults.getFloat("density", 0));
             rock.setFriction(defaults.getFloat("friction", 0));
             rock.setRestitution(defaults.getFloat("restitution", 0));
             rock.setDrawScale(scale);
-            rock.setTexture(polarRock1);
+
+            rock.setTexture(getRockTexture(jsonData.get("layers").get(7).get("objects").get(i).get(5).asString()));
             rock.setName("rock"+i);
 
             if (specialRock == null) { specialRock = rock; }
@@ -648,6 +664,42 @@ public class SceneModel extends WorldController implements ContactListener {
             // ===================
             genericObstacles.add(new GenericObstacle(rock.getX(), rock.getY(),
                     rock.getWidth(), rock.getHeight()));
+            // ===================
+        }
+
+        /**
+         * This loop renders each house in a given map.
+         */
+
+        // TODO: Uncouple Tiled-generated layers from obstacle rendering
+        for(int i = 0; jsonData.get("layers").get(9) != null &&
+                i < jsonData.get("layers").get(9).get("objects").size; i++) {
+
+            float x = (jsonData.get("layers").get(9).get("objects").get(i).get(8).asFloat());
+            float y = (maxY - jsonData.get("layers").get(9).get("objects").get(i).get(9).asFloat());
+            float ratioX = x/maxX;
+            float ratioY = y/maxY;
+
+            GenericObstacle house = new GenericObstacle(ratioX * tileWidth * 9,(ratioY * tileHeight * 9) + 8,3,3);
+            house.setBodyType(BodyDef.BodyType.StaticBody);
+            house.setDensity(defaults.getFloat("density", 0));
+            house.setFriction(defaults.getFloat("friction", 0));
+            house.setRestitution(defaults.getFloat("restitution", 0));
+            house.setDrawScale(scale);
+            house.setTexture(polarHouse);
+            house.setName("house"+i);
+
+            // Cave shadows
+            ShadowModel houseShadow = new ShadowModel(new Vector2(house.getX(), house.getY()), 0.75f, 0.75f,
+                    "rock", house.getDrawOrigin(), scale);
+            shadows.add(houseShadow);
+
+            addObject(houseShadow);
+            addObject(house);
+
+            // ===================
+            genericObstacles.add(new GenericObstacle(house.getX(), house.getY(),
+                    house.getWidth(), house.getHeight()));
             // ===================
         }
 
