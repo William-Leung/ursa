@@ -29,6 +29,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
     private boolean button2Pressed;
     private boolean button3Pressed;
     private float[] completedLevels;
+    private float[] unlockedLevels;
     private boolean button1Locked;
     private boolean button2Locked;
     private boolean button3Locked;
@@ -53,11 +54,16 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         json = new JsonReader();
         jsonData = json.parse(Gdx.files.internal("saveData.json"));
         completedLevels = new float[20];
+        unlockedLevels = new float[20];
+
 
         for (int i = 0;i<jsonData.get("completed").size;i++){
             completedLevels[i] = jsonData.get("completed").get(i).asFloat();
+            unlockedLevels[i] = jsonData.get("unlocked").get(i).asFloat();
 
-        }
+            }
+
+
 
 
 
@@ -73,15 +79,30 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         button2Locked = true;
         button3Locked = true;
         button1 = new FilmStrip(buttons[0].getTexture(),1,2);
-        button1.setFrame(0);
+
         button2 = new FilmStrip(buttons[1].getTexture(),1,5);
-        button2.setFrame(0);
+
         button3 = new FilmStrip(buttons[2].getTexture(),1,5);
-        button3.setFrame(0);
+
         button4 = new FilmStrip(buttons[3].getTexture(),1,5);
         button4.setFrame(0);
         background = new TextureRegion(directory.getEntry("levelSelect:background", Texture.class));
         levelSelectMusic = directory.getEntry("soundtracks:level_select", Music.class);
+        button1.setFrame(0);
+
+        if(unlockedLevels[1] ==1){
+            button2.setFrame(4);
+        }
+        else {
+            button2.setFrame(0);
+        }
+        if(unlockedLevels[2] == 1){
+            button3.setFrame(4);
+        }
+        else {
+            button3.setFrame(0);
+        }
+
 
     }
     private void update(float delta){
@@ -103,11 +124,17 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         if(button2Pressed){
             button2.setFrame(4);
         }
+        else if(unlockedLevels[1] == 1){
+            button2.setFrame(3);
+        }
         else {
             button2.setFrame(0);
         }
         if(button3Pressed){
             button3.setFrame(4);
+        }
+        else if(unlockedLevels[2] == 1){
+            button3.setFrame(3);
         }
         else {
             button3.setFrame(0);
