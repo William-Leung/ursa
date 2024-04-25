@@ -60,6 +60,7 @@ public abstract class WorldController implements Screen {
 
 	protected static TextureRegion redTextureRegion;
 	private static int CIRCLE_RADIUS = 500;
+	private static int RESET_DELAY = 20;
 
 	static {
 		Pixmap pixmap = new Pixmap(2 * CIRCLE_RADIUS + 1, 2 * CIRCLE_RADIUS + 1, Pixmap.Format.RGBA8888);
@@ -128,6 +129,8 @@ public abstract class WorldController implements Screen {
 	private Comparator<Obstacle> obstacleComparator = (o1, o2) -> Float.compare(o2.getY(), o1.getY());
 
 	private Color tinting = Color.WHITE;
+
+	private int resetDelay = RESET_DELAY;
 
 
 	/**
@@ -390,8 +393,11 @@ public abstract class WorldController implements Screen {
 		}
 
 		// Handle resets
-		if (input.didReset()) {
+		if (input.didReset() && resetDelay <= 0) {
 			reset();
+			resetDelay = RESET_DELAY;
+		} else {
+			resetDelay = Math.max(0, resetDelay - 1);
 		}
 
 		// Now it is time to maybe switch screens.

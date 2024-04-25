@@ -416,10 +416,7 @@ public class SceneModel extends WorldController implements ContactListener {
         levelMusicTense.stop();
         levelMusicNight.setLooping(true);
         levelMusicTense.setLooping(true);
-        levelMusicNight.setPosition(0);
         levelMusicTense.setVolume(0);
-        levelMusic.setPosition(0);
-        levelMusicTense.setPosition(0);
         levelMusicTense.setVolume(0);
 
 
@@ -665,11 +662,6 @@ public class SceneModel extends WorldController implements ContactListener {
         drawWalls();
 
         // Music stuff
-        levelMusicNight.play();
-        levelMusicTense.play();
-        levelMusic.setVolume(1.0f);
-        levelMusic.setLooping(true);
-        levelMusic.play();
 
         // make gameboard
 
@@ -1457,6 +1449,13 @@ public class SceneModel extends WorldController implements ContactListener {
         // Move the camera to Ursa
         canvas.moveCam(avatar.getPosition().x,avatar.getPosition().y);
 
+        if (!levelMusic.isPlaying()) {
+            levelMusicNight.play();
+            levelMusicTense.play();
+            levelMusic.play();
+            levelMusic.setLooping(true);
+        }
+
 
         // Move Ursa
         float xVal = InputController.getInstance().getHorizontal() * avatar.getForce();
@@ -1547,36 +1546,6 @@ public class SceneModel extends WorldController implements ContactListener {
         levelMusic.stop();
         levelMusicTense.stop();
         levelMusicNight.stop();
-//        if (levelMusic != null) {
-//            new Thread(new Runnable() {
-//                float vol = levelMusic.getVolume();
-//
-//                @Override
-//                public void run() {
-//
-//                    while (true) {
-//                        vol -= 0.007f;
-//                        Gdx.app.postRunnable(() -> {
-//                            levelMusic.setVolume(vol);
-//                            levelMusicNight.setVolume(levelMusicNight.getVolume() * vol);
-//                            levelMusicTense.setVolume(levelMusicTense.getVolume() * vol);
-//                            if (vol <= 0) {
-//
-//                            }
-//                        });
-//                        if (vol <= 0) {
-//                            break;
-//                        }
-//                        try {
-//                            Thread.sleep(16);
-//                        } catch (InterruptedException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//
-//                }
-//            }).start();
-//        }
     }
 
     private void shakeTree(Tree tree) {
@@ -1628,6 +1597,9 @@ public class SceneModel extends WorldController implements ContactListener {
             if ((bd1 == avatar   && bd2 == goalDoor) ||
                     (bd1 == goalDoor && bd2 == avatar)) {
                 setComplete(true);
+                levelMusic.stop();
+                levelMusicTense.stop();
+                levelMusicNight.stop();
             }
         } catch (Exception e) {
             e.printStackTrace();
