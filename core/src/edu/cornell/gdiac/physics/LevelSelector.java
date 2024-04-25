@@ -24,15 +24,26 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
 
     private TextureRegion[] buttons = new TextureRegion[20];
     private boolean button1Pressed;
+    private TextureRegion ursa;
     private JsonReader json;
+    private float ursaStartX;
+    private float ursaStartY;
+    private float ursaNewX;
+    private float ursaNewY;
+    private float time;
     private JsonValue jsonData;
     private boolean button2Pressed;
     private boolean button3Pressed;
     private float[] completedLevels;
     private boolean button1Locked;
     private boolean button2Locked;
+    private FilmStrip ursaFilm;
+
     private boolean button3Locked;
+    private boolean button4Locked;
+    private float levelsCompleted;
     private FilmStrip button1;
+    private FilmStrip[] buttonsFilms = new FilmStrip[20];
     private FilmStrip button2;
     private FilmStrip button3;
     private FilmStrip button4;
@@ -45,19 +56,19 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
     private boolean active;
 
     private Music levelSelectMusic;
-    public LevelSelector(GameCanvas NewCanvas){
+    public LevelSelector(GameCanvas NewCanvas,float completion){
+        ursaStartX = 35;
+        ursaStartY = 150;
+        ursaNewX = 35;
+        ursaNewY = 150;
+        levelsCompleted = completion;
         canvas = NewCanvas;
         active = false;
         Gdx.input.setInputProcessor( this );
         button1Pressed = false;
-        json = new JsonReader();
-        jsonData = json.parse(Gdx.files.internal("saveData.json"));
-        completedLevels = new float[20];
 
-        for (int i = 0;i<jsonData.get("completed").size;i++){
-            completedLevels[i] = jsonData.get("completed").get(i).asFloat();
 
-        }
+
 
 
 
@@ -70,22 +81,113 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         buttons[1] = new TextureRegion(directory.getEntry("levelSelect:Level2", Texture.class));
         buttons[2] = new TextureRegion(directory.getEntry("levelSelect:Level3", Texture.class));
         buttons[3] = new TextureRegion(directory.getEntry("levelSelect:Level3", Texture.class));
-        button2Locked = true;
-        button3Locked = true;
-        button1 = new FilmStrip(buttons[0].getTexture(),1,2);
-        button1.setFrame(0);
-        button2 = new FilmStrip(buttons[1].getTexture(),1,5);
-        button2.setFrame(0);
-        button3 = new FilmStrip(buttons[2].getTexture(),1,5);
-        button3.setFrame(0);
-        button4 = new FilmStrip(buttons[3].getTexture(),1,5);
-        button4.setFrame(0);
+
+        ursa = new TextureRegion(directory.getEntry("player:ursaWalk",Texture.class));
+        ursaFilm = new FilmStrip(ursa.getTexture(),2,8);
+        ursaFilm.setFrame(0);
+
+        buttonsFilms[0] = new FilmStrip(buttons[0].getTexture(),1,2);
+        buttonsFilms[0].setFrame(0);
+        buttonsFilms[1] = new FilmStrip(buttons[1].getTexture(),1,5);
+        buttonsFilms[1].setFrame(0);
+        buttonsFilms[2] = new FilmStrip(buttons[2].getTexture(),1,5);
+        buttonsFilms[2].setFrame(0);
+        buttonsFilms[3] = new FilmStrip(buttons[3].getTexture(),1,5);
+        buttonsFilms[3].setFrame(0);
         background = new TextureRegion(directory.getEntry("levelSelect:background", Texture.class));
         levelSelectMusic = directory.getEntry("soundtracks:level_select", Music.class);
 
+        button2Locked = true;
+        button3Locked = true;
+        button4Locked = true;
+        if(levelsCompleted >= 2){
+            button2Locked = false;
+        }
+        if(levelsCompleted >= 3){
+            button3Locked = false;
+        }
+        if(levelsCompleted >= 4){
+            button4Locked = false;
+        }
+
     }
     private void update(float delta){
+        if(levelsCompleted == 1){
+            button2Locked = false;
+        }
+        if(ursaFilm.getFrame() == 15){
+            ursaFilm.setFrame(0);
+        }
+        System.out.println(ursaFilm.getFrame());
+        time += 1;
 
+        if(button1Pressed){
+            buttonsFilms[0].setFrame(1);
+        }else {
+            buttonsFilms[0].setFrame(0);
+        }
+        if(button2Pressed){
+            System.out.println("this");
+            buttonsFilms[1].setFrame(4);
+        }
+        else if(button2Locked){
+            buttonsFilms[1].setFrame(0);
+        }
+        else {
+            if(buttonsFilms[1].getFrame() == 0 ){
+                if(time%24 == 0){
+                    buttonsFilms[1].setFrame(1);
+                }
+
+            }
+            else if(buttonsFilms[1].getFrame() ==1 ){
+                if(time%24 == 0){
+                    buttonsFilms[1].setFrame(2);
+                }
+            }
+            else if(buttonsFilms[1].getFrame() ==2 ){
+                if(time%24 == 0){
+                    buttonsFilms[1].setFrame(3);
+                }
+            }
+
+        }
+
+        if(button3Pressed){
+            buttonsFilms[2].setFrame(4);
+        }
+        else if(button3Locked){
+            buttonsFilms[2].setFrame(0);
+        }
+        else {
+            buttonsFilms[2].setFrame(3);
+        }
+        if(Math.abs(ursaStartX-ursaNewX) > 5 && ursaStartX < ursaNewX){
+
+            if(time% 2 == 0){
+                ursaFilm.setFrame(ursaFilm.getFrame() +1);
+            }
+
+            ursaStartX += 3.5f;
+        }
+        if(Math.abs(ursaStartX-ursaNewX) > 5 && ursaStartX > ursaNewX){
+            if(time% 2 == 0){
+                ursaFilm.setFrame(ursaFilm.getFrame() +1);
+            }
+
+            ursaStartX -= 3.5f;
+        }
+        if(ursaStartY < ursaNewY + 5){
+
+            ursaStartY += 3.5f;
+        }
+        if(ursaStartY < ursaNewY){
+
+            ursaStartY -= 3.5f;
+        }
+        if(Math.abs(ursaStartX - ursaNewX) < 5){
+            ursaFilm.setFrame(0);
+        }
 
     }
 
@@ -95,30 +197,15 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
 
         canvas.begin();
 
-        if(button1Pressed){
-            button1.setFrame(1);
-        }else {
-            button1.setFrame(0);
-        }
-        if(button2Pressed){
-            button2.setFrame(4);
-        }
-        else {
-            button2.setFrame(0);
-        }
-        if(button3Pressed){
-            button3.setFrame(4);
-        }
-        else {
-            button3.setFrame(0);
-        }
+
+
 
         canvas.draw(background,Color.WHITE,0,0,background.getRegionWidth() * .25f,background.getRegionHeight() * .285f);
-        canvas.draw(button1,Color.WHITE,40,155,button1.getRegionWidth() * .6f,button1.getRegionHeight() * .6f);
-        canvas.draw(button2,Color.WHITE,152.5f,155,button1.getRegionWidth() * .6f,button1.getRegionHeight() * .6f);
-        canvas.draw(button3,Color.WHITE,152.5f,395,button1.getRegionWidth() * .6f,button1.getRegionHeight() * .6f);
-        canvas.draw(button4,Color.WHITE,285f,395,button1.getRegionWidth() * .6f,button1.getRegionHeight() * .6f);
-
+        canvas.draw(buttonsFilms[0],Color.WHITE,40,155,buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
+        canvas.draw(buttonsFilms[1],Color.WHITE,152.5f,155,buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
+        canvas.draw(buttonsFilms[2],Color.WHITE,152.5f,395,buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
+        canvas.draw(buttonsFilms[3],Color.WHITE,285f,395,buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
+        canvas.draw(ursaFilm,Color.WHITE,ursaStartX,ursaStartY,ursaFilm.getRegionWidth() * .3f,ursaFilm.getRegionHeight() * .3f);
 
         canvas.end();
     }
@@ -146,7 +233,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         if(active){
             //System.out.println("Screen x + L: " + screenX);
             //System.out.println("Screen y: " + (canvas.getHeight()-screenY));
-            float radius = (button1.getRegionWidth()/2.0f) -25;
+            float radius = (buttonsFilms[0].getRegionWidth()/2.0f) -25;
             //System.out.println("RAdius is: " + radius);
             float centerX = 78f;
             float centerY = 196f;
@@ -154,22 +241,33 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
             float formula = (screenX-centerX)*(screenX-centerX)+(screenY-centerY)*(screenY-centerY);
             formula = (float) Math.sqrt(formula);
             //System.out.println("Formula: "+ formula);
-            if(formula < radius){
-                System.out.println("hit");
-                button1Pressed = true;
+            if(formula < radius  ){
+                if(Math.abs(ursaStartX - centerX) < 5 && Math.abs(ursaStartX - centerX) < 5){
+                    button1Pressed = true;
+                }
+               ursaNewX = centerX;
+               ursaNewY = centerY;
             }
             centerX = 189f;
             centerY = 196f;
             formula = (screenX-centerX)*(screenX-centerX)+(screenY-centerY)*(screenY-centerY);
             formula = (float) Math.sqrt(formula);
-            if(formula < radius){
-                button2Pressed = true;
+            System.out.println("levels complete: "+ levelsCompleted);
+            if(formula < radius && button2Locked == false ){
+                if(Math.abs(ursaStartX - centerX) < 7 && Math.abs(ursaStartX - centerX) < 7){
+                    button2Pressed = true;
+                }
+
+                ursaNewX = centerX;
+                ursaNewY = centerY;
             }
+
+
             centerX = 189f;
             centerY = 434;
             formula = (screenX-centerX)*(screenX-centerX)+(screenY-centerY)*(screenY-centerY);
             formula = (float) Math.sqrt(formula);
-            if(formula < radius){
+            if(formula < radius && button3Locked == false && Math.abs(ursaStartX - centerX) < 7 && Math.abs(ursaStartX - centerX) < 7){
                 System.out.println("Button 3");
                 button3Pressed = true;
             }
@@ -189,7 +287,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
             button1Pressed = false;
             System.out.println("Screen x + L: " + screenX);
             System.out.println("Screen y: " + (canvas.getHeight()-screenY));
-            float radius = (button1.getRegionWidth()/2.0f) -25;
+            float radius = (buttonsFilms[0].getRegionWidth()/2.0f) -25;
             System.out.println("RAdius is: " + radius);
             float centerX = 78f;
             float centerY = 196f;
@@ -197,7 +295,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
             float formula = (screenX-centerX)*(screenX-centerX)+(screenY-centerY)*(screenY-centerY);
             formula = (float) Math.sqrt(formula);
             System.out.println("Formula: "+ formula);
-            if(formula < radius){
+            if(formula < radius && Math.abs(ursaStartX - centerX) < 7 && Math.abs(ursaStartX - centerX) < 7){
 
                listener.exitScreen(this,1);
             }
@@ -205,14 +303,18 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
             centerY = 196f;
             formula = (screenX-centerX)*(screenX-centerX)+(screenY-centerY)*(screenY-centerY);
             formula = (float) Math.sqrt(formula);
-            if(formula < radius){
+
+            if(formula < radius && button2Locked == false && Math.abs(ursaStartX - centerX) <7 && Math.abs(ursaStartX - centerX) < 7){
                listener.exitScreen(this,2);
+            }
+            if(formula < radius && levelsCompleted == 1 ){
+                button2Locked = false;
             }
             centerX = 189f;
             centerY = 434;
             formula = (screenX-centerX)*(screenX-centerX)+(screenY-centerY)*(screenY-centerY);
             formula = (float) Math.sqrt(formula);
-            if(formula < radius){
+            if(formula < radius && button3Locked == false && Math.abs(ursaStartX - centerX) < 7 && Math.abs(ursaStartX - centerX) < 7){
                 listener.exitScreen(this,3);
             }
 

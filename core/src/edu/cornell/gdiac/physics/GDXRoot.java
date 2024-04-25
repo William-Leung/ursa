@@ -31,6 +31,8 @@ public class GDXRoot extends Game implements ScreenListener {
 	AssetDirectory directory;
 	/** Drawing context to display graphics (VIEW CLASS) */
 	private GameCanvas canvas;
+	private Preferences prefs;
+	private float levelsCompleted;
 	private float camX;
 	private float camY;
 	/** Player mode for the asset loading screen (CONTROLLER CLASS) */
@@ -57,6 +59,9 @@ public class GDXRoot extends Game implements ScreenListener {
 	 * the asynchronous loader for all other assets.
 	 */
 	public void create() {
+		prefs = Gdx.app.getPreferences("Completed Data");
+		levelsCompleted= prefs.getFloat("completed");
+		System.out.println("levels completed " + levelsCompleted);
 		canvas  = new GameCanvas();
 		loading = new LoadingMode("assets.json",canvas,1);
 		camX = canvas.getCameraX();
@@ -67,6 +72,9 @@ public class GDXRoot extends Game implements ScreenListener {
 		controllers[0] = new SceneModel("level4.json");
 		controllers[1] = new SceneModel("level3.json");
 		controllers[2] = new SceneModel("level2.json");
+		for(int i = 0; i < prefs.getFloat("completed");i++){
+			controllers[i].wasCompleted = true;
+		}
 
 		current = 0;
 		loading.setScreenListener(this);
@@ -127,7 +135,7 @@ public class GDXRoot extends Game implements ScreenListener {
 
 		if (screen == loading) {
 			directory = loading.getAssets();
-			levelSelector = new LevelSelector(canvas);
+			levelSelector = new LevelSelector(canvas,levelsCompleted);
 			levelSelector.gatherAssets(directory);
 			levelSelector.setScreenListener(this);
 
@@ -196,6 +204,14 @@ public class GDXRoot extends Game implements ScreenListener {
 		}
 		else if (exitCode == 12 && screen != levelSelector && screen != loading) {
 
+			if(controllers[current].wasCompleted != true){
+				levelsCompleted += 1;
+				controllers[current].wasCompleted = true;
+				prefs.putFloat("completed", prefs.getFloat("completed")+1);
+				System.out.println(prefs.getFloat("completed"));
+				prefs.flush();
+			}
+			controllers[current].wasCompleted = true;
 			retryMenu = new RetryMenu(canvas,true);
 			retryMenu.gatherAssets(directory);
 			retryMenu.setScreenListener(this);
@@ -238,7 +254,7 @@ public class GDXRoot extends Game implements ScreenListener {
 
 		}else if(exitCode == 2 && screen == retryMenu){
 			current = -1;
-			levelSelector = new LevelSelector(canvas);
+			levelSelector = new LevelSelector(canvas,levelsCompleted);
 			levelSelector.gatherAssets(directory);
 			levelSelector.setScreenListener(this);
 			setScreen(levelSelector);

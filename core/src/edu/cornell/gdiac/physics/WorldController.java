@@ -51,6 +51,7 @@ public abstract class WorldController implements Screen {
 	protected TextureRegion snowBackGround;
 	private float textX;
 	private float textY;
+	public boolean wasCompleted;
 	/** The texture for white (placed behind snowBackground) */
 	protected TextureRegion whiteTexture;
 	/** The texture for falling snow */
