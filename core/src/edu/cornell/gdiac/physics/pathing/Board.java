@@ -36,8 +36,8 @@ public class Board {
     public Board(PooledList<GenericObstacle> obstacles, Enemy[] enemies) {
         getDims(obstacles);
 
-        tile_width = enemies[0].getWidth();
-        tile_height = enemies[0].getHeight();
+        tile_width = 1.5f * enemies[0].getWidth();
+        tile_height = 1.5f * enemies[0].getHeight();
 
         width = (int) (dims.x / tile_width) + 1;
         height = (int) (dims.y / tile_height) + 1;
@@ -232,6 +232,10 @@ public class Board {
     public void setVisited(int x, int y, boolean v) {
         if (!inBounds(x, y)) return;
         getTile(x, y).visited = v;
+    }
+
+    public boolean isSafe(int x, int y) {
+        return inBounds(x, y) && !getBlocked(x, y);
     }
 
     public void setVisited(TileState t) { t.visited = true; }
