@@ -90,22 +90,6 @@ public class SceneModel extends WorldController implements ContactListener {
     /** =========== Shadow Textures =========== */
     /** Texture asset for a tree's shadow in the polar map */
     private TextureRegion polarTreeShadow;
-    /** Texture asset for a cave's shadow in the polar map */
-    private TextureRegion polarCaveShadow;
-    /** Texture asset for a house's shadow in the polar map */
-    private TextureRegion polarHouseShadow;
-    /** Texture asset for the first rock's shadow in the polar map */
-    private TextureRegion polarRock1Shadow;
-    /** Texture asset for the second rock's shadow in the polar map */
-    private TextureRegion polarRock2Shadow;
-    /** Texture asset for the third rock's shadow in the polar map */
-    private TextureRegion polarRock3Shadow;
-    /** Texture asset for the fourth rock's shadow in the polar map */
-    private TextureRegion polarRock4Shadow;
-    /** Texture asset for the first trunk's shadow in the polar map */
-    private TextureRegion polarTrunk1Shadow;
-    /** Texture asset for the second trunk's shadow in the polar map */
-    private TextureRegion polarTrunk2Shadow;
 
     /** =========== Animation Textures =========== */
     /** Texture asset for player walking animation */
@@ -345,14 +329,6 @@ public class SceneModel extends WorldController implements ContactListener {
         polarCave = new TextureRegion(directory.getEntry("object:cave",Texture.class));
 
         polarTreeShadow = new TextureRegion(directory.getEntry("shadows:polar_tree_shadow", Texture.class));
-        polarCaveShadow = new TextureRegion(directory.getEntry("shadows:polar_cave_shadow", Texture.class));
-        polarHouseShadow = new TextureRegion(directory.getEntry("shadows:polar_house_shadow", Texture.class));
-        polarRock1Shadow = new TextureRegion(directory.getEntry("shadows:polar_rock_1_shadow", Texture.class));
-        polarRock2Shadow = new TextureRegion(directory.getEntry("shadows:polar_rock_2_shadow", Texture.class));
-        polarRock3Shadow = new TextureRegion(directory.getEntry("shadows:polar_rock_3_shadow", Texture.class));
-        polarRock4Shadow = new TextureRegion(directory.getEntry("shadows:polar_rock_4_shadow", Texture.class));
-        polarTrunk1Shadow = new TextureRegion(directory.getEntry("shadows:polar_trunk_1_shadow", Texture.class));
-        polarTrunk2Shadow = new TextureRegion(directory.getEntry("shadows:polar_trunk_2_shadow", Texture.class));
         polarTreeShadow.flip(true, true);
 
         playerWalkTextureAnimation = new TextureRegion(directory.getEntry("player:ursaWalk",Texture.class));
@@ -474,13 +450,11 @@ public class SceneModel extends WorldController implements ContactListener {
         System.out.println("Tileheight is  "+ tileHeight);
         tileWidth = jsonData.get("layers").get(0).get(7).asFloat();
 
-
         tileX = tileWidth * 8f;
         tileY = tileHeight * 8f;
         // Add level goal
         float dwidth;
         float dheight;
-
 
         // create shadow (idk if this does anything even)
         shadowController = new ShadowController();
@@ -516,10 +490,6 @@ public class SceneModel extends WorldController implements ContactListener {
             JsonValue goalpos = goal.get("pos");
 
             goalDoor = new Cave(ratioX * tileWidth * 9,(ratioY * tileHeight * 9) + 8,5,5);
-            goalDoor.setBodyType(BodyDef.BodyType.StaticBody);
-            goalDoor.setDensity(goal.getFloat("density", 0));
-            goalDoor.setFriction(goal.getFloat("friction", 0));
-            goalDoor.setRestitution(goal.getFloat("restitution", 0));
             goalDoor.setSensor(true);
             goalDoor.setDrawScale(scale);
             goalDoor.setTexture(polarCave);
@@ -607,10 +577,6 @@ public class SceneModel extends WorldController implements ContactListener {
             y = y * tileY +11.0f;
 
             Tree obj = new Tree(treejv.get(0).asFloatArray(),x,y);
-            obj.setBodyType(BodyDef.BodyType.StaticBody);
-            obj.setDensity(defaults.getFloat( "density", 0.0f ));
-            obj.setFriction(defaults.getFloat( "friction", 0.0f ));
-            obj.setRestitution(defaults.getFloat( "restitution", 0.0f ));
             obj.setDrawScale(scale);
             obj.setTexture(polarTreeWithSnow);
             obj.setName(tname+i);
@@ -678,10 +644,6 @@ public class SceneModel extends WorldController implements ContactListener {
             float ratioY = y/maxY;
 
             GenericObstacle house = new GenericObstacle(ratioX * tileWidth * 9,(ratioY * tileHeight * 9) + 8,3,3, 8);
-            house.setBodyType(BodyDef.BodyType.StaticBody);
-            house.setDensity(defaults.getFloat("density", 0));
-            house.setFriction(defaults.getFloat("friction", 0));
-            house.setRestitution(defaults.getFloat("restitution", 0));
             house.setDrawScale(scale);
             house.setTexture(polarHouse);
             house.setName("house"+i);
