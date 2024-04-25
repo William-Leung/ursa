@@ -38,11 +38,11 @@
             }
         },
         "/Users/williamleung/Documents/GitHub/ursa/assets/tweaking.json": {
-            "scale": 0.1342,
-            "selectedLayer": 0,
+            "scale": 0.2901,
+            "selectedLayer": 4,
             "viewCenter": {
-                "x": 3379.2846497764526,
-                "y": 3185.543964232488
+                "x": 3562.5646328852117,
+                "y": 2397.4491554636334
             }
         },
         "/Users/ykhadir/3300/p2/ursa/assets/Polar_House.tsx": {
@@ -352,6 +352,10 @@
     ],
     "project": "map1_test.tiled-project",
     "recentFiles": [
+        "/Users/williamleung/Documents/GitHub/ursa/assets/tutorial.json",
+        "/Users/williamleung/Documents/GitHub/ursa/assets/level2.json",
+        "/Users/williamleung/Documents/GitHub/ursa/assets/tweaking.json",
+        "/Users/williamleung/Documents/GitHub/ursa/assets/level1.json",
         "/Users/ykhadir/3300/p2/ursa/assets/tutorial.json",
         "/Users/ykhadir/3300/p2/ursa/assets/level1.json",
         "Polar_Rock_1.tsx",
@@ -359,11 +363,7 @@
         "tiles.tsx",
         "/Users/ykhadir/3300/p2/ursa/assets/Polar_Rock_1.tsx",
         "/Users/ykhadir/3300/p2/ursa/assets/Polar_House.tsx",
-        "map3.tmx",
-        "map2.tmx",
-        "tutorial.tmx",
-        "map4.tmx",
-        "map1.tmx"
+        "map3.tmx"
     ],
     "tileset.lastUsedFilter": "Tiled tileset files (*.tsx *.xml)",
     "tileset.lastUsedFormat": "tsx",

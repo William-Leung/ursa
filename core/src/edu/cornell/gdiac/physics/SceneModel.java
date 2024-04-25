@@ -133,7 +133,7 @@ public class SceneModel extends WorldController implements ContactListener {
     /** Player's current state: true corresponds to walking, false for idling */
     private boolean ursaCurrentState = false;
     /** Ursa's idle animates 1/ursaIdleAnimBuffer slower */
-    private int ursaIdleAnimBuffer = 2;
+    private int ursaIdleAnimBuffer = 3;
     /** Current index of the salmon walking animation */
     private int salmonWalkAnimIndex = 0;
     /** Current index of the salmon confused animation */
@@ -456,10 +456,6 @@ public class SceneModel extends WorldController implements ContactListener {
         // create shadow (idk if this does anything even)
         shadowController = new ShadowController();
 
-        String wname = "wall";
-        JsonValue walljv = constants.get("walls");
-        JsonValue defaults = constants.get("defaults");
-
         // Create ursa
         dwidth  = playerIdleFilm.getRegionWidth()/50f;
         dheight = playerIdleFilm.getRegionHeight()/100f;
@@ -476,7 +472,7 @@ public class SceneModel extends WorldController implements ContactListener {
         /**
          * This loop renders each cave in a given map.
          */
-        for(int i = 0; i< jsonData.get("layers").get(6).get("objects").size;i++) {
+        for(int i = 0; i < jsonData.get("layers").get(6).get("objects").size;i++) {
 
             float x = (jsonData.get("layers").get(6).get("objects").get(i).get(8).asFloat()) ;
             float y = (maxY - jsonData.get("layers").get(6).get("objects").get(i).get(9).asFloat());
@@ -1676,14 +1672,14 @@ public class SceneModel extends WorldController implements ContactListener {
             obj.preDraw(canvas);
         }
 
-        for(AIController control: controls) {
-            for(Vector2 v: control.getPatrol()) {
-                if(v != null) {
-                    canvas.draw(redTextureRegion,Color.WHITE, v.x * 32f,
-                            v.y * 32f, 10,10);
-                }
-            }
-        }
+//        for(AIController control: controls) {
+//            for(Vector2 v: control.getPatrol()) {
+//                if(v != null) {
+//                    canvas.draw(redTextureRegion,Color.WHITE, v.x * 32f,
+//                            v.y * 32f, 10,10);
+//                }
+//            }
+//        }
         //shadowController.drawAllShadows(canvas, this);
     }
 
