@@ -206,7 +206,7 @@ public class Enemy extends BoxObstacle {
 		greenTextureRegion = new TextureRegion(greenTexture);
 
 		Pixmap purplePixmap = new Pixmap(1, 1, Format.RGBA8888);
-		purplePixmap.setColor(new Color(166/255, 95/255, 207/255, 0.5f));
+		purplePixmap.setColor(Color.PURPLE);
 		purplePixmap.fill();
 		Texture purpleTexture = new Texture(purplePixmap);
 		purpleTextureRegion = new TextureRegion(purpleTexture);

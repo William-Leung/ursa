@@ -88,6 +88,8 @@ public class AIController {
     private static final int MIN_PATROL_CHANGE = 3;
     /** Amount of time since the last spotting that enemies will continue patrolling old locations */
     private static final int ADAPTIVE_AI_MEM = 500;
+    /** Maximum size of the pathfinding queue, to avoid  */
+    private static final int MAX_QUEUE_SIZE = 800;
 
     /** Ticks spent confused */
     private int ticks_confused = 0;
@@ -109,10 +111,9 @@ public class AIController {
     private int confused_anim_index = 0;
 
     /* WANDER STATE DATA STRUCTURES */
-    LinkedList<Vector2> queue;
-    HashMap<Vector2, Vector2> backpack;
-    LinkedList<Vector2> adjacents;
-    boolean[][] isAdded;
+    LinkedList<Coordinate> queue;
+    HashMap<Coordinate, Coordinate> backpack;
+    Coordinate[] adjacents;
 
 
     /** The goal angle to face, used to prevent cone snapping */
@@ -161,10 +162,19 @@ public class AIController {
         queue = new LinkedList<>();
         backpack = new HashMap<>();
 
-        adjacents = new LinkedList<>();
-
         startLoc = new Vector2(enemy.getX(), enemy.getY());
-        //isAdded = new boolean[board.width()][board.height()];
+
+        adjacents = new Coordinate[] {
+                new Coordinate(1,0),
+                new Coordinate(0,1),
+                new Coordinate(-1,0),
+                new Coordinate(0,-1),
+
+                new Coordinate(1,1),
+                new Coordinate(-1,-1),
+                new Coordinate(-1,1),
+                new Coordinate(1,-1),
+        };
     }
 
     public AIController(Enemy enemy,  UrsaModel ursa, Board board, Vector2[] patrolLocs, boolean stupid) {
@@ -228,11 +238,11 @@ public class AIController {
 
             case WANDER:
 
-                if (ticks % 100 == 0 && Math.random() > 0.98) {
+                if (ticks % 90 == 0 && Math.random() > 0.98) {
                     ticks_looking = 26;
                     state = FSMState.LOOKING;
                 } else if (times_detected >= MIN_PATROL_CHANGE &&
-                        ticks % 50 == 0 && Math.random() > 0.90) {
+                        ticks % 50 == 0 && Math.random() > 0.93) {
                     ticks_looking = 0;
                     state = FSMState.LOOKING;
                 } else if (ticks_detected >= DETECTION_DELAY) {
@@ -254,8 +264,8 @@ public class AIController {
                 ticks_looking++;
 
                 if (checkSpotted()) {
-                        state = FSMState.CHASE;
-                        ticks_looking = 0;
+                    state = FSMState.CHASE;
+                    ticks_looking = 0;
                 } else if (enemy.isAlerted() && ticks_spotted >= DETECTION_DELAY) {
                     state = FSMState.CONFUSED;
                     ticks_confused = 1;
@@ -381,25 +391,25 @@ public class AIController {
                 break;
             case WANDER:
 
-               /**for (Tree t : trees) {
-                   if (Math.abs(t.getY() - enemy.getY()) <= t.getHeight() / 2 + enemy.getHeight() / 2 ) {
-                       if (t.getY() > enemy.getY()) {
-                           enemy.setVY(-2);
-                       } else {
-                           enemy.setVY(2);
-                       }
-                       return;
-                   }
+                /**for (Tree t : trees) {
+                 if (Math.abs(t.getY() - enemy.getY()) <= t.getHeight() / 2 + enemy.getHeight() / 2 ) {
+                 if (t.getY() > enemy.getY()) {
+                 enemy.setVY(-2);
+                 } else {
+                 enemy.setVY(2);
+                 }
+                 return;
+                 }
 
-//                   if (Math.abs(t.getX() - enemy.getX()) <= t.getWidth() / 2 + enemy.getWidth() / 2 ) {
-//                       if (Math.random() < 0.5) {
-//                           enemy.setVY(1);
-//                       } else {
-//                           enemy.setVY(-1);
-//                       }
-//                       return;
-//                   }
-               }*/
+                 //                   if (Math.abs(t.getX() - enemy.getX()) <= t.getWidth() / 2 + enemy.getWidth() / 2 ) {
+                 //                       if (Math.random() < 0.5) {
+                 //                           enemy.setVY(1);
+                 //                       } else {
+                 //                           enemy.setVY(-1);
+                 //                       }
+                 //                       return;
+                 //                   }
+                 }*/
 
 //                if (Math.abs(prevLoc.x - enemy.getX()) <= 0.5) {
 //                    enemy.setY(enemy.getY() - 100);
@@ -525,7 +535,7 @@ public class AIController {
 
         board.clearMarks();
         Vector2 nxtGoal = goalLocs.peek();
-        Vector2 nextGoal = setNextGoal();
+        Coordinate nextGoal = setNextGoal();
 
 //        System.out.println("   nextGoal: " + nextGoal.x + ", " + nextGoal.y);
 //        System.out.println("   currTile: " + board.getXTile(enemy.getX()) + ", " + board.getYTile(enemy.getY()));
@@ -538,13 +548,13 @@ public class AIController {
                     && !locs_spotted.isEmpty()) {
                 locs_spotted.pop();
             } else {
-                //System.out.println("REACHED GOAL");
+                System.out.println("REACHED GOAL");
                 Vector2 temp = goalLocs.pop();
                 goalLocs.addLast(temp);
                 nxtGoal = goalLocs.peek();
                 //System.out.println("nxtGoal: " + nxtGoal.x + ", " + nxtGoal.y);
-                nextGoal = new Vector2(board.getXTile(nxtGoal.x), board.getYTile(nxtGoal.y));
-                //System.out.println("nextGoal: " + nextGoal.x + ", " + nextGoal.y);
+                nextGoal = new Coordinate(board.getXTile(nxtGoal.x), board.getYTile(nxtGoal.y));
+                System.out.println("nextGoal: " + nextGoal.x + ", " + nextGoal.y);
             }
         }
 
@@ -555,89 +565,64 @@ public class AIController {
             nextGoal.x = board.getXTile(nxtGoal.x);
         }
 
-        board.setGoal((int) nextGoal.x, (int) nextGoal.y, true);
+        board.setGoal(nextGoal.x, nextGoal.y, true);
 
         // clear data structures
         queue.clear();
         backpack.clear();
 
-        Vector2 currTile = new Vector2(board.getXTile(enemy.getX()), board.getYTile(enemy.getY()));
+        Coordinate currTile = new Coordinate(board.getXTile(enemy.getX()), board.getYTile(enemy.getY()));
 
-        if (!board.getBlocked((int) currTile.x, (int) currTile.y)) {
+        if (!board.getBlocked(currTile.x, currTile.y)) {
             queue.add(currTile);
             backpack.put(currTile, null);
         } else {
             //System.out.println("Not on safe tile");
-              moveToSafeTile(currTile);
+            moveToSafeTile(currTile);
         }
 
         boolean foundGoal = false; // determines whether we have found a goal tile yet
-        Vector2 closest_goal = null; // coordinate of first found goal tile
-
+        Coordinate closest_goal = null; // coordinate of first found goal tile
 
         //System.out.println("about to start bfs while loop");
         // loop for BFS
         while (!foundGoal && !queue.isEmpty()) {
             //System.out.println("bfs while loop iteration");
-            Vector2 nextTile = queue.poll(); // get first item in queue
+            Coordinate nextTile = queue.poll(); // get first item in queue
             // System.out.println(ship.getId() + " current tile is " + nextTile.x + " " + nextTile.y);
-            adjacents.clear();
 
-            if (!board.getVisited((int) nextTile.x, (int) nextTile.y)) {
+            if (!board.getVisited(nextTile.x, nextTile.y)) {
 
-                board.setVisited((int) nextTile.x, (int) nextTile.y, true);
+                board.setVisited(nextTile.x, nextTile.y, true);
 
-                if (board.inBounds((int) nextTile.x + 1, (int) nextTile.y + 1) && !board.getVisited((int) nextTile.x + 1, (int) nextTile.y + 1)) {
-                    adjacents.add(new Vector2((int) nextTile.x + 1, (int) nextTile.y + 1));
-                }
-                if (board.inBounds((int) nextTile.x + 1, (int) nextTile.y - 1) && !board.getVisited((int) nextTile.x + 1, (int) nextTile.y - 1)) {
-                    adjacents.add(new Vector2((int) nextTile.x + 1, (int) nextTile.y - 1));
-                }
-                if (board.inBounds((int) nextTile.x - 1, (int) nextTile.y + 1) && !board.getVisited((int) nextTile.x - 1, (int) nextTile.y + 1)) {
-                    adjacents.add(new Vector2((int) nextTile.x - 1, (int) nextTile.y + 1));
-                }
-                if (board.inBounds((int) nextTile.x - 1, (int) nextTile.y - 1) && !board.getVisited((int) nextTile.x - 1, (int) nextTile.y - 1)) {
-                    adjacents.add(new Vector2((int) nextTile.x - 1, (int) nextTile.y - 1));
-                }
-                if (board.inBounds((int) nextTile.x + 1, (int) nextTile.y) && !board.getVisited((int) nextTile.x + 1, (int) nextTile.y)) {
-                    adjacents.add(new Vector2((int) nextTile.x + 1, (int) nextTile.y));
-                }
-                if (board.inBounds((int) nextTile.x, (int) nextTile.y + 1) && !board.getVisited((int) nextTile.x, (int) nextTile.y)) {
-                    adjacents.add(new Vector2((int) nextTile.x, (int) nextTile.y + 1));
-                }
-                if (board.inBounds((int) nextTile.x - 1, (int) nextTile.y) && !board.getVisited((int) nextTile.x - 1, (int) nextTile.y + 1)) {
-                    adjacents.add(new Vector2((int) nextTile.x - 1, (int) nextTile.y));
-                }
-                if (board.inBounds((int) nextTile.x, (int) nextTile.y - 1) && !board.getVisited((int) nextTile.x, (int) nextTile.y - 1)) {
-                    adjacents.add(new Vector2((int) nextTile.x, (int) nextTile.y - 1));
-                }
-
-                for (Vector2 c : adjacents) {
+                for (Coordinate c : adjacents) {
                     // break out of loop if we already found a goal tile
                     if (foundGoal) break;
 
-                    if ((c.x == nextGoal.x && c.y == nextGoal.y) ||
-                            !board.getBlocked((int) c.x, (int) c.y) &&
-                            !board.getVisited((int) c.x, (int) c.y)) {
-                        queue.add(c);
-                        backpack.put(c, nextTile);
+                    if ((nextTile.x + c.x == nextGoal.x && nextTile.y + c.y == nextGoal.y)
+                            || !board.getBlocked(nextTile.x + c.x, nextTile.y + c.y) &&
+                            !board.getVisited(nextTile.x + c.x, nextTile.y + c.y)) {
+                        Coordinate thisCoord = new Coordinate(nextTile.x + c.x, nextTile.y + c.y);
+                        queue.add(thisCoord);
+                        backpack.put(thisCoord, nextTile);
 
                         // check if this tile is a goal tile
-                        if (board.getGoal((int) c.x, (int) c.y)) {
-                            closest_goal = c;
+                        if (board.getGoal(nextTile.x + c.x, nextTile.y + c.y)) {
+                            closest_goal = thisCoord;
                             foundGoal = true;
                         }
                     }
                 }
             }
+            if (queue.size() >= MAX_QUEUE_SIZE) return;
         }
 
         if (!foundGoal) {
             //System.out.println("CANNOT FIND GOAL");
             return; // pick random direction
         } else { // if we found a goal, backtrace to find the first step to get there
-            Vector2 this_tile = closest_goal;
-            Vector2 prev_tile = backpack.get(this_tile);
+            Coordinate this_tile = closest_goal;
+            Coordinate prev_tile = backpack.get(this_tile);
 
             while (prev_tile != null && (prev_tile.x != currTile.x || prev_tile.y != currTile.y)) {
                 //System.out.println(prev_tile.x + ", " + prev_tile.y);
@@ -691,7 +676,7 @@ public class AIController {
 
     }
 
-    public void moveToSafeTile(Vector2 currTile) {
+    public void moveToSafeTile(Coordinate currTile) {
         ArrayList<Vector2> safeTiles = new ArrayList<>();
 
         if (!board.getBlocked((int) currTile.x + 1, (int) currTile.y)) {
@@ -725,8 +710,9 @@ public class AIController {
 
         action.x = nextTile.x - enemy.getX();
         action.y = nextTile.y - enemy.getY();
-        enemy.setVX(action.x);
-        enemy.setVY(action.y);
+        action.nor();
+        enemy.setVX(action.x * 3);
+        enemy.setVY(action.y * 3);
         enemy.setLookDirection(action.x, action.y);
     }
 
@@ -822,16 +808,16 @@ public class AIController {
 //        rotateEnemy(Math.abs(goalAngle - enemy.getAngle()) / 20, goalAngle);
 //    }
 
-    public Vector2 setNextGoal() {
+    public Coordinate setNextGoal() {
         Vector2 nxtGoal = goalLocs.peek();
-        Vector2 nextGoal = new Vector2(board.getXTile(nxtGoal.x), board.getYTile(nxtGoal.y));
+        Coordinate nextGoal = new Coordinate(board.getXTile(nxtGoal.x), board.getYTile(nxtGoal.y));
 
-        while (board.getBlocked((int) nextGoal.x, (int) nextGoal.y)) {
-            if (!board.getBlocked((int) nextGoal.x - 1, (int) nextGoal.y)) {
+        while (board.getBlocked(nextGoal.x, nextGoal.y)) {
+            if (!board.getBlocked(nextGoal.x - 1, nextGoal.y)) {
                 nextGoal.x = nextGoal.x - 1;
-            } else if (!board.getBlocked((int) nextGoal.x + 1, (int) nextGoal.y)) {
+            } else if (!board.getBlocked(nextGoal.x + 1, nextGoal.y)) {
                 nextGoal.x = nextGoal.x + 1;
-            } else if (!board.getBlocked((int) nextGoal.x, (int) nextGoal.y - 1)) {
+            } else if (!board.getBlocked(nextGoal.x, nextGoal.y - 1)) {
                 nextGoal.y = nextGoal.y - 1;
             } else {
                 nextGoal.y = nextGoal.y + 1;

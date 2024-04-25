@@ -197,10 +197,6 @@ public class GDXRoot extends Game implements ScreenListener {
 			controllers[current].active = false;
 
 
-
-
-
-
 		}
 		else if (exitCode == 12 && screen != levelSelector && screen != loading) {
 
