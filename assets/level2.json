@@ -102,7 +102,7 @@
         {
          "draworder":"topdown",
          "id":6,
-         "name":"BackgroundObjects",
+         "name":"object",
          "objects":[],
          "opacity":1,
          "type":"objectgroup",
@@ -138,7 +138,31 @@
          "draworder":"topdown",
          "id":8,
          "name":"rock",
-         "objects":[],
+         "objects":[
+                {
+                 "gid":27,
+                 "height":512,
+                 "id":26,
+                 "name":"",
+                 "rotation":0,
+                 "type":"2",
+                 "visible":true,
+                 "width":512,
+                 "x":2144,
+                 "y":2647.66666666667
+                }, 
+                {
+                 "gid":27,
+                 "height":512,
+                 "id":27,
+                 "name":"",
+                 "rotation":0,
+                 "type":"1",
+                 "visible":true,
+                 "width":512,
+                 "x":760.666666666667,
+                 "y":2372.66666666667
+                }],
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
@@ -195,8 +219,20 @@
         {
          "draworder":"topdown",
          "id":10,
-         "name":"WorldObjects",
-         "objects":[],
+         "name":"houses",
+         "objects":[
+                {
+                 "gid":26,
+                 "height":512,
+                 "id":25,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":512,
+                 "x":2112,
+                 "y":1808
+                }],
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
@@ -204,7 +240,7 @@
          "y":0
         }],
  "nextlayerid":11,
- "nextobjectid":25,
+ "nextobjectid":28,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.10.2",
@@ -271,6 +307,14 @@
         {
          "firstgid":25,
          "source":"maps\/marker.tsx"
+        }, 
+        {
+         "firstgid":26,
+         "source":"maps\/Polar_House.tsx"
+        }, 
+        {
+         "firstgid":27,
+         "source":"maps\/Polar_Rock_1.tsx"
         }],
  "tilewidth":512,
  "type":"map",
