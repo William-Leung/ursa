@@ -641,11 +641,8 @@ public class SceneModel extends WorldController implements ContactListener {
             float ratioX = x/maxX;
             float ratioY = y/maxY;
 
-            GenericObstacle rock = new GenericObstacle(ratioX * tileWidth * 9,(ratioY * tileHeight * 9) + 8,3,3, 0.3f, 0.3f, 20);
-            rock.setBodyType(BodyDef.BodyType.StaticBody);
-            rock.setDensity(defaults.getFloat("density", 0));
-            rock.setFriction(defaults.getFloat("friction", 0));
-            rock.setRestitution(defaults.getFloat("restitution", 0));
+            GenericObstacle rock = new GenericObstacle(ratioX * tileWidth * 9,(ratioY * tileHeight * 9) + 8,3,3,
+                    0.3f, 0.3f, 20);
             rock.setDrawScale(scale);
 
             rock.setTexture(getRockTexture(jsonData.get("layers").get(7).get("objects").get(i).get(5).asString()));
@@ -680,7 +677,7 @@ public class SceneModel extends WorldController implements ContactListener {
             float ratioX = x/maxX;
             float ratioY = y/maxY;
 
-            GenericObstacle house = new GenericObstacle(ratioX * tileWidth * 9,(ratioY * tileHeight * 9) + 8,3,3);
+            GenericObstacle house = new GenericObstacle(ratioX * tileWidth * 9,(ratioY * tileHeight * 9) + 8,3,3, 8);
             house.setBodyType(BodyDef.BodyType.StaticBody);
             house.setDensity(defaults.getFloat("density", 0));
             house.setFriction(defaults.getFloat("friction", 0));
