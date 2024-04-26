@@ -3,13 +3,13 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "/Users/ykhadir/3300/p2/ursa/assets/tutorial.json",
+    "activeFile": "tutorial.tmx",
     "expandedProjectPaths": [
         "."
     ],
     "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
-        "/Users/williamleung/Documents/GitHub/ursa/assets/level1.json": {
+        "C:/Users/williamleung/Documents/GitHub/ursa/assets/level1.json": {
             "scale": 0.1792,
             "selectedLayer": 0,
             "viewCenter": {
@@ -17,66 +17,12 @@
                 "y": 2787.388392857143
             }
         },
-        "/Users/williamleung/Documents/GitHub/ursa/assets/level2.json": {
+        "C:/Users/williamleung/Documents/GitHub/ursa/assets/level2.json": {
             "scale": 0.08667689732142857,
             "selectedLayer": 0,
             "viewCenter": {
                 "x": 1794.0189924352167,
                 "y": 1794.0189924352164
-            }
-        },
-        "/Users/williamleung/Documents/GitHub/ursa/assets/tutorial.json": {
-            "expandedObjectLayers": [
-                9,
-                2
-            ],
-            "scale": 0.3671,
-            "selectedLayer": 3,
-            "viewCenter": {
-                "x": 3305.6387905202946,
-                "y": 1622.1737946063745
-            }
-        },
-        "/Users/williamleung/Documents/GitHub/ursa/assets/tweaking.json": {
-            "scale": 0.2901,
-            "selectedLayer": 4,
-            "viewCenter": {
-                "x": 3562.5646328852117,
-                "y": 2397.4491554636334
-            }
-        },
-        "/Users/ykhadir/3300/p2/ursa/assets/Polar_House.tsx": {
-            "dynamicWrapping": false,
-            "scaleInDock": 1,
-            "scaleInEditor": 1
-        },
-        "/Users/ykhadir/3300/p2/ursa/assets/Polar_Rock_1.tsx": {
-            "dynamicWrapping": false,
-            "scaleInDock": 1,
-            "scaleInEditor": 1
-        },
-        "/Users/ykhadir/3300/p2/ursa/assets/level1.json": {
-            "scale": 0.09,
-            "selectedLayer": 9,
-            "viewCenter": {
-                "x": 3077.7777777777774,
-                "y": 4894.444444444444
-            }
-        },
-        "/Users/ykhadir/3300/p2/ursa/assets/level2.json": {
-            "scale": 0.12,
-            "selectedLayer": 9,
-            "viewCenter": {
-                "x": 2375,
-                "y": 2070.8333333333335
-            }
-        },
-        "/Users/ykhadir/3300/p2/ursa/assets/tutorial.json": {
-            "scale": 0.0834,
-            "selectedLayer": 9,
-            "viewCenter": {
-                "x": 3884.8920863309354,
-                "y": 3950.8393285371703
             }
         },
         "C:/Users/williamleung/Documents/GitHub/ursa/assets/level4.json": {
@@ -90,12 +36,66 @@
         "C:/Users/williamleung/Documents/GitHub/ursa/assets/level4.json#tiles": {
             "scaleInDock": 1
         },
+        "C:/Users/williamleung/Documents/GitHub/ursa/assets/tutorial.json": {
+            "expandedObjectLayers": [
+                9,
+                2
+            ],
+            "scale": 0.3671,
+            "selectedLayer": 3,
+            "viewCenter": {
+                "x": 3305.6387905202946,
+                "y": 1622.1737946063745
+            }
+        },
+        "C:/Users/williamleung/Documents/GitHub/ursa/assets/tweaking.json": {
+            "scale": 0.2901,
+            "selectedLayer": 4,
+            "viewCenter": {
+                "x": 3562.5646328852117,
+                "y": 2397.4491554636334
+            }
+        },
+        "C:/Users/ykhadir/3300/p2/ursa/assets/Polar_House.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "C:/Users/ykhadir/3300/p2/ursa/assets/Polar_Rock_1.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "C:/Users/ykhadir/3300/p2/ursa/assets/level1.json": {
+            "scale": 0.09,
+            "selectedLayer": 9,
+            "viewCenter": {
+                "x": 3077.7777777777774,
+                "y": 4894.444444444444
+            }
+        },
+        "C:/Users/ykhadir/3300/p2/ursa/assets/level2.json": {
+            "scale": 0.12,
+            "selectedLayer": 9,
+            "viewCenter": {
+                "x": 2375,
+                "y": 2070.8333333333335
+            }
+        },
         "C:/Users/ykhadir/3300/p2/ursa/assets/level3.json": {
             "scale": 0.037480468749999996,
             "selectedLayer": 0,
             "viewCenter": {
                 "x": 5122.6680562793135,
                 "y": 5122.6680562793135
+            }
+        },
+        "C:/Users/ykhadir/3300/p2/ursa/assets/tutorial.json": {
+            "scale": 0.0834,
+            "selectedLayer": 9,
+            "viewCenter": {
+                "x": 3884.8920863309354,
+                "y": 3950.8393285371703
             }
         },
         "Polar_Cave.tsx": {
@@ -323,16 +323,16 @@
         },
         "tutorial.tmx": {
             "expandedObjectLayers": [
-                4,
+                9,
                 5,
-                2,
-                9
+                4,
+                2
             ],
-            "scale": 0.1037,
+            "scale": 0.125,
             "selectedLayer": 3,
             "viewCenter": {
-                "x": 3326.904532304725,
-                "y": 1788.8138862102214
+                "x": 3168,
+                "y": 3676
             }
         }
     },
@@ -346,24 +346,22 @@
     "map.tileWidth": 512,
     "map.width": 20,
     "openFiles": [
-        "/Users/ykhadir/3300/p2/ursa/assets/tutorial.json",
-        "/Users/ykhadir/3300/p2/ursa/assets/level1.json",
-        "/Users/ykhadir/3300/p2/ursa/assets/level2.json"
+        "tutorial.tmx"
     ],
     "project": "map1_test.tiled-project",
     "recentFiles": [
-        "/Users/williamleung/Documents/GitHub/ursa/assets/tutorial.json",
-        "/Users/williamleung/Documents/GitHub/ursa/assets/level2.json",
-        "/Users/williamleung/Documents/GitHub/ursa/assets/tweaking.json",
-        "/Users/williamleung/Documents/GitHub/ursa/assets/level1.json",
-        "/Users/ykhadir/3300/p2/ursa/assets/tutorial.json",
-        "/Users/ykhadir/3300/p2/ursa/assets/level1.json",
+        "tutorial.tmx",
+        "C:/Users/williamleung/Documents/GitHub/ursa/assets/tutorial.json",
+        "C:/Users/williamleung/Documents/GitHub/ursa/assets/level2.json",
+        "C:/Users/williamleung/Documents/GitHub/ursa/assets/tweaking.json",
+        "C:/Users/williamleung/Documents/GitHub/ursa/assets/level1.json",
+        "C:/Users/ykhadir/3300/p2/ursa/assets/tutorial.json",
+        "C:/Users/ykhadir/3300/p2/ursa/assets/level1.json",
         "Polar_Rock_1.tsx",
-        "/Users/ykhadir/3300/p2/ursa/assets/level2.json",
+        "C:/Users/ykhadir/3300/p2/ursa/assets/level2.json",
         "tiles.tsx",
-        "/Users/ykhadir/3300/p2/ursa/assets/Polar_Rock_1.tsx",
-        "/Users/ykhadir/3300/p2/ursa/assets/Polar_House.tsx",
-        "map3.tmx"
+        "C:/Users/ykhadir/3300/p2/ursa/assets/Polar_Rock_1.tsx",
+        "C:/Users/ykhadir/3300/p2/ursa/assets/Polar_House.tsx"
     ],
     "tileset.lastUsedFilter": "Tiled tileset files (*.tsx *.xml)",
     "tileset.lastUsedFormat": "tsx",

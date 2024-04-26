@@ -64,17 +64,19 @@ public class GDXRoot extends Game implements ScreenListener {
 		System.out.println("levels completed " + levelsCompleted);
 		canvas  = new GameCanvas();
 		loading = new LoadingMode("assets.json",canvas,1);
+
 		camX = canvas.getCameraX();
 		camY = canvas.getCameraY();
 		// Initialize the three game worlds
 
 		controllers = new WorldController[25];
-		controllers[0] = new SceneModel("level4.json");
-		controllers[1] = new SceneModel("level3.json");
+		controllers[0] = new SceneModel("tutorial.json");
+		controllers[1] = new SceneModel("tweaking.json");
 		controllers[2] = new SceneModel("level2.json");
 		for(int i = 0; i < prefs.getFloat("completed");i++){
-			controllers[i].wasCompleted = true;
+			controllers[i].setWasCompleted(true);
 		}
+		System.out.println("controller 0 " + controllers[0].isWasCompleted());
 
 		current = 0;
 		loading.setScreenListener(this);
@@ -148,8 +150,7 @@ public class GDXRoot extends Game implements ScreenListener {
 			loading = null;
 		} else if (screen == levelSelector && exitCode == 1) {
 			current = 0;
-			controllers[current].dispose();
-			controllers[current] = new SceneModel("tutorial.json");
+
 			controllers[current].gatherAssets(directory);
 			controllers[current].setScreenListener(this);
 			controllers[current].setCanvas(canvas);
@@ -163,7 +164,7 @@ public class GDXRoot extends Game implements ScreenListener {
 
 		} else if (screen == levelSelector && exitCode == 2) {
 			current = 1;
-			controllers[current] = new SceneModel("tweaking.json");
+
 			controllers[current].gatherAssets(directory);
 			controllers[current].setScreenListener(this);
 			controllers[current].setCanvas(canvas);
@@ -177,7 +178,7 @@ public class GDXRoot extends Game implements ScreenListener {
 
 		}else if (screen == levelSelector && exitCode == 3) {
 			current = 2;
-			controllers[current] = new SceneModel("level2.json");
+
 			controllers[current].gatherAssets(directory);
 			controllers[current].setScreenListener(this);
 			controllers[current].setCanvas(canvas);
@@ -200,14 +201,14 @@ public class GDXRoot extends Game implements ScreenListener {
 		}
 		else if (exitCode == 12 && screen != levelSelector && screen != loading) {
 
-			if(controllers[current].wasCompleted != true){
+			if(!controllers[current].isWasCompleted()){
 				levelsCompleted += 1;
-				controllers[current].wasCompleted = true;
+				controllers[current].setWasCompleted(true);
 				prefs.putFloat("completed", prefs.getFloat("completed")+1);
 				System.out.println(prefs.getFloat("completed"));
 				prefs.flush();
 			}
-			controllers[current].wasCompleted = true;
+			controllers[current].setWasCompleted(true);
 			retryMenu = new RetryMenu(canvas,true);
 			retryMenu.gatherAssets(directory);
 			retryMenu.setScreenListener(this);

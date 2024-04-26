@@ -51,7 +51,7 @@ public abstract class WorldController implements Screen {
 	protected TextureRegion snowBackGround;
 	private float textX;
 	private float textY;
-	public boolean wasCompleted;
+	private boolean wasCompleted;
 	/** The texture for white (placed behind snowBackground) */
 	protected TextureRegion whiteTexture;
 	/** The texture for falling snow */
@@ -62,6 +62,12 @@ public abstract class WorldController implements Screen {
 	protected static TextureRegion redTextureRegion;
 	private static int CIRCLE_RADIUS = 500;
 	private static int RESET_DELAY = 20;
+	public void setWasCompleted(boolean b){
+		wasCompleted = b;
+	}
+	public boolean isWasCompleted(){
+		return wasCompleted;
+	}
 
 	static {
 		Pixmap pixmap = new Pixmap(2 * CIRCLE_RADIUS + 1, 2 * CIRCLE_RADIUS + 1, Pixmap.Format.RGBA8888);
@@ -279,6 +285,7 @@ public abstract class WorldController implements Screen {
 	 */
 	protected WorldController(Rectangle bounds, Vector2 gravity) {
 		world = new World(gravity,false);
+		wasCompleted = false;
 		this.bounds = new Rectangle(bounds);
 		this.scale = new Vector2(1,1);
 		complete = false;
