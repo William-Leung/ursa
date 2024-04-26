@@ -127,7 +127,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
             buttonsFilms[0].setFrame(0);
         }
         if(button2Pressed){
-            System.out.println("this");
+
             buttonsFilms[1].setFrame(4);
         }
         else if(button2Locked){
