@@ -16,6 +16,7 @@ import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.physics.GameCanvas;
 import edu.cornell.gdiac.physics.SceneModel;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
+import edu.cornell.gdiac.physics.obstacle.PolygonObstacle;
 import edu.cornell.gdiac.physics.obstacle.SimpleObstacle;
 import edu.cornell.gdiac.physics.shadows.ShadowController;
 import edu.cornell.gdiac.physics.shadows.ShadowModel;
@@ -160,7 +161,7 @@ public class Enemy extends BoxObstacle {
 	 */
 	private static final float ENEMY_DETECTION_RANGE_NOISE = 3;
 
-	private static final float ENEMY_DETECTION_RANGE_SIGHT = 6f;
+	private static final float ENEMY_DETECTION_RANGE_SIGHT = 12f;
 
 	private static final float ENEMY_DETECTION_RANGE_SHADOW = 10;
 
@@ -180,10 +181,8 @@ public class Enemy extends BoxObstacle {
 
 	public Enemy(float xStart,float yStart,float maxX, float minX,JsonValue data, float width, float height) {
 		// The shrink factors fit the image to a tigher hitbox
-		super(	xStart,
-				yStart,
-				width*data.get("shrink").getFloat( 0 ),
-				height*data.get("shrink").getFloat( 1 ));
+		super(xStart,
+				yStart, width, height);
 		setDensity(data.getFloat("density", 0));
 		setFriction(data.getFloat("friction", 0));  /// HE WILL STICK TO WALLS IF YOU FORGET
 		setFixedRotation(true);
@@ -200,7 +199,7 @@ public class Enemy extends BoxObstacle {
 		redTextureRegion = new TextureRegion(redTexture);
 
 		Pixmap greenPixmap = new Pixmap(1, 1, Format.RGBA8888);
-		greenPixmap.setColor(new Color(0, 1, 0, 0.5f));
+		greenPixmap.setColor(new Color(0, 1, 0, 0.3f));
 		greenPixmap.fill();
 		Texture greenTexture = new Texture(greenPixmap);
 		greenTextureRegion = new TextureRegion(greenTexture);
@@ -470,10 +469,10 @@ public class Enemy extends BoxObstacle {
 
 	public void draw(GameCanvas canvas) {
 		Color color = alerted ? Color.RED : Color.GREEN;
-		canvas.draw(texture, Color.WHITE,origin.x,0,getX()*drawScale.x,getY()*drawScale.y,getAngle(),
+		canvas.draw(texture, Color.WHITE,origin.x,0,getX()*drawScale.x,(getY() - getHeight() / 2) * drawScale.y,getAngle(),
 				(lookDirection.x > 0 ? 1 : -1) * 0.75f,0.75f);
 
-		drawSightCone(canvas, detectionRange, lookDirection, 8);
+		//drawSightCone(canvas, detectionRange, lookDirection, 8);
 
 		screenWidth = canvas.getWidth();
 	}
@@ -525,7 +524,7 @@ public class Enemy extends BoxObstacle {
 		}
 
 		float yOffset = 30f;
-		canvas.draw(polygonRegion, Color.WHITE, origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y + texture.getRegionHeight() / 2f - yOffset,getAngle(),1.0f,1.0f);
+		canvas.draw(polygonRegion, Color.WHITE, origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y + texture.getRegionHeight() / 2f + yOffset,getAngle(),1.0f,1.0f);
 	}
 
 	public boolean isInShadow() {

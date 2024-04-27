@@ -114,12 +114,7 @@ public class ShadowModel extends PolygonObstacle {
 
     public static float[] ShadowPolygon(String texture) {
         float[] tree = new float[] {
-                0, -1f,
-                -1f, -0.25f,
-                -1.5f, 0.15f,
-                0, 5f,
-                1.5f, 0.15f,
-                1f, -0.25f,
+                0.0f, -4.0f, -4.0f, -1.0f, -6.0f, 0.6f, 0.0f, 20.0f, 6.0f, 0.6f, 4.0f, -1.0f
         };
         float[] cave = new float[] {
                 0, -2f,

@@ -16,12 +16,18 @@ public class Decoration {
     private float y;
     private TextureRegion texture;
     private Vector2 drawScale;
+    private int index;
 
-    public Decoration(TextureRegion texture, Vector2 scale, float x, float y) {
+    public Decoration(TextureRegion texture, Vector2 scale, float x, float y, int index) {
         this.texture = texture;
         this.drawScale = scale;
         this.x = x;
         this.y = y;
+        this.index = index;
+    }
+
+    public int getIndex() {
+        return index;
     }
 
     public void draw(GameCanvas canvas) {
