@@ -83,7 +83,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         buttons[3] = new TextureRegion(directory.getEntry("levelSelect:Level3", Texture.class));
 
         ursa = new TextureRegion(directory.getEntry("player:ursaWalk",Texture.class));
-        ursaFilm = new FilmStrip(ursa.getTexture(),2,8);
+        ursaFilm = new FilmStrip(ursa.getTexture(),3,8);
         ursaFilm.setFrame(0);
 
         buttonsFilms[0] = new FilmStrip(buttons[0].getTexture(),1,2);
@@ -100,25 +100,34 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         button2Locked = true;
         button3Locked = true;
         button4Locked = true;
-        if(levelsCompleted >= 2){
+        if(levelsCompleted >= 1){
             button2Locked = false;
+            if(levelsCompleted >= 2){
+                buttonsFilms[1].setFrame(3);
+            }
+        }
+
+        if(levelsCompleted >= 2){
+            button3Locked = false;
+            if(levelsCompleted >= 3){
+                buttonsFilms[2].setFrame(3);
+            }
+
         }
         if(levelsCompleted >= 3){
-            button3Locked = false;
-        }
-        if(levelsCompleted >= 4){
             button4Locked = false;
         }
 
     }
     private void update(float delta){
+
         if(levelsCompleted == 1){
             button2Locked = false;
         }
-        if(ursaFilm.getFrame() == 15){
+        if(ursaFilm.getFrame() == 18){
             ursaFilm.setFrame(0);
         }
-        System.out.println(ursaFilm.getFrame());
+
         time += 1;
 
         if(button1Pressed){
@@ -130,25 +139,29 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
 
             buttonsFilms[1].setFrame(4);
         }
-        else if(button2Locked){
+        else if(button2Locked ){
             buttonsFilms[1].setFrame(0);
         }
         else {
+
             if(buttonsFilms[1].getFrame() == 0 ){
-                if(time%24 == 0){
+                if(time%30 == 0){
                     buttonsFilms[1].setFrame(1);
                 }
 
             }
             else if(buttonsFilms[1].getFrame() ==1 ){
-                if(time%24 == 0){
+                if(time%30 == 0){
                     buttonsFilms[1].setFrame(2);
                 }
             }
             else if(buttonsFilms[1].getFrame() ==2 ){
-                if(time%24 == 0){
+                if(time%30 == 0){
                     buttonsFilms[1].setFrame(3);
                 }
+            }
+            else{
+                buttonsFilms[1].setFrame(3);
             }
 
         }
@@ -160,7 +173,24 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
             buttonsFilms[2].setFrame(0);
         }
         else {
-            buttonsFilms[2].setFrame(3);
+
+            if(buttonsFilms[2].getFrame() == 0 ){
+                if(time%30 == 0){
+                    buttonsFilms[2].setFrame(1);
+                }
+
+            }
+            else if(buttonsFilms[2].getFrame() ==1 ){
+                if(time%30 == 0){
+                    buttonsFilms[2].setFrame(2);
+                }
+            }
+            else if(buttonsFilms[2].getFrame() ==2 ){
+                if(time%30 == 0){
+                    buttonsFilms[2].setFrame(3);
+                }
+            }
+            else buttonsFilms[2].setFrame(3);
         }
         if(Math.abs(ursaStartX-ursaNewX) > 5 && ursaStartX < ursaNewX){
 
@@ -168,25 +198,30 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
                 ursaFilm.setFrame(ursaFilm.getFrame() +1);
             }
 
-            ursaStartX += 3.5f;
+            ursaStartX += 2.0f;
         }
         if(Math.abs(ursaStartX-ursaNewX) > 5 && ursaStartX > ursaNewX){
             if(time% 2 == 0){
                 ursaFilm.setFrame(ursaFilm.getFrame() +1);
             }
 
-            ursaStartX -= 3.5f;
+            ursaStartX -= 2.0f;
         }
-        if(ursaStartY < ursaNewY + 5){
+        if(Math.abs(ursaStartY-ursaNewY) > 5 && ursaStartY < ursaNewY){
+            ursaStartY += 3.0f;
 
-            ursaStartY += 3.5f;
-        }
-        if(ursaStartY < ursaNewY){
 
-            ursaStartY -= 3.5f;
         }
+        if(Math.abs(ursaStartY-ursaNewY) > 5 && ursaStartY > ursaNewY){
+
+            ursaStartY -= 3.0f;
+        }
+        if(Math.abs(ursaStartY-ursaNewY) > 5 && Math.abs(ursaStartX - ursaNewX) <5 && ursaFilm.getFrame() < 20){
+            ursaFilm.setFrame(ursaFilm.getFrame() + 1);
+        }
+
         if(Math.abs(ursaStartX - ursaNewX) < 5){
-            ursaFilm.setFrame(0);
+
         }
 
     }
@@ -242,7 +277,8 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
             formula = (float) Math.sqrt(formula);
             //System.out.println("Formula: "+ formula);
             if(formula < radius  ){
-                if(Math.abs(ursaStartX - centerX) < 5 && Math.abs(ursaStartX - centerX) < 5){
+                System.out.println("running this");
+                if(Math.abs(ursaStartX - centerX) < 10 && Math.abs(ursaStartY - centerY) < 10){
                     button1Pressed = true;
                 }
                ursaNewX = centerX;
@@ -254,7 +290,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
             formula = (float) Math.sqrt(formula);
             System.out.println("levels complete: "+ levelsCompleted);
             if(formula < radius && button2Locked == false ){
-                if(Math.abs(ursaStartX - centerX) < 7 && Math.abs(ursaStartX - centerX) < 7){
+                if(Math.abs(ursaStartX - centerX) < 7 && Math.abs(ursaStartY - centerY) < 7){
                     button2Pressed = true;
                 }
 
@@ -267,13 +303,21 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
             centerY = 434;
             formula = (screenX-centerX)*(screenX-centerX)+(screenY-centerY)*(screenY-centerY);
             formula = (float) Math.sqrt(formula);
-            if(formula < radius && button3Locked == false && Math.abs(ursaStartX - centerX) < 7 && Math.abs(ursaStartX - centerX) < 7){
-                System.out.println("Button 3");
-                button3Pressed = true;
+
+            if(formula < radius && button3Locked == false ){
+                System.out.println(button3Locked + "button 3 locked");
+                if(Math.abs(ursaStartX - centerX) < 7 && Math.abs(ursaStartY - centerY) < 7){
+                    button3Pressed = true;
+                }
+
+                ursaNewX = centerX;
+                ursaNewY = centerY;
+                System.out.println(ursaNewY + " ursa new y is ");
             }
 
 
         }
+
 
         return false;
     }
@@ -304,7 +348,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
             formula = (screenX-centerX)*(screenX-centerX)+(screenY-centerY)*(screenY-centerY);
             formula = (float) Math.sqrt(formula);
 
-            if(formula < radius && button2Locked == false && Math.abs(ursaStartX - centerX) <7 && Math.abs(ursaStartX - centerX) < 7){
+            if(formula < radius && button2Locked == false && Math.abs(ursaStartX - centerX) <7 && Math.abs(ursaStartY - centerY) < 7){
                listener.exitScreen(this,2);
             }
             if(formula < radius && levelsCompleted == 1 ){
@@ -314,12 +358,20 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
             centerY = 434;
             formula = (screenX-centerX)*(screenX-centerX)+(screenY-centerY)*(screenY-centerY);
             formula = (float) Math.sqrt(formula);
-            if(formula < radius && button3Locked == false && Math.abs(ursaStartX - centerX) < 7 && Math.abs(ursaStartX - centerX) < 7){
+            if(formula < radius && button3Locked == false && Math.abs(ursaStartX - centerX) <7 && Math.abs(ursaStartY - centerY) < 7){
+                System.out.println("heyo");
                 listener.exitScreen(this,3);
+            }
+            if(formula < radius && levelsCompleted == 2 ){
+                button3Locked = false;
             }
 
 
+
         }
+        button3Pressed = false;
+        button2Pressed = false;
+        button1Pressed = false;
 
         return false;
     }
