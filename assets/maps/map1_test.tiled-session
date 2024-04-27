@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "testing.tmx",
+    "activeFile": "/Users/williamleung/Documents/GitHub/ursa/assets/template.tmx",
     "expandedProjectPaths": [
         "."
     ],
@@ -25,13 +25,39 @@
                 "y": 1794.0189924352164
             }
         },
+        "/Users/williamleung/Documents/GitHub/ursa/assets/template.json": {
+            "expandedObjectLayers": [
+                2
+            ],
+            "scale": 0.254,
+            "selectedLayer": 6,
+            "viewCenter": {
+                "x": 2440.9448818897636,
+                "y": 1446.8503937007877
+            }
+        },
+        "/Users/williamleung/Documents/GitHub/ursa/assets/template.tmx": {
+            "expandedObjectLayers": [
+                2
+            ],
+            "scale": 0.5455,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 725.9395050412465,
+                "y": 847.8460128322641
+            }
+        },
         "/Users/williamleung/Documents/GitHub/ursa/assets/testing.json": {
-            "scale": 0.2742,
+            "scale": 0.2226,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 1921.9547775346464,
-                "y": 897.1553610503283
+                "x": 399.8203054806828,
+                "y": 2118.1491464510336
             }
+        },
+        "/Users/williamleung/Documents/GitHub/ursa/assets/tiles.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 0.4703
         },
         "/Users/williamleung/Documents/GitHub/ursa/assets/tutorial.json": {
             "expandedObjectLayers": [
@@ -82,14 +108,6 @@
                 "y": 2070.8333333333335
             }
         },
-        "/Users/ykhadir/3300/p2/ursa/assets/testing.json": {
-            "scale": 0.13606770833333331,
-            "selectedLayer": 7,
-            "viewCenter": {
-                "x": 2307.6746411483255,
-                "y": 1414.7368421052631
-            }
-        },
         "/Users/ykhadir/3300/p2/ursa/assets/tutorial.json": {
             "scale": 0.0834,
             "selectedLayer": 9,
@@ -114,15 +132,15 @@
         },
         "256x512.tsx": {
             "scaleInDock": 0.1713,
-            "scaleInEditor": 0.3865
+            "scaleInEditor": 0.26
         },
         "512x512.tsx": {
             "scaleInDock": 0.1515,
-            "scaleInEditor": 0.1634
+            "scaleInEditor": 0.16
         },
         "64x64.tsx": {
             "dynamicWrapping": false,
-            "scaleInDock": 1,
+            "scaleInDock": 0.409,
             "scaleInEditor": 1
         },
         "64x64decorations.tsx": {
@@ -266,7 +284,7 @@
             "scale": 0.107,
             "selectedLayer": 3,
             "viewCenter": {
-                "x": 3070.0934579439254,
+                "x": 3065.4205607476633,
                 "y": 3070.0934579439254
             }
         },
@@ -377,11 +395,11 @@
             "scaleInEditor": 0.4845
         },
         "testing.tmx": {
-            "scale": 0.18,
-            "selectedLayer": 0,
+            "scale": 0.1993,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": 1244.4444444444446,
-                "y": 1297.2222222222224
+                "x": 868.038133467135,
+                "y": 1723.53236327145
             }
         },
         "testing.tmx.tmj": {
@@ -395,7 +413,7 @@
         "tiles.tsx": {
             "dynamicWrapping": false,
             "scaleInDock": 0.1391,
-            "scaleInEditor": 0.64
+            "scaleInEditor": 0.26
         },
         "tundra_tree_snow.tsx": {
             "dynamicWrapping": false,
@@ -433,22 +451,23 @@
     "map.width": 20,
     "openFiles": [
         "tiles.tsx",
-        "testing.tmx"
+        "256x512.tsx",
+        "/Users/williamleung/Documents/GitHub/ursa/assets/template.tmx"
     ],
     "project": "map1_test.tiled-project",
     "recentFiles": [
-        "testing.tmx",
-        "testing.tmx.tmj",
-        "/Users/williamleung/Documents/GitHub/ursa/assets/testing.json",
         "tiles.tsx",
-        "256x256(Ursa + Salmon).tsx",
-        "64x64.tsx",
-        "512x512.tsx",
         "256x512.tsx",
+        "/Users/williamleung/Documents/GitHub/ursa/assets/template.tmx",
+        "/Users/williamleung/Documents/GitHub/ursa/assets/template.json",
+        "testing.tmx",
+        "/Users/williamleung/Documents/GitHub/ursa/assets/testing.json",
+        "level1.tmx",
+        "/Users/williamleung/Documents/GitHub/ursa/assets/tiles.tsx",
+        "512x512.tsx",
+        "64x64.tsx",
         "128x128.tsx",
-        "Ursa.tsx",
-        "salmon_walk_2_small.tsx",
-        "128x128decorations.tsx"
+        "256x256(Ursa + Salmon).tsx"
     ],
     "tileset.lastUsedFilter": "Tiled tileset files (*.tsx *.xml)",
     "tileset.lastUsedFormat": "tsx",
