@@ -76,7 +76,7 @@ public class GameCanvas {
 	
 	/** Camera for the underlying SpriteBatch */
 	private OrthographicCamera camera;
-	
+
 	/** Value to cache window width (if we are currently full screen) */
 	int width;
 	/** Value to cache window height (if we are currently full screen) */
@@ -164,8 +164,8 @@ public class GameCanvas {
 	}
 
 	protected void moveCam(float x, float y){
-		camera.position.x = x * 31.9f;
-		camera.position.y = y * 31.9f;
+		camera.position.x = x * 16;
+		camera.position.y = y * 16;
 		camera.update();
 	}
 	protected void setCam(float x, float y){

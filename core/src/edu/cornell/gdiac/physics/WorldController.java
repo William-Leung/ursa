@@ -57,7 +57,6 @@ public abstract class WorldController implements Screen {
 	/** The texture for falling snow */
 	protected TextureRegion fallingSnow;
 	/** The texture for the exit condition */
-	protected TextureRegion goalTile;
 
 	protected static TextureRegion redTextureRegion;
 	private static int CIRCLE_RADIUS = 500;
@@ -97,9 +96,9 @@ public abstract class WorldController implements Screen {
 	public static final int WORLD_POSIT = 2;
 
 	/** Width of the game world in Box2d units */
-	protected static final float DEFAULT_WIDTH  = 32.0f;
+	protected static final float DEFAULT_WIDTH  = 64.0f;
 	/** Height of the game world in Box2d units */
-	protected static final float DEFAULT_HEIGHT = 18.0f;
+	protected static final float DEFAULT_HEIGHT = 36.0f;
 	/** The default value of gravity (going down) */
 	protected static final float DEFAULT_GRAVITY = -4.9f;
 
@@ -324,7 +323,6 @@ public abstract class WorldController implements Screen {
 	 * @param directory	Reference to global asset manager.
 	 */
 	public void gatherAssets(AssetDirectory directory) {
-		goalTile  = new TextureRegion(directory.getEntry( "shared:goal", Texture.class ));
 		fallingSnow = new TextureRegion(directory.getEntry("platform:snowback",Texture.class));
 		snowBackGround = new TextureRegion(directory.getEntry("platform:snowbackground",Texture.class));
 		displayFont = directory.getEntry( "shared:retro" ,BitmapFont.class);

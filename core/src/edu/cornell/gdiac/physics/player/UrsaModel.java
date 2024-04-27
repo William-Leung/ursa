@@ -244,8 +244,8 @@ public class UrsaModel extends CapsuleObstacle {
 
         super(xPos,
                 yPos,
-                width*data.get("shrink").getFloat( 0 ),
-                height*data.get("shrink").getFloat( 1 ) );
+                width,
+                height);
         setDensity(data.getFloat("density", 0));
         setFriction(data.getFloat("friction", 0));  /// HE WILL STICK TO WALLS IF YOU FORGET
         setFixedRotation(true);
@@ -377,9 +377,9 @@ public class UrsaModel extends CapsuleObstacle {
         Texture blobShadow = SceneModel.BLOB_SHADOW_TEXTURE;
         int xcenter = blobShadow.getWidth() / 2;
         int ycenter = blobShadow.getHeight() / 2;
-        canvas.draw(blobShadow, new Color(1f,1f,1f,1f),xcenter,ycenter,
-            getX()*drawScale.x,(getY() - 0.8f) * drawScale.y,getAngle(),BLOB_SHADOW_SIZE / drawScale.x,
-            (BLOB_SHADOW_SIZE / 2f) / drawScale.y);
+        canvas.draw(blobShadow, Color.WHITE,xcenter,ycenter,
+           getX()*drawScale.x,(getY()) * drawScale.y,getAngle(),BLOB_SHADOW_SIZE / drawScale.x,
+          (BLOB_SHADOW_SIZE / 2f) / drawScale.y);
     }
 
     /**
@@ -388,15 +388,9 @@ public class UrsaModel extends CapsuleObstacle {
      * @param canvas Drawing context
      */
     public void draw(GameCanvas canvas) {
-        float scaleX;
         float effect = faceRight ? 1.0f : -1.0f;
-        if(effect == 1f){
-            scaleX = 0.45f;
-        }
-        else {
-            scaleX = -.45f;
-        }
-        canvas.draw(texture, isShaded ? Color.BLUE : Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y+20,getAngle(),scaleX,0.45f);
+
+        canvas.draw(texture, isShaded ? Color.BLUE : Color.WHITE,origin.x,0,getX()*drawScale.x,(getY() - data.get("yOffset").asFloat())*drawScale.y,getAngle(),effect * data.get("scaleX").asFloat(),data.get("scaleY").asFloat());
     }
 
     /**

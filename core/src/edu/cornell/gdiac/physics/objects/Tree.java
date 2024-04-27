@@ -12,8 +12,7 @@ import edu.cornell.gdiac.physics.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.PolygonObstacle;
 
 public class Tree extends PolygonObstacle {
-	public static final float X_SCALE = 0.3f;
-	public static final float Y_SCALE = 0.3f;
+
 	/** has the tree shaken yet: used to limit shaking to one time */
 	private boolean hasShaken;
 
@@ -26,7 +25,6 @@ public class Tree extends PolygonObstacle {
 	public boolean canShake() {
 		return !hasShaken;
 	}
-
 
 	public void putOnShakeCooldown() {
 		hasShaken = true;
@@ -43,11 +41,15 @@ public class Tree extends PolygonObstacle {
 	}
 
 	public void draw(GameCanvas canvas) {
+		float x_SCALE = 0.75f;
+		float y_SCALE = 0.75f;
+		float yOffset = 25f;
+
 		Affine2 affine = new Affine2()
-			.translate(getX() * drawScale.x, getY() * drawScale.y)
-			.scale(X_SCALE, Y_SCALE)
+			.translate(getX() * drawScale.x, getY()* drawScale.y - yOffset)
+			.scale(x_SCALE, y_SCALE)
 		;
-		canvas.draw(texture, Color.WHITE ,origin.x, origin.y, affine);
+		canvas.draw(texture, Color.WHITE ,origin.x, 0, affine);
 		//FrameBuffer fb = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), false);
 	}
 

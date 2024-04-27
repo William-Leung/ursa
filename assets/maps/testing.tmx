@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="15" height="7" tilewidth="256" tileheight="256" infinite="0" nextlayerid="13" nextobjectid="268">
+ <editorsettings>
+  <export target="../testing.json" format="json"/>
+ </editorsettings>
+ <tileset firstgid="1" source="64x64.tsx"/>
+ <tileset firstgid="9" source="128x128.tsx"/>
+ <tileset firstgid="13" source="256x256(Ursa + Salmon).tsx"/>
+ <tileset firstgid="19" source="tiles.tsx"/>
+ <layer id="1" name="Tile Layer 1" width="15" height="7">
+  <data encoding="csv">
+19,19,19,19,19,19,19,19,19,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,19,19,19,0,0,0,0,
+0,0,0,0,0,0,0,0,19,19,19,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <objectgroup id="2" name="player">
+  <object id="254" gid="13" x="1279.82" y="1275.29" width="256" height="256"/>
+ </objectgroup>
+ <group id="3" name="constants"/>
+ <objectgroup id="4" name="enemies"/>
+ <objectgroup id="5" name="snowtrees"/>
+ <objectgroup id="6" name="object"/>
+ <objectgroup id="7" name="cave"/>
+ <objectgroup id="8" name="rock"/>
+ <objectgroup id="9" name="markers"/>
+ <objectgroup id="10" name="houses"/>
+ <objectgroup id="11" name="decorations">
+  <object id="255" gid="1" x="1030.12" y="1254.44" width="64" height="64"/>
+  <object id="256" gid="2" x="1095.25" y="1264.46" width="64" height="64"/>
+  <object id="257" gid="3" x="1165.39" y="1279.49" width="64" height="64"/>
+  <object id="258" gid="4" x="1235.54" y="1279.49" width="64" height="64"/>
+  <object id="260" gid="9" x="1029.25" y="1022.2" width="128" height="128"/>
+  <object id="261" gid="10" x="1156.79" y="1017.74" width="128" height="128"/>
+  <object id="262" gid="11" x="1023.27" y="898.526" width="128" height="128"/>
+  <object id="263" gid="12" x="1156.79" y="896.141" width="128" height="128"/>
+  <object id="264" gid="6" x="1029.04" y="1188.41" width="64" height="64"/>
+  <object id="265" gid="5" x="1029.04" y="1126.42" width="64" height="64"/>
+  <object id="266" gid="7" x="1093.42" y="1193.18" width="64" height="64"/>
+  <object id="267" gid="8" x="1157.79" y="1195.57" width="64" height="64"/>
+ </objectgroup>
+</map>
