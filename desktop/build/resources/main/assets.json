@@ -36,15 +36,12 @@
         "decoration:flower_1": "polar/decorations/Polar_Flower_1.png",
         "decoration:flower_2": "polar/decorations/Polar_Flower_2.png",
         "decoration:ground_4": "polar/decorations/Polar_Ground_4.png",
-        "decoration:statue": "polar/decorations/Polar_Dec_1.png",
-        "decoration:goat": "polar/decorations/Polar_Dec_5.png",
         "decoration:ground_1": "polar/decorations/Polar_Ground_1.png",
         "decoration:ground_2": "polar/decorations/Polar_Ground_2.png",
 
 
 
         "object:polar_house": "object/Polar_House.png",
-        "object:polar_rock_1": "object/Polar_Rock_1.png",
         "object:polar_rock_2": "object/Polar_Rock_2.png",
         "object:polar_rock_3": "object/Polar_Rock_3.png",
         "object:polar_rock_4": "object/Polar_Rock_4.png",
@@ -96,9 +93,11 @@
         "enemies:salmonConfused": "enemies/Lost.png",
         "enemies:salmonIdle": "enemies/Idle.png",
         "enemies:salmonDetected": "enemies/Detected.png",
-        "polar:cave": "polar/objects/Cave.png"
 
-
+        "polar:cave": "polar/objects/Cave.png",
+        "polar:rock_1": "polar/objects/Polar_Rock_1.png",
+        "polar:statue": "polar/decorations/Polar_Dec_1.png",
+        "polar:goat": "polar/decorations/Polar_Dec_5.png"
     },
     "jsons"  : {
         "polar:constants": "polar/constants.json"

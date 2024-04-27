@@ -70,6 +70,7 @@ public class SceneModel extends WorldController implements ContactListener {
     private Texture blankTexture;
     /** Texture asset for trees in the polar map (first is snow, second is no snow) */
     private TextureRegion[] treeTextures = new TextureRegion[2];
+    private TextureRegion[] objectTextures = new TextureRegion[6];
     /** Texture asset for a house in the polar map */
     private TextureRegion polarHouse;
     /** Texture asset for the first rock in the polar map */
@@ -211,7 +212,7 @@ public class SceneModel extends WorldController implements ContactListener {
     private float deprecatedTileWidth;
     private float deprecatedTileHeight;
     private float timeRatio;
-    private Vector2[] enemyPosList = new Vector2[10];
+    private Vector2[] markerList = new Vector2[10];
     private JsonReader json;
     private JsonValue jsonData;
 
@@ -351,7 +352,6 @@ public class SceneModel extends WorldController implements ContactListener {
         treeTextures[0] = new TextureRegion(directory.getEntry("object:tundra_tree_snow_small", Texture.class));
         treeTextures[1] = new TextureRegion(directory.getEntry("object:tundra_tree",Texture.class));
         polarHouse = new TextureRegion(directory.getEntry("object:polar_house", Texture.class));
-        polarRock1 = new TextureRegion(directory.getEntry("object:polar_rock_1", Texture.class));
         polarRock2 = new TextureRegion(directory.getEntry("object:polar_rock_2", Texture.class));
         polarRock3 = new TextureRegion(directory.getEntry("object:polar_rock_3", Texture.class));
         polarRock4 = new TextureRegion(directory.getEntry("object:polar_rock_4", Texture.class));
@@ -391,6 +391,7 @@ public class SceneModel extends WorldController implements ContactListener {
 
         gatherTiles(directory);
         gatherDecorations(directory);
+        gatherObjects(directory);
 
         constants = directory.getEntry( "polar:constants", JsonValue.class );
         super.gatherAssets(directory);
@@ -426,10 +427,12 @@ public class SceneModel extends WorldController implements ContactListener {
         decorationTextures[9] = new TextureRegion(directory.getEntry("decoration:flower_1",Texture.class));
         decorationTextures[10] = new TextureRegion(directory.getEntry("decoration:flower_2",Texture.class));
         decorationTextures[11] = new TextureRegion(directory.getEntry("decoration:ground_4",Texture.class));
-        decorationTextures[12] = new TextureRegion(directory.getEntry("decoration:statue",Texture.class));
-        decorationTextures[13] = new TextureRegion(directory.getEntry("decoration:goat",Texture.class));
-        decorationTextures[14] = new TextureRegion(directory.getEntry("decoration:ground_1",Texture.class));
-        decorationTextures[15] = new TextureRegion(directory.getEntry("decoration:ground_2",Texture.class));
+        decorationTextures[12] = new TextureRegion(directory.getEntry("decoration:ground_1",Texture.class));
+        decorationTextures[13] = new TextureRegion(directory.getEntry("decoration:ground_2",Texture.class));
+    }
+
+    public void gatherObjects(AssetDirectory directory) {
+        objectTextures[0] = new TextureRegion(directory.getEntry("polar:rock_1",Texture.class));
     }
 
     /**
@@ -508,8 +511,8 @@ public class SceneModel extends WorldController implements ContactListener {
         /**
          * Parsing Ursa
          */
-        float playerX = jsonData.get("layers").get(1).get("objects").get(0).get(8).asFloat();
-        float playerY = maxY - jsonData.get("layers").get(1).get("objects").get(0).get(9).asFloat();
+        float playerX = jsonData.get("layers").get(9).get("objects").get(0).get(8).asFloat();
+        float playerY = maxY - jsonData.get("layers").get(9).get("objects").get(0).get(9).asFloat();
 
         JsonValue ursaConstants = constants.get("ursa");
         float playerWidth = ursaConstants.get("width").asFloat();
@@ -526,8 +529,9 @@ public class SceneModel extends WorldController implements ContactListener {
         renderTrees();
         renderCaves();
         renderSmolUrsa();
+        renderGameObjects();
         renderDecorations();
-        renderRocks();
+        //renderRocks();
 
 
 
@@ -734,10 +738,8 @@ public class SceneModel extends WorldController implements ContactListener {
      */
     public void drawTiles(){
         int counter = 0;
-        Barrier wall;
         float x;
         float y;
-        JsonValue wallConstants = constants.get("wall");
         // The array needs to be parsed from top to bottom
         for (int i = (int) numTilesY - 1; i >= 0 ; i--) {
             for(int j = 0; j < numTilesX; j++){
@@ -1152,15 +1154,6 @@ public class SceneModel extends WorldController implements ContactListener {
             return;
         }
 
-
-//        for(AIController control: controls) {
-//            for(Vector2 v: control.getPatrol()) {
-//                if(v != null) {
-//                    canvas.draw(redTextureRegion,Color.WHITE, v.x * 32f,
-//                            v.y * 32f, 10,10);
-//                }
-//            }
-//        }
         //shadowController.drawAllShadows(canvas, this);
     }
 
@@ -1188,6 +1181,12 @@ public class SceneModel extends WorldController implements ContactListener {
         float dheight = dayNightUITexture.getRegionHeight() / 2;
 
         canvas.draw(dayNightUITexture, Color.WHITE, dwidth, dheight, canvas.getCameraX(), canvas.getCameraY() + canvas.getHeight() / 2 + uiYOffset * uiDrawScale * dheight, uiRotationAngle, uiDrawScale, uiDrawScale);
+
+
+        /**for(Vector2 marker: markerList) {
+            if(marker == null) { continue;}
+            canvas.draw(redTextureRegion,Color.WHITE, marker.x * scale.x / 0.75f,marker.y * scale.x /0.75f,10,10);
+        }*/
     }
 
     public TextureRegion getTextureRegion(String s) {
@@ -1231,16 +1230,16 @@ public class SceneModel extends WorldController implements ContactListener {
     }
 
     public void renderEnemies() {
-        if (jsonData.get("layers").get(2) == null) {
+        if (jsonData.get("layers").get(7) == null) {
             return;
         }
-        // TODO
         JsonValue enemyConstants = constants.get("enemy");
-        JsonValue enemyObjectData = jsonData.get("layers").get(2).get("objects");
+        JsonValue enemyObjectData = jsonData.get("layers").get(7).get("objects");
 
         for (int i = 0; i < enemyObjectData.size; i++) {
             float x = enemyObjectData.get(i).get(8).asFloat() + salmonTexture.getRegionWidth() / 2f;
             float y = maxY - enemyObjectData.get(i).get(9).asFloat();
+            String enemyName = enemyObjectData.get(i).get("name").asString();
 
             float width = enemyConstants.get("width").asFloat();
             float height = enemyConstants.get("height").asFloat();
@@ -1253,7 +1252,28 @@ public class SceneModel extends WorldController implements ContactListener {
             addObject(obj);
             enemies[i] = obj;
 
-            enemyPosList = new Vector2[]{new Vector2(0,0)};
+            if(jsonData.get("layers").get(8) == null) {
+                System.out.println("Please put down some markers.");
+                return;
+            }
+
+            JsonValue markerObjectData = jsonData.get("layers").get(8).get("objects");
+            int markerCounter = 0;
+            Vector2[] enemyPosList = new Vector2[markerObjectData.size];
+            for(int e = 0; e < enemyPosList.length; e++) {
+                String markerName = markerObjectData.get(e).get("name").asString();
+                if (markerName.equals(enemyName)) {
+                    int orderNum = (jsonData.get("layers").get(8).get("objects").get(e).get("type")
+                            .asInt());
+                    float markerX = markerObjectData.get(e).get("x").asFloat();
+                    float markerY = maxY - markerObjectData.get(e).get("y").asFloat();
+
+                    Vector2 marker = new Vector2(drawToScreenCoordinates(markerX), drawToScreenCoordinates(markerY));
+                    enemyPosList[orderNum - 1] = marker;
+                    markerList[markerCounter++] = marker;
+                }
+            }
+
             if (enemies[i] != null) {
                 Board board = new Board(genericObstacles, enemies);
                 if(i == 0) {
@@ -1301,6 +1321,7 @@ public class SceneModel extends WorldController implements ContactListener {
 //        }
 
         }
+
     }
 
 
@@ -1308,10 +1329,10 @@ public class SceneModel extends WorldController implements ContactListener {
      * Renders all the trees on the map by reading them from JSON
      */
     public void renderTrees() {
-        if(jsonData.get("layers").get(4) == null) { return; }
+        if(jsonData.get("layers").get(3) == null) { return; }
 
         JsonValue treeConstants = constants.get("tree");
-        JsonValue treeObjectData = jsonData.get("layers").get(4).get("objects");
+        JsonValue treeObjectData = jsonData.get("layers").get(3).get("objects");
 
         for(int i = 0; i < treeObjectData.size; i++) {
             int treeIndex = treeObjectData.get(i).get("gid").asInt();
@@ -1343,40 +1364,14 @@ public class SceneModel extends WorldController implements ContactListener {
     }
 
 
-    /**
-     * This loop renders the decorations
-     */
-    public void renderDecorations() {
-        if(jsonData.get("layers").get(8) == null) { return; }
-        JsonValue decorationData = jsonData.get("layers").get(8).get("objects");
 
-        for(int i = 0; i < decorationData.size; i++) {
-            float x = decorationData.get(i).get(8).asFloat();
-            float y = maxY - decorationData.get(i).get(9).asFloat();
-            int decorationIndex = decorationData.get(i).get("gid").asInt();
-            int textureIndex;
-            if(decorationIndex - firstSmallDecorationIndex < decorationTextures.length) {
-                textureIndex = decorationIndex -firstSmallDecorationIndex;
-            } else if(decorationIndex - firstMediumDecorationIndex < decorationTextures.length) {
-                textureIndex = decorationIndex - firstMediumDecorationIndex + 12;
-            } else if(decorationIndex - firstLargeDecorationIndex < decorationTextures.length) {
-                textureIndex = decorationIndex - firstLargeDecorationIndex + 14;
-            } else {
-                continue;
-            }
-            Decoration decoration = new Decoration(decorationTextures[textureIndex], scale, drawToScreenCoordinates(x),drawToScreenCoordinates(y), decorationIndex);
-
-            decorations.add(decoration);
-        }
-        decorations.sort(decorationComparator);
-    }
 
     public void renderCaves() {
-        if (jsonData.get("layers").get(5) == null) {
+        if (jsonData.get("layers").get(2) == null) {
             return;
         }
         JsonValue caveConstants = constants.get("cave");
-        JsonValue caveObjectData = jsonData.get("layers").get(5).get("objects");
+        JsonValue caveObjectData = jsonData.get("layers").get(2).get("objects");
 
         for (int i = 0; i < caveObjectData.size; i++) {
             float x = caveObjectData.get(i).get(8).asFloat() + polarCave.getRegionWidth() / 2f;
@@ -1404,23 +1399,23 @@ public class SceneModel extends WorldController implements ContactListener {
         }
     }
 
-    public void renderRocks() {
-        if (jsonData.get("layers").get(9) == null) {
-            return;
-        }
-        JsonValue rockObjectData = jsonData.get("layers").get(9).get("objects");
-
-        for (int i = 0; i < rockObjectData.size; i++) {
-            float x = rockObjectData.get(i).get(8).asFloat() + polarCave.getRegionWidth() / 2f;
-            float y = maxY - rockObjectData.get(i).get(9).asFloat() + polarCave.getRegionHeight() / 2f;
-
-            Moveable rock = new Moveable(drawToScreenCoordinates(x),drawToScreenCoordinates(y),3,3);
-            rock.setDrawScale(scale);
-            rock.setTexture(polarRock3);
-            rock.setName("rock"+i);
-            addObject(rock);
-        }
-    }
+//    public void renderRocks() {
+//        if (jsonData.get("layers").get(9) == null) {
+//            return;
+//        }
+//        JsonValue rockObjectData = jsonData.get("layers").get(9).get("objects");
+//
+//        for (int i = 0; i < rockObjectData.size; i++) {
+//            float x = rockObjectData.get(i).get(8).asFloat() + polarCave.getRegionWidth() / 2f;
+//            float y = maxY - rockObjectData.get(i).get(9).asFloat() + polarCave.getRegionHeight() / 2f;
+//
+//            Moveable rock = new Moveable(drawToScreenCoordinates(x),drawToScreenCoordinates(y),3,3);
+//            rock.setDrawScale(scale);
+//            rock.setTexture(polarRock3);
+//            rock.setName("rock"+i);
+//            addObject(rock);
+//        }
+//    }
 
     public void renderSmolUrsa() {
         if (jsonData.get("layers").get(6) == null) {
@@ -1432,7 +1427,6 @@ public class SceneModel extends WorldController implements ContactListener {
         float x = smolUrsaObjectData.get(0).get(8).asFloat()
                 + smolUrsaTexture.getRegionWidth() / 2f;
         float y = maxY - smolUrsaObjectData.get(0).get(9).asFloat();
-        System.out.println(x + " " + y);
 
 
         goal = new GameObject(smolUrsaConstants.get("vertices").asFloatArray(), drawToScreenCoordinates(x),
@@ -1447,6 +1441,74 @@ public class SceneModel extends WorldController implements ContactListener {
         genericObstacles.add(new GenericObstacle(goal.getX(), goal.getY(),
                 goal.getWidth(), goal.getHeight()));
         // ===================
+    }
+
+    public void renderGameObjects() {
+        if(jsonData.get("layers").get(4) == null) { return; }
+
+        JsonValue treeConstants = constants.get("tree");
+        JsonValue objectData = jsonData.get("layers").get(4).get("objects");
+
+        for(int i = 0; i < objectData.size; i++) {
+            float x = objectData.get(i).get(8).asFloat() + objectTextures[0].getRegionWidth() / 2f;
+            float y = maxY - objectData.get(i).get(9).asFloat();
+
+            int objectIndex = objectData.get(i).get("gid").asInt();
+            int textureIndex;
+            if(objectIndex - firstSmallDecorationIndex < decorationTextures.length) {
+                textureIndex = objectIndex -firstSmallDecorationIndex;
+            } else if(objectIndex - firstLargeDecorationIndex < decorationTextures.length) {
+                textureIndex = objectIndex - firstLargeDecorationIndex + 12;
+            } else {
+                System.out.println("Unidentified Decoration.");
+                continue;
+            }
+
+            GameObject obj = new GameObject(treeConstants.get("vertices").asFloatArray(),drawToScreenCoordinates(x),drawToScreenCoordinates(y));
+            obj.setDrawScale(scale);
+            obj.setTexture(objectTextures[0]);
+            obj.setName("game object" + i);
+
+            addObject(obj);
+
+            // Tree shadows
+            ShadowModel model = new ShadowModel(new Vector2(obj.getX(), obj.getY()), 0.75f, 0.75f,
+                    "tree shadow" + i, new Vector2(polarTreeShadow.getRegionWidth() / 2.0f, 85), scale);
+            shadows.add(model);
+            addObject(model);
+
+            // ===================
+            genericObstacles.add(new GenericObstacle(obj.getX(), obj.getY(),
+                    obj.getWidth(), obj.getHeight()));
+            // ===================
+        }
+    }
+
+    /**
+     * This loop renders the decorations
+     */
+    public void renderDecorations() {
+        if(jsonData.get("layers").get(1) == null) { return; }
+        JsonValue decorationData = jsonData.get("layers").get(1).get("objects");
+
+        for(int i = 0; i < decorationData.size; i++) {
+            float x = decorationData.get(i).get(8).asFloat();
+            float y = maxY - decorationData.get(i).get(9).asFloat();
+            int decorationIndex = decorationData.get(i).get("gid").asInt();
+            int textureIndex;
+            if(decorationIndex - firstSmallDecorationIndex < decorationTextures.length) {
+                textureIndex = decorationIndex -firstSmallDecorationIndex;
+            } else if(decorationIndex - firstLargeDecorationIndex < decorationTextures.length) {
+                textureIndex = decorationIndex - firstLargeDecorationIndex + 12;
+            } else {
+                System.out.println("Unidentified decoration.");
+                continue;
+            }
+            Decoration decoration = new Decoration(decorationTextures[textureIndex], scale, drawToScreenCoordinates(x),drawToScreenCoordinates(y), decorationIndex);
+
+            decorations.add(decoration);
+        }
+        decorations.sort(decorationComparator);
     }
 }
 
