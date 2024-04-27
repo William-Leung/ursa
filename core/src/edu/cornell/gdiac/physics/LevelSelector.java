@@ -57,10 +57,10 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
 
     private Music levelSelectMusic;
     public LevelSelector(GameCanvas NewCanvas,float completion){
-        ursaStartX = 35;
-        ursaStartY = 150;
-        ursaNewX = 35;
-        ursaNewY = 150;
+        ursaStartX = 78;
+        ursaStartY = 196f;
+        ursaNewX = 78;
+        ursaNewY = 196f;
         levelsCompleted = completion;
         canvas = NewCanvas;
         active = false;
@@ -220,8 +220,8 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
             ursaFilm.setFrame(ursaFilm.getFrame() + 1);
         }
 
-        if(Math.abs(ursaStartX - ursaNewX) < 5){
-
+        if(Math.abs(ursaStartX - ursaNewX) < 10 && Math.abs(ursaStartY - ursaNewY) < 10){
+            ursaFilm.setFrame(3);
         }
 
     }
