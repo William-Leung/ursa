@@ -462,7 +462,7 @@ public class Enemy extends BoxObstacle {
 		Texture blobShadow = SceneModel.BLOB_SHADOW_TEXTURE;
 		int xcenter = blobShadow.getWidth() / 2;
 		int ycenter = blobShadow.getHeight() / 2;
-		canvas.draw(blobShadow, Color.BLACK,xcenter,ycenter,
+		canvas.draw(blobShadow, Color.WHITE,xcenter,ycenter,
 				getX()*drawScale.x,(getY() - 1.25f) * drawScale.y,getAngle(),BLOB_SHADOW_SIZE / drawScale.x,
 				(BLOB_SHADOW_SIZE / 2f) / drawScale.y);
 	}
