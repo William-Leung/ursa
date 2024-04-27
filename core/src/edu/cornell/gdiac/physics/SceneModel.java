@@ -61,6 +61,9 @@ public class SceneModel extends WorldController implements ContactListener {
     private TextureRegion dayNightUITexture;
     /** Texture asset for bipedal (2 legs) salmon */
     private TextureRegion salmonTexture;
+    /** Texture asset for ursa texture */
+    private TextureRegion ursaTexture;
+    private TextureRegion smolUrsaTexture;
     /** Texture asset for tint over the whole screen */
     private Texture blankTexture;
     /** Texture asset for trees in the polar map (first is snow, second is no snow) */
@@ -103,6 +106,8 @@ public class SceneModel extends WorldController implements ContactListener {
     private TextureRegion treeShakeAnimation;
     /** Texture asset for cave portal animation */
     private TextureRegion cavePortalAnimation;
+    /** Texture asset for cave portal animation */
+    private TextureRegion smolUrsaIdleAnimation;
 
     /** =========== Film Strips =========== */
     /** Filmstrip for player walking animation */
@@ -121,6 +126,8 @@ public class SceneModel extends WorldController implements ContactListener {
     private FilmStrip treeShakeFilm;
     /** Filmstrip for cave shake animation */
     private FilmStrip cavePortalFilm;
+    /** Filmstrip for little ursa idle animation */
+    private FilmStrip smolUrsaIdleFilm;
 
     /** =========== Animation Variables =========== */
     /** Current index of the player walk animation */
@@ -149,6 +156,14 @@ public class SceneModel extends WorldController implements ContactListener {
     private int currentFrame = 0;
     /** The frame at which the tree began shaking */
     private int beganShakingTreeFrame = 0;
+    /** Current index of the cave portal animation */
+    private int cavePortalIndex = 0;
+    /** Tree shaking animates 1/cavePortalAnimBuffer slower */
+    private int cavePortalAnimBuffer = 3;
+    /** Current index of the cave portal animation */
+    private int smolUrsaIdleIndex = 0;
+    /** Tree shaking animates 1/cavePortalAnimBuffer slower */
+    private int smolUrsaIdleAnimBuffer = 3;
 
     /** =========== Tree Shaking Variables =========== */
     /** The tree that is currently shaking. */
@@ -168,6 +183,11 @@ public class SceneModel extends WorldController implements ContactListener {
     private int firstTreeIndex = 34;
     /** The index of the first tile in the 64x64 decoration sprite sheet*/
     private int firstSmallDecorationIndex = 1;
+    /** The index of the first tile in the 256x256 decoration sprite sheet*/
+    private int firstMediumDecorationIndex = 17;
+    /** The index of the first tile in the 512x512 decoration sprite sheet*/
+    private int firstLargeDecorationIndex = 40;
+
     /** An array of TextureRegions containing all tile textures */
     private TextureRegion[] tileTextures = new TextureRegion[15];
     /** An array of TextureRegions containing all decoration textures */
@@ -224,7 +244,7 @@ public class SceneModel extends WorldController implements ContactListener {
 
     private int framesSinceTreeAnimation = 0;
     /** Reference to the goalDoor (for collision detection) */
-    private PolygonObstacle goalDoor;
+    private PolygonObstacle goal;
     /** Controller for all dynamic shadows */
     private ShadowController shadowController;
     /** rock to be used to reset the day if interacted with */
@@ -318,6 +338,8 @@ public class SceneModel extends WorldController implements ContactListener {
     public void gatherAssets(AssetDirectory directory) {
         dayNightUITexture = new TextureRegion(directory.getEntry("ui:dayNightUI", Texture.class));
         salmonTexture = new TextureRegion(directory.getEntry("enemies:salmon", Texture.class));
+        ursaTexture = new TextureRegion(directory.getEntry("player:ursa", Texture.class));
+        smolUrsaTexture = new TextureRegion(directory.getEntry("smolursa:model", Texture.class));
 
         treeTextures[0] = new TextureRegion(directory.getEntry("object:tundra_tree_snow_small", Texture.class));
         treeTextures[1] = new TextureRegion(directory.getEntry("object:tundra_tree",Texture.class));
@@ -339,7 +361,7 @@ public class SceneModel extends WorldController implements ContactListener {
         playerIdleFilm = new FilmStrip(playerIdleTextureAnimation.getTexture(),4,8);
 
         salmonUprightWalkAnimation = new TextureRegion(directory.getEntry("enemies:salmonUprightWalk",Texture.class));
-        salmonUprightWalkFilm = new FilmStrip(salmonUprightWalkAnimation.getTexture(),3,8);
+        salmonUprightWalkFilm = new FilmStrip(salmonUprightWalkAnimation.getTexture(),4,8);
         salmonConfusedAnimation = new TextureRegion(directory.getEntry("enemies:salmonConfused",Texture.class));
         salmonConfusedFilm = new FilmStrip(salmonConfusedAnimation.getTexture(),4,8);
         salmonIdleAnimation = new TextureRegion(directory.getEntry("enemies:salmonIdle",Texture.class));
@@ -352,6 +374,9 @@ public class SceneModel extends WorldController implements ContactListener {
 
         cavePortalAnimation = new TextureRegion(directory.getEntry("polar:cave_animation",Texture.class));
         cavePortalFilm = new FilmStrip(cavePortalAnimation.getTexture(), 2, 8);
+
+        smolUrsaIdleAnimation = new TextureRegion(directory.getEntry("smolursa:idle",Texture.class));
+        smolUrsaIdleFilm = new FilmStrip(smolUrsaIdleAnimation.getTexture(), 5, 8);
 
         levelMusic = directory.getEntry("soundtracks:level_track", Music.class);
         levelMusicNight = directory.getEntry("soundtracks:level_track_night", Music.class);
@@ -394,6 +419,10 @@ public class SceneModel extends WorldController implements ContactListener {
         decorationTextures[9] = new TextureRegion(directory.getEntry("decoration:flower_1",Texture.class));
         decorationTextures[10] = new TextureRegion(directory.getEntry("decoration:flower_2",Texture.class));
         decorationTextures[11] = new TextureRegion(directory.getEntry("decoration:ground_4",Texture.class));
+        decorationTextures[12] = new TextureRegion(directory.getEntry("decoration:statue",Texture.class));
+        decorationTextures[13] = new TextureRegion(directory.getEntry("decoration:goat",Texture.class));
+        decorationTextures[14] = new TextureRegion(directory.getEntry("decoration:ground_1",Texture.class));
+        decorationTextures[15] = new TextureRegion(directory.getEntry("decoration:ground_2",Texture.class));
     }
 
     /**
@@ -479,48 +508,20 @@ public class SceneModel extends WorldController implements ContactListener {
         float playerWidth = ursaConstants.get("width").asFloat();
         float playerHeight = ursaConstants.get("height").asFloat();
 
-        ursa = new UrsaModel(drawToScreenCoordinates(playerX + tileWidth / 2), drawToScreenCoordinates(playerY) + playerHeight / 2,
+        ursa = new UrsaModel(drawToScreenCoordinates(playerX + ursaTexture.getRegionWidth() / 2f), drawToScreenCoordinates(playerY) + playerHeight / 2,
                 ursaConstants, playerWidth, playerHeight);
         ursa.setDrawScale(scale);
         ursa.setTexture(playerWalkFilm);
         addObject(ursa);
 
+        renderWalls();
+        renderEnemies();
         renderTrees();
         renderCaves();
+        renderSmolUrsa();
         renderDecorations();
 
-        /**
-         * This loop renders each cave in a given map.
-         */
-        JsonValue currLayer = jsonData.get("layers").get(6);
-        for (int j = 0; j < currLayer.get("objects").size; j++) {
-            float x = currLayer.get("objects").get(j).get(8).asFloat();
-            float y = (maxY - (currLayer.get("objects").get(j).get(9).asFloat()));
 
-            JsonValue currConstants = constants.get(currLayer.get("name").asString());
-
-            goalDoor = new GameObject(currConstants.get("vertices").asFloatArray(), x / 64 + 4,
-                    y / 64 + 8, currConstants.get("xScale").asFloat(),
-                    currConstants.get("yScale").asFloat());
-            goalDoor.setSensor(true);
-            goalDoor.setDrawScale(scale);
-            goalDoor.setTexture(getTextureRegion(currConstants.get("texture").asString()));
-            goalDoor.setName("cave");
-
-            // Cave shadows
-            ShadowModel shadow = new ShadowModel(
-                    new Vector2(goalDoor.getX(), goalDoor.getY()), 0.75f, 0.75f,
-                    goalDoor.getName(), goalDoor.getDrawOrigin(), scale);
-            shadows.add(shadow);
-
-            addObject(shadow);
-            addObject(goalDoor);
-
-            // ===================
-            genericObstacles.add(new GenericObstacle(goalDoor.getX(), goalDoor.getY(),
-                    goalDoor.getWidth(), goalDoor.getHeight()));
-            // ===================
-        }
 
 
 
@@ -725,14 +726,20 @@ public class SceneModel extends WorldController implements ContactListener {
      */
     public void drawTiles(){
         int counter = 0;
+        Barrier wall;
+        float x;
+        float y;
+        JsonValue wallConstants = constants.get("wall");
         // The array needs to be parsed from top to bottom
         for (int i = (int) numTilesY - 1; i >= 0 ; i--) {
             for(int j = 0; j < numTilesX; j++){
                 int tileIndex = jsonData.get("layers").get(0).get(0).get(counter++).asInt();
-                if(tileIndex == 0 ) {
+                if(tileIndex == 0) {
                     continue;
                 }
-                canvas.draw(tileTextures[tileIndex - firstTileIndex], Color.WHITE,0,0,j * 12f * scale.x,i * 12f * scale.y,ursa.getAngle(), 0.75f,0.75f);
+                x = j * 12f * scale.x;
+                y = i * 12f * scale.y;
+                canvas.draw(tileTextures[tileIndex - firstTileIndex], Color.WHITE,0,0, x, y, ursa.getAngle(), 0.75f,0.75f);
             }
         }
 
@@ -742,513 +749,8 @@ public class SceneModel extends WorldController implements ContactListener {
 
 
     }
-    public void drawWalls(){
-        int counter = 0;
-        InvivisbleWall wall;
-        for (int i = (int) deprecatedTileHeight; i >0 ; i--) {
 
-            for(int j = 0; j < deprecatedTileWidth;j++){
-
-
-
-                if(jsonData.get("layers").get(0).get(0).get(counter).asInt() == firstTileIndex){
-                    //tileTextures[0] = new TextureRegion(directory.getEntry("tiles:polar_middle",Texture.class));
-
-
-                } else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == firstTileIndex +8) {
-                    //tileTextures[1] = new TextureRegion(directory.getEntry("tiles:polar_corner_1",Texture.class));
-                    wall = new InvivisbleWall(4 + (j* 8),0+(i*8),3f,.3f);
-                    wall.setDensity(0);
-                    wall.setFriction(0);
-                    wall.setRestitution(0);
-                    wall.setDrawScale(scale);
-                    wall.setName("invis wall " + (i + j));
-                    addObject(wall);
-
-                    // ===================
-                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
-                            wall.getWidth(), wall.getHeight()));
-                    // ===================
-
-                    wall = new InvivisbleWall(5.5f + (j* 8),1+(i*8),.3f,2f);
-                    wall.setDensity(0);
-                    wall.setFriction(0);
-                    wall.setRestitution(0);
-                    wall.setDrawScale(scale);
-                    wall.setName("invis wall " + (i + j));
-                    addObject(wall);
-
-                    // ===================
-                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
-                            wall.getWidth(), wall.getHeight()));
-                    // ===================
-
-                    wall = new InvivisbleWall(6.5f + (j* 8),2.8f+(i*8),2.5f,.3f);
-                    wall.setDensity(0);
-                    wall.setFriction(0);
-                    wall.setRestitution(0);
-                    wall.setDrawScale(scale);
-                    wall.setName("invis wall " + (i + j));
-                    addObject(wall);
-
-
-                    // ===================
-                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
-                            wall.getWidth(), wall.getHeight()));
-                    // ===================
-
-                }
-                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == firstTileIndex +1) {
-                    //tileTextures[2] = new TextureRegion(directory.getEntry("tiles:polar_corner_2",Texture.class));
-                    wall = new InvivisbleWall( 1.3f + (j* 8),2.8f+(i*8),3f,.3f);
-                    wall.setDensity(0);
-                    wall.setFriction(0);
-                    wall.setRestitution(0);
-                    wall.setDrawScale(scale);
-                    wall.setName("invis wall " + (i + j));
-                    addObject(wall);
-
-                    // ===================
-                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
-                            wall.getWidth(), wall.getHeight()));
-                    // ===================
-
-                    wall = new InvivisbleWall(3f + (j* 8),1.4f+(i*8),.3f,2.8f);
-                    wall.setDensity(0);
-                    wall.setFriction(0);
-                    wall.setRestitution(0);
-                    wall.setDrawScale(scale);
-                    wall.setName("invis wall " + (i + j));
-                    addObject(wall);
-
-                    // ===================
-                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
-                            wall.getWidth(), wall.getHeight()));
-                    // ===================
-
-                }
-                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == firstTileIndex +2) {
-                    //tileTextures[3] = new TextureRegion(directory.getEntry("tiles:polar_corner_3",Texture.class));
-                    wall = new InvivisbleWall( 1.3f + (j* 8),5.5f+(i*8),3f,.3f);
-                    wall.setDensity(0);
-                    wall.setFriction(0);
-                    wall.setRestitution(0);
-                    wall.setDrawScale(scale);
-                    wall.setName("invis wall " + (i + j));
-                    addObject(wall);
-
-                    // ===================
-                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
-                            wall.getWidth(), wall.getHeight()));
-                    // ===================
-
-                    wall = new InvivisbleWall(2.5f + (j* 8),6.8f+(i*8),.3f,2.3f);
-                    wall.setDensity(0);
-                    wall.setFriction(0);
-                    wall.setRestitution(0);
-                    wall.setDrawScale(scale);
-                    wall.setName("invis wall " + (i + j));
-                    addObject(wall);
-
-                    // ===================
-                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
-                            wall.getWidth(), wall.getHeight()));
-                    // ===================
-
-                }
-                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == firstTileIndex+3) {
-                    //tileTextures[4] = new TextureRegion(directory.getEntry("tiles:polar_corner_4",Texture.class));
-                    wall = new InvivisbleWall( 7.5f + (j* 8),05.5f+(i*8),3f,.3f);
-                    wall.setDensity(0);
-                    wall.setFriction(0);
-                    wall.setRestitution(0);
-                    wall.setDrawScale(scale);
-                    wall.setName("invis wall " + (i + j));
-                    addObject(wall);
-
-                    // ===================
-                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
-                            wall.getWidth(), wall.getHeight()));
-                    // ===================
-
-                    wall = new InvivisbleWall(5.5f + (j* 8),6.8f+(i*8),.3f,2.3f);
-                    wall.setDensity(0);
-                    wall.setFriction(0);
-                    wall.setRestitution(0);
-                    wall.setDrawScale(scale);
-                    wall.setName("invis wall " + (i + j));
-                    addObject(wall);
-
-                    // ===================
-                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
-                            wall.getWidth(), wall.getHeight()));
-                    // ===================
-
-                }
-                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == firstTileIndex+9) {
-                    //tileTextures[6] = new TextureRegion(directory.getEntry("tiles:polar_corner_6",Texture.class));
-                    wall = new InvivisbleWall(3f + (j* 8),4f+(i*8),.3f,8f);
-                    wall.setDensity(0);
-                    wall.setFriction(0);
-                    wall.setRestitution(0);
-                    wall.setDrawScale(scale);
-                    wall.setName("invis wall " + (i + j));
-                    addObject(wall);
-
-                    // ===================
-                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
-                            wall.getWidth(), wall.getHeight()));
-                    // ===================
-
-                }
-                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == firstTileIndex+13) {
-                    //tileTextures[10] = new TextureRegion(directory.getEntry("tiles:polar_edge_2",Texture.class));
-                    wall = new InvivisbleWall(2.8f + (j* 8),.8f+(i*8),.3f,1.5f);
-                    wall.setDensity(0);
-                    wall.setFriction(0);
-                    wall.setRestitution(0);
-                    wall.setDrawScale(scale);
-                    wall.setName("invis wall " + (i + j));
-                    addObject(wall);
-
-                    // ===================
-                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
-                            wall.getWidth(), wall.getHeight()));
-                    // ===================
-
-                    wall = new InvivisbleWall(2.5f + (j* 8),7f+(i*8),.3f,2f);
-                    wall.setDensity(0);
-                    wall.setFriction(0);
-                    wall.setRestitution(0);
-                    wall.setDrawScale(scale);
-                    wall.setName("invis wall " + (i + j));
-                    addObject(wall);
-
-                    // ===================
-                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
-                            wall.getWidth(), wall.getHeight()));
-                    // ===================
-
-                    wall = new InvivisbleWall(3.7f + (j* 8),3.7f+(i*8),.3f,4f);
-                    wall.setDensity(0);
-                    wall.setFriction(0);
-                    wall.setRestitution(0);
-                    wall.setDrawScale(scale);
-                    wall.setName("invis wall " + (i + j));
-                    addObject(wall);
-
-                    // ===================
-                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
-                            wall.getWidth(), wall.getHeight()));
-                    // ===================
-
-                }
-                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == firstTileIndex+10) {
-                    //tileTextures[12] = new TextureRegion(directory.getEntry("tiles:polar_edge_4",Texture.class));
-                    wall = new InvivisbleWall( 3.9f + (j* 8),2.8f+(i*8),8f,.3f);
-                    wall.setDensity(0);
-                    wall.setFriction(0);
-                    wall.setRestitution(0);
-                    wall.setDrawScale(scale);
-                    wall.setName("invis wall " + (i + j));
-                    addObject(wall);
-
-                    // ===================
-                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
-                            wall.getWidth(), wall.getHeight()));
-                    // ===================
-
-                }
-                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == firstTileIndex + 11) {
-                    //tileTextures[14] = new TextureRegion(directory.getEntry("tiles:polar_edge_6",Texture.class));
-                    wall = new InvivisbleWall( 4.9f + (j* 8),6.8f+(i*8),.3f,2.5f);
-                    wall.setDensity(0);
-                    wall.setFriction(0);
-                    wall.setRestitution(0);
-                    wall.setDrawScale(scale);
-                    wall.setName("invis wall " + (i + j));
-                    addObject(wall);
-
-                    // ===================
-                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
-                            wall.getWidth(), wall.getHeight()));
-                    // ===================
-
-                    wall = new InvivisbleWall( 3.9f + (j* 8),3.8f+(i*8),.3f,2.5f);
-                    wall.setDensity(0);
-                    wall.setFriction(0);
-                    wall.setRestitution(0);
-                    wall.setDrawScale(scale);
-                    wall.setName("invis wall " + (i + j));
-                    addObject(wall);
-
-                    // ===================
-                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
-                            wall.getWidth(), wall.getHeight()));
-                    // ===================
-
-                    wall = new InvivisbleWall( 5.3f + (j* 8),1.1f+(i*8),.3f,2.0f);
-                    wall.setDensity(0);
-                    wall.setFriction(0);
-                    wall.setRestitution(0);
-                    wall.setDrawScale(scale);
-                    wall.setName("invis wall " + (i + j));
-                    addObject(wall);
-
-                    // ===================
-                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
-                            wall.getWidth(), wall.getHeight()));
-                    // ===================
-
-                }
-                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == firstTileIndex + 7) {
-                    //tileTextures[5] = new TextureRegion(directory.getEntry("tiles:polar_corner_5",Texture.class));
-                    wall = new InvivisbleWall( 4f + (j* 8),5f+(i*8),8f,.3f);
-                    wall.setDensity(0);
-                    wall.setFriction(0);
-                    wall.setRestitution(0);
-                    wall.setDrawScale(scale);
-                    wall.setName("invis wall " + (i + j));
-                    addObject(wall);
-
-                    // ===================
-                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
-                            wall.getWidth(), wall.getHeight()));
-                    // ===================
-
-                }
-                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == firstTileIndex + 14) {
-                    //tileTextures[8] = new TextureRegion(directory.getEntry("tiles:polar_corner_8",Texture.class));
-                    wall = new InvivisbleWall( 6.2f +  (j* 8),4.7f+(i*8),3.5f,.3f);
-                    wall.setDensity(0);
-                    wall.setFriction(0);
-                    wall.setRestitution(0);
-                    wall.setDrawScale(scale);
-                    wall.setName("invis wall " + (i + j));
-                    addObject(wall);
-
-                    // ===================
-                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
-                            wall.getWidth(), wall.getHeight()));
-                    // ===================
-
-                    wall = new InvivisbleWall(3f + (j* 8),1.3f+(i*8),.3f,2.3f);
-                    wall.setDensity(0);
-                    wall.setFriction(0);
-                    wall.setRestitution(0);
-                    wall.setDrawScale(scale);
-                    wall.setName("invis wall " + (i + j));
-                    addObject(wall);
-
-                    // ===================
-                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
-                            wall.getWidth(), wall.getHeight()));
-                    // ===================
-
-                    wall = new InvivisbleWall(3.8f + (j* 8),3.3f+(i*8),.3f,1.3f);
-                    wall.setDensity(0);
-                    wall.setFriction(0);
-                    wall.setRestitution(0);
-                    wall.setDrawScale(scale);
-                    wall.setName("invis wall " + (i + j));
-                    addObject(wall);
-
-                    // ===================
-                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
-                            wall.getWidth(), wall.getHeight()));
-                    // ===================
-
-                }
-                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == firstTileIndex+4) {
-                    //tileTextures[9] = new TextureRegion(directory.getEntry("tiles:polar_edge_1",Texture.class));
-                    wall = new InvivisbleWall( 5.8f +  (j* 8),3.3f+(i*8),4f,.3f);
-                    wall.setDensity(0);
-                    wall.setFriction(0);
-                    wall.setRestitution(0);
-                    wall.setDrawScale(scale);
-                    wall.setName("invis wall " + (i + j));
-                    addObject(wall);
-
-                    // ===================
-                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
-                            wall.getWidth(), wall.getHeight()));
-                    // ===================
-
-                    wall = new InvivisbleWall(3f + (j* 8),6.3f+(i*8),.3f,4.3f);
-                    wall.setDensity(0);
-                    wall.setFriction(0);
-                    wall.setRestitution(0);
-                    wall.setDrawScale(scale);
-                    wall.setName("invis wall " + (i + j));
-                    addObject(wall);
-
-                    // ===================
-                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
-                            wall.getWidth(), wall.getHeight()));
-                    // ===================
-
-                }
-                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == firstTileIndex+5) {
-                    //tileTextures[13] = new TextureRegion(directory.getEntry("tiles:polar_edge_5",Texture.class));
-                    wall = new InvivisbleWall( 2.3f +  (j* 8),4.7f+(i*8),4.5f,.3f);
-                    wall.setDensity(0);
-                    wall.setFriction(0);
-                    wall.setRestitution(0);
-                    wall.setDrawScale(scale);
-                    wall.setName("invis wall " + (i + j));
-                    addObject(wall);
-
-                    // ===================
-                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
-                            wall.getWidth(), wall.getHeight()));
-                    // ===================
-
-                    wall = new InvivisbleWall(5.2f + (j* 8),2.5f+(i*8),.3f,4.3f);
-                    wall.setDensity(0);
-                    wall.setFriction(0);
-                    wall.setRestitution(0);
-                    wall.setDrawScale(scale);
-                    wall.setName("invis wall " + (i + j));
-                    addObject(wall);
-
-                    // ===================
-                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
-                            wall.getWidth(), wall.getHeight()));
-                    // ===================
-
-                }
-                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == firstTileIndex+12) {
-                    //tileTextures[11] = new TextureRegion(directory.getEntry("tiles:polar_edge_3",Texture.class));
-                    wall = new InvivisbleWall(5.2f + (j* 8),4f+(i*8),.3f,8f);
-                    wall.setDensity(0);
-                    wall.setFriction(0);
-                    wall.setRestitution(0);
-                    wall.setDrawScale(scale);
-                    wall.setName("invis wall " + (i + j));
-                    addObject(wall);
-
-                    // ===================
-                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
-                            wall.getWidth(), wall.getHeight()));
-                    // ===================
-
-                }
-                else if (jsonData.get("layers").get(0).get(0).get(counter).asInt() == firstTileIndex+6){
-                    wall = new InvivisbleWall( (j* 8),3+ (i*8),1f,.3f);
-                    wall.setDensity(0);
-                    wall.setFriction(0);
-                    wall.setRestitution(0);
-                    wall.setDrawScale(scale);
-                    wall.setName("invis wall " + (i + j));
-                    addObject(wall);
-
-                    // ===================
-                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
-                            wall.getWidth(), wall.getHeight()));
-                    // ===================
-
-
-                    wall = new InvivisbleWall( 1+(j* 8),3.2f+ (i*8),1f,.3f);
-                    wall.setDensity(0);
-                    wall.setFriction(0);
-                    wall.setRestitution(0);
-                    wall.setDrawScale(scale);
-                    wall.setName("invis wall " + (i + j));
-                    addObject(wall);
-
-                    // ===================
-                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
-                            wall.getWidth(), wall.getHeight()));
-                    // ===================
-
-
-                    wall = new InvivisbleWall( 1.8f+(j* 8),3.5f+ (i*8),1f,.3f);
-                    wall.setDensity(0);
-                    wall.setFriction(0);
-                    wall.setRestitution(0);
-                    wall.setDrawScale(scale);
-                    wall.setName("invis wall " + (i + j));
-                    addObject(wall);
-
-                    // ===================
-                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
-                            wall.getWidth(), wall.getHeight()));
-                    // ===================
-
-
-                    wall = new InvivisbleWall( 2.8f+(j* 8),4.0f+ (i*8),1f,.3f);
-                    wall.setDensity(0);
-                    wall.setFriction(0);
-                    wall.setRestitution(0);
-                    wall.setDrawScale(scale);
-                    wall.setName("invis wall " + (i + j));
-                    addObject(wall);
-
-                    // ===================
-                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
-                            wall.getWidth(), wall.getHeight()));
-                    // ===================
-
-
-                    wall = new InvivisbleWall( 3.5f+(j* 8),4.5f+ (i*8),1f,.3f);
-                    wall.setDensity(0);
-                    wall.setFriction(0);
-                    wall.setRestitution(0);
-                    wall.setDrawScale(scale);
-                    wall.setName("invis wall " + (i + j));
-                    addObject(wall);
-
-                    // ===================
-                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
-                            wall.getWidth(), wall.getHeight()));
-                    // ===================
-
-
-                    wall = new InvivisbleWall( 4.5f+(j* 8),5.2f+ (i*8),.1f,2f);
-                    wall.setDensity(0);
-                    wall.setFriction(0);
-                    wall.setRestitution(0);
-                    wall.setDrawScale(scale);
-                    wall.setName("invis wall " + (i + j));
-                    wall.setAngle(-0.523599f);
-                    addObject(wall);
-
-                    // ===================
-                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
-                            wall.getWidth(), wall.getHeight()));
-                    // ===================
-
-
-                    wall = new InvivisbleWall( 5.15f+(j* 8),6.9f+ (i*8),.1f,2f);
-                    wall.setDensity(0);
-                    wall.setFriction(0);
-                    wall.setRestitution(0);
-                    wall.setDrawScale(scale);
-                    wall.setName("invis wall " + (i + j));
-                    wall.setAngle(-.2f);
-                    addObject(wall);
-
-                    // ===================
-                    genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
-                            wall.getWidth(), wall.getHeight()));
-                    // ===================
-                }
-                counter += 1;
-
-
-
-            }
-
-            //draw the background objects
-
-
-
-        }
-
-
-    }
     private void animateEnemies(){
-
         for (AIController i : controls) {
             if (i != null) {
                 if (i.isWon() || i.isSurprised()) {
@@ -1336,6 +838,20 @@ public class SceneModel extends WorldController implements ContactListener {
             treeShakeIndex = 0;
             // Reset the currently shaking tree
             shakingTree = null;
+        }
+    }
+
+    private void animateCaves() {
+        cavePortalFilm.setFrame(cavePortalIndex);
+        if(currentFrame % cavePortalAnimBuffer == 0) {
+            cavePortalIndex = (cavePortalIndex + 1) % 11;
+        }
+    }
+
+    private void animateSmolUrsa() {
+        smolUrsaIdleFilm.setFrame(smolUrsaIdleIndex);
+        if(currentFrame % smolUrsaIdleAnimBuffer == 0) {
+            smolUrsaIdleIndex = (smolUrsaIdleIndex + 1) % 39;
         }
     }
 
@@ -1442,6 +958,8 @@ public class SceneModel extends WorldController implements ContactListener {
         animatePlayerModel();
         animateEnemies();
         animateTree();
+        animateCaves();
+        animateSmolUrsa();
 
         // If the game is lost, move the player
         if (!isFailure()) {
@@ -1536,8 +1054,8 @@ public class SceneModel extends WorldController implements ContactListener {
             }
 
             // Check for win condition
-            if ((bd1 == ursa   && bd2 == goalDoor) ||
-                    (bd1 == goalDoor && bd2 == ursa)) {
+            if ((bd1 == ursa   && bd2 == goal) ||
+                    (bd1 == goal && bd2 == ursa)) {
                 setComplete(true);
                 levelMusic.stop();
                 levelMusicTense.stop();
@@ -1671,16 +1189,120 @@ public class SceneModel extends WorldController implements ContactListener {
         return drawCoord * 0.75f / scale.x;
     }
 
+    public void renderWalls(){
+        int counter = 0;
+        float x;
+        float y;
+        JsonValue wallConstants = constants.get("wall");
+        // The array needs to be parsed from top to bottom
+        for (int i = (int) numTilesY - 1; i >= 0 ; i--) {
+            for(int j = 0; j < numTilesX; j++){
+                int tileIndex = jsonData.get("layers").get(0).get(0).get(counter++).asInt();
+                if(tileIndex == 0 || tileIndex == firstTileIndex) {
+                    continue;
+                }
+                x = j * 12f;
+                y = i * 12f;
+                float[] coords = wallConstants.get(Integer.toString(tileIndex - firstTileIndex)).asFloatArray();
+                Barrier wall = new Barrier(coords,x, y);
+                wall.setDrawScale(scale);
+                wall.setName("wall" + i + " " + j);
+                addObject(wall);
+                // ===================
+                genericObstacles.add(new GenericObstacle(wall.getX(), wall.getY(),
+                        wall.getWidth(), wall.getHeight()));
+                // ===================
+            }
+        }
+    }
+
+    public void renderEnemies() {
+        if (jsonData.get("layers").get(2) == null) {
+            return;
+        }
+        // TODO
+        JsonValue treeConstants = constants.get("enemy");
+        for (int i = 0; i < jsonData.get("layers").get(2).get("objects").size; i++) {
+            float x = jsonData.get("layers").get(2).get("objects").get(i).get(8).asFloat()
+                    + salmonTexture.getRegionWidth() / 2f;
+            float y = maxY - jsonData.get("layers").get(2).get("objects").get(i).get(9).asFloat();
+
+            Enemy obj = new Enemy(drawToScreenCoordinates(x), drawToScreenCoordinates(y),20,20,constants.get("enemy"), 128,128);
+            obj.setDrawScale(scale);
+            obj.setLookDirection(1, 0);
+            obj.setTexture(salmonUprightWalkFilm);
+            obj.setName("cave" + i);
+
+            addObject(obj);
+            enemies[i] = obj;
+
+//            enemyPosList = new Vector2[]{new Vector2(0,0)};
+//            if (enemies[i] != null) {
+//                Board board = new Board(genericObstacles, enemies);
+//                if(i == 0) {
+//                    controls.add(new AIController(enemies[i], ursa, null, enemyPosList, true));
+//                } else {
+//                    controls.add(new AIController(enemies[i], ursa, null, enemyPosList));
+//                }
+//            }
+
+            //float markerCounter = 0;
+//            enemyPosList = new Vector2[10];
+//            float enemyNumber = jsonData.get("layers").get(3).get("objects").get(i).get("name").asFloat();
+//            float x = (jsonData.get("layers").get(3).get("objects").get(i).get(8).asFloat()) ;
+//
+//            float y = (maxY - jsonData.get("layers").get(3).get("objects").get(i).get(9).asFloat());
+//            float ratioX = x/maxX;
+//            float ratioY = y/maxY;
+//
+//            float direction = 1;
+//
+//            for(int e = 0; e < jsonData.get("layers").get(8).get("objects").size;e++){
+//                float MarkerName = jsonData.get("layers").get(8).get("objects").get(e).get("name").asFloat();
+//                if(MarkerName == enemyNumber ){
+//                    int orderNum = (jsonData.get("layers").get(8).get("objects").get(e).get("type").asInt());
+//                    float markerX = (jsonData.get("layers").get(8).get("objects").get(e).get("x").asFloat());
+//                    float markerY = ((maxY - jsonData.get("layers").get(8).get("objects").get(e).get("y").asFloat())) ;
+//                    float markerRatioX = markerX/maxX;
+//                    float markerRatioY = markerY/maxY;
+//
+//                    enemyPosList[orderNum-1] = new Vector2(markerRatioX * deprecatedTileWidth * 9  ,(markerRatioY * deprecatedTileWidth
+//                            * 8) +8);
+//                    markerCounter += 1;
+//                }
+//            }
+
+//
+//            if (enemies[i] != null) {
+//                Board board = new Board(genericObstacles, enemies);
+//                if(i == 0) {
+//                    controls.add(new AIController(enemies[i], ursa, null, enemyPosList, true));
+//                } else {
+//                    controls.add(new AIController(enemies[i], ursa, null, enemyPosList));
+//                }
+//            }
+//        }
+
+        }
+    }
+
+    public void renderInvisibleWalls() {
+
+    }
+
     /**
      * Renders all the trees on the map by reading them from JSON
      */
     public void renderTrees() {
         if(jsonData.get("layers").get(4) == null) { return; }
+
         JsonValue treeConstants = constants.get("tree");
-        for(int i = 0; i < jsonData.get("layers").get(4).get("objects").size; i++) {
-            int treeIndex = jsonData.get("layers").get(4).get("objects").get(i).get("gid").asInt();
-            float x = jsonData.get("layers").get(4).get("objects").get(i).get(8).asFloat() + treeTextures[treeIndex - firstTreeIndex].getRegionWidth() / 2f;
-            float y = maxY - jsonData.get("layers").get(4).get("objects").get(i).get(9).asFloat();
+        JsonValue treeObjectData = jsonData.get("layers").get(4).get("objects");
+
+        for(int i = 0; i < treeObjectData.size; i++) {
+            int treeIndex = treeObjectData.get(i).get("gid").asInt();
+            float x = treeObjectData.get(i).get(8).asFloat() + treeTextures[treeIndex - firstTreeIndex].getRegionWidth() / 2f;
+            float y = maxY - treeObjectData.get(i).get(9).asFloat();
 
             Tree obj = new Tree(treeConstants.get("vertices").asFloatArray(),drawToScreenCoordinates(x),drawToScreenCoordinates(y));
             obj.setDrawScale(scale);
@@ -1712,24 +1334,40 @@ public class SceneModel extends WorldController implements ContactListener {
      */
     public void renderDecorations() {
         if(jsonData.get("layers").get(8) == null) { return; }
-        for(int i = 0; i < jsonData.get("layers").get(8).get("objects").size; i++) {
-            float x = jsonData.get("layers").get(8).get("objects").get(i).get(8).asFloat();
-            float y = maxY - jsonData.get("layers").get(8).get("objects").get(i).get(9).asFloat();
-            int decorationIndex = jsonData.get("layers").get(8).get("objects").get(i).get("gid").asInt();
-            Decoration decoration = new Decoration(decorationTextures[decorationIndex - firstSmallDecorationIndex], scale, drawToScreenCoordinates(x),drawToScreenCoordinates(y));
+        JsonValue decorationData = jsonData.get("layers").get(8).get("objects");
+
+        for(int i = 0; i < decorationData.size; i++) {
+            float x = decorationData.get(i).get(8).asFloat();
+            float y = maxY - decorationData.get(i).get(9).asFloat();
+            int decorationIndex = decorationData.get(i).get("gid").asInt();
+            if(decorationIndex - firstSmallDecorationIndex < decorationTextures.length) {
+                decorationIndex -= firstSmallDecorationIndex;
+            } else if(decorationIndex - firstMediumDecorationIndex < decorationTextures.length) {
+                decorationIndex = decorationIndex - firstMediumDecorationIndex + 12;
+            } else if(decorationIndex - firstLargeDecorationIndex < decorationTextures.length) {
+                decorationIndex = decorationIndex - firstLargeDecorationIndex + 14;
+            } else {
+                continue;
+            }
+            Decoration decoration = new Decoration(decorationTextures[decorationIndex], scale, drawToScreenCoordinates(x),drawToScreenCoordinates(y));
 
             decorations.add(decoration);
         }
     }
 
     public void renderCaves() {
-        if(jsonData.get("layers").get(5) == null) { return; }
-        JsonValue treeConstants = constants.get("cave");
-        for(int i = 0; i < jsonData.get("layers").get(5).get("objects").size; i++) {
-            float x = jsonData.get("layers").get(5).get("objects").get(i).get(8).asFloat() + polarCave.getRegionWidth() / 2f;
-            float y = maxY - jsonData.get("layers").get(5).get("objects").get(i).get(9).asFloat() + polarCave.getRegionHeight() / 2f;
+        if (jsonData.get("layers").get(5) == null) {
+            return;
+        }
+        JsonValue caveConstants = constants.get("cave");
+        JsonValue caveObjectData = jsonData.get("layers").get(5).get("objects");
 
-            Cave obj = new Cave(treeConstants.get("vertices").asFloatArray(),drawToScreenCoordinates(x),drawToScreenCoordinates(y));
+        for (int i = 0; i < caveObjectData.size; i++) {
+            float x = caveObjectData.get(i).get(8).asFloat() + polarCave.getRegionWidth() / 2f;
+            float y = maxY - caveObjectData.get(i).get(9).asFloat() + polarCave.getRegionHeight() / 2f;
+
+            Cave obj = new Cave(caveConstants.get("vertices").asFloatArray(),
+                    drawToScreenCoordinates(x), drawToScreenCoordinates(y));
             obj.setDrawScale(scale);
             obj.setTexture(cavePortalFilm);
             obj.setName("cave" + i);
@@ -1738,7 +1376,8 @@ public class SceneModel extends WorldController implements ContactListener {
 
             // Tree shadows
             ShadowModel model = new ShadowModel(new Vector2(obj.getX(), obj.getY()), 0.75f, 0.75f,
-                    "cave shadow" + i, new Vector2(polarTreeShadow.getRegionWidth() / 2.0f, 85), scale);
+                    "cave shadow" + i, new Vector2(polarTreeShadow.getRegionWidth() / 2.0f, 85),
+                    scale);
             shadows.add(model);
             addObject(model);
 
@@ -1748,4 +1387,33 @@ public class SceneModel extends WorldController implements ContactListener {
             // ===================
         }
     }
+
+    public void renderSmolUrsa() {
+        if (jsonData.get("layers").get(6) == null) {
+            return;
+        }
+        JsonValue smolUrsaConstants = constants.get("smolursa");
+        JsonValue smolUrsaObjectData = jsonData.get("layers").get(6).get("objects");
+
+        float x = smolUrsaObjectData.get(0).get(8).asFloat()
+                + smolUrsaTexture.getRegionWidth() / 2f;
+        float y = maxY - smolUrsaObjectData.get(0).get(9).asFloat();
+        System.out.println(x + " " + y);
+
+
+        goal = new GameObject(smolUrsaConstants.get("vertices").asFloatArray(), drawToScreenCoordinates(x),
+                drawToScreenCoordinates(y));
+        goal.setSensor(true);
+        goal.setDrawScale(scale);
+        goal.setTexture(smolUrsaIdleFilm);
+        goal.setName("smolursa");
+        addObject(goal);
+
+        // ===================
+        genericObstacles.add(new GenericObstacle(goal.getX(), goal.getY(),
+                goal.getWidth(), goal.getHeight()));
+        // ===================
+    }
 }
+
+

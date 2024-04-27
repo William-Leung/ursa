@@ -470,8 +470,8 @@ public class Enemy extends BoxObstacle {
 
 	public void draw(GameCanvas canvas) {
 		Color color = alerted ? Color.RED : Color.GREEN;
-		canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),
-				(lookDirection.x > 0 ? 1 : -1) * .35f,.35f);
+		canvas.draw(texture, Color.WHITE,origin.x,0,getX()*drawScale.x,getY()*drawScale.y,getAngle(),
+				(lookDirection.x > 0 ? 1 : -1) * 0.75f,0.75f);
 
 		drawSightCone(canvas, detectionRange, lookDirection, 8);
 
@@ -523,7 +523,9 @@ public class Enemy extends BoxObstacle {
 		} else {
 			polygonRegion = new PolygonRegion(greenTextureRegion,vertices, triangles);
 		}
-		canvas.draw(polygonRegion, Color.WHITE, origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),1.0f,1.0f);
+
+		float yOffset = 30f;
+		canvas.draw(polygonRegion, Color.WHITE, origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y + texture.getRegionHeight() / 2f - yOffset,getAngle(),1.0f,1.0f);
 	}
 
 	public boolean isInShadow() {

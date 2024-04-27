@@ -36,6 +36,11 @@
         "decoration:flower_1": "polar/decorations/Polar_Flower_1.png",
         "decoration:flower_2": "polar/decorations/Polar_Flower_2.png",
         "decoration:ground_4": "polar/decorations/Polar_Ground_4.png",
+        "decoration:statue": "polar/decorations/Polar_Dec_1.png",
+        "decoration:goat": "polar/decorations/Polar_Dec_5.png",
+        "decoration:ground_1": "polar/decorations/Polar_Ground_1.png",
+        "decoration:ground_2": "polar/decorations/Polar_Ground_2.png",
+
 
 
         "object:polar_house": "object/Polar_House.png",
@@ -82,6 +87,11 @@
         "levelSelect:retry": "levelSelect/retryMenu.png",
         "player:ursaWalk": "player/Walk.png",
         "player:ursaIdle": "player/Idle.png",
+        "player:ursa": "player/Ursa.png",
+
+        "smolursa:model": "smolursa/Little Ursa.png",
+        "smolursa:idle": "smolursa/Idle.png",
+
         "enemies:salmonUprightWalk": "enemies/Walk.png",
         "enemies:salmonConfused": "enemies/Lost.png",
         "enemies:salmonIdle": "enemies/Idle.png",

@@ -6,8 +6,6 @@ import edu.cornell.gdiac.physics.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.PolygonObstacle;
 
 public class GameObject extends PolygonObstacle {
-    private float xScale;
-    private float yScale;
 
     /**
      * Creates a (not necessarily convex) polygon
@@ -19,10 +17,8 @@ public class GameObject extends PolygonObstacle {
      * @param x      Initial x position of the polygon center
      * @param y      Initial y position of the polygon center
      */
-    public GameObject(float[] points, float x, float y, float xScale, float yScale) {
+    public GameObject(float[] points, float x, float y) {
         super(points, x, y);
-        this.xScale = 1 / xScale;
-        this.yScale = 1 / yScale;
 
         setBodyType(BodyDef.BodyType.StaticBody);
         setDensity(0.0f);
@@ -33,7 +29,7 @@ public class GameObject extends PolygonObstacle {
     public void draw(GameCanvas canvas) {
         if (region != null) {
             // We draw the texture from the bottom middle
-            canvas.draw(texture,Color.WHITE, texture.getRegionWidth() / 2f, 0,getX()*drawScale.x,getY()*drawScale.y,getAngle(),xScale,yScale);
+            canvas.draw(texture,Color.WHITE, texture.getRegionWidth() / 2f, 0f,getX()*drawScale.x,getY()*drawScale.y,getAngle(),0.75f,0.75f);
         }
     }
 }
