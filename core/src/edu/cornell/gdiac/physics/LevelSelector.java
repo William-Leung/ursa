@@ -83,7 +83,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         buttons[3] = new TextureRegion(directory.getEntry("levelSelect:Level3", Texture.class));
 
         ursa = new TextureRegion(directory.getEntry("player:ursaWalk",Texture.class));
-        ursaFilm = new FilmStrip(ursa.getTexture(),3,8);
+        ursaFilm = new FilmStrip(ursa.getTexture(),2,8);
         ursaFilm.setFrame(0);
 
         buttonsFilms[0] = new FilmStrip(buttons[0].getTexture(),1,2);
@@ -124,7 +124,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         if(levelsCompleted == 1){
             button2Locked = false;
         }
-        if(ursaFilm.getFrame() == 18){
+        if(ursaFilm.getFrame() == 11){
             ursaFilm.setFrame(0);
         }
 
