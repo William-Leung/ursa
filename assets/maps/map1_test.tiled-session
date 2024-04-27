@@ -82,6 +82,14 @@
                 "y": 2070.8333333333335
             }
         },
+        "/Users/ykhadir/3300/p2/ursa/assets/testing.json": {
+            "scale": 0.13606770833333331,
+            "selectedLayer": 7,
+            "viewCenter": {
+                "x": 2307.6746411483255,
+                "y": 1414.7368421052631
+            }
+        },
         "/Users/ykhadir/3300/p2/ursa/assets/tutorial.json": {
             "scale": 0.0834,
             "selectedLayer": 9,
@@ -372,8 +380,8 @@
             "scale": 0.18,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 1241.6666666666665,
-                "y": 1297.2222222222222
+                "x": 1244.4444444444446,
+                "y": 1297.2222222222224
             }
         },
         "testing.tmx.tmj": {

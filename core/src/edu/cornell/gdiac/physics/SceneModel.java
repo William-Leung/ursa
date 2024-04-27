@@ -22,6 +22,7 @@ import edu.cornell.gdiac.physics.enemy.Enemy;
 import edu.cornell.gdiac.physics.objects.Cave;
 import edu.cornell.gdiac.physics.objects.Decoration;
 import edu.cornell.gdiac.physics.objects.GameObject;
+import edu.cornell.gdiac.physics.objects.Moveable;
 import edu.cornell.gdiac.physics.obstacle.*;
 import edu.cornell.gdiac.physics.objects.GenericObstacle;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
@@ -520,6 +521,7 @@ public class SceneModel extends WorldController implements ContactListener {
         renderCaves();
         renderSmolUrsa();
         renderDecorations();
+        renderRocks();
 
 
 
@@ -1221,7 +1223,6 @@ public class SceneModel extends WorldController implements ContactListener {
             return;
         }
         // TODO
-        JsonValue treeConstants = constants.get("enemy");
         for (int i = 0; i < jsonData.get("layers").get(2).get("objects").size; i++) {
             float x = jsonData.get("layers").get(2).get("objects").get(i).get(8).asFloat()
                     + salmonTexture.getRegionWidth() / 2f;
@@ -1385,6 +1386,24 @@ public class SceneModel extends WorldController implements ContactListener {
             genericObstacles.add(new GenericObstacle(obj.getX(), obj.getY(),
                     obj.getWidth(), obj.getHeight()));
             // ===================
+        }
+    }
+
+    public void renderRocks() {
+        if (jsonData.get("layers").get(9) == null) {
+            return;
+        }
+        JsonValue rockObjectData = jsonData.get("layers").get(9).get("objects");
+
+        for (int i = 0; i < rockObjectData.size; i++) {
+            float x = rockObjectData.get(i).get(8).asFloat() + polarCave.getRegionWidth() / 2f;
+            float y = maxY - rockObjectData.get(i).get(9).asFloat() + polarCave.getRegionHeight() / 2f;
+
+            Moveable rock = new Moveable(drawToScreenCoordinates(x),drawToScreenCoordinates(y),3,3);
+            rock.setDrawScale(scale);
+            rock.setTexture(polarRock3);
+            rock.setName("rock"+i);
+            addObject(rock);
         }
     }
 
