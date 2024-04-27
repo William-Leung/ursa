@@ -266,24 +266,24 @@
             "scale": 0.20335937499999998,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 2050.557049558202,
-                "y": 2028.4287360737608
+                "x": 2045.63964656166,
+                "y": 1276.0660776027662
             }
         },
         "level1.tmx": {
             "scale": 0.107,
             "selectedLayer": 3,
             "viewCenter": {
-                "x": 3065.4205607476642,
-                "y": 3060.747663551402
+                "x": 3065.4205607476633,
+                "y": 3070.0934579439254
             }
         },
         "map1.tmx": {
             "scale": 0.08,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 5100,
-                "y": 5106.25
+                "x": 5112.5,
+                "y": 5118.75
             }
         },
         "map1.tmx#Polar_Cliff_center": {
@@ -291,45 +291,45 @@
         },
         "map2.tmx": {
             "expandedObjectLayers": [
-                9,
+                5,
+                8,
+                2,
                 3,
                 7,
-                5,
                 4,
-                2,
-                8
+                9
             ],
             "scale": 0.25,
             "selectedLayer": 9,
             "viewCenter": {
-                "x": 1788,
-                "y": 1786
+                "x": 1792,
+                "y": 1790
             }
         },
         "map3.tmx": {
             "expandedObjectLayers": [
-                7,
                 5,
-                4,
-                2
+                2,
+                7,
+                4
             ],
             "scale": 0.15,
             "selectedLayer": 3,
             "viewCenter": {
-                "x": 3046.666666666667,
-                "y": 4863.333333333334
+                "x": 3066.666666666667,
+                "y": 3070
             }
         },
         "map4.tmx": {
             "expandedObjectLayers": [
-                9,
-                4
+                4,
+                9
             ],
             "scale": 0.25,
             "selectedLayer": 8,
             "viewCenter": {
-                "x": 3324,
-                "y": 2810
+                "x": 3328,
+                "y": 2206
             }
         },
         "map5.tmx": {
@@ -388,8 +388,8 @@
             "scale": 0.18,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 1233.333333333333,
-                "y": 1202.7777777777776
+                "x": 1877.7777777777776,
+                "y": 3147.2222222222217
             }
         },
         "testing.tmx.tmj": {
