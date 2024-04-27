@@ -30,13 +30,16 @@
     "vertices": [0.8, 2.3, 1, 0, -1, 0, -0.8, 2.3]
   },
   "enemy" : {
+    "vertices": [3,4,-3,4,-1,0.5,1,0.5],
     "pos": [7.5, 5.0],
     "shrink": [0.07, 0.095],
-    "force": 20.0,
+    "width": 4,
+    "height": 4,
+    "force": 100.0,
     "damping": 10.0,
     "density": 1.0,
     "friction": 1.0,
-    "maxspeed": 5.0,
+    "maxspeed": 10.0,
     "jump_force": 5.5,
     "jump_cool": 30,
     "shot_cool": 40,

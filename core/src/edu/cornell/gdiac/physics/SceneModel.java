@@ -34,6 +34,7 @@ import edu.cornell.gdiac.physics.shadows.ShadowModel;
 import edu.cornell.gdiac.physics.objects.Tree;
 import edu.cornell.gdiac.util.FilmStrip;
 import edu.cornell.gdiac.util.PooledList;
+import java.util.Comparator;
 import java.util.LinkedList;
 
 public class SceneModel extends WorldController implements ContactListener {
@@ -49,7 +50,7 @@ public class SceneModel extends WorldController implements ContactListener {
 
     static {
         Pixmap pixmap = new Pixmap(BLOB_SHADOW_RESOLUTION * 2, BLOB_SHADOW_RESOLUTION * 2, Pixmap.Format.RGBA8888);
-        pixmap.setColor(new Color(0f,0f,0f,0.7f));
+        pixmap.setColor(new Color(0f,0f,0f,0.3f));
         int xcenter = pixmap.getWidth() / 2;
         int ycenter = pixmap.getHeight() / 2;
         pixmap.fillCircle(xcenter, ycenter, BLOB_SHADOW_RESOLUTION);
@@ -141,6 +142,10 @@ public class SceneModel extends WorldController implements ContactListener {
     private boolean ursaCurrentState = false;
     /** Ursa's idle animates 1/ursaIdleAnimBuffer slower */
     private int ursaIdleAnimBuffer = 3;
+    /** The frame at which Ursa began idling */
+    private int ursaBeganWalkingFrame = 0;
+    /** Ursa's idle animates 1/ursaWalkAnimBuffer slower */
+    private int ursaWalkAnimBuffer = 2;
     /** Current index of the salmon walking animation */
     private int salmonWalkAnimIndex = 0;
     /** Current index of the salmon confused animation */
@@ -152,7 +157,7 @@ public class SceneModel extends WorldController implements ContactListener {
     /** Current index of the tree shaking animation */
     private int treeShakeIndex = 0;
     /** Tree shaking animates 1/treeShakeAnimBuffer slower */
-    private int treeShakeAnimBuffer = 3;
+    private int treeShakeAnimBuffer = 4;
     /** Current frame number (used to slow down animations) */
     private int currentFrame = 0;
     /** The frame at which the tree began shaking */
@@ -170,7 +175,7 @@ public class SceneModel extends WorldController implements ContactListener {
     /** The tree that is currently shaking. */
     private Tree shakingTree = null;
     /** How far away the player must be to interact with trees (screen coords) */
-    private float treeInteractionRange = 3;
+    private float treeInteractionRange = 7;
     /** Within what distance will the enemy be stunned upon tree shaking. */
     private float enemyStunDistance = 4;
 
@@ -277,6 +282,7 @@ public class SceneModel extends WorldController implements ContactListener {
     /** Draw scale of UI */
     private float uiDrawScale = 0.1f;
 
+    private Comparator<Decoration> decorationComparator = (o1, o2) -> Float.compare(o2.getIndex(), o1.getIndex());
 
     /** =========== Soundtrack assets =========== */
     private Music levelMusic;
@@ -357,7 +363,7 @@ public class SceneModel extends WorldController implements ContactListener {
         polarTreeShadow.flip(true, true);
 
         playerWalkTextureAnimation = new TextureRegion(directory.getEntry("player:ursaWalk",Texture.class));
-        playerWalkFilm = new FilmStrip(playerWalkTextureAnimation.getTexture(),3,8);
+        playerWalkFilm = new FilmStrip(playerWalkTextureAnimation.getTexture(),2,8);
         playerIdleTextureAnimation = new TextureRegion(directory.getEntry("player:ursaIdle",Texture.class));
         playerIdleFilm = new FilmStrip(playerIdleTextureAnimation.getTexture(),4,8);
 
@@ -789,15 +795,18 @@ public class SceneModel extends WorldController implements ContactListener {
             // If the player was idling, now changing states
             if(ursaCurrentState == false) {
                 ursaCurrentState = true;
+                ursaBeganWalkingFrame = currentFrame;
             }
             ursaIdleAnimIndex = 0;
             // Rewind the film
-            if(ursaWalkAnimIndex == 20){
+            if(ursaWalkAnimIndex == 12){
                 ursaWalkAnimIndex = 0;
             }
             playerWalkFilm.setFrame(ursaWalkAnimIndex);
             ursa.setTexture(playerWalkFilm);
-            ursaWalkAnimIndex += 1;
+            if((currentFrame - ursaBeganWalkingFrame) % ursaWalkAnimBuffer == 0) {
+                ursaWalkAnimIndex += 1;
+            }
             // If the player is not moving
         } else {
             // If the player changed states
@@ -1125,21 +1134,24 @@ public class SceneModel extends WorldController implements ContactListener {
     public void preDraw(float dt) {
         canvas.draw(snowBackGround,Color.WHITE,0,0, deprecatedTileWidth * 256, deprecatedTileHeight
                 *256);
-        drawTiles();
+
         for(Decoration d: decorations) {
             d.draw(canvas);
         }
-        canvas.draw(blankTexture,backgroundColor, canvas.getCameraX() - canvas.getWidth() / 2, canvas.getCameraY() - canvas.getHeight() / 2, canvas.getWidth(), canvas.getHeight());
+
+        drawTiles();
+        canvas.draw(blankTexture,backgroundColor, canvas.getCameraX() - canvas.getWidth() / 2f, canvas.getCameraY() - canvas.getHeight() / 2, canvas.getWidth(), canvas.getHeight());
         super.updateTinting(backgroundColor);
 
+        for(Obstacle obj : objects) {
+            obj.preDraw(canvas);
+        }
         // Draws shadows for moving objects (enemy/player) and static objects
         // If it's night, don't draw shadows
         if(timeRatio > 1) {
             return;
         }
-        for(Obstacle obj : objects) {
-            obj.preDraw(canvas);
-        }
+
 
 //        for(AIController control: controls) {
 //            for(Vector2 v: control.getPatrol()) {
@@ -1223,29 +1235,33 @@ public class SceneModel extends WorldController implements ContactListener {
             return;
         }
         // TODO
-        for (int i = 0; i < jsonData.get("layers").get(2).get("objects").size; i++) {
-            float x = jsonData.get("layers").get(2).get("objects").get(i).get(8).asFloat()
-                    + salmonTexture.getRegionWidth() / 2f;
-            float y = maxY - jsonData.get("layers").get(2).get("objects").get(i).get(9).asFloat();
+        JsonValue enemyConstants = constants.get("enemy");
+        JsonValue enemyObjectData = jsonData.get("layers").get(2).get("objects");
 
-            Enemy obj = new Enemy(drawToScreenCoordinates(x), drawToScreenCoordinates(y),20,20,constants.get("enemy"), 128,128);
+        for (int i = 0; i < enemyObjectData.size; i++) {
+            float x = enemyObjectData.get(i).get(8).asFloat() + salmonTexture.getRegionWidth() / 2f;
+            float y = maxY - enemyObjectData.get(i).get(9).asFloat();
+
+            float width = enemyConstants.get("width").asFloat();
+            float height = enemyConstants.get("height").asFloat();
+            Enemy obj = new Enemy(drawToScreenCoordinates(x), drawToScreenCoordinates(y) + height / 2,20,20,constants.get("enemy"), width, height);
             obj.setDrawScale(scale);
             obj.setLookDirection(1, 0);
             obj.setTexture(salmonUprightWalkFilm);
-            obj.setName("cave" + i);
+            obj.setName("enemy" + i);
 
             addObject(obj);
             enemies[i] = obj;
 
-//            enemyPosList = new Vector2[]{new Vector2(0,0)};
-//            if (enemies[i] != null) {
-//                Board board = new Board(genericObstacles, enemies);
-//                if(i == 0) {
-//                    controls.add(new AIController(enemies[i], ursa, null, enemyPosList, true));
-//                } else {
-//                    controls.add(new AIController(enemies[i], ursa, null, enemyPosList));
-//                }
-//            }
+            enemyPosList = new Vector2[]{new Vector2(0,0)};
+            if (enemies[i] != null) {
+                Board board = new Board(genericObstacles, enemies);
+                if(i == 0) {
+                    controls.add(new AIController(enemies[i], ursa, null, enemyPosList, true));
+                } else {
+                    controls.add(new AIController(enemies[i], ursa, null, enemyPosList));
+                }
+            }
 
             //float markerCounter = 0;
 //            enemyPosList = new Vector2[10];
@@ -1287,9 +1303,6 @@ public class SceneModel extends WorldController implements ContactListener {
         }
     }
 
-    public void renderInvisibleWalls() {
-
-    }
 
     /**
      * Renders all the trees on the map by reading them from JSON
@@ -1341,19 +1354,21 @@ public class SceneModel extends WorldController implements ContactListener {
             float x = decorationData.get(i).get(8).asFloat();
             float y = maxY - decorationData.get(i).get(9).asFloat();
             int decorationIndex = decorationData.get(i).get("gid").asInt();
+            int textureIndex;
             if(decorationIndex - firstSmallDecorationIndex < decorationTextures.length) {
-                decorationIndex -= firstSmallDecorationIndex;
+                textureIndex = decorationIndex -firstSmallDecorationIndex;
             } else if(decorationIndex - firstMediumDecorationIndex < decorationTextures.length) {
-                decorationIndex = decorationIndex - firstMediumDecorationIndex + 12;
+                textureIndex = decorationIndex - firstMediumDecorationIndex + 12;
             } else if(decorationIndex - firstLargeDecorationIndex < decorationTextures.length) {
-                decorationIndex = decorationIndex - firstLargeDecorationIndex + 14;
+                textureIndex = decorationIndex - firstLargeDecorationIndex + 14;
             } else {
                 continue;
             }
-            Decoration decoration = new Decoration(decorationTextures[decorationIndex], scale, drawToScreenCoordinates(x),drawToScreenCoordinates(y));
+            Decoration decoration = new Decoration(decorationTextures[textureIndex], scale, drawToScreenCoordinates(x),drawToScreenCoordinates(y), decorationIndex);
 
             decorations.add(decoration);
         }
+        decorations.sort(decorationComparator);
     }
 
     public void renderCaves() {

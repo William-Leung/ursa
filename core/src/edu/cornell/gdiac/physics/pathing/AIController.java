@@ -435,23 +435,23 @@ public class AIController {
 //
 //               }
 
-//               if (enemy.getX() >= currGoal.x - GOAL_DIST && enemy.getX() <= currGoal.x + GOAL_DIST /*||
-//                       Math.abs(prevLoc.x - enemy.getX()) <= 0.5 && Math.abs(prevLoc.x - enemy.getY()) <= 0.5*/) {
-//                   // they reached the goal, so add curr goal to end and make next goal the first in deque
-//                   goalLocs.addLast(currGoal);
-//                   currGoal = goalLocs.pop();
-//               } else { // move enemy in direction of goal
-//                   action.x = currGoal.x - enemy.getX();
-//                   action.y = currGoal.y - enemy.getY();
-//                   action = action.nor();
-//
-//                   enemy.setVX(action.x * 3);
-//                   enemy.setVY(action.y * 3);
-//                   enemy.setLookDirection(action.x, action.y);
-//
-//               }
+               if (enemy.getX() >= currGoal.x - GOAL_DIST && enemy.getX() <= currGoal.x + GOAL_DIST /*||
+                       Math.abs(prevLoc.x - enemy.getX()) <= 0.5 && Math.abs(prevLoc.x - enemy.getY()) <= 0.5*/) {
+                   // they reached the goal, so add curr goal to end and make next goal the first in deque
+                   goalLocs.addLast(currGoal);
+                   currGoal = goalLocs.pop();
+               } else { // move enemy in direction of goal
+                   action.x = currGoal.x - enemy.getX();
+                   action.y = currGoal.y - enemy.getY();
+                   action = action.nor();
 
-                wanderMove();
+                   enemy.setVX(action.x * 3);
+                   enemy.setVY(action.y * 3);
+                   enemy.setLookDirection(action.x, action.y);
+
+               }
+
+                //wanderMove();
 
 
                 break;
