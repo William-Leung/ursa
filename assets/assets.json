@@ -41,12 +41,6 @@
 
 
 
-        "object:polar_house": "object/Polar_House.png",
-        "object:polar_rock_2": "object/Polar_Rock_2.png",
-        "object:polar_rock_3": "object/Polar_Rock_3.png",
-        "object:polar_rock_4": "object/Polar_Rock_4.png",
-        "object:polar_trunk_1": "object/Polar_Trunk_1.png",
-        "object:polar_trunk_2": "object/Polar_Trunk_2.png",
         "shadows:polar_tree_shadow": "shadows/polar_tree_shadow.png",
         "shadows:polar_cave_shadow": "shadows/Polar_Cave_Shadow.png",
         "shadows:polar_house_shadow": "shadows/Polar_House_Shadow.png",
@@ -96,8 +90,14 @@
 
         "polar:cave": "polar/objects/Cave.png",
         "polar:rock_1": "polar/objects/Polar_Rock_1.png",
-        "polar:statue": "polar/decorations/Polar_Dec_1.png",
-        "polar:goat": "polar/decorations/Polar_Dec_5.png"
+        "polar:statue": "polar/objects/Polar_Dec_1.png",
+        "polar:goat": "polar/objects/Polar_Dec_5.png",
+        "polar:rock_3": "polar/objects/Polar_Rock_3.png",
+        "polar:rock_4": "polar/objects/Polar_Rock_4.png",
+        "polar:house": "polar/objects/Polar_House.png",
+        "polar:rock_2": "polar/objects/Polar_Rock_2.png",
+        "polar:trunk_1": "polar/objects/Polar_Trunk_1.png",
+        "polar:trunk_2": "polar/objects/Polar_Trunk_2.png"
     },
     "jsons"  : {
         "polar:constants": "polar/constants.json"
