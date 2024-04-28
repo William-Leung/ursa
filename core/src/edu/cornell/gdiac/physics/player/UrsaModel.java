@@ -287,14 +287,14 @@ public class UrsaModel extends CapsuleObstacle {
 
         // Shadow sensor
         // -------------
-        Vector2 sensorCenter = new Vector2(0, -getHeight());
+        Vector2 sensorCenter = new Vector2(0, 0);
         FixtureDef sensorDef = new FixtureDef();
         sensorDef.density = data.getFloat("density",0);
         sensorDef.isSensor = true;
         sensorShape = new PolygonShape();
         JsonValue sensorjv = data.get("sensor");
 
-        float size = BLOB_SHADOW_SIZE - 0.25f;
+        float size = BLOB_SHADOW_SIZE + 0.5f;
         sensorShape.setAsBox(size, size / 2f, sensorCenter, 0.0f);
         sensorDef.shape = sensorShape;
 
@@ -353,7 +353,7 @@ public class UrsaModel extends CapsuleObstacle {
         int xcenter = blobShadow.getWidth() / 2;
         int ycenter = blobShadow.getHeight() / 2;
         canvas.draw(blobShadow, Color.WHITE,xcenter,ycenter,
-           getX()*drawScale.x,(getY()) * drawScale.y,getAngle(),BLOB_SHADOW_SIZE / drawScale.x,
+           getX() * drawScale.x,getY() * drawScale.y,getAngle(),BLOB_SHADOW_SIZE / drawScale.x,
           (BLOB_SHADOW_SIZE / 2f) / drawScale.y);
     }
 

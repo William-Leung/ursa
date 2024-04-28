@@ -26,7 +26,7 @@ public class Enemy extends BoxObstacle {
 
 
 	private static final float SIGHT_RANGE_INCREMENT = 0.75f;
-	private static final float BLOB_SHADOW_SIZE = 0.5f;
+	private static final float BLOB_SHADOW_SIZE = 0.85f;
 
 	private static final int WALK_DAMPENING = 15;
 	private static final int STUN_DAMPENING = 25;
@@ -159,7 +159,7 @@ public class Enemy extends BoxObstacle {
 	/**
 	 * The default range that the enemy can hear noise/footsteps around them
 	 */
-	private static final float ENEMY_DETECTION_RANGE_NOISE = 3;
+	private static final float ENEMY_DETECTION_RANGE_NOISE = 6f;
 
 	private static final float ENEMY_DETECTION_RANGE_SIGHT = 12f;
 
@@ -387,7 +387,8 @@ public class Enemy extends BoxObstacle {
 		Vector2 dirToVector = new Vector2(player.getPosition()).sub(pos).nor();
 		float angle = lookDirection.angleDeg(dirToVector);
 		boolean possiblyVisible;
-		possiblyVisible = dst <= detectionRange && (angle <= ENEMY_DETECTION_ANGLE_SIGHT || angle >= 360 - ENEMY_DETECTION_ANGLE_SIGHT);
+		possiblyVisible = dst <= detectionRange && (angle <= ENEMY_DETECTION_ANGLE_SIGHT || angle >= 360 - ENEMY_DETECTION_ANGLE_SIGHT)
+			                  || dst <= ENEMY_DETECTION_RANGE_NOISE;
 
 		if (possiblyVisible) {
 			EnemyLoSCallback callback = new EnemyLoSCallback(player.getBody());

@@ -113,15 +113,17 @@ public class RetryMenu implements Screen, InputProcessor, ControllerListener {
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        screenY = canvas.getHeight() - screenY;
-        if(screenX >= 133 && screenX <=274 && screenY >= 330 && screenY <= 385){
-            listener.exitScreen(this,1);
+        if (active) {
+            screenY = canvas.getHeight() - screenY;
+            if(screenX >= 133 && screenX <=274 && screenY >= 330 && screenY <= 385){
+                listener.exitScreen(this,1);
+            }
+            if(screenX >= 130 && screenX <= 272 && screenY >= 250 && screenY <= 305){
+                listener.exitScreen(this,2);
+            }
+            retryFilm.setFrame(0);
+            levelSelectFilm.setFrame(0);
         }
-        if(screenX >= 130 && screenX <= 272 && screenY >= 250 && screenY <= 305){
-            listener.exitScreen(this,2);
-        }
-        retryFilm.setFrame(0);
-        levelSelectFilm.setFrame(0);
         return false;
     }
 

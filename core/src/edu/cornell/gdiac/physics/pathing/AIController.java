@@ -66,6 +66,10 @@ public class AIController {
     /** Distance that if chasing the player, the enemy will still attack them */
     private static final float CHASE_RADIUS = 2f;
 
+    private static final float WANDER_SPEED = 6f;
+
+    private static final float CHASE_SPEED = 10f;
+
     // Instance Attributes
     /** The enemy being controlled by this AIController */
     private Enemy enemy;
@@ -177,6 +181,7 @@ public class AIController {
         };
         this.starting_rotation = starting_rotation;
         this.is_stupid = is_stupid;
+        enemy.rotateLookDirection(starting_rotation);
     }
 
 
@@ -366,13 +371,7 @@ public class AIController {
     public void getAction() {
         ticks++;
 
-        if(is_stupid) {
-            return;
-        }
-        this.state = FSMState.WANDER;
-
-
-        isAdaptive();
+        changeStateIfApplicable();
 
         //prevLoc.x = enemy.getX();
         //prevLoc.y = enemy.getY();
@@ -388,6 +387,10 @@ public class AIController {
                 enemy.setVY(0);
                 break;
             case WANDER:
+
+                if (is_stupid) {
+                    break;
+                }
 
                 /**for (Tree t : trees) {
                  if (Math.abs(t.getY() - enemy.getY()) <= t.getHeight() / 2 + enemy.getHeight() / 2 ) {
@@ -444,8 +447,8 @@ public class AIController {
                         action.y = currGoal.y - enemy.getY();
                         action = action.nor();
 
-                        enemy.setVX(action.x * 6);
-                        enemy.setVY(action.y * 6);
+                        enemy.setVX(action.x * WANDER_SPEED);
+                        enemy.setVY(action.y * WANDER_SPEED);
                         enemy.setLookDirection(action.x, action.y);
 
                     }
@@ -458,6 +461,10 @@ public class AIController {
                 break;
 
             case LOOKING:
+
+                if (is_stupid) {
+                    break;
+                }
 
                 enemy.setVX(0);
                 enemy.setVY(0);
@@ -486,8 +493,8 @@ public class AIController {
                 action.y = locs_spotted.getLast().y - enemy.getY();
                 action = action.nor();
 
-                enemy.setVX(action.x * 4);
-                enemy.setVY(action.y * 4);
+                enemy.setVX(action.x * CHASE_SPEED);
+                enemy.setVY(action.y * CHASE_SPEED);
                 enemy.setLookDirection(action.x, action.y);
 
                 break;
@@ -498,8 +505,8 @@ public class AIController {
                 action.y = ursa.getY() - enemy.getY();
                 action = action.nor();
 
-                enemy.setVX(action.x * 4);
-                enemy.setVY(action.y * 4);
+                enemy.setVX(action.x * CHASE_SPEED);
+                enemy.setVY(action.y * CHASE_SPEED);
                 enemy.setLookDirection(action.x, action.y);
 
                 break;
