@@ -8,6 +8,11 @@ import edu.cornell.gdiac.util.PooledList;
 import java.util.LinkedList;
 import com.badlogic.gdx.math.*;
 
+/**
+ * ShadowController stores references to all the shadows in the world that are used for collisions.
+ * (This does not include player and enemy shadows which are done in preDraw())
+ * It also stores the time of day which interacts with the day/night UI in Scene Model
+ */
 public class ShadowController {
 
     /** Current time of day */

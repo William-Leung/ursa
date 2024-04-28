@@ -129,16 +129,16 @@ public class AIController {
 
     private Vector2 firstGoal;
 
-    private boolean isStupid = false;
-
     private Board board;
 
     private Vector2 startLoc;
+    private boolean is_stupid;
+    private int starting_rotation;
 
     /**
      * Creates an AIController for the ship with the given id.
      */
-    public AIController(Enemy enemy,  UrsaModel ursa, Board board, Vector2[] patrolLocs) {
+    public AIController(Enemy enemy,  UrsaModel ursa, Board board, Vector2[] patrolLocs, boolean is_stupid, int starting_rotation) {
         this.enemy = enemy;
         this.ursa = ursa;
         //this.prevLoc = new Vector2(enemy.getX(), enemy.getY());
@@ -175,12 +175,10 @@ public class AIController {
                 new Coordinate(-1,1),
                 new Coordinate(1,-1),
         };
+        this.starting_rotation = starting_rotation;
+        this.is_stupid = is_stupid;
     }
 
-    public AIController(Enemy enemy,  UrsaModel ursa, Board board, Vector2[] patrolLocs, boolean stupid) {
-        this(enemy, ursa, board, patrolLocs);
-        isStupid = false;
-    }
 
 
     public void setGameBoard(Board b) { this.board = b; }
@@ -368,11 +366,11 @@ public class AIController {
     public void getAction() {
         ticks++;
 
-        if(!isStupid) {
-            changeStateIfApplicable();
-        } else {
-            this.state = FSMState.WANDER;
+        if(is_stupid) {
+            return;
         }
+        this.state = FSMState.WANDER;
+
 
         isAdaptive();
 
@@ -446,8 +444,8 @@ public class AIController {
                         action.y = currGoal.y - enemy.getY();
                         action = action.nor();
 
-                        enemy.setVX(action.x * 3);
-                        enemy.setVY(action.y * 3);
+                        enemy.setVX(action.x * 6);
+                        enemy.setVY(action.y * 6);
                         enemy.setLookDirection(action.x, action.y);
 
                     }

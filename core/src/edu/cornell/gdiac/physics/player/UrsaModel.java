@@ -347,31 +347,6 @@ public class UrsaModel extends CapsuleObstacle {
         }
     }
 
-    /**
-     * Updates the object's physics state (NOT GAME LOGIC).
-     *
-     * We use this method to reset cooldowns.
-     *
-     * @param dt	Number of seconds since last animation frame
-     */
-    public void update(float dt) {
-
-        // Apply cooldowns
-        if (isJumping()) {
-            jumpCooldown = jumpLimit;
-        } else {
-            jumpCooldown = Math.max(0, jumpCooldown - 1);
-        }
-
-        if (isShooting()) {
-            shootCooldown = shotLimit;
-        } else {
-            shootCooldown = Math.max(0, shootCooldown - 1);
-        }
-
-        super.update(dt);
-    }
-
     @Override
     public void preDraw(GameCanvas canvas) {
         Texture blobShadow = SceneModel.BLOB_SHADOW_TEXTURE;

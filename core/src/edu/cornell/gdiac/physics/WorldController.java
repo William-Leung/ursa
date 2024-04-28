@@ -47,17 +47,12 @@ import edu.cornell.gdiac.physics.obstacle.*;
  * place nicely with the static assets.
  */
 public abstract class WorldController implements Screen {
-	/** The texture for backgrounds */
-	protected TextureRegion snowBackGround;
-	private float textX;
-	private float textY;
 	private boolean wasCompleted;
 	/** The texture for white (placed behind snowBackground) */
-	protected TextureRegion whiteTexture;
+
 	/** The texture for falling snow */
 	protected TextureRegion fallingSnow;
 	/** The texture for the exit condition */
-
 	protected static TextureRegion redTextureRegion;
 	private static int CIRCLE_RADIUS = 500;
 	private static int RESET_DELAY = 20;
@@ -76,8 +71,6 @@ public abstract class WorldController implements Screen {
 		pixmap.dispose();
 	}
 
-	/** The font for giving messages to the player */
-	protected BitmapFont displayFont;
 
 	/** Exit code for quitting the game */
 	public static final int EXIT_QUIT = 0;
@@ -132,7 +125,7 @@ public abstract class WorldController implements Screen {
 	/** Offset to help move falling snow */
 	private float snowFall = 450.0f;
 	/** Comparator to determine hierarchy of drawing for Pokémon 3/4 */
-	private Comparator<Obstacle> obstacleComparator = (o1, o2) -> Float.compare(o2.getY(), o1.getY());
+	private final Comparator<Obstacle> obstacleComparator = (o1, o2) -> Float.compare(o2.getY(), o1.getY());
 
 	private Color tinting = Color.WHITE;
 
@@ -323,9 +316,7 @@ public abstract class WorldController implements Screen {
 	 * @param directory	Reference to global asset manager.
 	 */
 	public void gatherAssets(AssetDirectory directory) {
-		fallingSnow = new TextureRegion(directory.getEntry("platform:snowback",Texture.class));
-		snowBackGround = new TextureRegion(directory.getEntry("platform:snowbackground",Texture.class));
-		displayFont = directory.getEntry( "shared:retro" ,BitmapFont.class);
+		fallingSnow = new TextureRegion(directory.getEntry("polar:falling_snow",Texture.class));
 	}
 
 	/**
@@ -484,10 +475,6 @@ public abstract class WorldController implements Screen {
 		}
 	}
 
-	public void setTextPos(float x, float y){
-		textX = x;
-		textY = y;
-	}
 
 	/**
 	 * Draws objects to the canvas that are meant to be drawn before the main objects
@@ -556,20 +543,6 @@ public abstract class WorldController implements Screen {
 				obj.drawDebug(canvas);
 			}
 			canvas.endDebug();
-		}
-
-		// Final message
-		if (complete && !failed) {
-			displayFont.setColor(Color.YELLOW);
-			canvas.begin(); // DO NOT SCALE
-
-			// canvas.drawTextCentered("VICTORY!", displayFont, 0.0f);
-			canvas.end();
-		} else if (failed) {
-			displayFont.setColor(Color.RED);
-			canvas.begin(); // DO NOT SCALE
-			// canvas.drawTextCentered("FAILURE!", displayFont, 0.0f);
-			canvas.end();
 		}
 	}
 
