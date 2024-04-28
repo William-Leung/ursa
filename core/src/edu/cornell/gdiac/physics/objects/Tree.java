@@ -11,13 +11,17 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import edu.cornell.gdiac.physics.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.PolygonObstacle;
 
+/**
+ * This class represents the trees of the game and can either have snow or no snow upon creation.
+ * Trees with no snow cannot be shaken and trees with snow can only be shaken once.
+ * Origin is at the bottom middle of the texture.
+ */
 public class Tree extends PolygonObstacle {
-
-	/** has the tree shaken yet: used to limit shaking to one time */
+	/** Has the tree shaken yet? Once shaken, trees will not be able to shake again. */
 	private boolean hasShaken;
 
-	public Tree(float[] points, float x, float y) {
-		super(points, x, y);
+	public Tree(float[] points, float x, float y, float offset, float textureScale) {
+		super(points, x, y, offset, textureScale);
 		setBodyType(BodyDef.BodyType.StaticBody);
 		hasShaken = false;
 	}
@@ -29,28 +33,5 @@ public class Tree extends PolygonObstacle {
 	public void putOnShakeCooldown() {
 		hasShaken = true;
 	}
-
-	@Override
-	public void setTexture(TextureRegion value) {
-		super.setTexture(value);
-		/*
-		 * For some reason the origin for tree textures aren't set properly, so we just have to do it manually here.
-		 * We also need to set the origin to the base/trunk of the tree.
-		 */
-		origin.set(texture.getRegionWidth() / 2.0f, 0);
-	}
-
-	public void draw(GameCanvas canvas) {
-		float x_SCALE = 0.75f;
-		float y_SCALE = 0.75f;
-		float yOffset = 25f;
-
-		Affine2 affine = new Affine2()
-			.translate(getX() * drawScale.x, getY()* drawScale.y - yOffset)
-			.scale(x_SCALE, y_SCALE)
-		;
-		canvas.draw(texture, Color.WHITE ,origin.x, 0, affine);
-		//FrameBuffer fb = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), false);
-	}
-
+	//FrameBuffer fb = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), false);
 }

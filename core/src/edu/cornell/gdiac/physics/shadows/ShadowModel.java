@@ -6,15 +6,12 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.Transform;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.math.*;
 import edu.cornell.gdiac.physics.GameCanvas;
-import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.physics.obstacle.PolygonObstacle;
 import edu.cornell.gdiac.physics.obstacle.SimpleObstacle;
 
@@ -27,7 +24,7 @@ public class ShadowModel extends PolygonObstacle {
 
     static {
         Pixmap redPixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
-        redPixmap.setColor(new Color(0, 0, 0, 0.5f));
+        redPixmap.setColor(new Color(0, 0, 0, 0.3f));
         redPixmap.fill();
         Texture redTexture = new Texture(redPixmap);
         SHADOW_TEXTURE = new TextureRegion(redTexture);
@@ -145,7 +142,7 @@ public class ShadowModel extends PolygonObstacle {
     }
 
     public ShadowModel(Vector2 anchor, float sx, float sy, String texture, Vector2 textureOrigin, Vector2 drawScale) {
-        super(ShadowPolygon(texture), anchor.x, anchor.y);
+        super(ShadowPolygon(texture), anchor.x, anchor.y, 0,1f);
         this.initial_height = 0;
         this.initial_width = 0;
         this.shadow_anchor = anchor;
@@ -269,26 +266,12 @@ public class ShadowModel extends PolygonObstacle {
 
     @Override
     public void preDraw(GameCanvas canvas) {
-        super.draw(canvas);
+        canvas.draw(region,Color.WHITE,0,0,getX()*drawScale.x,getY()*drawScale.y,getAngle(),1,1);
+
     }
 
     @Override
     public void draw(GameCanvas canvas) {
 
     }
-
-//    /**
-//     * Draws the shadow onto the given GameCanvas with the specified max skew and y-scalar
-//     * @param canvas The GameCanvas to draw to
-//     * @param xSkew The maximum skew that this shadow can have.
-//     * @param yScalar The maximum y-scaling this shadow can have.
-//     */
-//    public void draw(GameCanvas canvas, float xSkew, float yScalar) {
-//        Affine2 affine = new Affine2()
-//            .setToTranslation(shadow_anchor.x * drawScale.x, shadow_anchor.y * drawScale.y)
-//            .scale(sx, sy * yScalar * direction.y)
-//            .shear(xSkew * direction.x, 0);
-//        canvas.draw(texture, new Color(0, 0, 0, 127), origin.x, origin.y, affine);
-//    }
-
 }

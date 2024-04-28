@@ -523,8 +523,6 @@ public class Enemy extends BoxObstacle {
 		} else {
 			polygonRegion = new PolygonRegion(greenTextureRegion,vertices, triangles);
 		}
-
-		float yOffset = -30f;
 		canvas.draw(polygonRegion, Color.WHITE, origin.x,origin.y,getX()*drawScale.x,
 			getY()*drawScale.y,getAngle(),1.0f,1.0f);
 	}

@@ -39,8 +39,7 @@ public class PolygonObstacle extends SimpleObstacle {
 	
 	/** Shape information for this physics object */
 	protected PolygonShape[] shapes;
-	private Pixmap shadowPixmap;
-	private Texture shadowTexture;
+
 	/** Texture information for this object */
 	protected PolygonRegion region;
 	
@@ -57,7 +56,14 @@ public class PolygonObstacle extends SimpleObstacle {
 	private Vector2 sizeCache;
 	/** Cache of the polygon vertices (for resizing) */
 	private float[] vertices;
-	
+	/** The scale between texture coordinates and drawing coordinates */
+	private final float textureScale;
+	/** The texture's yOffset (distance between bottom of object on texture and true bottom of texture) */
+	private final float yOffset;
+	/** The distance between the bottom of the image and the top of the hitbox
+	 * Used to determine drawing order of objects
+	 */
+	private float sortingY = 0f;
 	/** 
 	 * Returns the dimensions of this box
 	 *
@@ -142,7 +148,7 @@ public class PolygonObstacle extends SimpleObstacle {
 	 * @param points   The polygon vertices
 	 */
 	public PolygonObstacle(float[] points) {
-		this(points, 0, 0);
+		this(points, 0, 0,0,0.75f);
 	}
 
 	/**
@@ -157,15 +163,17 @@ public class PolygonObstacle extends SimpleObstacle {
 	 * @param x  Initial x position of the polygon center
 	 * @param y  Initial y position of the polygon center
 	 */
-	public PolygonObstacle(float[] points, float x, float y) {
+	public PolygonObstacle(float[] points, float x, float y, float offset, float textureScale) {
 		super(x, y);
 		assert points.length % 2 == 0;
-		shadowPixmap = new Pixmap(1, 1, Format.RGBA8888);
-		shadowPixmap.setColor(new Color(0,0,0,0.1f));
-		shadowPixmap.fill();
-		shadowTexture = new Texture(shadowPixmap);
 		initShapes(points);
 		initBounds();
+		this.yOffset = offset;
+		this.textureScale = textureScale;
+		// Loop through the y coordinates of the hitbox to find the highest
+		for(int i = 1; i < points.length; i += 2) {
+			sortingY = Math.max(sortingY, points[i]);
+		}
 	}
 
 	/**
@@ -174,6 +182,11 @@ public class PolygonObstacle extends SimpleObstacle {
 	public float[] getPoints() {
 		return vertices;
 	}
+
+	/**
+	 * Gets the y coordinate used to determine drawing order.
+	 */
+	public float getSortingY() { return getY() + sortingY; }
 
 	/**
 	 * Initializes the bounding box (and drawing scale) for this polygon
@@ -378,7 +391,11 @@ public class PolygonObstacle extends SimpleObstacle {
 	 */
 	public void draw(GameCanvas canvas) {
 		if (region != null) {
-			canvas.draw(region,Color.WHITE,0,0,getX()*drawScale.x,getY()*drawScale.y,getAngle(),1,1);
+			Affine2 affine = new Affine2()
+					.translate(getX() * drawScale.x, getY()* drawScale.y)
+					.scale(textureScale, textureScale)
+					;
+			canvas.draw(texture, Color.WHITE, texture.getRegionWidth() / 2f, yOffset, affine);
 		}
 	}
 

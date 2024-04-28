@@ -125,7 +125,7 @@ public abstract class WorldController implements Screen {
 	/** Offset to help move falling snow */
 	private float snowFall = 450.0f;
 	/** Comparator to determine hierarchy of drawing for Pokémon 3/4 */
-	private final Comparator<Obstacle> obstacleComparator = (o1, o2) -> Float.compare(o2.getY(), o1.getY());
+	private final Comparator<Obstacle> obstacleComparator = (o1, o2) -> Float.compare(o2.getSortingY(), o1.getSortingY());
 
 	private Color tinting = Color.WHITE;
 
@@ -452,6 +452,7 @@ public abstract class WorldController implements Screen {
 	public void postUpdate(float dt) {
 		// Add any objects created by actions
 		while (!addQueue.isEmpty()) {
+			System.out.println("Creating objects...");
 			addObject(addQueue.poll());
 		}
 

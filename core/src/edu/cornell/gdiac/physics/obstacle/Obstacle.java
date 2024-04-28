@@ -47,8 +47,8 @@ public abstract class Obstacle {
 	protected MassData massdata;
 	/** Whether or not to use the custom mass data */
 	protected boolean masseffect;
-    /** A tag for debugging purposes */
-    private String nametag;
+	/** A tag for debugging purposes */
+	private String nametag;
 	/** Drawing scale to convert physics units to pixels */
 	protected Vector2 drawScale;
 
@@ -120,6 +120,11 @@ public abstract class Obstacle {
 	public void setPosition(Vector2 value) {
 		bodyinfo.position.set(value);
 	}
+
+	/**
+	 * Gets the y coordinate used to determine drawing order.
+	 */
+	public float getSortingY() { return getY(); }
 
 	/**
 	 * Sets the current position for this physics body
@@ -982,7 +987,7 @@ public abstract class Obstacle {
 	 *
 	 * @param dt Timing values from parent loop
 	 */
-	public void update(float delta) { 
+	public void update(float dt) {
 	}
 
 	/**

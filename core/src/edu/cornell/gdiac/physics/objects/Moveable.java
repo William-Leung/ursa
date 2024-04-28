@@ -8,28 +8,19 @@ import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.physics.obstacle.PolygonObstacle;
 
 /**
- * A generic (non-moveable and non-interactable) physics-influenced obstacle.
+ * This class represents a generic moveable obstacle.
  */
-public class Moveable extends BoxObstacle {
-    private float sx = 0.5f;
-    private float sy = 0.5f;
+public class Moveable extends PolygonObstacle {
 
     /**
      * A moveable physics-influenced obstacle. Extends BoxObstacle.
      */
-    public Moveable(float x, float y, float width, float height) {
-        super(x, y, width, height);
+    public Moveable(float[] points, float width, float height, float yOffset, float textureScale) {
+        super(points, width, height, yOffset, textureScale);
         setBodyType(BodyDef.BodyType.DynamicBody);
         setDensity(3.0f);
         setFriction(1.0f);
         setLinearDamping(1.0f);
         setFixedRotation(true);
     }
-
-    public void draw(GameCanvas canvas) {
-        canvas.draw(texture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x,
-                getY() * drawScale.y,
-                getAngle(), sx, sy);
-    }
-
 }

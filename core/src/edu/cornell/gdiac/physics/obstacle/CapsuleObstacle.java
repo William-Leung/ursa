@@ -116,6 +116,11 @@ public class CapsuleObstacle extends SimpleObstacle {
 	public float getWidth() {
 		return dimension.x;
 	}
+
+	/**
+	 * Gets the y coordinate used to determine drawing order.
+	 */
+	public float getSortingY() { return getY() + getHeight() / 2; }
 	
 	/**
 	 * Sets the box width

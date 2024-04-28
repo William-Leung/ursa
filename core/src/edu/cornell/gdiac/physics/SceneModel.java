@@ -1,5 +1,6 @@
 package edu.cornell.gdiac.physics;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
@@ -38,9 +39,8 @@ import java.util.Comparator;
 import java.util.LinkedList;
 
 /**
- * SceneModel is responsible for loading all the texture assets into the world.
- * It also parses level JSON data into corresponding game objects, storing their references.
- * Furthermore, SceneModel contains logic for update loops where it animates and moves objects.
+ * This class contains references to all game objects and stores logic for update loops, where it animates and moves objects.
+ * It also parses level JSON data into corresponding game objects.
  */
 public class SceneModel extends WorldController implements ContactListener {
     /*
@@ -189,6 +189,10 @@ public class SceneModel extends WorldController implements ContactListener {
     private int polarTrunk2Index;
     /** The index of rock 2 in terms of all textures in json*/
     private int polarRock2Index;
+    /** Scaling between textures and drawing (256x256 -> 192x192)
+     * Converts between 2560 x 1440 resolution assets were drawn for and 1920 x 1080 resolution we have
+     */
+    private final float textureScale = 0.75f;
 
 
     /* =========== Tile Variables =========== */
@@ -250,7 +254,7 @@ public class SceneModel extends WorldController implements ContactListener {
     protected ObjectSet<Fixture> sensorFixtures;
 
 
-    /** =========== Day/Night Screen Tinting =========== */
+    /* =========== Day/Night Screen Tinting =========== */
     /** Background color that changes with the day */
     protected Color backgroundColor = Color.BLACK;
     /** A list of colors that the tinting with linear interpolate between */
@@ -261,11 +265,11 @@ public class SceneModel extends WorldController implements ContactListener {
     /** Points to the next color we interpolate to */
     private int colorNextPointer = 1;
 
-    /** =========== UI Constants =========== */
+    /* =========== UI Constants =========== */
     /** Rotation angle of UI element */
     private float uiRotationAngle = 0f;
     /** Draw scale of UI */
-    private float uiDrawScale = 0.1f;
+    private final float uiDrawScale = 0.1f;
 
 
     /** =========== Soundtrack assets =========== */
@@ -283,7 +287,7 @@ public class SceneModel extends WorldController implements ContactListener {
         setComplete(false);
         setFailure(false);
         world.setContactListener(this);
-        sensorFixtures = new ObjectSet<Fixture>();
+        sensorFixtures = new ObjectSet<>();
         JsonReader json = new JsonReader();
         jsonData = json.parse(Gdx.files.internal(levelJson));
 
@@ -522,7 +526,6 @@ public class SceneModel extends WorldController implements ContactListener {
      Draws all tiles based on the json data from Tiled
      */
     public void drawTiles(){
-        int counter = 0;
         float x;
         float y;
         // The array needs to be parsed from top to bottom
@@ -535,7 +538,7 @@ public class SceneModel extends WorldController implements ContactListener {
                 }
                 x = j * 12f * scale.x;
                 y = i * 12f * scale.y;
-                canvas.draw(tileTextures[tileIndex - firstTileIndex], Color.WHITE,0,0, x, y, ursa.getAngle(), 0.75f,0.75f);
+                canvas.draw(tileTextures[tileIndex - firstTileIndex], Color.WHITE,0,0, x, y, ursa.getAngle(), textureScale, textureScale);
             }
         }
     }
@@ -651,7 +654,6 @@ public class SceneModel extends WorldController implements ContactListener {
 
     /**
      * The core gameplay loop of this world.
-     *
      * This method contains the specific update code for this mini-game. It does
      * not handle collisions, as those are managed by the parent class WorldController.
      * This method is called after input is read, but before collisions are resolved.
@@ -730,8 +732,6 @@ public class SceneModel extends WorldController implements ContactListener {
             System.out.println(shadowController.getTime());
             shadowController.setTime(0);
             System.out.println(shadowController.getTime());
-//            shadowController.update(this);
-//            shadowController.reset(this);
             for (AIController i : controls) { i.reset(); }
         }
 
@@ -808,7 +808,6 @@ public class SceneModel extends WorldController implements ContactListener {
 
     /**
      * Callback method for the start of a collision
-     *
      * This method is called when we first get a collision between two objects.  We use
      * this method to test if it is the "right" kind of collision.  In particular, we
      * use it to test if we made it to the win door.
@@ -852,7 +851,6 @@ public class SceneModel extends WorldController implements ContactListener {
 
     /**
      * Callback method for the start of a collision
-     *
      * This method is called when two objects cease to touch.  The main use of this method
      * is to determine when the character is NOT on the ground.  This is how we prevent
      * double jumping.
@@ -893,7 +891,7 @@ public class SceneModel extends WorldController implements ContactListener {
      * Invariant: intervals.length == colors.length
      * Transitions smoothly between colors[reachPointer] and colors[reachPointer-1] in the time
      * between intervals[reachPointer] and intervals[reachPointer-1]
-     * @param timeRatio
+     * @param timeRatio the time of day where 0 is night -> day, 1 is day -> night
      */
     private void updateBackgroundColor(float startTime, float timeRatio) {
         backgroundColor.r = colors[colorNextPointer - 1].r + (colors[colorNextPointer].r - colors[colorNextPointer - 1].r) * (timeRatio - startTime) / (intervals[colorNextPointer] - intervals[colorNextPointer - 1]);
@@ -952,9 +950,9 @@ public class SceneModel extends WorldController implements ContactListener {
      * @return drawCoord in terms of the screen coordinates
      */
     public float drawToScreenCoordinates(float drawCoord) {
-        // 0.75 converts between 2560 x 1440 resolution assets were drawn for and the 1920 x 1080 resolution we have
+        // First, convert between 2560 x 1440 resolution assets were drawn for and 1920 x 1080 resolution we have
         // Then, convert to screen coordinates using the scale
-        return drawCoord * 0.75f / scale.x;
+        return drawCoord * textureScale / scale.x;
     }
 
     /**
@@ -972,24 +970,33 @@ public class SceneModel extends WorldController implements ContactListener {
         for(int i = 0; i < tilesetData.size; i++) {
             int id = tilesetData.get(i).get("firstgid").asInt();
             String source = tilesetData.get(i).get("source").asString();
-            if(source.equals("maps/tiles.tsx")) {
-                firstTileIndex = id;
-            } else if(source.equals("maps/256x512.tsx")) {
-                firstTreeIndex = id;
-                firstMediumRockIndex = id + 2;
-            } else if(source.equals("maps/64x64.tsx")) {
-                firstSmallDecorationIndex = id;
-            } else if(source.equals("maps/512x512.tsx")) {
-                firstLargeDecorationIndex = id + 2;
-                firstHouseIndex = id + 3;
-            } else if(source.equals("maps/256x256(Ursa + Salmon).tsx")) {
-                firstMediumObjectIndex = id + 3;
-            } else if(source.equals("maps/Polar_Rock_2.tsx")) {
-                polarRock2Index = id;
-            } else if(source.equals("maps/Polar_Trunk_1.tsx")) {
-                polarTrunk1Index = id;
-            } else if(source.equals("maps/Polar_Trunk_2.tsx")) {
-                polarTrunk2Index = id;
+            switch (source) {
+                case "maps/tiles.tsx":
+                    firstTileIndex = id;
+                    break;
+                case "maps/256x512.tsx":
+                    firstTreeIndex = id;
+                    firstMediumRockIndex = id + 2;
+                    break;
+                case "maps/64x64.tsx":
+                    firstSmallDecorationIndex = id;
+                    break;
+                case "maps/512x512.tsx":
+                    firstLargeDecorationIndex = id + 2;
+                    firstHouseIndex = id + 3;
+                    break;
+                case "maps/256x256(Ursa + Salmon).tsx":
+                    firstMediumObjectIndex = id + 3;
+                    break;
+                case "maps/Polar_Rock_2.tsx":
+                    polarRock2Index = id;
+                    break;
+                case "maps/Polar_Trunk_1.tsx":
+                    polarTrunk1Index = id;
+                    break;
+                case "maps/Polar_Trunk_2.tsx":
+                    polarTrunk2Index = id;
+                    break;
             }
         }
     }
@@ -1001,7 +1008,7 @@ public class SceneModel extends WorldController implements ContactListener {
         float x;
         float y;
         JsonValue wallConstants = constants.get("wall");
-        Barrier wall;
+        GameObject wall;
         tiles = new int[(int) numTilesX][(int) numTilesY];
         // The array needs to be parsed from top to bottom
         for (int i = (int) numTilesY - 1; i >= 0 ; i--) {
@@ -1014,7 +1021,7 @@ public class SceneModel extends WorldController implements ContactListener {
                 x = j * 12f;
                 y = i * 12f;
                 float[] points = wallConstants.get(Integer.toString(tileIndex - firstTileIndex)).asFloatArray();
-                wall = new Barrier(points,x, y);
+                wall = new GameObject(points,x, y, 0, textureScale);
                 wall.setDrawScale(scale);
                 wall.setName("wall" + i + " " + j);
                 addObject(wall);
@@ -1122,13 +1129,11 @@ public class SceneModel extends WorldController implements ContactListener {
         JsonValue smolUrsaConstants = constants.get("smolursa");
         JsonValue smolUrsaObjectData = jsonData.get("layers").get(6).get("objects");
 
-        float x = smolUrsaObjectData.get(0).get(8).asFloat()
-                + smolUrsaTexture.getRegionWidth() / 2f;
+        float x = smolUrsaObjectData.get(0).get(8).asFloat() + smolUrsaTexture.getRegionWidth() / 2f;
         float y = maxY - smolUrsaObjectData.get(0).get(9).asFloat();
 
-
         goal = new GameObject(smolUrsaConstants.get("vertices").asFloatArray(), drawToScreenCoordinates(x),
-                drawToScreenCoordinates(y));
+                drawToScreenCoordinates(y), 0, textureScale);
         goal.setSensor(true);
         goal.setDrawScale(scale);
         goal.setTexture(smolUrsaIdleFilm);
@@ -1148,17 +1153,19 @@ public class SceneModel extends WorldController implements ContactListener {
         if (jsonData.get("layers").get(5) == null) {
             return;
         }
+        JsonValue iceConstants = constants.get("ice");
         JsonValue iceObjectData = jsonData.get("layers").get(5).get("objects");
 
         for (int i = 0; i < iceObjectData.size; i++) {
+            float yOffset = iceConstants.get("yOffset").asFloat();
             float x = iceObjectData.get(i).get(8).asFloat() + polarIceTexture.getRegionWidth() / 2f;
-            float y = maxY - iceObjectData.get(i).get(9).asFloat() + polarIceTexture.getRegionHeight() / 2f;
+            float y = maxY - iceObjectData.get(i).get(9).asFloat() + yOffset;
 
-            Moveable rock = new Moveable(drawToScreenCoordinates(x),drawToScreenCoordinates(y),3,3);
-            rock.setDrawScale(scale);
-            rock.setTexture(polarIceTexture);
-            rock.setName("ice"+i);
-            addObject(rock);
+            Moveable ice = new Moveable(iceConstants.get("vertices").asFloatArray(), drawToScreenCoordinates(x),drawToScreenCoordinates(y), yOffset, textureScale);
+            ice.setDrawScale(scale);
+            ice.setTexture(polarIceTexture);
+            ice.setName("ice" + i);
+            addObject(ice);
         }
     }
 
@@ -1169,37 +1176,44 @@ public class SceneModel extends WorldController implements ContactListener {
     private void renderGameObjects() {
         if(jsonData.get("layers").get(4) == null) { return; }
 
-        JsonValue treeConstants = constants.get("tree");
         JsonValue objectData = jsonData.get("layers").get(4).get("objects");
 
+        String name;
         for(int i = 0; i < objectData.size; i++) {
             int objectIndex = objectData.get(i).get("gid").asInt();
             int textureIndex;
             if(objectIndex - firstMediumObjectIndex < 3) {
                 textureIndex = objectIndex - firstMediumObjectIndex;
+                name = "tree";
             } else if(objectIndex - firstMediumRockIndex < 2) {
                 textureIndex = objectIndex - firstMediumRockIndex + 3;
+                name = "tree";
             } else if(objectIndex - firstHouseIndex < 1) {
                 textureIndex = objectIndex - firstHouseIndex + 5;
+                name = "tree";
             } else if(objectIndex == polarRock2Index) {
                 textureIndex = 6;
+                name = "tree";
             } else if(objectIndex == polarTrunk1Index) {
                 textureIndex = 7;
+                name = "trunk1";
             } else if(objectIndex == polarTrunk2Index) {
                 textureIndex = 8;
+                name = "trunk2";
             } else {
                 System.out.println("Unidentified object (UFO).");
                 continue;
             }
 
+            JsonValue objectConstants = constants.get(name);
+            float yOffset = objectConstants.get("yOffset").asFloat();
             float x = objectData.get(i).get(8).asFloat() + objectTextures[textureIndex].getRegionWidth() / 2f;
-            float y = maxY - objectData.get(i).get(9).asFloat();
+            float y = maxY - objectData.get(i).get(9).asFloat() + yOffset;
 
-            GameObject obj = new GameObject(treeConstants.get("vertices").asFloatArray(),drawToScreenCoordinates(x),drawToScreenCoordinates(y));
+            GameObject obj = new GameObject(objectConstants.get("vertices").asFloatArray(),drawToScreenCoordinates(x),drawToScreenCoordinates(y), yOffset, textureScale);
             obj.setDrawScale(scale);
             obj.setTexture(objectTextures[textureIndex]);
             obj.setName("game object" + i);
-
             addObject(obj);
 
             // Tree shadows
@@ -1226,10 +1240,11 @@ public class SceneModel extends WorldController implements ContactListener {
 
         for(int i = 0; i < treeObjectData.size; i++) {
             int treeIndex = treeObjectData.get(i).get("gid").asInt();
+            float yOffset = treeConstants.get("yOffset").asFloat();
             float x = treeObjectData.get(i).get(8).asFloat() + treeTextures[treeIndex - firstTreeIndex].getRegionWidth() / 2f;
-            float y = maxY - treeObjectData.get(i).get(9).asFloat();
+            float y = maxY - treeObjectData.get(i).get(9).asFloat() + yOffset;
 
-            Tree obj = new Tree(treeConstants.get("vertices").asFloatArray(),drawToScreenCoordinates(x),drawToScreenCoordinates(y));
+            Tree obj = new Tree(treeConstants.get("vertices").asFloatArray(),drawToScreenCoordinates(x),drawToScreenCoordinates(y), yOffset, textureScale);
             obj.setDrawScale(scale);
             obj.setTexture(treeTextures[treeIndex - firstTreeIndex]);
             if(treeIndex - firstTreeIndex == 1) {
@@ -1265,11 +1280,13 @@ public class SceneModel extends WorldController implements ContactListener {
 
         caves = new Cave[caveObjectData.size];
         for (int i = 0; i < caveObjectData.size; i++) {
+            float yOffset = caveConstants.get("yOffset").asFloat();
             float x = caveObjectData.get(i).get(8).asFloat() + polarCaveTexture.getRegionWidth() / 2f;
-            float y = maxY - caveObjectData.get(i).get(9).asFloat() + polarCaveTexture.getRegionHeight() / 2f;
+            float y = maxY - caveObjectData.get(i).get(9).asFloat() + yOffset;
+            x = drawToScreenCoordinates(x);
+            y = drawToScreenCoordinates(y);
 
-            Cave obj = new Cave(caveConstants.get("vertices").asFloatArray(),
-                    drawToScreenCoordinates(x), drawToScreenCoordinates(y));
+            Cave obj = new Cave(caveConstants.get("vertices").asFloatArray(), x, y, yOffset,textureScale);
             obj.setDrawScale(scale);
             obj.setTexture(cavePortalFilm);
             obj.setName("cave" + i);
@@ -1278,7 +1295,7 @@ public class SceneModel extends WorldController implements ContactListener {
             caves[i] = obj;
 
             // Tree shadows
-            ShadowModel model = new ShadowModel(new Vector2(obj.getX(), obj.getY()), 0.75f, 0.75f,
+            ShadowModel model = new ShadowModel(new Vector2(x, y), 0.75f, 0.75f,
                     "cave shadow" + i, new Vector2(polarTreeShadow.getRegionWidth() / 2.0f, 85),
                     scale);
             shadows.add(model);
@@ -1308,14 +1325,14 @@ public class SceneModel extends WorldController implements ContactListener {
                 textureIndex = decorationIndex - firstSmallDecorationIndex;
             } else if(decorationIndex - firstLargeDecorationIndex < decorationTextures.length) {
                 textureIndex = decorationIndex - firstLargeDecorationIndex + 12;
-                Decoration decoration = new Decoration(decorationTextures[textureIndex], scale, drawToScreenCoordinates(x),drawToScreenCoordinates(y), decorationIndex);
+                Decoration decoration = new Decoration(decorationTextures[textureIndex], scale, drawToScreenCoordinates(x),drawToScreenCoordinates(y), decorationIndex + 12, textureScale);
                 groundDecorations.add(decoration);
                 return;
             } else {
                 System.out.println("Unidentified decoration.");
                 continue;
             }
-            Decoration decoration = new Decoration(decorationTextures[textureIndex], scale, drawToScreenCoordinates(x),drawToScreenCoordinates(y), decorationIndex);
+            Decoration decoration = new Decoration(decorationTextures[textureIndex], scale, drawToScreenCoordinates(x),drawToScreenCoordinates(y), decorationIndex, textureScale);
 
             decorations.add(decoration);
         }

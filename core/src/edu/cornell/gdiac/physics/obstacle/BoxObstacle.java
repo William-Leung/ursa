@@ -192,6 +192,11 @@ public class BoxObstacle extends SimpleObstacle {
 	    }
 	}
 
+	/**
+	 * Gets the y coordinate used to determine drawing order.
+	 */
+	public float getSortingY() { return getY() + getHeight() / 2; }
+
 	
 	/**
 	 * Draws the outline of the physics body.
