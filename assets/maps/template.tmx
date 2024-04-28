@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="18" height="11" tilewidth="256" tileheight="256" infinite="0" nextlayerid="16" nextobjectid="362">
+ <editorsettings>
+  <export target="../template.json" format="json"/>
+ </editorsettings>
+ <tileset firstgid="1" source="64x64.tsx"/>
+ <tileset firstgid="9" source="128x128.tsx"/>
+ <tileset firstgid="13" source="256x256(Ursa + Salmon).tsx"/>
+ <tileset firstgid="19" source="tiles.tsx"/>
+ <tileset firstgid="43" source="256x512.tsx"/>
+ <tileset firstgid="47" source="512x512.tsx"/>
+ <tileset firstgid="51" source="Polar_Rock_2.tsx"/>
+ <tileset firstgid="52" source="Polar_Trunk_1.tsx"/>
+ <tileset firstgid="53" source="Polar_Trunk_2.tsx"/>
+ <tileset firstgid="54" source="Polar_Ice.tsx"/>
+ <layer id="1" name="Tile Layer 1" width="18" height="11">
+  <data encoding="csv">
+19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,
+19,19,20,31,31,21,19,19,19,19,19,19,19,19,19,19,19,19,
+19,20,26,0,0,25,31,21,19,19,19,19,20,31,21,19,19,19,
+19,33,0,0,0,0,0,25,21,19,19,19,33,0,25,21,19,19,
+19,23,27,0,0,0,0,0,29,19,19,20,26,0,0,25,21,19,
+19,19,23,28,27,0,0,0,25,31,31,26,0,0,0,0,29,19,
+19,19,19,19,23,27,0,0,0,24,28,27,0,0,0,0,30,19,
+19,19,19,19,19,32,0,24,28,22,19,33,0,0,0,24,22,19,
+19,19,19,19,19,23,28,22,19,19,19,23,27,0,24,22,19,19,
+19,19,19,19,19,19,19,19,19,19,19,19,23,28,22,19,19,19,
+19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19
+</data>
+ </layer>
+ <objectgroup id="1" name="decorations">
+  <object id="332" gid="1" x="1224.91" y="1575.51" width="64" height="64"/>
+  <object id="333" gid="2" x="1193.83" y="1433.93" width="64" height="64"/>
+  <object id="334" gid="3" x="1428.64" y="1627.3" width="64" height="64"/>
+  <object id="335" gid="4" x="1387.2" y="1468.46" width="64" height="64"/>
+  <object id="336" gid="5" x="1249.08" y="1254.38" width="64" height="64"/>
+  <object id="338" gid="6" x="1483.88" y="1713.63" width="64" height="64"/>
+  <object id="339" gid="8" x="1470.07" y="1813.77" width="64" height="64"/>
+  <object id="340" gid="7" x="1445.9" y="1903.55" width="64" height="64"/>
+  <object id="341" gid="9" x="737.105" y="1358.89" width="128" height="128"/>
+  <object id="342" gid="10" x="864.867" y="1400.33" width="128" height="128"/>
+  <object id="343" gid="11" x="996.083" y="1414.14" width="128" height="128"/>
+  <object id="344" gid="12" x="833.79" y="1276.02" width="128" height="128"/>
+  <object id="349" gid="49" x="1295.84" y="1640.42" width="512" height="512"/>
+  <object id="350" gid="50" x="1598.48" y="1920.52" width="512" height="512"/>
+ </objectgroup>
+ <objectgroup id="2" name="cave">
+  <object id="273" gid="47" x="2377.67" y="1624.02" width="512" height="512"/>
+ </objectgroup>
+ <objectgroup id="3" name="trees">
+  <object id="268" gid="43" x="1503.59" y="1478.09" width="256" height="512"/>
+  <object id="269" gid="44" x="1811.77" y="1685.72" width="256" height="512"/>
+ </objectgroup>
+ <objectgroup id="4" name="objects">
+  <object id="345" gid="45" x="2114.31" y="1894.46" width="256" height="512"/>
+  <object id="347" gid="46" x="1159.83" y="1115.63" width="256" height="512"/>
+  <object id="348" gid="48" x="1456.81" y="970.746" width="512" height="512"/>
+  <object id="351" gid="16" x="3020.74" y="2098.38" width="256" height="256"/>
+  <object id="352" gid="17" x="3316.95" y="2333.41" width="256" height="256"/>
+  <object id="353" gid="18" x="3571.29" y="2098.38" width="256" height="256"/>
+  <object id="354" gid="51" x="3064.95" y="1231.53" width="1024" height="512"/>
+  <object id="355" gid="52" x="3999.1" y="1834.37" width="128" height="256"/>
+  <object id="356" gid="53" x="3349.14" y="1673.79" width="256" height="128"/>
+ </objectgroup>
+ <objectgroup id="5" name="ice">
+  <object id="361" gid="54" x="3634.5" y="1823.83" width="256" height="256"/>
+ </objectgroup>
+ <objectgroup id="6" name="smolursa">
+  <object id="275" gid="15" x="3654.11" y="1489.27" width="256" height="256"/>
+ </objectgroup>
+ <objectgroup id="7" name="enemies">
+  <object id="314" name="1" gid="14" x="3012.37" y="1609.71" width="256" height="256"/>
+  <object id="358" name="2" gid="14" x="1842.38" y="1298.27" width="256" height="256"/>
+ </objectgroup>
+ <objectgroup id="8" name="markers">
+  <object id="315" name="1" type="1" x="1013.32" y="1097.79">
+   <point/>
+  </object>
+  <object id="316" name="1" type="2" x="2341.99" y="1562.84">
+   <point/>
+  </object>
+  <object id="317" name="1" type="3" x="3014.21" y="1557.63">
+   <point/>
+  </object>
+  <object id="359" name="2" type="2" x="2009.01" y="1113.97">
+   <point/>
+  </object>
+  <object id="360" name="2" type="1" x="1645.2" y="1101.09">
+   <point/>
+  </object>
+ </objectgroup>
+ <objectgroup id="9" name="player">
+  <object id="254" gid="13" x="777.658" y="887.93" width="256" height="256"/>
+ </objectgroup>
+</map>

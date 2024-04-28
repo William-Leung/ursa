@@ -109,7 +109,7 @@
          "name":"cave",
          "objects":[
                 {
-                 "gid":38,
+                 "gid":47,
                  "height":512,
                  "id":273,
                  "name":"",
@@ -132,7 +132,7 @@
          "name":"trees",
          "objects":[
                 {
-                 "gid":34,
+                 "gid":43,
                  "height":512,
                  "id":268,
                  "name":"",
@@ -144,7 +144,7 @@
                  "y":1886.09
                 }, 
                 {
-                 "gid":35,
+                 "gid":44,
                  "height":512,
                  "id":269,
                  "name":"",
@@ -166,18 +166,6 @@
          "id":4,
          "name":"objects",
          "objects":[
-                {
-                 "gid":16,
-                 "height":256,
-                 "id":318,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":256,
-                 "x":-5.19260261614795,
-                 "y":2566.6197564276
-                }, 
                 {
                  "gid":17,
                  "height":256,
@@ -203,7 +191,7 @@
                  "y":2428.23455119531
                 }, 
                 {
-                 "gid":39,
+                 "gid":48,
                  "height":512,
                  "id":323,
                  "name":"",
@@ -215,7 +203,7 @@
                  "y":1392.32295895354
                 }, 
                 {
-                 "gid":42,
+                 "gid":51,
                  "height":512,
                  "id":325,
                  "name":"",
@@ -227,7 +215,7 @@
                  "y":643.55397871262
                 }, 
                 {
-                 "gid":43,
+                 "gid":52,
                  "height":256,
                  "id":329,
                  "name":"",
@@ -239,7 +227,7 @@
                  "y":1320.10475266731
                 }, 
                 {
-                 "gid":44,
+                 "gid":53,
                  "height":128,
                  "id":330,
                  "name":"",
@@ -251,7 +239,7 @@
                  "y":1163.66634335597
                 }, 
                 {
-                 "gid":44,
+                 "gid":53,
                  "height":128,
                  "id":332,
                  "name":"",
@@ -261,6 +249,18 @@
                  "width":256,
                  "x":2400,
                  "y":1172
+                }, 
+                {
+                 "gid":46,
+                 "height":512,
+                 "id":348,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":256,
+                 "x":2890.6170212766,
+                 "y":1120.36170212766
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -271,31 +271,19 @@
         {
          "draworder":"topdown",
          "id":5,
-         "name":"rocks",
+         "name":"ice",
          "objects":[
                 {
-                 "gid":36,
+                 "gid":45,
                  "height":512,
-                 "id":290,
+                 "id":349,
                  "name":"",
                  "rotation":0,
-                 "type":"1",
+                 "type":"",
                  "visible":true,
                  "width":256,
-                 "x":2233.05,
-                 "y":1902.85
-                }, 
-                {
-                 "gid":37,
-                 "height":512,
-                 "id":295,
-                 "name":"",
-                 "rotation":0,
-                 "type":"2",
-                 "visible":true,
-                 "width":256,
-                 "x":2922.68,
-                 "y":1081.895
+                 "x":2216.85815602837,
+                 "y":1909.36879432624
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -516,7 +504,7 @@
          "y":0
         }],
  "nextlayerid":16,
- "nextobjectid":348,
+ "nextobjectid":350,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.10.2",
@@ -539,23 +527,23 @@
          "source":"maps\/tiles.tsx"
         }, 
         {
-         "firstgid":34,
+         "firstgid":43,
          "source":"maps\/256x512.tsx"
         }, 
         {
-         "firstgid":38,
+         "firstgid":47,
          "source":"maps\/512x512.tsx"
         }, 
         {
-         "firstgid":42,
+         "firstgid":51,
          "source":"maps\/Polar_Rock_2.tsx"
         }, 
         {
-         "firstgid":43,
+         "firstgid":52,
          "source":"maps\/Polar_Trunk_1.tsx"
         }, 
         {
-         "firstgid":44,
+         "firstgid":53,
          "source":"maps\/Polar_Trunk_2.tsx"
         }],
  "tilewidth":256,

@@ -97,7 +97,8 @@
         "polar:house": "polar/objects/Polar_House.png",
         "polar:rock_2": "polar/objects/Polar_Rock_2.png",
         "polar:trunk_1": "polar/objects/Polar_Trunk_1.png",
-        "polar:trunk_2": "polar/objects/Polar_Trunk_2.png"
+        "polar:trunk_2": "polar/objects/Polar_Trunk_2.png",
+        "polar:ice": "polar/objects/Polar_Ice.png"
     },
     "jsons"  : {
         "polar:constants": "polar/constants.json"
