@@ -60,7 +60,7 @@ public class GDXRoot extends Game implements ScreenListener {
 	 */
 	public void create() {
 		prefs = Gdx.app.getPreferences("Completed Data");
-		levelsCompleted= prefs.getFloat("completed");
+		levelsCompleted = 10;
 		System.out.println("levels completed " + levelsCompleted);
 		canvas  = new GameCanvas();
 		loading = new LoadingMode("assets.json",canvas,1);
@@ -72,7 +72,7 @@ public class GDXRoot extends Game implements ScreenListener {
 		controllers = new WorldController[25];
 		controllers[0] = new SceneModel("levelD.json");
 		controllers[1] = new SceneModel("template.json");
-		controllers[2] = new SceneModel("template.json");
+		controllers[2] = new SceneModel("rigel_level.json");
 		for(int i = 0; i < prefs.getFloat("completed");i++){
 			controllers[i].setWasCompleted(true);
 		}

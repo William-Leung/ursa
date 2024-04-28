@@ -323,7 +323,7 @@ public class AIController {
                 break;
 
             case ATTACK:
-                if (checkRange(5f)) {
+                if (checkRange(3f)) {
                     if (ticks_collided >= DETECTION_DELAY * 0.25) {
                         state = FSMState.WON;
                     } else {
@@ -435,21 +435,24 @@ public class AIController {
 //
 //               }
 
-               if (enemy.getX() >= currGoal.x - GOAL_DIST && enemy.getX() <= currGoal.x + GOAL_DIST /*||
+                if (currGoal != null) {
+                    if (enemy.getX() >= currGoal.x - GOAL_DIST && enemy.getX() <= currGoal.x + GOAL_DIST /*||
                        Math.abs(prevLoc.x - enemy.getX()) <= 0.5 && Math.abs(prevLoc.x - enemy.getY()) <= 0.5*/) {
-                   // they reached the goal, so add curr goal to end and make next goal the first in deque
-                   goalLocs.addLast(currGoal);
-                   currGoal = goalLocs.pop();
-               } else { // move enemy in direction of goal
-                   action.x = currGoal.x - enemy.getX();
-                   action.y = currGoal.y - enemy.getY();
-                   action = action.nor();
+                        // they reached the goal, so add curr goal to end and make next goal the first in deque
+                        goalLocs.addLast(currGoal);
+                        currGoal = goalLocs.pop();
+                    } else { // move enemy in direction of goal
+                        action.x = currGoal.x - enemy.getX();
+                        action.y = currGoal.y - enemy.getY();
+                        action = action.nor();
 
-                   enemy.setVX(action.x * 3);
-                   enemy.setVY(action.y * 3);
-                   enemy.setLookDirection(action.x, action.y);
+                        enemy.setVX(action.x * 3);
+                        enemy.setVY(action.y * 3);
+                        enemy.setLookDirection(action.x, action.y);
 
-               }
+                    }
+                }
+
 
                 //wanderMove();
 
@@ -517,12 +520,12 @@ public class AIController {
             case STUNNED:
 
                 rotateEnemy(360 / enemy.getMaxStun(), enemy.getAngle() + ROTATE_SPEED);
-                //enemy.setVX(0);
-                //enemy.setVY(0);
-                if (ticks % 20 == 0) {
-                    enemy.setVX(4 * (float) Math.random());
-                    enemy.setVY(4 * (float) Math.random());
-                }
+                enemy.setVX(0);
+                enemy.setVY(0);
+//                if (ticks % 20 == 0) {
+//                    enemy.setVX(4 * (float) Math.random());
+//                    enemy.setVY(4 * (float) Math.random());
+//                }
 
                 break;
         }

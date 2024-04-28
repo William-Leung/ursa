@@ -25,13 +25,13 @@ import edu.cornell.gdiac.util.PooledList;
 public class Enemy extends BoxObstacle {
 
 
-	private static final float SIGHT_RANGE_INCREMENT = 0.35f;
+	private static final float SIGHT_RANGE_INCREMENT = 0.75f;
 	private static final float BLOB_SHADOW_SIZE = 0.5f;
 
 	private static final int WALK_DAMPENING = 15;
 	private static final int STUN_DAMPENING = 25;
 
-	private static final int STUN_DURATION = 60 * 2;
+	private static final int STUN_DURATION = 60 * 5;
 
 	/** A Pixmap used for drawing sightcones */
 	private TextureRegion redTextureRegion;
@@ -163,7 +163,7 @@ public class Enemy extends BoxObstacle {
 
 	private static final float ENEMY_DETECTION_RANGE_SIGHT = 12f;
 
-	private static final float ENEMY_DETECTION_RANGE_SHADOW = 10;
+	private static final float ENEMY_DETECTION_RANGE_SHADOW = 24f;
 
 	private static final float ENEMY_DETECTION_ANGLE_SIGHT = 25;
 
@@ -472,7 +472,7 @@ public class Enemy extends BoxObstacle {
 		canvas.draw(texture, Color.WHITE,origin.x,0,getX()*drawScale.x,(getY() - getHeight() / 2) * drawScale.y,getAngle(),
 				(lookDirection.x > 0 ? 1 : -1) * 0.75f,0.75f);
 
-		//drawSightCone(canvas, detectionRange, lookDirection, 8);
+		drawSightCone(canvas, detectionRange, lookDirection, 8);
 
 		screenWidth = canvas.getWidth();
 	}
@@ -523,8 +523,9 @@ public class Enemy extends BoxObstacle {
 			polygonRegion = new PolygonRegion(greenTextureRegion,vertices, triangles);
 		}
 
-		float yOffset = 30f;
-		canvas.draw(polygonRegion, Color.WHITE, origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y + texture.getRegionHeight() / 2f + yOffset,getAngle(),1.0f,1.0f);
+		float yOffset = -30f;
+		canvas.draw(polygonRegion, Color.WHITE, origin.x,origin.y,getX()*drawScale.x,
+			getY()*drawScale.y,getAngle(),1.0f,1.0f);
 	}
 
 	public boolean isInShadow() {

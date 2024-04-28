@@ -149,7 +149,7 @@ public class SceneModel extends WorldController implements ContactListener {
     /** How far away the player must be to interact with trees (screen coords) */
     private float treeInteractionRange = 7;
     /** Within what distance will the enemy be stunned upon tree shaking. */
-    private float enemyStunDistance = 4;
+    private float enemyStunDistance = 10;
 
 
     /** =========== Tiled Parsing Variables =========== */
