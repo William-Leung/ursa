@@ -323,8 +323,8 @@ public class AIController {
                 break;
 
             case ATTACK:
-                if (checkRange(null)) {
-                    if (ticks_collided >= DETECTION_DELAY * 0.75) {
+                if (checkRange(5f)) {
+                    if (ticks_collided >= DETECTION_DELAY * 0.25) {
                         state = FSMState.WON;
                     } else {
                         ticks_collided++;
@@ -720,7 +720,7 @@ public class AIController {
 
     public boolean isWon() { return state == FSMState.WON; }
 
-    //public void setWon(boolean value) { hasWon = value; }
+    public void setWon(boolean value) { hasWon = value; }
 
     public void resetLifeTime() { ticks_attacked = 0; }
 

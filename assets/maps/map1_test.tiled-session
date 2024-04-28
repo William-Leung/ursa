@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "tutorial.tmx",
+    "activeFile": "C:/Users/danbp/Desktop/School/Junioir year cornell/3152/ursa/assets/DannyCurrent.json",
     "expandedProjectPaths": [
         "."
     ],
@@ -40,6 +40,48 @@
             "dynamicWrapping": false,
             "scaleInDock": 1,
             "scaleInEditor": 1
+        },
+        "C:/Users/danbp/Desktop/School/Junioir year cornell/3152/ursa/assets/DannyCurrent.json": {
+            "expandedObjectLayers": [
+                7,
+                6,
+                3,
+                4,
+                5,
+                2,
+                9,
+                8
+            ],
+            "scale": 0.5,
+            "selectedLayer": 4,
+            "viewCenter": {
+                "x": 845,
+                "y": 657
+            }
+        },
+        "C:/Users/danbp/Desktop/School/Junioir year cornell/3152/ursa/assets/levelD.json": {
+            "scale": 0.33,
+            "selectedLayer": 8,
+            "viewCenter": {
+                "x": 2825.757575757576,
+                "y": 1486.3636363636363
+            }
+        },
+        "C:/Users/danbp/Desktop/School/Junioir year cornell/3152/ursa/assets/template.json": {
+            "scale": 0.21399739583333333,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 2303.766352296928,
+                "y": 1408.8956495284456
+            }
+        },
+        "C:/Users/danbp/Desktop/School/Junioir year cornell/3152/ursa/assets/template.tmx": {
+            "scale": 0.125,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 2304,
+                "y": 1412
+            }
         },
         "C:/Users/williamleung/Documents/GitHub/ursa/assets/level1.json": {
             "scale": 0.1792,
@@ -239,7 +281,7 @@
         },
         "Ursa.tsx": {
             "dynamicWrapping": true,
-            "scaleInDock": 1,
+            "scaleInDock": 0.1,
             "scaleInEditor": 1
         },
         "backgroundTest.tsx": {
@@ -267,7 +309,7 @@
             "selectedLayer": 0,
             "viewCenter": {
                 "x": 2045.63964656166,
-                "y": 1276.0660776027662
+                "y": 1280.9834805993085
             }
         },
         "level1.tmx": {
@@ -275,7 +317,7 @@
             "selectedLayer": 3,
             "viewCenter": {
                 "x": 3065.4205607476633,
-                "y": 3070.0934579439254
+                "y": 3070.093457943925
             }
         },
         "map1.tmx": {
@@ -291,13 +333,13 @@
         },
         "map2.tmx": {
             "expandedObjectLayers": [
-                5,
-                8,
-                2,
-                3,
                 7,
                 4,
-                9
+                3,
+                5,
+                2,
+                9,
+                8
             ],
             "scale": 0.25,
             "selectedLayer": 9,
@@ -308,10 +350,10 @@
         },
         "map3.tmx": {
             "expandedObjectLayers": [
-                5,
-                2,
                 7,
-                4
+                4,
+                5,
+                2
             ],
             "scale": 0.15,
             "selectedLayer": 3,
@@ -377,7 +419,7 @@
         },
         "salmon_walk_2_small.tsx": {
             "dynamicWrapping": false,
-            "scaleInDock": 1,
+            "scaleInDock": 0.1,
             "scaleInEditor": 1
         },
         "spritesheet.tsx": {
@@ -389,7 +431,7 @@
             "selectedLayer": 0,
             "viewCenter": {
                 "x": 1877.7777777777776,
-                "y": 3147.2222222222217
+                "y": 3352.7777777777774
             }
         },
         "testing.tmx.tmj": {
@@ -402,7 +444,7 @@
         },
         "tiles.tsx": {
             "dynamicWrapping": false,
-            "scaleInDock": 0.1391,
+            "scaleInDock": 0.1,
             "scaleInEditor": 0.64
         },
         "tundra_tree_snow.tsx": {
@@ -412,30 +454,30 @@
         },
         "tundra_tree_snow_small.tsx": {
             "dynamicWrapping": false,
-            "scaleInDock": 1,
+            "scaleInDock": 0.1,
             "scaleInEditor": 0.07
         },
         "tutorial.tmx": {
             "expandedObjectLayers": [
-                9,
-                5,
                 4,
-                2
+                5,
+                2,
+                9
             ],
             "scale": 0.0904,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 3307.5221238938057,
-                "y": 1786.5044247787605
+                "x": 3318.58407079646,
+                "y": 116.15044247787591
             }
         }
     },
-    "last.exportedFilePath": "/Users/williamleung/Documents/GitHub/ursa/assets",
+    "last.exportedFilePath": "C:/Users/danbp/Desktop/School/Junioir year cornell/3152/ursa/assets",
     "last.externalTilesetPath": "/Users/ykhadir/3300/p2/ursa/assets/maps",
     "last.imagePath": "/Users/williamleung/Documents/GitHub/ursa/assets/polar",
     "map.height": 10,
     "map.lastUsedExportFilter": "JSON map files (*.tmj *.json)",
-    "map.lastUsedFormat": "tmx",
+    "map.lastUsedFormat": "json",
     "map.tileHeight": 256,
     "map.tileWidth": 256,
     "map.width": 20,
@@ -448,10 +490,14 @@
         "map1.tmx",
         "level1.tmx",
         "level 10.tmx",
-        "tutorial.tmx"
+        "tutorial.tmx",
+        "C:/Users/danbp/Desktop/School/Junioir year cornell/3152/ursa/assets/template.tmx",
+        "C:/Users/danbp/Desktop/School/Junioir year cornell/3152/ursa/assets/DannyCurrent.json",
+        "C:/Users/danbp/Desktop/School/Junioir year cornell/3152/ursa/assets/template.json"
     ],
     "project": "map1_test.tiled-project",
     "recentFiles": [
+        "C:/Users/danbp/Desktop/School/Junioir year cornell/3152/ursa/assets/levelD.json",
         "tiles.tsx",
         "testing.tmx",
         "map4.tmx",
@@ -461,9 +507,8 @@
         "level1.tmx",
         "level 10.tmx",
         "tutorial.tmx",
-        "testing.tmx.tmj",
-        "C:/Users/williamleung/Documents/GitHub/ursa/assets/testing.json",
-        "256x256(Ursa + Salmon).tsx"
+        "C:/Users/danbp/Desktop/School/Junioir year cornell/3152/ursa/assets/template.tmx",
+        "C:/Users/danbp/Desktop/School/Junioir year cornell/3152/ursa/assets/template.json"
     ],
     "tileset.lastUsedFilter": "Tiled tileset files (*.tsx *.xml)",
     "tileset.lastUsedFormat": "tsx",

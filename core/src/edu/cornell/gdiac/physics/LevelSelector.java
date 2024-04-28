@@ -359,7 +359,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
             formula = (screenX-centerX)*(screenX-centerX)+(screenY-centerY)*(screenY-centerY);
             formula = (float) Math.sqrt(formula);
             if(formula < radius && button3Locked == false && Math.abs(ursaStartX - centerX) <7 && Math.abs(ursaStartY - centerY) < 7){
-                System.out.println("heyo");
+
                 listener.exitScreen(this,3);
             }
             if(formula < radius && levelsCompleted == 2 ){
