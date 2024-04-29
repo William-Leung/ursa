@@ -57,8 +57,9 @@ public class ShadowModel extends PolygonObstacle {
         }
     }
 
-    public ShadowModel(float x, float y, String shadowType, float textureScale) {
-        super(ShadowPolygon(shadowType), x, y, 0,textureScale);
+    public ShadowModel(float[] points, float x, float y, float textureScale) {
+        //super(ShadowPolygon(shadowType), x, y, 0,textureScale);
+        super(points, x, y, 0,textureScale);
         this.shadowColor = new Color(1,1,1,0.3f);
         this.textureScale = textureScale;
 
@@ -85,7 +86,7 @@ public class ShadowModel extends PolygonObstacle {
 
     @Override
     public void preDraw(GameCanvas canvas) {
-        canvas.draw(region,shadowColor,0,0,getX()*drawScale.x,getY()*drawScale.y, vectorToRadians(direction), textureScale, textureScale);
+        canvas.draw(region,shadowColor,0,0,getX()*drawScale.x,getY()*drawScale.y, vectorToRadians(direction), 1, 1);
     }
 
     @Override

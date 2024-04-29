@@ -115,3 +115,4 @@ core/build/tmp/compileJava/previous-compilation-data.bin
 core/build/libs/core-1.0.jar
 /core/build/classes
 *.class
+desktop/build/resources/main/META-INF/MANIFEST.MF

@@ -1,13 +1,11 @@
 package edu.cornell.gdiac.physics;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
@@ -38,7 +36,6 @@ import edu.cornell.gdiac.util.FilmStrip;
 import edu.cornell.gdiac.util.PooledList;
 import java.util.Comparator;
 import java.util.LinkedList;
-import org.w3c.dom.Text;
 
 /**
  * This class contains references to all game objects and stores logic for update loops, where it animates and moves objects.
@@ -71,9 +68,8 @@ public class SceneModel extends WorldController implements ContactListener {
     private TextureRegion salmonTexture;
     /** Texture asset for ursa texture */
     private TextureRegion ursaTexture;
+    /** Texture asset for smol ursa texture */
     private TextureRegion smolUrsaTexture;
-    /** Texture asset for tint over the whole screen */
-    private final Texture blankTexture;
     /** Texture asset for trees in the polar map (first is snow, second is no snow) */
     private final TextureRegion[] treeTextures = new TextureRegion[2];
     /** Texture asset for objects in the polar map */
@@ -86,7 +82,6 @@ public class SceneModel extends WorldController implements ContactListener {
     protected TextureRegion whiteTexture;
     /** Texture asset for a single black pixel (shadows) */
     protected TextureRegion blackTexture;
-
 
 
     /* =========== Shadow Textures =========== */
@@ -158,6 +153,7 @@ public class SceneModel extends WorldController implements ContactListener {
     /** Smol ursa's idle animates every smolUrsaIdleAnimBuffer update loops */
     private final int smolUrsaIdleAnimBuffer = 3;
 
+
     /* =========== Tree Shaking Variables =========== */
     /** The tree that is currently shaking. */
     private Tree shakingTree = null;
@@ -165,6 +161,7 @@ public class SceneModel extends WorldController implements ContactListener {
     private final float treeInteractionRange = 7;
     /** Within what distance will the enemy be stunned upon tree shaking. */
     private final float enemyStunDistance = 10;
+
 
     /* =========== Cave Interaction Variables =========== */
     /** How far away the player must be to interact with caves (screen coords) */
@@ -174,7 +171,7 @@ public class SceneModel extends WorldController implements ContactListener {
     /** The frame at which time began to skip */
     private int timeBeganSkippingFrame = 0;
     /** The number of frames over which time will skip */
-    private int fastForwardDuration = 30;
+    private int fastForwardDuration = 60;
 
 
     /* =========== Tiled Parsing Variables =========== */
@@ -219,9 +216,6 @@ public class SceneModel extends WorldController implements ContactListener {
     private final float tileSideLength = 256;
     private int[][] tiles;
 
-
-    private float timeRatio;
-
     /* =========== Collections of References =========== */
     /** Reference to the character avatar */
     private UrsaModel ursa;
@@ -233,41 +227,16 @@ public class SceneModel extends WorldController implements ContactListener {
     private Enemy[] enemies;
     /** List of references to all AIControllers */
     private LinkedList<AIController> controls = new LinkedList<>();
-    /** List of references to all shadows. */
-    private PooledList<ShadowModel> shadows = new PooledList<>();
     /** List of references to all trees */
     private PooledList<Tree> trees = new PooledList<>();
     /** List of references to all decorations */
-    private PooledList<Decoration> decorations = new PooledList<>();
+    private PooledList<Decoration> decorations= new PooledList<>();
     /** List of references to decorations on the ground */
     private PooledList<Decoration> groundDecorations = new PooledList<>();
     /** List of references to all caves */
-    private Cave[] caves;
+    private PooledList<Cave> caves = new PooledList<>();
     /** List of references to dynamic objects (ursa + enemies) */
     private PooledList<Obstacle> dynamicObjects = new PooledList<>();
-
-
-
-    /**
-     * Information about the gameboard used for pathfinding
-     */
-    private Board gameBoard;
-
-    /**
-     * List of all references to all generic obstacles
-     */
-    private PooledList<GenericObstacle> genericObstacles = new PooledList<>();
-
-    /** Reference to goal */
-    private PolygonObstacle goal;
-    /** Controller for all dynamic shadows */
-    private ShadowController shadowController = new ShadowController();
-    private boolean doShadowsMove = false;
-    private final Comparator<Decoration> decorationComparator = (o1, o2) -> Float.compare(o2.getIndex(), o1.getIndex());
-
-
-    /** Mark set to handle more sophisticated collision callbacks */
-    protected ObjectSet<Fixture> sensorFixtures;
 
 
     /* =========== Day/Night Screen Tinting =========== */
@@ -281,17 +250,35 @@ public class SceneModel extends WorldController implements ContactListener {
     /** Points to the next color we interpolate to */
     private int colorNextPointer = 1;
 
+
     /* =========== UI Constants =========== */
+    /** Time as a float where 0 represents sunrise, 0.5 is sunset. Always stays between 0 and 1. */
+    private float timeRatio;
     /** Rotation angle of UI element */
     private float uiRotationAngle = 0f;
     /** Draw scale of UI */
     private final float uiDrawScale = 0.1f;
 
 
-    /** =========== Soundtrack assets =========== */
+    /* =========== Soundtrack Assets =========== */
     private Music levelMusic;
     private Music levelMusicNight;
     private Music levelMusicTense;
+
+
+    /**
+     * List of all references to all generic obstacles
+     */
+    private PooledList<GenericObstacle> genericObstacles = new PooledList<>();
+
+    /** Reference to goal */
+    private PolygonObstacle goal;
+    /** Controller for all dynamic shadows */
+    private ShadowController shadowController = new ShadowController();
+    private final Comparator<Decoration> decorationComparator = (o1, o2) -> Float.compare(o2.getIndex(), o1.getIndex());
+    /** Mark set to handle more sophisticated collision callbacks */
+    protected ObjectSet<Fixture> sensorFixtures;
+
 
     /**
      * Creates and initialize a new instance of the platformer game
@@ -313,22 +300,14 @@ public class SceneModel extends WorldController implements ContactListener {
 
         colors = new Color[4];
         intervals = new float[4];
-        // Night
         colors[0] = new Color(0f,0f,0f,0.5f);
+        intervals[0] = 0f;
         colors[1] = new Color(1f,1f,1f,0f);
         intervals[1] = 0.1f;
-        // Maintain the white
         colors[2] = new Color(1f,1f,1f,0f);
         intervals[2] = 0.4f;
-// Sunset Colors
         colors[3] = new Color(0f,0f,0f,0.5f);
         intervals[3] = 0.5f;
-
-        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
-        pixmap.setColor(1, 1, 1, 1); // RGBA color with full opacity (white)
-        pixmap.fill();
-        blankTexture = new Texture(pixmap);
-        pixmap.dispose();
     }
     /**
      * Gather the assets for this controller.
@@ -465,10 +444,7 @@ public class SceneModel extends WorldController implements ContactListener {
             obj.deactivatePhysics(world);
         }
         objects.clear();
-        shadows.clear();
         addQueue.clear();
-        trees.clear();
-        decorations.clear();
         dynamicObjects.clear();
         groundDecorations.clear();
         shadowController.reset();
@@ -504,7 +480,8 @@ public class SceneModel extends WorldController implements ContactListener {
      * Lays out the game geography.
      */
     private void populateLevel() {
-        // create shadow (idk if this does anything even)
+        // False for static shadows, true for dynamic
+        boolean doShadowsMove = true;
         shadowController = new ShadowController(blackTexture, doShadowsMove);
 
         findTileIndices();
@@ -688,14 +665,6 @@ public class SceneModel extends WorldController implements ContactListener {
         // Continuously rotate the day/night UI
         uiRotationAngle = -(timeRatio * 2) * (float) Math.PI + (float) Math.PI;
 
-        if(isTimeSkipping) {
-            if((currentFrame - timeBeganSkippingFrame) % fastForwardDuration == 0) {
-                isTimeSkipping = false;
-            } else {
-                shadowController.animateFastForward(currentFrame - timeBeganSkippingFrame, fastForwardDuration);;
-            }
-        }
-
         // Update the timeRatio (used for UI element and tinting)
         timeRatio = shadowController.getTimeRatio();
         // If it's night, reset the tinting
@@ -721,6 +690,15 @@ public class SceneModel extends WorldController implements ContactListener {
             levelMusicTense.play();
             levelMusic.play();
             levelMusic.setLooping(true);
+        }
+
+        if(isTimeSkipping) {
+            if((currentFrame - timeBeganSkippingFrame) % fastForwardDuration == 0) {
+                isTimeSkipping = false;
+            } else {
+                shadowController.animateFastForward(currentFrame - timeBeganSkippingFrame, fastForwardDuration);
+            }
+            return;
         }
 
 
@@ -948,10 +926,10 @@ public class SceneModel extends WorldController implements ContactListener {
         for(Decoration d: decorations) {
             d.draw(canvas);
         }
-        canvas.draw(blankTexture,backgroundColor, canvas.getCameraX() - canvas.getWidth() / 2f, canvas.getCameraY() - canvas.getHeight() / 2, canvas.getWidth(), canvas.getHeight());
+        canvas.draw(whiteTexture,backgroundColor, canvas.getCameraX() - canvas.getWidth() / 2f, canvas.getCameraY() - canvas.getHeight() / 2f, canvas.getWidth(), canvas.getHeight());
         super.updateTinting(backgroundColor);
         // Draws shadows for moving objects (enemy/player)
-        for(Obstacle obj : dynamicObjects) {
+        for(Obstacle obj: dynamicObjects) {
             obj.preDraw(canvas);
         }
         // Draws shadows for static objects (trees, rocks, trunks, etc)
@@ -985,7 +963,7 @@ public class SceneModel extends WorldController implements ContactListener {
         return drawCoord * textureScale / scale.x;
     }
 
-    /**
+    /*
      * RENDERING Methods that parse a level JSON into a world
      * Layers Invariant: player/markers/enemies/smolursa/ice/objects/trees/cave/decorations
      */
@@ -1214,18 +1192,35 @@ public class SceneModel extends WorldController implements ContactListener {
         for(int i = 0; i < objectData.size; i++) {
             int objectIndex = objectData.get(i).get("gid").asInt();
             int textureIndex;
-            if(objectIndex - firstMediumObjectIndex < 3) {
-                textureIndex = objectIndex - firstMediumObjectIndex;
+
+            if(objectIndex - firstMediumObjectIndex == 0) {
+                textureIndex = 0;
                 name = "tree";
-            } else if(objectIndex - firstMediumRockIndex < 2) {
-                textureIndex = objectIndex - firstMediumRockIndex + 3;
+                //name = "rock_1";
+            } else if(objectIndex - firstMediumObjectIndex == 1) {
+                textureIndex = 1;
                 name = "tree";
-            } else if(objectIndex - firstHouseIndex < 1) {
-                textureIndex = objectIndex - firstHouseIndex + 5;
+                //name = "statue";
+            } else if(objectIndex - firstMediumObjectIndex == 2) {
+                textureIndex = 2;
                 name = "tree";
+                //name = "goat";
+            } else if(objectIndex - firstMediumRockIndex == 0) {
+                textureIndex = 3;
+                name = "tree";
+                //name = "rock_4";
+            }  else if(objectIndex - firstMediumRockIndex == 1) {
+                textureIndex = 4;
+                name = "tree";
+                //name = "rock_3";
+            } else if(objectIndex - firstHouseIndex == 0) {
+                textureIndex = 5;
+                name = "tree";
+                // name = "house";
             } else if(objectIndex == polarRock2Index) {
                 textureIndex = 6;
                 name = "tree";
+                // name = "rock_2";
             } else if(objectIndex == polarTrunk1Index) {
                 textureIndex = 7;
                 name = "trunk1";
@@ -1239,8 +1234,8 @@ public class SceneModel extends WorldController implements ContactListener {
 
             JsonValue objectConstants = constants.get(name);
             float yOffset = objectConstants.get("yOffset").asFloat();
-            float x = objectData.get(i).get(8).asFloat() + objectTextures[textureIndex].getRegionWidth() / 2f;
-            float y = maxY - objectData.get(i).get(9).asFloat() + yOffset;
+            float x = objectData.get(i).get("x").asFloat() + objectTextures[textureIndex].getRegionWidth() / 2f;
+            float y = maxY - objectData.get(i).get("y").asFloat() + yOffset;
 
             GameObject obj = new GameObject(objectConstants.get("vertices").asFloatArray(),drawToScreenCoordinates(x),drawToScreenCoordinates(y), yOffset, textureScale);
             obj.setDrawScale(scale);
@@ -1249,8 +1244,7 @@ public class SceneModel extends WorldController implements ContactListener {
             addObject(obj);
 
             // Tree shadows
-            ShadowModel shadow = new ShadowModel(obj.getX(), obj.getY(), "tree", textureScale);
-            shadow.setName("shadow");
+            ShadowModel shadow = new ShadowModel(objectConstants.get("shadowVertices").asFloatArray(),obj.getX(), obj.getY(), textureScale);
             shadow.setDrawScale(scale);
             shadowController.addShadow(shadow);
             addObject(shadow);
@@ -1277,27 +1271,26 @@ public class SceneModel extends WorldController implements ContactListener {
             float x = treeObjectData.get(i).get(8).asFloat() + treeTextures[treeIndex - firstTreeIndex].getRegionWidth() / 2f;
             float y = maxY - treeObjectData.get(i).get(9).asFloat() + yOffset;
 
-            Tree obj = new Tree(treeConstants.get("vertices").asFloatArray(),drawToScreenCoordinates(x),drawToScreenCoordinates(y), yOffset, textureScale);
-            obj.setDrawScale(scale);
-            obj.setTexture(treeTextures[treeIndex - firstTreeIndex]);
+            Tree tree = new Tree(treeConstants.get("vertices").asFloatArray(),drawToScreenCoordinates(x),drawToScreenCoordinates(y), yOffset, textureScale);
+            tree.setDrawScale(scale);
+            tree.setTexture(treeTextures[treeIndex - firstTreeIndex]);
             if(treeIndex - firstTreeIndex == 1) {
-                obj.putOnShakeCooldown();
+                tree.putOnShakeCooldown();
             }
-            obj.setName("tree" + i);
+            tree.setName("tree" + i);
 
-            addObject(obj);
-            trees.add(obj);
+            addObject(tree);
+            trees.add(tree);
 
             // Tree shadows
-            ShadowModel shadow = new ShadowModel(obj.getX(), obj.getY(),"tree shadow" + i, textureScale);
-            shadow.setName("shadow");
+            ShadowModel shadow = new ShadowModel(treeConstants.get("shadowVertices").asFloatArray(), tree.getX(), tree.getY(), textureScale);
             shadow.setDrawScale(scale);
             shadowController.addShadow(shadow);
             addObject(shadow);
 
             // ===================
-            genericObstacles.add(new GenericObstacle(obj.getX(), obj.getY(),
-                    obj.getWidth(), obj.getHeight()));
+            genericObstacles.add(new GenericObstacle(tree.getX(), tree.getY(),
+                    tree.getWidth(), tree.getHeight()));
             // ===================
         }
     }
@@ -1312,7 +1305,6 @@ public class SceneModel extends WorldController implements ContactListener {
         JsonValue caveConstants = constants.get("cave");
         JsonValue caveObjectData = jsonData.get("layers").get(2).get("objects");
 
-        caves = new Cave[caveObjectData.size];
         for (int i = 0; i < caveObjectData.size; i++) {
             float yOffset = caveConstants.get("yOffset").asFloat();
             float x = caveObjectData.get(i).get(8).asFloat() + polarCaveTexture.getRegionWidth() / 2f;
@@ -1326,11 +1318,10 @@ public class SceneModel extends WorldController implements ContactListener {
             obj.setName("cave" + i);
 
             addObject(obj);
-            caves[i] = obj;
+            caves.add(obj);
 
             // Tree shadows
-            ShadowModel shadow = new ShadowModel(obj.getX(), obj.getY(),"cave shadow" + i, textureScale);
-            shadow.setName("shadow");
+            ShadowModel shadow = new ShadowModel(caveConstants.get("shadowVertices").asFloatArray(), obj.getX(), obj.getY(), textureScale);
             shadow.setDrawScale(scale);
             shadowController.addShadow(shadow);
             addObject(shadow);
@@ -1370,6 +1361,7 @@ public class SceneModel extends WorldController implements ContactListener {
 
             decorations.add(decoration);
         }
+        // Since decoration positions never change, we only need to sort once
         decorations.sort(decorationComparator);
     }
 }
