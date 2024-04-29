@@ -38,21 +38,25 @@ public class ShadowController {
     private final Vector2 starting_direction = new Vector2(1, 0);
     /** List of references to all shadows. */
     private PooledList<ShadowModel> shadows = new PooledList<>();
+    private boolean doShadowsMove;
+    private float beginningTimeRatio = 0;
+    private float endTimeRatio = 0;
 
     /**
      * Empty constructor
      */
     public ShadowController() {
-        this(null);
+        this(null, false);
     }
 
     /** Creates and initializes a new instance of a shadow controller
      *
      * The shadow controller has a time of 0 ticks */
-    public ShadowController(TextureRegion region) {
+    public ShadowController(TextureRegion region, boolean doShadowsMove) {
         time = 0;
         isNight = false;
         shadowTexture = region;
+        this.doShadowsMove = doShadowsMove;
 
         dayLength = 1800;
         nightLength = 1800;
@@ -99,8 +103,12 @@ public class ShadowController {
             time = 0;
             isNight = false;
         }
-        time++;
         timeRatio = (float) time / fullDayLength;
+
+        if(!doShadowsMove) {
+            return;
+        }
+        time++;
         rotateShadows();
     }
 
@@ -134,4 +142,23 @@ public class ShadowController {
 
     /** Gets the time of day */
     public int getTime() { return this.time; }
+
+    public void animateFastForward(float framesIntoAnimation, float animationLength) {
+        timeRatio = beginningTimeRatio + (endTimeRatio - beginningTimeRatio) * framesIntoAnimation / animationLength;
+        time = (int) (timeRatio * fullDayLength);
+        for (ShadowModel shadow : shadows) {
+            if (isNight) {
+                continue;
+            }
+            shadow.rotateDirection(720 / animationLength * (endTimeRatio - beginningTimeRatio));
+        }
+    }
+
+    public void forwardTimeRatio(float amount) {
+        if(doShadowsMove) {
+            amount = 1 - timeRatio;
+        }
+        beginningTimeRatio = timeRatio;
+        endTimeRatio = timeRatio + amount;
+    }
 }

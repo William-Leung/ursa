@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
@@ -165,6 +166,16 @@ public class SceneModel extends WorldController implements ContactListener {
     /** Within what distance will the enemy be stunned upon tree shaking. */
     private final float enemyStunDistance = 10;
 
+    /* =========== Cave Interaction Variables =========== */
+    /** How far away the player must be to interact with caves (screen coords) */
+    private final float caveInteractionRange = 6;
+    /** Is the time fast forwarding right now? */
+    private boolean isTimeSkipping = false;
+    /** The frame at which time began to skip */
+    private int timeBeganSkippingFrame = 0;
+    /** The number of frames over which time will skip */
+    private int fastForwardDuration = 30;
+
 
     /* =========== Tiled Parsing Variables =========== */
     /** Maximum Y Coordinate (Screen) */
@@ -251,8 +262,7 @@ public class SceneModel extends WorldController implements ContactListener {
     private PolygonObstacle goal;
     /** Controller for all dynamic shadows */
     private ShadowController shadowController = new ShadowController();
-    /** rock to be used to reset the day if interacted with */
-    private GenericObstacle specialRock = null;
+    private boolean doShadowsMove = false;
     private final Comparator<Decoration> decorationComparator = (o1, o2) -> Float.compare(o2.getIndex(), o1.getIndex());
 
 
@@ -495,7 +505,7 @@ public class SceneModel extends WorldController implements ContactListener {
      */
     private void populateLevel() {
         // create shadow (idk if this does anything even)
-        shadowController = new ShadowController(blackTexture);
+        shadowController = new ShadowController(blackTexture, doShadowsMove);
 
         findTileIndices();
         renderUrsa();
@@ -676,7 +686,15 @@ public class SceneModel extends WorldController implements ContactListener {
         currentFrame++;
 
         // Continuously rotate the day/night UI
-        uiRotationAngle = -(timeRatio / 2) * (float) Math.PI + (float) Math.PI;
+        uiRotationAngle = -(timeRatio * 2) * (float) Math.PI + (float) Math.PI;
+
+        if(isTimeSkipping) {
+            if((currentFrame - timeBeganSkippingFrame) % fastForwardDuration == 0) {
+                isTimeSkipping = false;
+            } else {
+                shadowController.animateFastForward(currentFrame - timeBeganSkippingFrame, fastForwardDuration);;
+            }
+        }
 
         // Update the timeRatio (used for UI element and tinting)
         timeRatio = shadowController.getTimeRatio();
@@ -711,38 +729,35 @@ public class SceneModel extends WorldController implements ContactListener {
         float yVal = InputController.getInstance().getVertical() * ursa.getForce();
         ursa.setMovement(xVal,yVal);
 
-        // If the player tried to interact with a tree
-        if(InputController.getInstance().didInteract()) {
-            if (treeShakeIndex == 0) {
-                Tree nearest = null;
-                float minDistance = 0;
-                float tempDistance;
-                for (Tree tree : trees) {
-                    tempDistance = ursa.getPosition().dst(tree.getPosition());
-                    // This 3 is a hard coded constant for interactionrange
-                    if (tree.canShake() && tempDistance < treeInteractionRange && (nearest == null || tempDistance < minDistance)) {
-                        nearest = tree;
-                        minDistance = tempDistance;
-                    }
-                }
-
-                if (nearest != null) {
-                    shakeTree(nearest);
-                }
+        // Find the closest interactable obstacle among caves and trees
+        PolygonObstacle closestInteractableObstacle = null;
+        float minDistance = 1000;
+        float tempDistance;
+        for(Tree tree: trees) {
+            tempDistance = ursa.getPosition().dst(tree.getPosition());
+            if (tree.canShake() && tempDistance < treeInteractionRange && (closestInteractableObstacle == null || tempDistance < minDistance)) {
+                closestInteractableObstacle = tree;
+                minDistance = tempDistance;
             }
         }
-
-
-        // reset day if interact w special rock
-        if (specialRock != null && InputController.getInstance().didInteract()
-                && ursa.getPosition().dst(specialRock.getPosition()) <= treeInteractionRange) {
-            for (ShadowModel s : shadows) {
-                s.rotateDirection((float) (-1 * shadowController.getTime() * (360 / 240)/5));
+        for(Cave cave: caves) {
+            tempDistance = ursa.getPosition().dst(cave.getPosition());
+            if (cave.canInteract() && tempDistance < caveInteractionRange && (closestInteractableObstacle == null || tempDistance < minDistance)) {
+                closestInteractableObstacle = cave;
+                minDistance = tempDistance;
             }
-            System.out.println(shadowController.getTime());
-            shadowController.setTime(0);
-            System.out.println(shadowController.getTime());
-            for (AIController i : controls) { i.reset(); }
+        }
+        if(InputController.getInstance().didInteract()) {
+            System.out.println("Attempting to interact. ");
+            if (closestInteractableObstacle != null) {
+                if (closestInteractableObstacle instanceof Tree) {
+                    shakeTree((Tree) closestInteractableObstacle);
+                    System.out.println("Shaking tree. ");
+                } else {
+                    fastForward((Cave) closestInteractableObstacle);
+                    System.out.println("Fast forwarding time. ");
+                }
+            }
         }
 
 
@@ -766,6 +781,7 @@ public class SceneModel extends WorldController implements ContactListener {
             if (c.isWon()) setFailure(true);
         }
 
+        System.out.println(ursa.isInShadow());
         for (Enemy enemy : enemies) {
             if(enemy != null) {
                 if (enemy.isPlayerInLineOfSight(world,ursa)) {
@@ -816,6 +832,17 @@ public class SceneModel extends WorldController implements ContactListener {
         }
     }
 
+    public void fastForward(Cave cave) {
+        if(cave.canInteract()) {
+            cave.interact();
+            shadowController.forwardTimeRatio(0.2f);
+            isTimeSkipping = true;
+            timeBeganSkippingFrame = currentFrame;
+
+            for (AIController i : controls) { i.reset(); }
+        }
+    }
+
     /**
      * Callback method for the start of a collision
      * This method is called when we first get a collision between two objects.  We use
@@ -837,6 +864,8 @@ public class SceneModel extends WorldController implements ContactListener {
         try {
             Obstacle bd1 = (Obstacle)body1.getUserData();
             Obstacle bd2 = (Obstacle)body2.getUserData();
+
+            System.out.println("ntya");
 
             // See if we have landed on the ground.
             if ((ursa.getSensorName().equals(fd2) && bd1.getName().contains("shadow")) ||

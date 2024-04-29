@@ -64,6 +64,7 @@ public class ShadowModel extends PolygonObstacle {
 
         setSensor(true);
         setName("shadow");
+        System.out.println(x + " " + y);
     }
 
     /**
@@ -89,6 +90,28 @@ public class ShadowModel extends PolygonObstacle {
 
     @Override
     public void draw(GameCanvas canvas) {
+
+    }
+
+    public boolean isPlayerInShadow(World world, SimpleObstacle player) {
+        Vector2 pos = getAnchor();
+        Vector2 playerPos = new Vector2(player.getPosition());
+        double dst = playerPos.dst(pos);
+
+        Vector2 dirToVector = new Vector2(player.getPosition()).sub(pos).nor();
+        float angle = getDirection().angleDeg(dirToVector);
+        boolean possiblyVisible = dst <= 5 && (angle <= 20 || angle >= 360 - 20);
+
+        if (possiblyVisible) {
+            ShadowCallback callback = new ShadowCallback(player.getBody());
+            world.rayCast(callback, getAnchor(), player.getPosition());
+            if (callback.hitPlayer) {
+                playerCurrentInShadow = true;
+                return true;
+            }
+        }
+        playerCurrentInShadow = false;
+        return false;
 
     }
 
