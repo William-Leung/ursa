@@ -781,7 +781,6 @@ public class SceneModel extends WorldController implements ContactListener {
             if (c.isWon()) setFailure(true);
         }
 
-        System.out.println(ursa.isInShadow());
         for (Enemy enemy : enemies) {
             if(enemy != null) {
                 if (enemy.isPlayerInLineOfSight(world,ursa)) {
@@ -865,11 +864,9 @@ public class SceneModel extends WorldController implements ContactListener {
             Obstacle bd1 = (Obstacle)body1.getUserData();
             Obstacle bd2 = (Obstacle)body2.getUserData();
 
-            System.out.println("ntya");
-
             // See if we have landed on the ground.
-            if ((ursa.getSensorName().equals(fd2) && bd1.getName().contains("shadow")) ||
-                    (ursa.getSensorName().equals(fd1) && bd2.getName().contains("shadow"))) {
+            if ((ursa.getSensorName().equals(fd2) && bd1.getName().equals("shadow")) ||
+                    (ursa.getSensorName().equals(fd1) && bd2.getName().equals("shadow"))) {
                 ursa.setInShadow(true);
                 sensorFixtures.add(ursa == bd1 ? fix2 : fix1); // Could have more than one ground
             }
@@ -1253,7 +1250,7 @@ public class SceneModel extends WorldController implements ContactListener {
 
             // Tree shadows
             ShadowModel shadow = new ShadowModel(obj.getX(), obj.getY(), "tree", textureScale);
-            shadow.setName("game object shadow" + i);
+            shadow.setName("shadow");
             shadow.setDrawScale(scale);
             shadowController.addShadow(shadow);
             addObject(shadow);
@@ -1293,7 +1290,7 @@ public class SceneModel extends WorldController implements ContactListener {
 
             // Tree shadows
             ShadowModel shadow = new ShadowModel(obj.getX(), obj.getY(),"tree shadow" + i, textureScale);
-            shadow.setName("tree shadow " + i);
+            shadow.setName("shadow");
             shadow.setDrawScale(scale);
             shadowController.addShadow(shadow);
             addObject(shadow);
@@ -1333,7 +1330,7 @@ public class SceneModel extends WorldController implements ContactListener {
 
             // Tree shadows
             ShadowModel shadow = new ShadowModel(obj.getX(), obj.getY(),"cave shadow" + i, textureScale);
-            shadow.setName("cave shadow" + i);
+            shadow.setName("shadow");
             shadow.setDrawScale(scale);
             shadowController.addShadow(shadow);
             addObject(shadow);
