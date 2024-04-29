@@ -15,7 +15,7 @@
         "decoration:ground_1": "polar/decorations/Polar_Ground_1.png",
         "decoration:ground_2": "polar/decorations/Polar_Ground_2.png",
 
-        "enemies:salmon":  "enemies/salmon.png",
+        "enemies:salmon":  "enemies/Salmon.png",
         "enemies:salmonUprightWalk": "enemies/Walk.png",
         "enemies:salmonConfused": "enemies/Lost.png",
         "enemies:salmonIdle": "enemies/Idle.png",
@@ -51,6 +51,7 @@
         "polar:tree_shake_animation": "polar/animations/Polar_Tree_Shake.png",
 
         "polar:white": "polar/white.png",
+        "polar:black": "polar/black.png",
         "polar:falling_snow": "polar/falling_snow.png",
         "polar:tree_no_snow": "polar/objects/tree_no_snow.png",
         "polar:tree_snow": "polar/objects/tree_snow.png",

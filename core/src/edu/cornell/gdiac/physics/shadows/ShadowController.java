@@ -1,5 +1,6 @@
 package edu.cornell.gdiac.physics.shadows;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.physics.GameCanvas;
@@ -14,128 +15,119 @@ import com.badlogic.gdx.math.*;
  * It also stores the time of day which interacts with the day/night UI in Scene Model
  */
 public class ShadowController {
-
-    /** Current time of day */
-    private static int time;
-    /** The texture used for all shadows in this controller. */
-    private TextureRegion texture;
-    /** Boolean that tracks whether it is currently nighttime **/
+    /** Time in terms of number of update loops
+     *  At 60 updates/second, time % 60 is the number of seconds elapsed
+     */
+    private int time;
+    /** Length of the day (dayLength % 60 is the number of seconds) */
+    private final int dayLength;
+    /** Length of the night */
+    private final int nightLength;
+    /** Length of a single day/night cycle */
+    private final int fullDayLength;
+    /** The texture of all shadows */
+    private final TextureRegion shadowTexture;
+    /** Is it currently night time?  **/
     private static boolean isNight;
+    /**
+     * Time as a float where 0 represents sunrise, 0.5 is sunset.
+     * Always stays between 0 and 1
+     */
+    private float timeRatio;
+    /** The starting direction of the shadows */
+    private final Vector2 starting_direction = new Vector2(1, 0);
+    /** List of references to all shadows. */
+    private PooledList<ShadowModel> shadows = new PooledList<>();
 
     /**
-     * The amount of x-skew to apply to all shadows
+     * Empty constructor
      */
-    private float xSkew = 0.75f;
-    /**
-     * ratio of ticks remaining in day
-     */
-    private float timeRatio = time/1800;
-    /**
-     * The amount of y-scaling to apply to all shadows. If this is negative then the shadow will appear
-     * upside down.
-     */
-    private float yScalar = 0.8f;
-
-    /** The total number of ticks in a day */
-    private static final int TICKS_PER_DAY = 240;
-
-    private final Vector2 origDir = new Vector2(0, 1);
-
-    /** Creates and initializes a new instance of a shadow controller
-     *
-     * The shadow controller has a time of 0 ticks and texture texture */
-    public ShadowController(TextureRegion texture) {
-        time = 0;
-        this.texture = texture;
-        isNight = false;
+    public ShadowController() {
+        this(null);
     }
-
-
 
     /** Creates and initializes a new instance of a shadow controller
      *
      * The shadow controller has a time of 0 ticks */
-    public ShadowController() {
+    public ShadowController(TextureRegion region) {
         time = 0;
-        this.texture = null;
         isNight = false;
+        shadowTexture = region;
+
+        dayLength = 1800;
+        nightLength = 1800;
+        fullDayLength = dayLength + nightLength;
     }
+
+    /**
+     *
+     * @return the time ratio (always between 0 and 1)
+     */
     public float getTimeRatio(){
         return timeRatio;
     }
 
-    public TextureRegion getTexture() { return texture; }
-
-    public void setTexture(TextureRegion t) { texture = t; }
-
-//    public void initAllShadows() {
-//
-//        // INITIALIZATION DATA FOR ALL THE SHADOWS --- DELETE LATER
-//        ShadowModel[] init_data = {
-//                new ShadowModel(new Vector2(100f, 100f), new Vector2(300f,300f), texture)
-//        };
-//
-//        for (ShadowModel sh : init_data) addShadow(sh);
-//    }
-
-    public void updateShadow(ShadowModel sh) {
-//        if (time < TICKS_PER_DAY / 2) {
-//            sh.setWidth(sh.getInitWidth() - (time * (1/(TICKS_PER_DAY / 2))));
-//        } else {
-//            sh.setWidth(0 + (time * (1/(TICKS_PER_DAY / 2))));
-//        }
-        //System.out.println("Ticks: " + time);
-        if (!isNight) {
-            sh.rotateDirection((float) (360 / TICKS_PER_DAY)/5 );
-        } else {
-            sh.setDirection(origDir);
-        }
-
-
-//        System.out.println(sh.getDirection());
+    /**
+     * Adds shadow to the list of shadows in ShadowController
+     * @param shadow A shadow
+     */
+    public void addShadow(ShadowModel shadow) {
+        shadow.setTexture(shadowTexture);
+        shadow.setDirection(starting_direction);
+        shadows.add(shadow);
     }
 
-    public void update(SceneModel sceneModel) {
-        if (time == 1800) {
+    /**
+     * Rotates all the shadows every update loop
+     */
+    public void rotateShadows() {
+        for (ShadowModel shadow : shadows) {
+            if (isNight) {
+                continue;
+            }
+            shadow.rotateDirection(360f / dayLength);
+        }
+    }
+
+    public void update() {
+        if (time == dayLength) {
             isNight = true;
-        } else if (time == 3600) {
+        } else if (time == fullDayLength) {
+            for(ShadowModel shadow: shadows) {
+                shadow.setDirection(starting_direction);
+            }
             time = 0;
             isNight = false;
         }
         time++;
-        timeRatio = time/1800f;
-        for (ShadowModel sh : sceneModel.getShadows()) {
-            updateShadow(sh);
-        }
-    }
-
-    public void reset(SceneModel sm) {
-        this.time = 0;
-        this.isNight = false;
-        update(sm);
+        timeRatio = (float) time / fullDayLength;
+        rotateShadows();
     }
 
     /**
-     * Draws shadows for all objects in the SceneModel.
-     * If it is night, draws nothing.
-     *
-     * This method actually doesn't do anything right now. PreDraw draws the shadows
-     * @param canvas GameCanvas
-     * @param sceneModel SceneModel
+     * Resets the ShadowController
      */
-    public void drawAllShadows(GameCanvas canvas, SceneModel sceneModel) {
-        if(isNight()) {
+    public void reset() {
+        this.time = 0;
+        this.isNight = false;
+        shadows.clear();
+    }
+
+    /**
+     * Draws all shadows to the canvas
+     * @param canvas Drawing context
+     */
+    public void drawShadows(GameCanvas canvas) {
+        if(isNight) {
             return;
         }
-        for (ShadowModel sh: sceneModel.getShadows()) {
-            sh.draw(canvas);
+        for(ShadowModel shadow: shadows) {
+            shadow.preDraw(canvas);
         }
     }
 
     /** An isNight getter to access the time of night from within ShadowController **/
     public static boolean isNight() { return isNight; }
-
-    //public boolean checkOverlap(Vector2 ursa_tl, Vector2 ursa_br, ShadowModel sh) {}
 
     /** Sets the time of day */
     public void setTime(int time) { this.time = time % 3600; }

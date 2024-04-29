@@ -73,8 +73,8 @@
             "scale": 0.1646,
             "selectedLayer": 4,
             "viewCenter": {
-                "x": 2973.8760631834757,
-                "y": 1758.8092345078983
+                "x": 3320.170109356015,
+                "y": 1795.2612393681654
             }
         },
         "/Users/williamleung/Documents/GitHub/ursa/assets/rigel_level.json": {
@@ -88,6 +88,14 @@
             "viewCenter": {
                 "x": 1959.5588235294117,
                 "y": 1944.8529411764703
+            }
+        },
+        "/Users/williamleung/Documents/GitHub/ursa/assets/template.json": {
+            "scale": 0.2364,
+            "selectedLayer": 3,
+            "viewCenter": {
+                "x": 962.3519458544839,
+                "y": 2108.714043993232
             }
         },
         "/Users/williamleung/Documents/GitHub/ursa/assets/template.tmx": {
@@ -416,7 +424,7 @@
             "scale": 0.20335937499999998,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 2045.6396465616597,
+                "x": 2043.1809450633884,
                 "y": 1276.066077602766
             }
         },
@@ -424,7 +432,7 @@
             "scale": 0.107,
             "selectedLayer": 3,
             "viewCenter": {
-                "x": 3065.4205607476633,
+                "x": 3070.0934579439254,
                 "y": 3070.0934579439254
             }
         },
@@ -432,7 +440,7 @@
             "scale": 0.08,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 5112.5,
+                "x": 5118.75,
                 "y": 5118.75
             }
         },
@@ -441,32 +449,32 @@
         },
         "map2.tmx": {
             "expandedObjectLayers": [
-                4,
-                3,
-                8,
-                7,
                 2,
-                9,
-                5
+                4,
+                8,
+                5,
+                3,
+                7,
+                9
             ],
             "scale": 0.25,
             "selectedLayer": 9,
             "viewCenter": {
-                "x": 1792,
+                "x": 1790,
                 "y": 1790
             }
         },
         "map3.tmx": {
             "expandedObjectLayers": [
-                4,
-                7,
                 2,
-                5
+                4,
+                5,
+                7
             ],
             "scale": 0.15,
             "selectedLayer": 3,
             "viewCenter": {
-                "x": 3066.666666666667,
+                "x": 3070,
                 "y": 3070
             }
         },
@@ -478,7 +486,7 @@
             "scale": 0.25,
             "selectedLayer": 8,
             "viewCenter": {
-                "x": 3328,
+                "x": 3326,
                 "y": 2206
             }
         },
@@ -555,7 +563,7 @@
             "scale": 0.18,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 1916.6666666666665,
+                "x": 1919.4444444444443,
                 "y": 897.2222222222223
             }
         },
@@ -584,15 +592,15 @@
         },
         "tutorial.tmx": {
             "expandedObjectLayers": [
-                4,
                 2,
-                9,
-                5
+                4,
+                5,
+                9
             ],
             "scale": 0.0904,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 3318.58407079646,
+                "x": 3313.053097345133,
                 "y": 116.15044247787614
             }
         }
@@ -622,18 +630,18 @@
     ],
     "project": "map1_test.tiled-project",
     "recentFiles": [
-        "C:/Users/danbp/Desktop/School/Junioir year cornell/3152/ursa/assets/levelD.json",
-        "tiles.tsx",
-        "testing.tmx",
-        "map4.tmx",
-        "map2.tmx",
-        "map3.tmx",
-        "map1.tmx",
-        "level1.tmx",
-        "level 10.tmx",
+        "/Users/williamleung/Documents/GitHub/ursa/assets/template.json",
         "tutorial.tmx",
-        "C:/Users/danbp/Desktop/School/Junioir year cornell/3152/ursa/assets/template.tmx",
-        "C:/Users/danbp/Desktop/School/Junioir year cornell/3152/ursa/assets/template.json"
+        "level 10.tmx",
+        "level1.tmx",
+        "map1.tmx",
+        "map3.tmx",
+        "map2.tmx",
+        "map4.tmx",
+        "testing.tmx",
+        "tiles.tsx",
+        "C:/Users/danbp/Desktop/School/Junioir year cornell/3152/ursa/assets/levelD.json",
+        "C:/Users/danbp/Desktop/School/Junioir year cornell/3152/ursa/assets/template.tmx"
     ],
     "tileset.lastUsedFilter": "Tiled tileset files (*.tsx *.xml)",
     "tileset.lastUsedFormat": "tsx",

@@ -8,6 +8,7 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -21,7 +22,15 @@ import edu.cornell.gdiac.util.ScreenListener;
 
 
 public class LevelSelector implements Screen, InputProcessor, ControllerListener {
+    private static final TextureRegion redTextureregion;
 
+    static {
+        Pixmap redPixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        redPixmap.setColor(new Color(1, 0, 0, 1));
+        redPixmap.fill();
+        Texture redTexture = new Texture(redPixmap);
+        redTextureregion = new TextureRegion(redTexture);
+    }
     private TextureRegion[] buttons = new TextureRegion[20];
     private boolean button1Pressed;
     private TextureRegion ursa;
@@ -54,6 +63,9 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
     private float buttonWidth;
     GameCanvas canvas;
     private boolean active;
+
+    private final float[] buttonPositions = new float[]{153, 337, 388, 337, 388, 760,};
+    float backgroundScaleFactor;
 
     private Music levelSelectMusic;
     public LevelSelector(GameCanvas NewCanvas,float completion){
@@ -234,13 +246,28 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
 
 
 
+        // We only care about the full height of the image fitting in the image, the width can go off the screen
+        backgroundScaleFactor = (float) canvas.getHeight() / background.getRegionHeight();
+        float buttonWidth = 128 * backgroundScaleFactor;
+        float buttonHeight = 128 * backgroundScaleFactor;
 
+        //System.out.println("Button " + buttonPositions[0] * backgroundScaleFactor + " " + buttonPositions[1] * backgroundScaleFactor);
+        //System.out.println("Ursa " + ursaStartX + " " + ursaStartY);
+        //System.out.println(buttonsFilms[0].getRegionWidth() + " " + buttonsFilms[0].getRegionHeight());
+
+        /**canvas.draw(background,Color.WHITE,0,0,background.getRegionWidth() * backgroundScaleFactor,background.getRegionHeight() * backgroundScaleFactor);
+        canvas.draw(buttonsFilms[0],Color.WHITE,buttonsFilms[0].getRegionWidth() / 4f,buttonsFilms[0].getRegionHeight() / 4f,buttonPositions[0] * backgroundScaleFactor,buttonPositions[1] * backgroundScaleFactor, buttonWidth, buttonHeight);
+        //canvas.draw(buttonsFilms[0],Color.WHITE, buttonCenter.x, buttonCenter.y, buttonPositions[0] * backgroundScaleFactor,buttonPositions[1] * backgroundScaleFactor,256 * backgroundScaleFactor,256 * backgroundScaleFactor);
+        canvas.draw(buttonsFilms[1],Color.WHITE,buttonsFilms[1].getRegionWidth() / 4f,buttonsFilms[1].getRegionHeight() / 4f,buttonPositions[2] * backgroundScaleFactor,buttonPositions[3] * backgroundScaleFactor, buttonWidth, buttonHeight);
+        canvas.draw(buttonsFilms[2],Color.WHITE,buttonsFilms[2].getRegionWidth() / 4f,buttonsFilms[2].getRegionHeight() / 4f,buttonPositions[4] * backgroundScaleFactor,buttonPositions[5] * backgroundScaleFactor, buttonWidth, buttonHeight);
+         canvas.draw(background,Color.WHITE,0,0,background.getRegionWidth() * .25f,background.getRegionHeight() * .285f);*/
         canvas.draw(background,Color.WHITE,0,0,background.getRegionWidth() * .25f,background.getRegionHeight() * .285f);
         canvas.draw(buttonsFilms[0],Color.WHITE,40,155,buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
         canvas.draw(buttonsFilms[1],Color.WHITE,152.5f,155,buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
         canvas.draw(buttonsFilms[2],Color.WHITE,152.5f,395,buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
         canvas.draw(buttonsFilms[3],Color.WHITE,285f,395,buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
         canvas.draw(ursaFilm,Color.WHITE,ursaStartX,ursaStartY,ursaFilm.getRegionWidth() * .3f,ursaFilm.getRegionHeight() * .3f);
+        //canvas.draw(redTextureregion,Color.WHITE, 0,0,86,189,10,10);
 
         canvas.end();
     }
