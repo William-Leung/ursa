@@ -51,6 +51,45 @@ public class GDXRoot extends Game implements ScreenListener {
 	 * or assign any screen.
 	 */
 	public GDXRoot() { }
+	public static void testing() {
+		float[] arr = new float[20];
+
+		arr[0] = 142;
+		arr[1] = 194;
+		arr[2] = 337;
+		arr[3] = 30;
+		arr[4] = 494;
+		arr[5] = 87;
+		arr[6] =560;
+		arr[7] = 175;
+		arr[8] = 680;
+		arr[9] =155;
+		arr[10] =855;
+		arr[11] =338;
+		arr[12] =866;
+		arr[13] =471;
+		arr[14] = 550;
+		arr[15] = 484;
+		arr[16] = 183;
+		arr[17] = 459;
+		arr[18] = 92;
+		arr[19] = 401.5f;
+
+		float imageX = 512;
+		float imageY = 512;
+		float yOffset = 67;
+		for(int i = 0; i < arr.length; i++) {
+			float elem = arr[i];
+			if(i % 2 == 1) {
+				elem = imageY - elem - yOffset;
+			} else {
+				elem = elem - imageX / 2f;
+			}
+			elem *= 12/256f;
+			System.out.print(Math.round(elem * 10) / 10.0 + ", ") ;
+		}
+		System.out.print("\n");
+	}
 
 	/**
 	 * Called when the Application is first created.
@@ -59,6 +98,7 @@ public class GDXRoot extends Game implements ScreenListener {
 	 * the asynchronous loader for all other assets.
 	 */
 	public void create() {
+		testing();
 		prefs = Gdx.app.getPreferences("Completed Data");
 		levelsCompleted = 10;
 		System.out.println("levels completed " + levelsCompleted);

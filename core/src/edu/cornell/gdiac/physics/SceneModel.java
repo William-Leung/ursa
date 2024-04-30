@@ -496,6 +496,7 @@ public class SceneModel extends WorldController implements ContactListener {
         renderDecorations();
     }
 
+
     /**
      * Returns whether to process the update loop
      * At the start of the update loop, we check if it is time
@@ -1207,7 +1208,7 @@ public class SceneModel extends WorldController implements ContactListener {
                 //name = "goat";
             } else if(objectIndex - firstMediumRockIndex == 0) {
                 textureIndex = 3;
-                name = "tree";
+                name = "rock4";
                 //name = "rock_4";
             }  else if(objectIndex - firstMediumRockIndex == 1) {
                 textureIndex = 4;
@@ -1215,11 +1216,11 @@ public class SceneModel extends WorldController implements ContactListener {
                 //name = "rock_3";
             } else if(objectIndex - firstHouseIndex == 0) {
                 textureIndex = 5;
-                name = "tree";
+                name = "house";
                 // name = "house";
             } else if(objectIndex == polarRock2Index) {
                 textureIndex = 6;
-                name = "tree";
+                name = "rock2";
                 // name = "rock_2";
             } else if(objectIndex == polarTrunk1Index) {
                 textureIndex = 7;
