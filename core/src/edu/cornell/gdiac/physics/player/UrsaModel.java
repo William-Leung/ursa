@@ -21,8 +21,6 @@ public class UrsaModel extends CapsuleObstacle {
 
     /** The initializing data (to avoid magic numbers) */
     private final JsonValue data;
-
-
     /** The factor to multiply by the input */
     private final float force;
     /** The amount to slow the character down */
@@ -31,34 +29,14 @@ public class UrsaModel extends CapsuleObstacle {
     private final float maxspeed;
     /** Identifier to allow us to track the sensor in ContactListener */
     private final String sensorName;
-    /** The impulse for the character jump */
-    private final float jump_force;
-    /** Cooldown (in animation frames) for jumping */
-    private final int jumpLimit;
-    /** Cooldown (in animation frames) for shooting */
-    private final int shotLimit;
-
     /** The current horizontal movement of the character */
-    private float   xMovement;
+    private float xMovement;
     /** The current vertical movement of the character */
-    private float   yMovement;
+    private float yMovement;
     /** Which direction is the character facing */
-    private boolean faceRight;
-    /** How long until we can jump again */
-    private int jumpCooldown;
-    /** Whether we are actively jumping */
-    private boolean isJumping;
-    /** How long until we can shoot again */
-    private int shootCooldown;
-    /** Whether our feet are on the ground */
-    private boolean isGrounded;
-    /** Whether we are actively shooting */
-    private boolean isShooting;
+    private boolean isFacingRight;
     /** The physics shape of this object */
     private PolygonShape sensorShape;
-    /** Whether we are currently "shaded" */
-    private boolean isShaded;
-
     private boolean inShadow;
 
     /** Cache for internal force calculations */
@@ -91,64 +69,10 @@ public class UrsaModel extends CapsuleObstacle {
         yMovement = yValue;
         // Change facing if appropriate
         if (xMovement < 0) {
-            faceRight = false;
+            isFacingRight = false;
         } else if (xMovement > 0) {
-            faceRight = true;
+            isFacingRight = true;
         }
-    }
-
-    /**
-     * Returns true if the dude is actively firing.
-     *
-     * @return true if the dude is actively firing.
-     */
-    public boolean isShooting() {
-        return isShooting && shootCooldown <= 0;
-    }
-
-    /**
-     * Sets whether the dude is actively firing.
-     *
-     * @param value whether the dude is actively firing.
-     */
-    public void setShooting(boolean value) {
-        isShooting = value;
-    }
-
-    /**
-     * Returns true if the dude is actively jumping.
-     *
-     * @return true if the dude is actively jumping.
-     */
-    public boolean isJumping() {
-        return isJumping && isGrounded && jumpCooldown <= 0;
-    }
-
-    /**
-     * Sets whether the dude is actively jumping.
-     *
-     * @param value whether the dude is actively jumping.
-     */
-    public void setJumping(boolean value) {
-        isJumping = value;
-    }
-
-    /**
-     * Returns true if the dude is on the ground.
-     *
-     * @return true if the dude is on the ground.
-     */
-    public boolean isGrounded() {
-        return isGrounded;
-    }
-
-    /**
-     * Sets whether the dude is on the ground.
-     *
-     * @param value whether the dude is on the ground.
-     */
-    public void setGrounded(boolean value) {
-        isGrounded = value;
     }
 
     public boolean isInShadow() {
@@ -202,33 +126,6 @@ public class UrsaModel extends CapsuleObstacle {
     }
 
     /**
-     * Returns true if this character is facing right
-     *
-     * @return true if this character is facing right
-     */
-    public boolean isFacingRight() {
-        return faceRight;
-    }
-
-    /**
-     * Returns true if this character is in the shade
-     *
-     * @return true if this character is in the shade
-     */
-    public boolean shaded() {
-        return isShaded;
-    }
-
-    /**
-     * Sets whether the character is in the shade.
-     *
-     * @param value whether the character is in the shade.
-     */
-    public void setShaded(boolean value) {
-        isShaded = value;
-    }
-
-    /**
      * Creates a new dude avatar with the given physics data
      *
      * The size is expressed in physics units NOT pixels.  In order for
@@ -242,8 +139,7 @@ public class UrsaModel extends CapsuleObstacle {
     public UrsaModel(float xPos,float yPos,JsonValue data, float width, float height) {
         // The shrink factors fit the image to a tigher hitbox
 
-        super(xPos,
-                yPos,
+        super(xPos, yPos,
                 width,
                 height);
         setDensity(data.getFloat("density", 0));
@@ -254,19 +150,11 @@ public class UrsaModel extends CapsuleObstacle {
         maxspeed = data.getFloat("maxspeed", 0);
         damping = data.getFloat("damping", 0);
         force = data.getFloat("force", 0);
-        jump_force = data.getFloat( "jump_force", 0 );
-        jumpLimit = data.getInt( "jump_cool", 0 );
-        shotLimit = data.getInt( "shot_cool", 0 );
         sensorName = "shadow_sensor";
         this.data = data;
 
         // Gameplay attributes
-        isGrounded = false;
-        isShooting = false;
-        isJumping = false;
-        faceRight = true;
-        shootCooldown = 0;
-        jumpCooldown = 0;
+        isFacingRight = true;
         setName("ursa");
     }
 
@@ -286,13 +174,11 @@ public class UrsaModel extends CapsuleObstacle {
         }
 
         // Shadow sensor
-        // -------------
         Vector2 sensorCenter = new Vector2(0, 0);
         FixtureDef sensorDef = new FixtureDef();
         sensorDef.density = data.getFloat("density",0);
         sensorDef.isSensor = true;
         sensorShape = new PolygonShape();
-        JsonValue sensorjv = data.get("sensor");
 
         float size = BLOB_SHADOW_SIZE + 0.5f;
         sensorShape.setAsBox(size, size / 2f, sensorCenter, 0.0f);
@@ -339,14 +225,12 @@ public class UrsaModel extends CapsuleObstacle {
             forceCache.set(0, getyMovement()); // Set y-movement
             body.applyForce(forceCache, getPosition(), true);
         }
-
-
-        if (isJumping()) {
-            forceCache.set(0, jump_force);
-            body.applyLinearImpulse(forceCache, getPosition(), true);
-        }
     }
 
+    /**
+     * Draws shadow underneath Ursa
+     * @param canvas Drawing context
+     */
     @Override
     public void preDraw(GameCanvas canvas) {
         Texture blobShadow = SceneModel.BLOB_SHADOW_TEXTURE;
@@ -358,19 +242,17 @@ public class UrsaModel extends CapsuleObstacle {
     }
 
     /**
-     * Draws the physics object.
+     * Draws Ursa to the screen.
      *
      * @param canvas Drawing context
      */
     public void draw(GameCanvas canvas) {
-        float effect = faceRight ? 1.0f : -1.0f;
-
-        canvas.draw(texture, isShaded ? Color.BLUE : Color.WHITE,origin.x,0,getX()*drawScale.x,(getY() - data.get("yOffset").asFloat())*drawScale.y,getAngle(),effect * data.get("scaleX").asFloat(),data.get("scaleY").asFloat());
+        float effect = isFacingRight ? 1.0f : -1.0f;
+        canvas.draw(texture, Color.WHITE,origin.x,0,getX()*drawScale.x,(getY() - data.get("yOffset").asFloat())*drawScale.y,getAngle(),effect * data.get("scaleX").asFloat(),data.get("scaleY").asFloat());
     }
 
     /**
      * Draws the outline of the physics body.
-     *
      * This method can be helpful for understanding issues with collisions.
      *
      * @param canvas Drawing context

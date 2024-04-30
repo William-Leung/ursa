@@ -1,12 +1,12 @@
 package edu.cornell.gdiac.physics.shadows;
 
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import edu.cornell.gdiac.physics.GameCanvas;
-import edu.cornell.gdiac.physics.SceneModel;
 import edu.cornell.gdiac.util.PooledList;
-import java.util.LinkedList;
 import com.badlogic.gdx.math.*;
 
 /**
@@ -18,13 +18,13 @@ public class ShadowController {
     /** Time in terms of number of update loops
      *  At 60 updates/second, time % 60 is the number of seconds elapsed
      */
-    private int time;
+    private static int time;
     /** Length of the day (dayLength % 60 is the number of seconds) */
-    private final int dayLength;
+    private static int dayLength = 1800;
     /** Length of the night */
-    private final int nightLength;
+    private static final int nightLength = 1800;
     /** Length of a single day/night cycle */
-    private final int fullDayLength;
+    private static final int fullDayLength = dayLength + nightLength;
     /** The texture of all shadows */
     private final TextureRegion shadowTexture;
     /** Is it currently night time?  **/
@@ -41,30 +41,27 @@ public class ShadowController {
     private boolean doShadowsMove;
     private float beginningTimeRatio = 0;
     private float endTimeRatio = 0;
+    private FrameBuffer fb = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), false);
+
 
     /**
-     * Empty constructor
+     * Empty Constructor
      */
     public ShadowController() {
         this(null, false);
     }
 
-    /** Creates and initializes a new instance of a shadow controller
-     *
-     * The shadow controller has a time of 0 ticks */
+    /**
+     * Creates a new ShadowController, starting at time = 0
+     */
     public ShadowController(TextureRegion region, boolean doShadowsMove) {
         time = 0;
         isNight = false;
         shadowTexture = region;
         this.doShadowsMove = doShadowsMove;
-
-        dayLength = 1800;
-        nightLength = 1800;
-        fullDayLength = dayLength + nightLength;
     }
 
     /**
-     *
      * @return the time ratio (always between 0 and 1)
      */
     public float getTimeRatio(){
@@ -82,70 +79,82 @@ public class ShadowController {
     }
 
     /**
-     * Rotates all the shadows every update loop
+     * Updates the time and handles day -> night + night -> day transitions
+     * If shadows are dynamic, rotates them.
      */
-    public void rotateShadows() {
-        for (ShadowModel shadow : shadows) {
-            if (isNight) {
-                continue;
-            }
-            shadow.rotateDirection(360f / dayLength);
-        }
-    }
-
-    public void update() {
-        if (time == dayLength) {
-            isNight = true;
-        } else if (time == fullDayLength) {
+    public void update(Color backgroundColor) {
+        // Transition from night to day
+        if (time > fullDayLength) {
             for(ShadowModel shadow: shadows) {
                 shadow.setDirection(starting_direction);
             }
             time = 0;
             isNight = false;
+        // Transition from day to night
+        } else if (time > dayLength) {
+            isNight = true;
         }
+        // Update the timeRatio to match the time
         timeRatio = (float) time / fullDayLength;
 
+        // Update tinting ONLY if shadows are nonmoving
         if(!doShadowsMove) {
+            for(ShadowModel shadow: shadows) {
+                shadow.updateTinting(backgroundColor);
+            }
             return;
         }
+        // If shadows, move update time, rotate shadows, and update tinting
         time++;
-        rotateShadows();
+        for (ShadowModel shadow : shadows) {
+            if (isNight) {
+                continue;
+            }
+            shadow.updateTinting(backgroundColor);
+            shadow.rotateDirection(360f / dayLength);
+        }
     }
 
     /**
      * Resets the ShadowController
      */
     public void reset() {
-        this.time = 0;
-        this.isNight = false;
+        time = 0;
+        isNight = false;
         shadows.clear();
     }
 
     /**
-     * Draws all shadows to the canvas
+     * Draws all shadows to the canvas only when it is not night
      * @param canvas Drawing context
      */
     public void drawShadows(GameCanvas canvas) {
         if(isNight) {
             return;
         }
+        //fb.begin();
         for(ShadowModel shadow: shadows) {
             shadow.preDraw(canvas);
         }
+        //fb.end();
     }
 
-    /** An isNight getter to access the time of night from within ShadowController **/
-    public static boolean isNight() { return isNight; }
+    /** Returns if the time of day is night **/
+    public static boolean isNight() {
+        return isNight;
+    }
 
-    /** Sets the time of day */
-    public void setTime(int time) { this.time = time % 3600; }
-
-    /** Gets the time of day */
-    public int getTime() { return this.time; }
-
+    /**
+     * Animates the shadows to spin, starting at beginningTimeRatio, ending at endTimeRatio
+     * @param framesIntoAnimation How far are we into the animation?
+     * @param animationLength Total length of animation
+     */
     public void animateFastForward(float framesIntoAnimation, float animationLength) {
         timeRatio = beginningTimeRatio + (endTimeRatio - beginningTimeRatio) * framesIntoAnimation / animationLength;
         time = (int) (timeRatio * fullDayLength);
+        if (time > dayLength) {
+            isNight = true;
+        }
         for (ShadowModel shadow : shadows) {
             if (isNight) {
                 continue;

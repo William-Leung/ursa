@@ -33,5 +33,4 @@ public class Tree extends PolygonObstacle {
 	public void putOnShakeCooldown() {
 		hasShaken = true;
 	}
-	//FrameBuffer fb = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), false);
 }

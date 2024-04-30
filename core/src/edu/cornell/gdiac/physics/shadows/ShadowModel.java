@@ -1,5 +1,6 @@
 package edu.cornell.gdiac.physics.shadows;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.Transform;
 import com.badlogic.gdx.math.*;
@@ -12,18 +13,14 @@ import edu.cornell.gdiac.util.PooledList;
  * This includes (not expansively) houses, rocks, trunks, and trees.
  */
 public class ShadowModel extends PolygonObstacle {
-    private final Color shadowColor;
-    /** Converts between 2560 x 1440 resolution assets were drawn for and 1920 x 1080 resolution */
-    private final float textureScale;
+    /** Tinting for the shadow */
+    private final Color shadowTint;
 
     /**
      * The direction that the shadow is facing.
      * Invariant: This vector is always normalized.
      */
     private Vector2 direction = new Vector2(0, 1);
-
-
-    public void setDirection (Vector2 newDirec) { direction.set(newDirec); }
 
     public static float[] ShadowPolygon(String texture) {
         float[] tree = new float[] {
@@ -57,15 +54,20 @@ public class ShadowModel extends PolygonObstacle {
         }
     }
 
-    public ShadowModel(float[] points, float x, float y, float textureScale) {
-        //super(ShadowPolygon(shadowType), x, y, 0,textureScale);
-        super(points, x, y, 0,textureScale);
-        this.shadowColor = new Color(1,1,1,0.3f);
-        this.textureScale = textureScale;
+    public ShadowModel(float[] points, float x, float y) {
+        super(points, x, y, 0,1);
+        this.shadowTint = new Color(1,1,1,0.3f);
 
         setSensor(true);
         setName("shadow");
-        System.out.println(x + " " + y);
+    }
+
+    /**
+     * Setter for direction variable
+     * @param newDirec The new direction.
+     */
+    public void setDirection (Vector2 newDirec) {
+        direction.set(newDirec);
     }
 
     /**
@@ -78,22 +80,46 @@ public class ShadowModel extends PolygonObstacle {
         body.setTransform(transform.getPosition(), transform.getRotation() + (float) Math.toRadians(degrees));
     }
 
-    @Override
-    public void setDrawScale(Vector2 scale) {
-        super.setDrawScale(scale);
-        this.drawScale.set(scale);
+    /**
+     * Adjusts the tinting of the shadows such that the alphas of shadows + tint sum to 0.3
+     * @param backgroundColor color of background tinting
+     */
+    public void updateTinting(Color backgroundColor) {
+        shadowTint.a = 0.35f - backgroundColor.a;
     }
 
+    /**
+     * preDraw simply draws the shadow to the canvas just as in a normal draw() method.
+     * However, we want to do this before all the game objects are drawn.
+     * @param canvas Drawing context
+     */
     @Override
     public void preDraw(GameCanvas canvas) {
-        canvas.draw(region,shadowColor,0,0,getX()*drawScale.x,getY()*drawScale.y, vectorToRadians(direction), 1, 1);
+        canvas.draw(region,shadowTint,0,0,getX()*drawScale.x,getY()*drawScale.y, vectorToRadians(direction), 1, 1);
+
+//        Affine2 affine = new Affine2()
+//                .rotate(vectorToRadians(direction))
+//                .translate(getX() * drawScale.x, getY()* drawScale.y)
+//                .scale(1, 1)
+//                ;
+//        canvas.draw(region, shadowTint, 0, 0, affine);
     }
 
+    /**
+     * All shadow drawing is done in preDraw() so this method doesn't do anything.
+     * @param canvas Drawing context
+     */
     @Override
     public void draw(GameCanvas canvas) {
-
+        /**if (region != null) {
+            Affine2 affine = new Affine2()
+                    .rotate(vectorToRadians(direction))
+                    .translate(getX() * drawScale.x, getY()* drawScale.y)
+                    .scale(1, 1)
+                    ;
+           // canvas.draw(texture, Color.WHITE, texture.getRegionWidth() / 2f, yOffset, affine);
+        }*/
     }
-
 
     /**
      * Converts a vector to radians

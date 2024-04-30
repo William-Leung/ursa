@@ -3,9 +3,11 @@ package edu.cornell.gdiac.physics;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
@@ -42,24 +44,7 @@ import java.util.LinkedList;
  * It also parses level JSON data into corresponding game objects.
  */
 public class SceneModel extends WorldController implements ContactListener {
-    /*
-     * Initialize the global blob shadow used for Ursa and enemies.
-     * Since it's a shared texture, we can just use it statically across everything to make it easier.
-     */
 
-    private static final int BLOB_SHADOW_RESOLUTION = 512; // High resolution for lesser edge cuts (in theory that is)
-
-    public static final Texture BLOB_SHADOW_TEXTURE;
-
-    static {
-        Pixmap pixmap = new Pixmap(BLOB_SHADOW_RESOLUTION * 2, BLOB_SHADOW_RESOLUTION * 2, Pixmap.Format.RGBA8888);
-        pixmap.setColor(new Color(0f,0f,0f,0.3f));
-        int xcenter = pixmap.getWidth() / 2;
-        int ycenter = pixmap.getHeight() / 2;
-        pixmap.fillCircle(xcenter, ycenter, BLOB_SHADOW_RESOLUTION);
-        BLOB_SHADOW_TEXTURE = new Texture(pixmap);
-        pixmap.dispose();
-    }
 
     /* =========== Textures =========== */
     /** Texture asset for day night UI */
@@ -165,7 +150,7 @@ public class SceneModel extends WorldController implements ContactListener {
 
     /* =========== Cave Interaction Variables =========== */
     /** How far away the player must be to interact with caves (screen coords) */
-    private final float caveInteractionRange = 6;
+    private final float caveInteractionRange = 4;
     /** Is the time fast forwarding right now? */
     private boolean isTimeSkipping = false;
     /** The frame at which time began to skip */
@@ -249,6 +234,27 @@ public class SceneModel extends WorldController implements ContactListener {
     private float[] intervals;
     /** Points to the next color we interpolate to */
     private int colorNextPointer = 1;
+    /** The alpha at which all shadows should be */
+    private static float shadowAlpha = 0.35f;
+
+    /*
+     * Initialize the global blob shadow used for Ursa and enemies.
+     * Since it's a shared texture, we can just use it statically across everything to make it easier.
+     */
+
+    private static final int BLOB_SHADOW_RESOLUTION = 512; // High resolution for lesser edge cuts (in theory that is)
+
+    public static final Texture BLOB_SHADOW_TEXTURE;
+
+    static {
+        Pixmap pixmap = new Pixmap(BLOB_SHADOW_RESOLUTION * 2, BLOB_SHADOW_RESOLUTION * 2, Pixmap.Format.RGBA8888);
+        pixmap.setColor(new Color(0f,0f,0f,shadowAlpha));
+        int xcenter = pixmap.getWidth() / 2;
+        int ycenter = pixmap.getHeight() / 2;
+        pixmap.fillCircle(xcenter, ycenter, BLOB_SHADOW_RESOLUTION);
+        BLOB_SHADOW_TEXTURE = new Texture(pixmap);
+        pixmap.dispose();
+    }
 
 
     /* =========== UI Constants =========== */
@@ -300,13 +306,13 @@ public class SceneModel extends WorldController implements ContactListener {
 
         colors = new Color[4];
         intervals = new float[4];
-        colors[0] = new Color(0f,0f,0f,0.5f);
+        colors[0] = new Color(0f,0f,0f,shadowAlpha);
         intervals[0] = 0f;
         colors[1] = new Color(1f,1f,1f,0f);
         intervals[1] = 0.1f;
         colors[2] = new Color(1f,1f,1f,0f);
         intervals[2] = 0.4f;
-        colors[3] = new Color(0f,0f,0f,0.5f);
+        colors[3] = new Color(0f,0f,0f,shadowAlpha);
         intervals[3] = 0.5f;
     }
     /**
@@ -776,10 +782,10 @@ public class SceneModel extends WorldController implements ContactListener {
         }
 
         canvas.clear();
-        shadowController.update();
+        shadowController.update(backgroundColor);
 
 
-        // If the game is lost, move the player
+        // If the game is lost, stop the player
         if (!isFailure()) {
             ursa.applyForce();
         } else {
@@ -796,36 +802,46 @@ public class SceneModel extends WorldController implements ContactListener {
         levelMusicNight.stop();
     }
 
+    /**
+     * Shakes tree if able.
+     * Stuns nearby enemies and prevents tree from shaking again.
+     * @param tree Tree attempting to be interacted with
+     */
     private void shakeTree(Tree tree) {
-        if (tree.canShake()) {
-            tree.putOnShakeCooldown();
-            shakingTree = tree;
-            beganShakingTreeFrame = currentFrame;
+        if (!tree.canShake()) {
+            return;
+        }
+        tree.putOnShakeCooldown();
+        shakingTree = tree;
+        beganShakingTreeFrame = currentFrame;
 
-            for (Enemy enemy : enemies) {
-                if (enemy != null && enemy.getPosition().dst(tree.getPosition()) < enemyStunDistance) {
-                    enemy.stun();
-                }
+        for (Enemy enemy : enemies) {
+            if (enemy != null && enemy.getPosition().dst(tree.getPosition()) < enemyStunDistance) {
+                enemy.stun();
             }
         }
     }
 
+    /**
+     * fastForward(cave) fast forwards the time via ShadowController.
+     * Then, the cave is set such that it cannot be interacted with again.
+     * @param cave Cave being interacted with
+     */
     public void fastForward(Cave cave) {
-        if(cave.canInteract()) {
-            cave.interact();
-            shadowController.forwardTimeRatio(0.2f);
-            isTimeSkipping = true;
-            timeBeganSkippingFrame = currentFrame;
-
-            for (AIController i : controls) { i.reset(); }
+        if(!cave.canInteract()) {
+            return;
         }
+        //cave.interact();
+        shadowController.forwardTimeRatio(0.2f);
+        isTimeSkipping = true;
+        timeBeganSkippingFrame = currentFrame;
     }
 
     /**
      * Callback method for the start of a collision
-     * This method is called when we first get a collision between two objects.  We use
-     * this method to test if it is the "right" kind of collision.  In particular, we
-     * use it to test if we made it to the win door.
+     * This method is called when we first get a collision between two objects.
+     * We use this method to see if Ursa is in shadow.
+     * Secondarily, it's used to see if Ursa reaches the goal.
      *
      * @param contact The two bodies that collided
      */
@@ -843,16 +859,14 @@ public class SceneModel extends WorldController implements ContactListener {
             Obstacle bd1 = (Obstacle)body1.getUserData();
             Obstacle bd2 = (Obstacle)body2.getUserData();
 
-            // See if we have landed on the ground.
             if ((ursa.getSensorName().equals(fd2) && bd1.getName().equals("shadow")) ||
                     (ursa.getSensorName().equals(fd1) && bd2.getName().equals("shadow"))) {
                 ursa.setInShadow(true);
-                sensorFixtures.add(ursa == bd1 ? fix2 : fix1); // Could have more than one ground
+                sensorFixtures.add(ursa == bd1 ? fix2 : fix1);
             }
 
             // Check for win condition
-            if ((bd1 == ursa   && bd2 == goal) ||
-                    (bd1 == goal && bd2 == ursa)) {
+            if ((bd1 == ursa && bd2 == goal) || (bd1 == goal && bd2 == ursa)) {
                 setComplete(true);
                 levelMusic.stop();
                 levelMusicTense.stop();
@@ -866,9 +880,8 @@ public class SceneModel extends WorldController implements ContactListener {
 
     /**
      * Callback method for the start of a collision
-     * This method is called when two objects cease to touch.  The main use of this method
-     * is to determine when the character is NOT on the ground.  This is how we prevent
-     * double jumping.
+     * This method is called when two objects cease to touch.
+     * The main use of this method is to determine when Ursa exits a shadow.
      */
     public void endContact(Contact contact) {
         Fixture fix1 = contact.getFixtureA();
@@ -910,7 +923,7 @@ public class SceneModel extends WorldController implements ContactListener {
         backgroundColor.b = colors[colorNextPointer - 1].b + (colors[colorNextPointer].b - colors[colorNextPointer - 1].b) * (timeRatio - startTime) / (intervals[colorNextPointer] - intervals[colorNextPointer - 1]);
         backgroundColor.a = colors[colorNextPointer - 1].a + (colors[colorNextPointer].a - colors[colorNextPointer - 1].a) * (timeRatio - startTime) / (intervals[colorNextPointer] - intervals[colorNextPointer - 1]);
     }
-
+private         FrameBuffer fb = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), false);
     /**
      * predraw(dt) draws all the background elements of the game
      * This includes the background (obviously), decorations, tiles, and shadows
@@ -933,8 +946,13 @@ public class SceneModel extends WorldController implements ContactListener {
         for(Obstacle obj: dynamicObjects) {
             obj.preDraw(canvas);
         }
+//        fb.begin();
+//        Gdx.gl.glClearColor(1, 1, 1, 1);
+//        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         // Draws shadows for static objects (trees, rocks, trunks, etc)
         shadowController.drawShadows(canvas);
+//        canvas.draw(salmonTexture,Color.WHITE,128,128,400f,400f);
+//        fb.end();
     }
 
     @Override
@@ -991,8 +1009,8 @@ public class SceneModel extends WorldController implements ContactListener {
                     firstSmallDecorationIndex = id;
                     break;
                 case "maps/512x512.tsx":
+                    firstHouseIndex = id + 1;
                     firstLargeDecorationIndex = id + 2;
-                    firstHouseIndex = id + 3;
                     break;
                 case "maps/256x256(Ursa + Salmon).tsx":
                     firstMediumObjectIndex = id + 3;
@@ -1190,44 +1208,39 @@ public class SceneModel extends WorldController implements ContactListener {
         JsonValue objectData = jsonData.get("layers").get(4).get("objects");
 
         String name;
+        name = "tree";
         for(int i = 0; i < objectData.size; i++) {
             int objectIndex = objectData.get(i).get("gid").asInt();
             int textureIndex;
 
+            System.out.println(firstHouseIndex);
             if(objectIndex - firstMediumObjectIndex == 0) {
                 textureIndex = 0;
-                name = "tree";
-                //name = "rock_1";
+//                name = "rock_1";
             } else if(objectIndex - firstMediumObjectIndex == 1) {
                 textureIndex = 1;
-                name = "tree";
-                //name = "statue";
+                 name = "statue";
             } else if(objectIndex - firstMediumObjectIndex == 2) {
                 textureIndex = 2;
-                name = "tree";
-                //name = "goat";
+                name = "goat";
             } else if(objectIndex - firstMediumRockIndex == 0) {
                 textureIndex = 3;
-                name = "rock4";
-                //name = "rock_4";
+//                name = "rock_4";
             }  else if(objectIndex - firstMediumRockIndex == 1) {
                 textureIndex = 4;
-                name = "tree";
-                //name = "rock_3";
+//                name = "rock_3";
             } else if(objectIndex - firstHouseIndex == 0) {
                 textureIndex = 5;
-                name = "house";
-                // name = "house";
+//                name = "house";
             } else if(objectIndex == polarRock2Index) {
                 textureIndex = 6;
-                name = "rock2";
-                // name = "rock_2";
+//                name = "rock_2";
             } else if(objectIndex == polarTrunk1Index) {
                 textureIndex = 7;
-                name = "trunk1";
+                name = "trunk_1";
             } else if(objectIndex == polarTrunk2Index) {
                 textureIndex = 8;
-                name = "trunk2";
+                name = "trunk_2";
             } else {
                 System.out.println("Unidentified object (UFO).");
                 continue;
@@ -1244,8 +1257,14 @@ public class SceneModel extends WorldController implements ContactListener {
             obj.setName("game object" + i);
             addObject(obj);
 
+            float[] shadowVertices;
+            if(objectConstants.get("shadowVertices") == null) {
+                shadowVertices = new float[]{0, -4, -4, -1, -6, 0.6f, 0, 20, 6, 0.6f, 4, -1};
+            } else {
+                shadowVertices = objectConstants.get("shadowVertices").asFloatArray();
+            }
             // Tree shadows
-            ShadowModel shadow = new ShadowModel(objectConstants.get("shadowVertices").asFloatArray(),obj.getX(), obj.getY(), textureScale);
+            ShadowModel shadow = new ShadowModel(shadowVertices,obj.getX(), obj.getY());
             shadow.setDrawScale(scale);
             shadowController.addShadow(shadow);
             addObject(shadow);
@@ -1284,7 +1303,13 @@ public class SceneModel extends WorldController implements ContactListener {
             trees.add(tree);
 
             // Tree shadows
-            ShadowModel shadow = new ShadowModel(treeConstants.get("shadowVertices").asFloatArray(), tree.getX(), tree.getY(), textureScale);
+            float[] shadowVertices;
+            if(treeConstants.get("shadowVertices") == null) {
+                shadowVertices = new float[]{0, -4, -4, -1, -6, 0.6f, 0, 20, 6, 0.6f, 4, -1};
+            } else {
+                shadowVertices = treeConstants.get("shadowVertices").asFloatArray();
+            }
+            ShadowModel shadow = new ShadowModel(shadowVertices, tree.getX(), tree.getY());
             shadow.setDrawScale(scale);
             shadowController.addShadow(shadow);
             addObject(shadow);
@@ -1322,7 +1347,13 @@ public class SceneModel extends WorldController implements ContactListener {
             caves.add(obj);
 
             // Tree shadows
-            ShadowModel shadow = new ShadowModel(caveConstants.get("shadowVertices").asFloatArray(), obj.getX(), obj.getY(), textureScale);
+            float[] shadowVertices;
+            if(caveConstants.get("shadowVertices") == null) {
+                shadowVertices = new float[]{0, -4, -4, -1, -6, 0.6f, 0, 20, 6, 0.6f, 4, -1};
+            } else {
+                shadowVertices = caveConstants.get("shadowVertices").asFloatArray();
+            }
+            ShadowModel shadow = new ShadowModel(shadowVertices, obj.getX(), obj.getY());
             shadow.setDrawScale(scale);
             shadowController.addShadow(shadow);
             addObject(shadow);
