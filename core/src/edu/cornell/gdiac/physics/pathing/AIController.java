@@ -44,7 +44,7 @@ public class AIController {
     /** Time when enemy spawns where they cannot do anything */
     private static final int SPAWN_TICKS = 30;
     /** Time in range before changing confused to attack */
-    private static final int CONFUSE_TIME = 30;
+    private static final int CONFUSE_TIME = 12;
     /** ticks enemy will stay engaged in if chasing but not in cone */
     private static final int CHASE_MEMORY = 80;
     /** Amount of uninterrupted time player can spend in cone before losing */
@@ -52,7 +52,7 @@ public class AIController {
     /** Maximum amount of time enemy can spend looking around in one time */
     private static final float MAX_LOOKING = 700;
     /** Ticks Ursa can be within range before being detected */
-    private static final int DETECTION_DELAY = 20;
+    private static final int DETECTION_DELAY = 10;
 
 
     /** Degrees enemy can rotate per tick */
@@ -66,9 +66,9 @@ public class AIController {
     /** Distance that if chasing the player, the enemy will still attack them */
     private static final float CHASE_RADIUS = 2f;
 
-    private static final float WANDER_SPEED = 6f;
+    private static final float WANDER_SPEED = 9f;
 
-    private static final float CHASE_SPEED = 10f;
+    private static final float CHASE_SPEED = 15f;
 
     // Instance Attributes
     /** The enemy being controlled by this AIController */
@@ -641,8 +641,8 @@ public class AIController {
             action.x = (this_tile.x * board.tileWidth()) + (board.tileWidth() / 2) - enemy.getX();
             action.y = (this_tile.y * board.tileHeight()) + (board.tileHeight() / 2) - enemy.getY();
             action.nor();
-            enemy.setVX(action.x * 2);
-            enemy.setVY(action.y * 2);
+            enemy.setVX(action.x * WANDER_SPEED);
+            enemy.setVY(action.y * WANDER_SPEED);
             enemy.setLookDirection(action.x, action.y);
         }
 
