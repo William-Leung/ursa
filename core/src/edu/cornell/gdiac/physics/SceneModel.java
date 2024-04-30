@@ -1225,16 +1225,16 @@ private         FrameBuffer fb = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.gra
                 name = "goat";
             } else if(objectIndex - firstMediumRockIndex == 0) {
                 textureIndex = 3;
-//                name = "rock_4";
+                name = "rock_4";
             }  else if(objectIndex - firstMediumRockIndex == 1) {
                 textureIndex = 4;
-//                name = "rock_3";
+                name = "rock_3";
             } else if(objectIndex - firstHouseIndex == 0) {
                 textureIndex = 5;
-//                name = "house";
+                name = "house";
             } else if(objectIndex == polarRock2Index) {
                 textureIndex = 6;
-//                name = "rock_2";
+                name = "rock_2";
             } else if(objectIndex == polarTrunk1Index) {
                 textureIndex = 7;
                 name = "trunk_1";
