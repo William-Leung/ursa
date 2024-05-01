@@ -1,15 +1,8 @@
 package edu.cornell.gdiac.physics.pathing;
 
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Pixmap.Format;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import edu.cornell.gdiac.physics.enemy.Enemy;
+import edu.cornell.gdiac.physics.units.Enemy;
 import edu.cornell.gdiac.physics.objects.GenericObstacle;
-import edu.cornell.gdiac.physics.obstacle.Obstacle;
-import edu.cornell.gdiac.physics.player.UrsaModel;
 import edu.cornell.gdiac.util.PooledList;
 
 public class Board {

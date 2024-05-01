@@ -1,18 +1,12 @@
 package edu.cornell.gdiac.physics.pathing;
 
 import com.badlogic.gdx.math.Vector2;
-import edu.cornell.gdiac.physics.enemy.Enemy;
-import edu.cornell.gdiac.physics.player.UrsaModel;
-import edu.cornell.gdiac.physics.objects.Tree;
-import edu.cornell.gdiac.util.PooledList;
-import java.lang.reflect.Array;
+import edu.cornell.gdiac.physics.units.Enemy;
+import edu.cornell.gdiac.physics.units.UrsaModel;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.Stack;
 
 public class AIController {
 

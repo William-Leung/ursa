@@ -1,4 +1,4 @@
-package edu.cornell.gdiac.physics.enemy;
+package edu.cornell.gdiac.physics.units;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -46,6 +46,8 @@ public class Enemy extends BoxObstacle {
 	private Vector2 playerPos;
 	private float previousXMovement;
 	private float previousYMovement;
+
+	private float textureScale;
 
 	private boolean playerInShadow = false;
 	private float screenWidth = 1280f;
@@ -179,7 +181,7 @@ public class Enemy extends BoxObstacle {
 
 	private float detectionRange = ENEMY_DETECTION_RANGE_SIGHT;
 
-	public Enemy(float xStart,float yStart,float maxX, float minX,JsonValue data, float width, float height) {
+	public Enemy(float xStart,float yStart,float maxX, float minX,JsonValue data, float width, float height, float textureScale) {
 		// The shrink factors fit the image to a tigher hitbox
 		super(xStart,
 				yStart, width, height);
@@ -221,6 +223,8 @@ public class Enemy extends BoxObstacle {
 		greenPixmap.dispose();
 		/** RED TEXTURE AND GREENTEXTURE ARE NOT DISPOSED*/
 		setName("enemy");
+
+		this.textureScale = textureScale;
 	}
 
 	public void stun() {
@@ -471,7 +475,7 @@ public class Enemy extends BoxObstacle {
 	public void draw(GameCanvas canvas) {
 		Color color = alerted ? Color.RED : Color.GREEN;
 		canvas.draw(texture, Color.WHITE,origin.x,0,getX()*drawScale.x,(getY() - getHeight() / 2) * drawScale.y,getAngle(),
-				(lookDirection.x > 0 ? 1 : -1) * 0.75f,0.75f);
+				(lookDirection.x > 0 ? 1 : -1) * textureScale,textureScale);
 
 		drawSightCone(canvas, detectionRange, lookDirection, 8);
 

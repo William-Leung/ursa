@@ -81,7 +81,8 @@ public class ShadowModel extends PolygonObstacle {
     }
 
     /**
-     * Adjusts the tinting of the shadows such that the alphas of shadows + tint sum to 0.3
+     * Adjusts the tinting of the shadows such that the alphas of shadows + tint sum to 0.35
+     * Create smoother transitions when shadows disappear at night.
      * @param backgroundColor color of background tinting
      */
     public void updateTinting(Color backgroundColor) {

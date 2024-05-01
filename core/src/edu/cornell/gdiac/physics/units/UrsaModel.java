@@ -1,11 +1,8 @@
-package edu.cornell.gdiac.physics.player;
+package edu.cornell.gdiac.physics.units;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
@@ -41,6 +38,8 @@ public class UrsaModel extends CapsuleObstacle {
 
     /** Cache for internal force calculations */
     private final Vector2 forceCache = new Vector2();
+
+    private float textureScale;
 
 
     /**
@@ -136,7 +135,7 @@ public class UrsaModel extends CapsuleObstacle {
      * @param width		The object width in physics units
      * @param height	The object width in physics units
      */
-    public UrsaModel(float xPos,float yPos,JsonValue data, float width, float height) {
+    public UrsaModel(float xPos,float yPos,JsonValue data, float width, float height, float textureScale) {
         // The shrink factors fit the image to a tigher hitbox
 
         super(xPos, yPos,
@@ -156,6 +155,7 @@ public class UrsaModel extends CapsuleObstacle {
         // Gameplay attributes
         isFacingRight = true;
         setName("ursa");
+        this.textureScale = textureScale;
     }
 
     /**
@@ -248,7 +248,7 @@ public class UrsaModel extends CapsuleObstacle {
      */
     public void draw(GameCanvas canvas) {
         float effect = isFacingRight ? 1.0f : -1.0f;
-        canvas.draw(texture, Color.WHITE,origin.x,0,getX()*drawScale.x,(getY() - data.get("yOffset").asFloat())*drawScale.y,getAngle(),effect * data.get("scaleX").asFloat(),data.get("scaleY").asFloat());
+        canvas.draw(texture, Color.WHITE,origin.x,0,getX()*drawScale.x,(getY() - data.get("yOffset").asFloat())*drawScale.y,getAngle(),effect * textureScale,textureScale);
     }
 
     /**

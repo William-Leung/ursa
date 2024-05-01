@@ -3,7 +3,6 @@ package edu.cornell.gdiac.physics;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -20,7 +19,8 @@ import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.assets.AssetDirectory;
-import edu.cornell.gdiac.physics.enemy.Enemy;
+import edu.cornell.gdiac.physics.objects.CustomGameObject;
+import edu.cornell.gdiac.physics.units.Enemy;
 import edu.cornell.gdiac.physics.objects.Cave;
 import edu.cornell.gdiac.physics.objects.Decoration;
 import edu.cornell.gdiac.physics.objects.GameObject;
@@ -30,7 +30,7 @@ import edu.cornell.gdiac.physics.objects.GenericObstacle;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.physics.pathing.AIController;
 import edu.cornell.gdiac.physics.pathing.Board;
-import edu.cornell.gdiac.physics.player.UrsaModel;
+import edu.cornell.gdiac.physics.units.UrsaModel;
 import edu.cornell.gdiac.physics.shadows.ShadowController;
 import edu.cornell.gdiac.physics.shadows.ShadowModel;
 import edu.cornell.gdiac.physics.objects.Tree;
@@ -199,7 +199,10 @@ public class SceneModel extends WorldController implements ContactListener {
     private final float numTilesX;
     /** Height of a single tile */
     private final float tileSideLength = 256;
+    /** 2d array of tile textures */
     private int[][] tiles;
+    /** Height of the player hitbox. */
+    private float playerHeight;
 
     /* =========== Collections of References =========== */
     /** Reference to the character avatar */
@@ -234,7 +237,7 @@ public class SceneModel extends WorldController implements ContactListener {
     private float[] intervals;
     /** Points to the next color we interpolate to */
     private int colorNextPointer = 1;
-    /** The alpha at which all shadows should be */
+    /** The darkest tinting of any shadow */
     private static float shadowAlpha = 0.35f;
 
     /*
@@ -487,7 +490,7 @@ public class SceneModel extends WorldController implements ContactListener {
      */
     private void populateLevel() {
         // False for static shadows, true for dynamic
-        boolean doShadowsMove = true;
+        boolean doShadowsMove = false;
         shadowController = new ShadowController(blackTexture, doShadowsMove);
 
         findTileIndices();
@@ -540,8 +543,8 @@ public class SceneModel extends WorldController implements ContactListener {
                 if(tileIndex == 0) {
                     continue;
                 }
-                x = j * 12f * scale.x;
-                y = i * 12f * scale.y;
+                x = j * (16f * textureScale) * scale.x;
+                y = i * (16f * textureScale) * scale.y;
                 canvas.draw(tileTextures[tileIndex - firstTileIndex], Color.WHITE,0,0, x, y, ursa.getAngle(), textureScale, textureScale);
             }
         }
@@ -1069,10 +1072,10 @@ private         FrameBuffer fb = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.gra
 
         JsonValue ursaConstants = constants.get("ursa");
         float playerWidth = ursaConstants.get("width").asFloat();
-        float playerHeight = ursaConstants.get("height").asFloat();
+        playerHeight = ursaConstants.get("height").asFloat();
 
         ursa = new UrsaModel(drawToScreenCoordinates(playerX + ursaTexture.getRegionWidth() / 2f), drawToScreenCoordinates(playerY) + playerHeight / 2,
-                ursaConstants, playerWidth, playerHeight);
+                ursaConstants, playerWidth, playerHeight, textureScale);
         ursa.setDrawScale(scale);
         ursa.setTexture(playerWalkFilm);
         addObject(ursa);
@@ -1112,7 +1115,7 @@ private         FrameBuffer fb = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.gra
                 }
             } catch (NullPointerException ignored) { }
 
-            Enemy enemy = new Enemy(drawToScreenCoordinates(x), drawToScreenCoordinates(y) + height / 2,20,20,constants.get("enemy"), width, height);
+            Enemy enemy = new Enemy(drawToScreenCoordinates(x), drawToScreenCoordinates(y) + height / 2,20,20,constants.get("enemy"), width, height, textureScale);
             enemy.setDrawScale(scale);
             enemy.setLookDirection(1, 0);
             enemy.setTexture(salmonUprightWalkFilm);
@@ -1216,7 +1219,7 @@ private         FrameBuffer fb = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.gra
             System.out.println(firstHouseIndex);
             if(objectIndex - firstMediumObjectIndex == 0) {
                 textureIndex = 0;
-//                name = "rock_1";
+                name = "rock_1";
             } else if(objectIndex - firstMediumObjectIndex == 1) {
                 textureIndex = 1;
                  name = "statue";
@@ -1251,7 +1254,13 @@ private         FrameBuffer fb = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.gra
             float x = objectData.get(i).get("x").asFloat() + objectTextures[textureIndex].getRegionWidth() / 2f;
             float y = maxY - objectData.get(i).get("y").asFloat() + yOffset;
 
-            GameObject obj = new GameObject(objectConstants.get("vertices").asFloatArray(),drawToScreenCoordinates(x),drawToScreenCoordinates(y), yOffset, textureScale);
+            // House and Rock 3 have special drawing order
+            GameObject obj;
+            if(name.equals("house") || name.equals("rock_3")) {
+                obj = new CustomGameObject(objectConstants.get("vertices").asFloatArray(),drawToScreenCoordinates(x),drawToScreenCoordinates(y), yOffset, textureScale, playerHeight);
+            } else {
+                obj = new GameObject(objectConstants.get("vertices").asFloatArray(),drawToScreenCoordinates(x),drawToScreenCoordinates(y), yOffset, textureScale);
+            }
             obj.setDrawScale(scale);
             obj.setTexture(objectTextures[textureIndex]);
             obj.setName("game object" + i);
