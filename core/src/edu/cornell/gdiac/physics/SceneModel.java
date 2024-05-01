@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
@@ -15,6 +16,7 @@ import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectSet;
@@ -189,7 +191,7 @@ public class SceneModel extends WorldController implements ContactListener {
     /** Scaling between textures and drawing (256x256 -> 192x192)
      * Converts between 2560 x 1440 resolution assets were drawn for and 1920 x 1080 resolution we have
      */
-    private final float textureScale = 0.75f;
+    private final float textureScale = 0.4f;
 
 
     /* =========== Tile Variables =========== */
@@ -935,7 +937,8 @@ private         FrameBuffer fb = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.gra
      */
     @Override
     public void preDraw(float dt) {
-        canvas.draw(whiteTexture,Color.WHITE, canvas.getCameraX() - canvas.getWidth() / 2f, canvas.getCameraY() - canvas.getHeight() / 2f, canvas.getWidth(), canvas.getHeight());
+        canvas.draw(tileTextures[0], Color.WHITE,canvas.getCameraX() - canvas.getWidth() / 2f, canvas.getCameraY() - canvas.getHeight() / 2f, canvas.getWidth(), canvas.getHeight());
+        canvas.draw(whiteTexture, Color.WHITE, 0, 0, numTilesX * 16 * textureScale * scale.x, numTilesY * 16 * textureScale * scale.y);
         for(Decoration d: groundDecorations) {
             d.draw(canvas);
         }
@@ -1164,7 +1167,7 @@ private         FrameBuffer fb = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.gra
         float x = smolUrsaObjectData.get(0).get(8).asFloat() + smolUrsaTexture.getRegionWidth() / 2f;
         float y = maxY - smolUrsaObjectData.get(0).get(9).asFloat();
 
-        goal = new GameObject(smolUrsaConstants.get("vertices").asFloatArray(), drawToScreenCoordinates(x),
+        goal = new GameObject(getVertices(smolUrsaConstants), drawToScreenCoordinates(x),
                 drawToScreenCoordinates(y), 0, textureScale);
         goal.setSensor(true);
         goal.setDrawScale(scale);
@@ -1193,7 +1196,7 @@ private         FrameBuffer fb = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.gra
             float x = iceObjectData.get(i).get(8).asFloat() + polarIceTexture.getRegionWidth() / 2f;
             float y = maxY - iceObjectData.get(i).get(9).asFloat() + yOffset;
 
-            Moveable ice = new Moveable(iceConstants.get("vertices").asFloatArray(), drawToScreenCoordinates(x),drawToScreenCoordinates(y), yOffset, textureScale);
+            Moveable ice = new Moveable(getVertices(iceConstants), drawToScreenCoordinates(x),drawToScreenCoordinates(y), yOffset, textureScale);
             ice.setDrawScale(scale);
             ice.setTexture(polarIceTexture);
             ice.setName("ice" + i);
@@ -1257,26 +1260,17 @@ private         FrameBuffer fb = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.gra
             // House and Rock 3 have special drawing order
             GameObject obj;
             if(name.equals("house") || name.equals("rock_3")) {
-                obj = new CustomGameObject(objectConstants.get("vertices").asFloatArray(),drawToScreenCoordinates(x),drawToScreenCoordinates(y), yOffset, textureScale, playerHeight);
+                obj = new CustomGameObject(getVertices(objectConstants),drawToScreenCoordinates(x),drawToScreenCoordinates(y), yOffset, textureScale, playerHeight);
             } else {
-                obj = new GameObject(objectConstants.get("vertices").asFloatArray(),drawToScreenCoordinates(x),drawToScreenCoordinates(y), yOffset, textureScale);
+                obj = new GameObject(getVertices(objectConstants),drawToScreenCoordinates(x),drawToScreenCoordinates(y), yOffset, textureScale);
             }
             obj.setDrawScale(scale);
             obj.setTexture(objectTextures[textureIndex]);
             obj.setName("game object" + i);
             addObject(obj);
 
-            float[] shadowVertices;
-            if(objectConstants.get("shadowVertices") == null) {
-                shadowVertices = new float[]{0, -4, -4, -1, -6, 0.6f, 0, 20, 6, 0.6f, 4, -1};
-            } else {
-                shadowVertices = objectConstants.get("shadowVertices").asFloatArray();
-            }
             // Tree shadows
-            ShadowModel shadow = new ShadowModel(shadowVertices,obj.getX(), obj.getY());
-            shadow.setDrawScale(scale);
-            shadowController.addShadow(shadow);
-            addObject(shadow);
+            makeShadow(objectConstants,obj);
 
             // ===================
             genericObstacles.add(new GenericObstacle(obj.getX(), obj.getY(),
@@ -1300,7 +1294,7 @@ private         FrameBuffer fb = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.gra
             float x = treeObjectData.get(i).get(8).asFloat() + treeTextures[treeIndex - firstTreeIndex].getRegionWidth() / 2f;
             float y = maxY - treeObjectData.get(i).get(9).asFloat() + yOffset;
 
-            Tree tree = new Tree(treeConstants.get("vertices").asFloatArray(),drawToScreenCoordinates(x),drawToScreenCoordinates(y), yOffset, textureScale);
+            Tree tree = new Tree(getVertices(treeConstants),drawToScreenCoordinates(x),drawToScreenCoordinates(y), yOffset, textureScale);
             tree.setDrawScale(scale);
             tree.setTexture(treeTextures[treeIndex - firstTreeIndex]);
             if(treeIndex - firstTreeIndex == 1) {
@@ -1312,16 +1306,7 @@ private         FrameBuffer fb = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.gra
             trees.add(tree);
 
             // Tree shadows
-            float[] shadowVertices;
-            if(treeConstants.get("shadowVertices") == null) {
-                shadowVertices = new float[]{0, -4, -4, -1, -6, 0.6f, 0, 20, 6, 0.6f, 4, -1};
-            } else {
-                shadowVertices = treeConstants.get("shadowVertices").asFloatArray();
-            }
-            ShadowModel shadow = new ShadowModel(shadowVertices, tree.getX(), tree.getY());
-            shadow.setDrawScale(scale);
-            shadowController.addShadow(shadow);
-            addObject(shadow);
+            makeShadow(treeConstants,tree);
 
             // ===================
             genericObstacles.add(new GenericObstacle(tree.getX(), tree.getY(),
@@ -1347,7 +1332,7 @@ private         FrameBuffer fb = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.gra
             x = drawToScreenCoordinates(x);
             y = drawToScreenCoordinates(y);
 
-            Cave obj = new Cave(caveConstants.get("vertices").asFloatArray(), x, y, yOffset,textureScale);
+            Cave obj = new Cave(getVertices(caveConstants), x, y, yOffset,textureScale);
             obj.setDrawScale(scale);
             obj.setTexture(cavePortalFilm);
             obj.setName("cave" + i);
@@ -1355,17 +1340,7 @@ private         FrameBuffer fb = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.gra
             addObject(obj);
             caves.add(obj);
 
-            // Tree shadows
-            float[] shadowVertices;
-            if(caveConstants.get("shadowVertices") == null) {
-                shadowVertices = new float[]{0, -4, -4, -1, -6, 0.6f, 0, 20, 6, 0.6f, 4, -1};
-            } else {
-                shadowVertices = caveConstants.get("shadowVertices").asFloatArray();
-            }
-            ShadowModel shadow = new ShadowModel(shadowVertices, obj.getX(), obj.getY());
-            shadow.setDrawScale(scale);
-            shadowController.addShadow(shadow);
-            addObject(shadow);
+            makeShadow(caveConstants,obj);
 
             // ===================g
             genericObstacles.add(new GenericObstacle(obj.getX(), obj.getY(),
@@ -1404,6 +1379,49 @@ private         FrameBuffer fb = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.gra
         }
         // Since decoration positions never change, we only need to sort once
         decorations.sort(decorationComparator);
+    }
+
+    private float[] getVertices(JsonValue constants){
+            if(constants.get("vertices") == null) {
+                System.out.println("Undefined constants.");
+                return null;
+            }
+            float[] vertices = constants.get("vertices").asFloatArray();
+            for(int i = 0; i < vertices.length; i++) {
+                vertices[i] *= textureScale / 0.75f;
+            }
+            return vertices;
+    }
+
+    private void makeShadow(JsonValue constants, PolygonObstacle obj) {
+        float[] shadowVertices;
+        if(constants.get("shadowVertices") == null) {
+            shadowVertices = new float[]{0, -4, -4, -1, -6, 0.6f, 0, 20, 6, 0.6f, 4, -1};
+        } else {
+            shadowVertices = constants.get("shadowVertices").asFloatArray();
+        }
+
+        for(int i = 0; i < shadowVertices.length; i++) {
+            shadowVertices[i] *= textureScale / 0.75f;
+        }
+
+        float xOffset = 0f;
+        float yOffset = 0f;
+        boolean moving = true;
+        if(constants.get("shadowXOffset") != null) {
+            xOffset = constants.get("shadowXOffset").asFloat();
+        }
+        if(constants.get("shadowYOffset") != null) {
+            yOffset = constants.get("shadowYOffset").asFloat();
+        }
+        if(constants.get("doesShadowMove") != null) {
+            moving = constants.get("doesShadowMove").asBoolean();
+        }
+
+        ShadowModel shadow = new ShadowModel(shadowVertices, obj.getX(), obj.getY(), xOffset, yOffset, moving);
+        shadow.setDrawScale(scale);
+        shadowController.addShadow(shadow);
+        addObject(shadow);
     }
 }
 

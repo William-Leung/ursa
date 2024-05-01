@@ -21,42 +21,18 @@ public class ShadowModel extends PolygonObstacle {
      * Invariant: This vector is always normalized.
      */
     private Vector2 direction = new Vector2(0, 1);
+    /** X offset of the shadow. */
+    private float xOffset;
+    /** Y offset of the shadow. */
+    private float yOffset;
+    private boolean doesShadowMove;
 
-    public static float[] ShadowPolygon(String texture) {
-        float[] tree = new float[] {
-                0.0f, -4.0f, -4.0f, -1.0f, -6.0f, 0.6f, 0.0f, 20.0f, 6.0f, 0.6f, 4.0f, -1.0f
-        };
-        float[] cave = new float[] {
-                0, -2f,
-                -2f, 0,
-                -3f, 2f,
-                0, 4f,
-                3f, 2f,
-                3f, 0f,
-        };
-        float[] rock = new float[] {
-                0, -1f,
-                -2f, -0.25f,
-                -2.5f, 3f,
-                0, 5f,
-                2.5f, 3f,
-                2f, -0.25f,
-        };
-        switch (texture) {
-            case "tree":
-                return tree;
-            case "cave":
-                return cave;
-            case "rock":
-                return rock;
-            default:
-                return tree;
-        }
-    }
-
-    public ShadowModel(float[] points, float x, float y) {
+    public ShadowModel(float[] points, float x, float y, float xOffset, float yOffset, boolean doesShadowMove) {
         super(points, x, y, 0,1);
-        this.shadowTint = new Color(1,1,1,0.3f);
+        this.shadowTint = new Color(1,1,1,0.35f);
+        this.xOffset = xOffset;
+        this.yOffset = yOffset;
+        this.doesShadowMove = doesShadowMove;
 
         setSensor(true);
         setName("shadow");
@@ -67,6 +43,9 @@ public class ShadowModel extends PolygonObstacle {
      * @param newDirec The new direction.
      */
     public void setDirection (Vector2 newDirec) {
+        if(!doesShadowMove) {
+            return;
+        }
         direction.set(newDirec);
     }
 
@@ -75,6 +54,9 @@ public class ShadowModel extends PolygonObstacle {
      * @param degrees The amount of degrees to rotate the shadow.
      */
     public void rotateDirection(float degrees) {
+        if(!doesShadowMove) {
+            return;
+        }
         direction.rotateDeg(degrees).nor();
         Transform transform = body.getTransform();
         body.setTransform(transform.getPosition(), transform.getRotation() + (float) Math.toRadians(degrees));
@@ -96,14 +78,7 @@ public class ShadowModel extends PolygonObstacle {
      */
     @Override
     public void preDraw(GameCanvas canvas) {
-        canvas.draw(region,shadowTint,0,0,getX()*drawScale.x,getY()*drawScale.y, vectorToRadians(direction), 1, 1);
-
-//        Affine2 affine = new Affine2()
-//                .rotate(vectorToRadians(direction))
-//                .translate(getX() * drawScale.x, getY()* drawScale.y)
-//                .scale(1, 1)
-//                ;
-//        canvas.draw(region, shadowTint, 0, 0, affine);
+        canvas.draw(region,shadowTint,0,0,getX()*drawScale.x + xOffset,getY()*drawScale.y + yOffset, vectorToRadians(direction), 1, 1);
     }
 
     /**

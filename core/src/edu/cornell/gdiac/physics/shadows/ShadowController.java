@@ -59,6 +59,9 @@ public class ShadowController {
         isNight = false;
         shadowTexture = region;
         this.doShadowsMove = doShadowsMove;
+        if(!doShadowsMove) {
+            time = 300;
+        }
     }
 
     /**
