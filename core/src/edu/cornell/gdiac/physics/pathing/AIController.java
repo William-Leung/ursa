@@ -38,7 +38,7 @@ public class AIController {
     /** Time when enemy spawns where they cannot do anything */
     private static final int SPAWN_TICKS = 30;
     /** Time in range before changing confused to attack */
-    private static final int CONFUSE_TIME = 12;
+    private static final int CONFUSE_TIME = 30;
     /** ticks enemy will stay engaged in if chasing but not in cone */
     private static final int CHASE_MEMORY = 80;
     /** Amount of uninterrupted time player can spend in cone before losing */
@@ -60,9 +60,9 @@ public class AIController {
     /** Distance that if chasing the player, the enemy will still attack them */
     private static final float CHASE_RADIUS = 2f;
 
-    private static final float WANDER_SPEED = 9f;
+    private static final float WANDER_SPEED = 7f;
 
-    private static final float CHASE_SPEED = 15f;
+    private static final float CHASE_SPEED = 13f;
 
     // Instance Attributes
     /** The enemy being controlled by this AIController */

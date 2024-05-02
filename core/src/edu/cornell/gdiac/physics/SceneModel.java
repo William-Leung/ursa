@@ -512,10 +512,16 @@ public class SceneModel extends WorldController implements ContactListener {
         for (AIController i : controls) {
             if (i != null) {
                 if (i.isWon() || i.isSurprised()) {
+                    System.out.println("Enemy is surprised");
+                    System.out.println("Salmon detected index: " + salmonDetectedIndex);
+                    System.out.println();
                     salmonDetectedFilm.setFrame(salmonDetectedIndex);
                     i.getEnemy().setTexture(salmonDetectedFilm);
                     salmonDetectedIndex = (salmonDetectedIndex + 1) % 30;
                 } else if (i.isConfused() || i.isStunned() || i.earlyLooking()) {
+                    System.out.println("Enemy is confused or stunned");
+                    System.out.println("Salmon confused index: " + i.get_confused_anim_index());
+                    System.out.println();
                     salmonConfusedFilm.setFrame(i.get_confused_anim_index());
                     i.getEnemy().setTexture(salmonConfusedFilm);
                     i.inc_anim_index();
@@ -524,7 +530,8 @@ public class SceneModel extends WorldController implements ContactListener {
                     i.getEnemy().setTexture(salmonIdleFilm);
                     salmonIdleAnimIndex = (salmonIdleAnimIndex + 1) % 40;
                 } else {
-                    i.reset_anim_index();
+                    //i.reset_anim_index();
+                    //salmonDetectedIndex = 0;
                     salmonUprightWalkFilm.setFrame(salmonWalkAnimIndex);
                     i.getEnemy().setTexture(salmonUprightWalkFilm);
                 }
@@ -675,6 +682,13 @@ public class SceneModel extends WorldController implements ContactListener {
             // Stop Ursa
             ursa.setVX(0f);
             ursa.setVY(0f);
+
+            for (Enemy e : enemies) {
+                if (e != null) {
+                    e.setVY(0);
+                    e.setVX(0);
+                }
+            }
 
             // Ursa Walks to the Cave
             if((currentFrame - timeBeganSkippingFrame) < walkingDuration) {
