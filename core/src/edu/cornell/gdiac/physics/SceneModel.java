@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
-import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
@@ -16,7 +15,6 @@ import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectSet;
@@ -71,11 +69,6 @@ public class SceneModel extends WorldController implements ContactListener {
     protected TextureRegion blackTexture;
 
 
-    /* =========== Shadow Textures =========== */
-    /** Texture asset for a tree's shadow in the polar map */
-    private TextureRegion polarTreeShadow;
-
-
     /* =========== Film Strips =========== */
     /** Filmstrip for player walking animation */
     private FilmStrip playerWalkFilm;
@@ -95,6 +88,8 @@ public class SceneModel extends WorldController implements ContactListener {
     private FilmStrip cavePortalFilm;
     /** Filmstrip for little ursa idle animation */
     private FilmStrip smolUrsaIdleFilm;
+    /** Filmstrip for cave sleep animation */
+    private FilmStrip caveSleepFilm;
 
 
     /* =========== Animation Variables =========== */
@@ -112,8 +107,6 @@ public class SceneModel extends WorldController implements ContactListener {
     private boolean ursaCurrentState = false;
     /** Current index of the salmon walking animation */
     private int salmonWalkAnimIndex = 0;
-    /** Current index of the salmon confused animation */
-    private int salmonConfusedAnimIndex = 0;
     /** Current index of the salmon idling animation */
     private int salmonIdleAnimIndex = 0;
     /** Current index of the salmon detection animation */
@@ -128,37 +121,22 @@ public class SceneModel extends WorldController implements ContactListener {
     private int smolUrsaIdleIndex = 0;
 
 
-    /* =========== Animation Buffers =========== */
-    /** Ursa's walk animates every ursaWalkAnimBuffer update loops */
-    private final int ursaWalkAnimBuffer = 2;
-    /** Ursa's idle animates every ursaIdleAnimBuffer update loops */
-    private final int ursaIdleAnimBuffer = 3;
-    /** Tree shaking animates every treeShakeAnimBuffer update loops */
-    private final int treeShakeAnimBuffer = 4;
-    /** Cave portal animates every cavePortalAnimBuffer update loops */
-    private final int cavePortalAnimBuffer = 3;
-    /** Smol ursa's idle animates every smolUrsaIdleAnimBuffer update loops */
-    private final int smolUrsaIdleAnimBuffer = 3;
-
-
     /* =========== Tree Shaking Variables =========== */
     /** The tree that is currently shaking. */
     private Tree shakingTree = null;
-    /** How far away the player must be to interact with trees (screen coords) */
-    private final float treeInteractionRange = 7;
-    /** Within what distance will the enemy be stunned upon tree shaking. */
-    private final float enemyStunDistance = 10;
 
 
     /* =========== Cave Interaction Variables =========== */
-    /** How far away the player must be to interact with caves (screen coords) */
-    private final float caveInteractionRange = 4;
     /** Is the time fast forwarding right now? */
     private boolean isTimeSkipping = false;
     /** The frame at which time began to skip */
     private int timeBeganSkippingFrame = 0;
-    /** The number of frames over which time will skip */
-    private int fastForwardDuration = 60;
+    /** The cave recently interacted with. */
+    private Cave interactedCave = null;
+    /** The position at which Ursa was when interacting with the cave.*/
+    private Vector2 ursaStartingPosition;
+    /** How long Ursa will walk to the cave for */
+    private float walkingDuration = 0f;
 
 
     /* =========== Tiled Parsing Variables =========== */
@@ -199,8 +177,6 @@ public class SceneModel extends WorldController implements ContactListener {
     private final float numTilesY;
     /** Total number of tiles in the x direction on the board. */
     private final float numTilesX;
-    /** Height of a single tile */
-    private final float tileSideLength = 256;
     /** 2d array of tile textures */
     private int[][] tiles;
     /** Height of the player hitbox. */
@@ -216,17 +192,17 @@ public class SceneModel extends WorldController implements ContactListener {
     /** List of references to enemies */
     private Enemy[] enemies;
     /** List of references to all AIControllers */
-    private LinkedList<AIController> controls = new LinkedList<>();
+    private final LinkedList<AIController> controls = new LinkedList<>();
     /** List of references to all trees */
-    private PooledList<Tree> trees = new PooledList<>();
+    private final PooledList<Tree> trees = new PooledList<>();
     /** List of references to all decorations */
-    private PooledList<Decoration> decorations= new PooledList<>();
+    private final PooledList<Decoration> decorations= new PooledList<>();
     /** List of references to decorations on the ground */
-    private PooledList<Decoration> groundDecorations = new PooledList<>();
+    private final PooledList<Decoration> groundDecorations = new PooledList<>();
     /** List of references to all caves */
-    private PooledList<Cave> caves = new PooledList<>();
+    private final PooledList<Cave> caves = new PooledList<>();
     /** List of references to dynamic objects (ursa + enemies) */
-    private PooledList<Obstacle> dynamicObjects = new PooledList<>();
+    private final PooledList<Obstacle> dynamicObjects = new PooledList<>();
 
 
     /* =========== Day/Night Screen Tinting =========== */
@@ -236,11 +212,11 @@ public class SceneModel extends WorldController implements ContactListener {
     private final Color[] colors;
     /** The intervals at which the tintings will occur
      * colors[i] happens at intervals[i] */
-    private float[] intervals;
+    private final float[] intervals;
     /** Points to the next color we interpolate to */
     private int colorNextPointer = 1;
     /** The darkest tinting of any shadow */
-    private static float shadowAlpha = 0.35f;
+    private static final float shadowAlpha = 0.35f;
 
     /*
      * Initialize the global blob shadow used for Ursa and enemies.
@@ -267,8 +243,6 @@ public class SceneModel extends WorldController implements ContactListener {
     private float timeRatio;
     /** Rotation angle of UI element */
     private float uiRotationAngle = 0f;
-    /** Draw scale of UI */
-    private final float uiDrawScale = 0.1f;
 
 
     /* =========== Soundtrack Assets =========== */
@@ -280,7 +254,7 @@ public class SceneModel extends WorldController implements ContactListener {
     /**
      * List of all references to all generic obstacles
      */
-    private PooledList<GenericObstacle> genericObstacles = new PooledList<>();
+    private final PooledList<GenericObstacle> genericObstacles = new PooledList<>();
 
     /** Reference to goal */
     private PolygonObstacle goal;
@@ -289,6 +263,9 @@ public class SceneModel extends WorldController implements ContactListener {
     private final Comparator<Decoration> decorationComparator = (o1, o2) -> Float.compare(o2.getIndex(), o1.getIndex());
     /** Mark set to handle more sophisticated collision callbacks */
     protected ObjectSet<Fixture> sensorFixtures;
+
+    private FrameBuffer fb = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), false);
+
 
 
     /**
@@ -307,6 +284,8 @@ public class SceneModel extends WorldController implements ContactListener {
 
         numTilesY = jsonData.get("layers").get(0).get(1).asFloat();
         numTilesX = jsonData.get("layers").get(0).get(7).asFloat();
+
+        float tileSideLength = 256;
         maxY = numTilesY * tileSideLength;
 
         colors = new Color[4];
@@ -340,9 +319,6 @@ public class SceneModel extends WorldController implements ContactListener {
 
         polarCaveTexture = new TextureRegion(directory.getEntry("polar:cave",Texture.class));
         polarIceTexture = new TextureRegion(directory.getEntry("polar:ice",Texture.class));
-
-        polarTreeShadow = new TextureRegion(directory.getEntry("shadows:polar_tree_shadow", Texture.class));
-        polarTreeShadow.flip(true, true);
 
         levelMusic = directory.getEntry("soundtracks:level_track", Music.class);
         levelMusicNight = directory.getEntry("soundtracks:level_track_night", Music.class);
@@ -381,6 +357,8 @@ public class SceneModel extends WorldController implements ContactListener {
         treeShakeFilm = new FilmStrip(treeShakeAnimation.getTexture(), 2, 8);
 
         TextureRegion cavePortalAnimation = new TextureRegion(directory.getEntry("polar:cave_animation", Texture.class));
+        cavePortalFilm = new FilmStrip(cavePortalAnimation.getTexture(), 2, 8);
+        TextureRegion caveSleepAnimation = new TextureRegion(directory.getEntry("polar:cave_sleep_animation", Texture.class));
         cavePortalFilm = new FilmStrip(cavePortalAnimation.getTexture(), 2, 8);
 
         TextureRegion smolUrsaIdleAnimation = new TextureRegion(directory.getEntry("smolursa:idle", Texture.class));
@@ -481,7 +459,6 @@ public class SceneModel extends WorldController implements ContactListener {
         levelMusicTense.setVolume(0);
         levelMusicTense.setVolume(0);
 
-
         populateLevel();
         System.out.println(" ====== Reset ===== ");
     }
@@ -531,27 +508,6 @@ public class SceneModel extends WorldController implements ContactListener {
         return true;
     }
 
-    /**
-     Draws all tiles based on the json data from Tiled
-     */
-    public void drawTiles(){
-        float x;
-        float y;
-        // The array needs to be parsed from top to bottom
-
-        for(int i = 0; i < numTilesY; i++) {
-            for(int j = 0; j < numTilesX; j++) {
-                int tileIndex = tiles[j][i];
-                if(tileIndex == 0) {
-                    continue;
-                }
-                x = j * (16f * textureScale) * scale.x;
-                y = i * (16f * textureScale) * scale.y;
-                canvas.draw(tileTextures[tileIndex - firstTileIndex], Color.WHITE,0,0, x, y, ursa.getAngle(), textureScale, textureScale);
-            }
-        }
-    }
-
     private void animateEnemies(){
         for (AIController i : controls) {
             if (i != null) {
@@ -575,7 +531,6 @@ public class SceneModel extends WorldController implements ContactListener {
             }
         }
         salmonWalkAnimIndex = (salmonWalkAnimIndex + 1) % 25;
-
     }
 
     /**
@@ -598,10 +553,12 @@ public class SceneModel extends WorldController implements ContactListener {
             }
             playerWalkFilm.setFrame(ursaWalkAnimIndex);
             ursa.setTexture(playerWalkFilm);
+
+            int ursaWalkAnimBuffer = 2;
             if((currentFrame - ursaBeganWalkingFrame) % ursaWalkAnimBuffer == 0) {
                 ursaWalkAnimIndex += 1;
             }
-            // If the player is not moving
+        // If the player is not moving
         } else {
             // If the player changed states
             if(ursaCurrentState) {
@@ -615,6 +572,8 @@ public class SceneModel extends WorldController implements ContactListener {
             }
             playerIdleFilm.setFrame(ursaIdleAnimIndex);
             ursa.setTexture(playerIdleFilm);
+
+            int ursaIdleAnimBuffer = 3;
             if((currentFrame - ursaBeganIdlingFrame) % ursaIdleAnimBuffer == 0) {
                 ursaIdleAnimIndex += 1;
             }
@@ -632,7 +591,8 @@ public class SceneModel extends WorldController implements ContactListener {
 
         treeShakeFilm.setFrame(treeShakeIndex);
         shakingTree.setTexture(treeShakeFilm);
-        // Increment the film by one every 3 frames
+
+        int treeShakeAnimBuffer = 4;
         if((currentFrame - beganShakingTreeFrame) % treeShakeAnimBuffer == 0) {
             treeShakeIndex = (treeShakeIndex + 1) % 12;
         }
@@ -648,6 +608,8 @@ public class SceneModel extends WorldController implements ContactListener {
 
     private void animateCaves() {
         cavePortalFilm.setFrame(cavePortalIndex);
+
+        int cavePortalAnimBuffer = 3;
         if(currentFrame % cavePortalAnimBuffer == 0) {
             cavePortalIndex = (cavePortalIndex + 1) % 11;
         }
@@ -655,6 +617,8 @@ public class SceneModel extends WorldController implements ContactListener {
 
     private void animateSmolUrsa() {
         smolUrsaIdleFilm.setFrame(smolUrsaIdleIndex);
+
+        int smolUrsaIdleAnimBuffer = 3;
         if(currentFrame % smolUrsaIdleAnimBuffer == 0) {
             smolUrsaIdleIndex = (smolUrsaIdleIndex + 1) % 39;
         }
@@ -704,60 +668,46 @@ public class SceneModel extends WorldController implements ContactListener {
             levelMusic.setLooping(true);
         }
 
+        shadowController.update(backgroundColor);
+
+        // If the time is fast forwarding
         if(isTimeSkipping) {
+            // Stop Ursa
+            ursa.setVX(0f);
+            ursa.setVY(0f);
+
+            // Ursa Walks to the Cave
+            if((currentFrame - timeBeganSkippingFrame) < walkingDuration) {
+                walkToCave(interactedCave);
+                return;
+            }
+            ursa.stopDrawing();
+
+            // Rotate the shadows over fastForwardDuration update loops
+            int fastForwardDuration = 60;
             if((currentFrame - timeBeganSkippingFrame) % fastForwardDuration == 0) {
                 isTimeSkipping = false;
             } else {
-                shadowController.animateFastForward(currentFrame - timeBeganSkippingFrame, fastForwardDuration);
+                shadowController.animateFastForward(currentFrame - timeBeganSkippingFrame,
+                        fastForwardDuration);
             }
             return;
         }
-
+        ursa.resumeDrawing();
 
         // Move Ursa
         float xVal = InputController.getInstance().getHorizontal() * ursa.getForce();
         float yVal = InputController.getInstance().getVertical() * ursa.getForce();
         ursa.setMovement(xVal,yVal);
 
-        // Find the closest interactable obstacle among caves and trees
-        PolygonObstacle closestInteractableObstacle = null;
-        float minDistance = 1000;
-        float tempDistance;
-        for(Tree tree: trees) {
-            tempDistance = ursa.getPosition().dst(tree.getPosition());
-            if (tree.canShake() && tempDistance < treeInteractionRange && (closestInteractableObstacle == null || tempDistance < minDistance)) {
-                closestInteractableObstacle = tree;
-                minDistance = tempDistance;
-            }
-        }
-        for(Cave cave: caves) {
-            tempDistance = ursa.getPosition().dst(cave.getPosition());
-            if (cave.canInteract() && tempDistance < caveInteractionRange && (closestInteractableObstacle == null || tempDistance < minDistance)) {
-                closestInteractableObstacle = cave;
-                minDistance = tempDistance;
-            }
-        }
-        if(InputController.getInstance().didInteract()) {
-            System.out.println("Attempting to interact. ");
-            if (closestInteractableObstacle != null) {
-                if (closestInteractableObstacle instanceof Tree) {
-                    shakeTree((Tree) closestInteractableObstacle);
-                    System.out.println("Shaking tree. ");
-                } else {
-                    fastForward((Cave) closestInteractableObstacle);
-                    System.out.println("Fast forwarding time. ");
-                }
-            }
-        }
+        checkForInteraction();
 
-
-        // Animate the players, trees, and enemies
+        // Animates the game objects
         animatePlayerModel();
         animateEnemies();
         animateTree();
         animateCaves();
         animateSmolUrsa();
-
 
         boolean alerted = false;
         for (AIController c : controls) {
@@ -787,7 +737,6 @@ public class SceneModel extends WorldController implements ContactListener {
         }
 
         canvas.clear();
-        shadowController.update(backgroundColor);
 
 
         // If the game is lost, stop the player
@@ -808,6 +757,44 @@ public class SceneModel extends WorldController implements ContactListener {
     }
 
     /**
+     *  Find the closest interactable obstacle among caves and trees.
+     *  Then, shake the tree or fast forward the time if applicable.
+     */
+    public void checkForInteraction() {
+        float treeInteractionRange = 7;
+        PolygonObstacle closestInteractableObstacle = null;
+        float minDistance = 1000;
+        float tempDistance;
+        for(Tree tree: trees) {
+            tempDistance = ursa.getPosition().dst(tree.getPosition());
+            if (tree.canShake() && tempDistance < treeInteractionRange && (closestInteractableObstacle == null || tempDistance < minDistance)) {
+                closestInteractableObstacle = tree;
+                minDistance = tempDistance;
+            }
+        }
+        for(Cave cave: caves) {
+            float caveInteractionRange = 3;
+            tempDistance = ursa.getPosition().dst(cave.getPosition());
+            if (cave.canInteract() && tempDistance < caveInteractionRange && (closestInteractableObstacle == null || tempDistance < minDistance)) {
+                closestInteractableObstacle = cave;
+                minDistance = tempDistance;
+            }
+        }
+        if(InputController.getInstance().didInteract()) {
+            System.out.println("Attempting to interact. ");
+            if (closestInteractableObstacle != null) {
+                if (closestInteractableObstacle instanceof Tree) {
+                    shakeTree((Tree) closestInteractableObstacle);
+                    System.out.println("Shaking tree. ");
+                } else {
+                    beginCaveFastForward((Cave) closestInteractableObstacle);
+                    System.out.println("Fast forwarding time. ");
+                }
+            }
+        }
+    }
+
+    /**
      * Shakes tree if able.
      * Stuns nearby enemies and prevents tree from shaking again.
      * @param tree Tree attempting to be interacted with
@@ -821,6 +808,7 @@ public class SceneModel extends WorldController implements ContactListener {
         beganShakingTreeFrame = currentFrame;
 
         for (Enemy enemy : enemies) {
+            float enemyStunDistance = 10;
             if (enemy != null && enemy.getPosition().dst(tree.getPosition()) < enemyStunDistance) {
                 enemy.stun();
             }
@@ -832,14 +820,42 @@ public class SceneModel extends WorldController implements ContactListener {
      * Then, the cave is set such that it cannot be interacted with again.
      * @param cave Cave being interacted with
      */
-    public void fastForward(Cave cave) {
+    public void beginCaveFastForward(Cave cave) {
         if(!cave.canInteract()) {
             return;
         }
         //cave.interact();
+        walkingDuration = cave.getPosition().dst(ursa.getPosition()) * 10;
         shadowController.forwardTimeRatio(0.2f);
         isTimeSkipping = true;
         timeBeganSkippingFrame = currentFrame;
+        interactedCave = cave;
+        ursaStartingPosition = new Vector2(ursa.getPosition());
+        ursaWalkAnimIndex = 0;
+        ursaIdleAnimIndex = 0;
+        ursa.setIsFacingRight(cave.getX() > ursa.getX());
+    }
+
+    /**
+     * Walks Ursa to the cave she interacted with.
+     */
+    private void walkToCave(Cave cave) {
+        // Move Ursa towards the cave over walkingDuration
+        float newX = ursaStartingPosition.x + (cave.getX() - ursaStartingPosition.x) * (currentFrame - timeBeganSkippingFrame) / walkingDuration;
+        float newY = ursaStartingPosition.y + (cave.getY() - ursaStartingPosition.y) * (currentFrame - timeBeganSkippingFrame) / walkingDuration;
+        ursa.setX(newX);
+        ursa.setY(newY);
+        // Animate Ursa to be walking
+        if(ursaWalkAnimIndex == 12){
+            ursaWalkAnimIndex = 0;
+        }
+        playerWalkFilm.setFrame(ursaWalkAnimIndex);
+        ursa.setTexture(playerWalkFilm);
+
+        int ursaWalkAnimBuffer = 2;
+        if((currentFrame - ursaBeganWalkingFrame) % ursaWalkAnimBuffer == 0) {
+            ursaWalkAnimIndex += 1;
+        }
     }
 
     /**
@@ -915,7 +931,6 @@ public class SceneModel extends WorldController implements ContactListener {
     /** Unused ContactListener method */
     public void preSolve(Contact contact, Manifold oldManifold) {}
 
-
     /**
      * Invariant: intervals.length == colors.length
      * Transitions smoothly between colors[reachPointer] and colors[reachPointer-1] in the time
@@ -928,7 +943,7 @@ public class SceneModel extends WorldController implements ContactListener {
         backgroundColor.b = colors[colorNextPointer - 1].b + (colors[colorNextPointer].b - colors[colorNextPointer - 1].b) * (timeRatio - startTime) / (intervals[colorNextPointer] - intervals[colorNextPointer - 1]);
         backgroundColor.a = colors[colorNextPointer - 1].a + (colors[colorNextPointer].a - colors[colorNextPointer - 1].a) * (timeRatio - startTime) / (intervals[colorNextPointer] - intervals[colorNextPointer - 1]);
     }
-private         FrameBuffer fb = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), false);
+
     /**
      * predraw(dt) draws all the background elements of the game
      * This includes the background (obviously), decorations, tiles, and shadows
@@ -974,7 +989,10 @@ private         FrameBuffer fb = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.gra
         super.postDraw(dt);
 
         // Draws the day/night UI element
-        canvas.draw(dayNightUITexture, Color.WHITE, dayNightUITexture.getRegionWidth() / 2f, dayNightUITexture.getRegionHeight() / 2f, canvas.getCameraX(), canvas.getCameraY() + canvas.getHeight() / 2f, uiRotationAngle, uiDrawScale, uiDrawScale);
+
+        float uiDrawScale = 0.1f;
+        canvas.draw(dayNightUITexture, Color.WHITE, dayNightUITexture.getRegionWidth() / 2f, dayNightUITexture.getRegionHeight() / 2f, canvas.getCameraX(), canvas.getCameraY() + canvas.getHeight() / 2f, uiRotationAngle,
+                uiDrawScale, uiDrawScale);
     }
 
 
@@ -988,6 +1006,28 @@ private         FrameBuffer fb = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.gra
         return drawCoord * textureScale / scale.x;
     }
 
+
+    /**
+     Draws all tiles based on the tile textures parsed.
+     */
+    private void drawTiles(){
+        float x;
+        float y;
+        // The array needs to be parsed from top to bottom
+
+        for(int i = 0; i < numTilesY; i++) {
+            for(int j = 0; j < numTilesX; j++) {
+                int tileIndex = tiles[j][i];
+                if(tileIndex == 0) {
+                    continue;
+                }
+                x = j * (16f * textureScale) * scale.x;
+                y = i * (16f * textureScale) * scale.y;
+                canvas.draw(tileTextures[tileIndex - firstTileIndex], Color.WHITE,0,0, x, y, ursa.getAngle(), textureScale, textureScale);
+            }
+        }
+    }
+
     /*
      * RENDERING Methods that parse a level JSON into a world
      * Layers Invariant: player/markers/enemies/smolursa/ice/objects/trees/cave/decorations
@@ -998,7 +1038,7 @@ private         FrameBuffer fb = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.gra
      * These are hard coded to what images are in the tilsets so if you change them, let William know :3
      * There's similar hard coding in renderDecorations() and renderGameObjects()
      */
-    public void findTileIndices() {
+    private void findTileIndices() {
         JsonValue tilesetData = jsonData.get("tilesets");
         for(int i = 0; i < tilesetData.size; i++) {
             int id = tilesetData.get(i).get("firstgid").asInt();
@@ -1036,7 +1076,7 @@ private         FrameBuffer fb = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.gra
     /**
      * Creates invisible walls depending on the tile types
      */
-    public void renderWalls(){
+    private void renderWalls(){
         int counter = 0;
         float x;
         float y;
@@ -1051,9 +1091,12 @@ private         FrameBuffer fb = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.gra
                 if(tileIndex == 0 || tileIndex == firstTileIndex) {
                     continue;
                 }
-                x = j * 12f;
-                y = i * 12f;
+                x = j * (16f * textureScale);
+                y = i * (16f * textureScale);
                 float[] points = wallConstants.get(Integer.toString(tileIndex - firstTileIndex)).asFloatArray();
+                for(int k = 0; k < points.length; k++) {
+                    points[k] *= textureScale / 0.75f;
+                }
                 wall = new GameObject(points,x, y, 0, textureScale);
                 wall.setDrawScale(scale);
                 wall.setName("wall" + i + " " + j);
@@ -1074,8 +1117,8 @@ private         FrameBuffer fb = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.gra
         float playerY = maxY - jsonData.get("layers").get(9).get("objects").get(0).get(9).asFloat();
 
         JsonValue ursaConstants = constants.get("ursa");
-        float playerWidth = ursaConstants.get("width").asFloat();
-        playerHeight = ursaConstants.get("height").asFloat();
+        float playerWidth = ursaConstants.get("width").asFloat() * textureScale;
+        playerHeight = ursaConstants.get("height").asFloat() * textureScale;
 
         ursa = new UrsaModel(drawToScreenCoordinates(playerX + ursaTexture.getRegionWidth() / 2f), drawToScreenCoordinates(playerY) + playerHeight / 2,
                 ursaConstants, playerWidth, playerHeight, textureScale);
@@ -1088,7 +1131,7 @@ private         FrameBuffer fb = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.gra
     /**
      * Renders the enemies and their corresponding patrol markers by parsing JSON
      */
-    public void renderEnemies() {
+    private void renderEnemies() {
         if (jsonData.get("layers").get(7) == null) {
             return;
         }
@@ -1128,7 +1171,7 @@ private         FrameBuffer fb = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.gra
             dynamicObjects.add(enemy);
             enemies[i] = enemy;
 
-            if(jsonData.get("layers").get(8) == null) {
+            if(jsonData.get("layers").get(8) == null && !is_stupid) {
                 System.out.println("Please put down some markers.");
                 return;
             }
@@ -1214,12 +1257,10 @@ private         FrameBuffer fb = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.gra
         JsonValue objectData = jsonData.get("layers").get(4).get("objects");
 
         String name;
-        name = "tree";
         for(int i = 0; i < objectData.size; i++) {
             int objectIndex = objectData.get(i).get("gid").asInt();
             int textureIndex;
 
-            System.out.println(firstHouseIndex);
             if(objectIndex - firstMediumObjectIndex == 0) {
                 textureIndex = 0;
                 name = "rock_1";
@@ -1269,7 +1310,6 @@ private         FrameBuffer fb = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.gra
             obj.setName("game object" + i);
             addObject(obj);
 
-            // Tree shadows
             makeShadow(objectConstants,obj);
 
             // ===================
@@ -1305,7 +1345,6 @@ private         FrameBuffer fb = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.gra
             addObject(tree);
             trees.add(tree);
 
-            // Tree shadows
             makeShadow(treeConstants,tree);
 
             // ===================
@@ -1381,6 +1420,11 @@ private         FrameBuffer fb = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.gra
         decorations.sort(decorationComparator);
     }
 
+    /**
+     * Gets vertices for the object corresponding to constants
+     * @param constants constants for game object
+     * @return vertices scaled according to textureScale
+     */
     private float[] getVertices(JsonValue constants){
             if(constants.get("vertices") == null) {
                 System.out.println("Undefined constants.");
@@ -1393,6 +1437,11 @@ private         FrameBuffer fb = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.gra
             return vertices;
     }
 
+    /**
+     * Initializes and adds a shadow into the game world.
+     * @param constants constants corresponding to the object
+     * @param obj object we are making the shadow for
+     */
     private void makeShadow(JsonValue constants, PolygonObstacle obj) {
         float[] shadowVertices;
         if(constants.get("shadowVertices") == null) {
@@ -1424,5 +1473,3 @@ private         FrameBuffer fb = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.gra
         addObject(shadow);
     }
 }
-
-

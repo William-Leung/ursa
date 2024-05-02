@@ -40,6 +40,8 @@ public class UrsaModel extends CapsuleObstacle {
     private final Vector2 forceCache = new Vector2();
 
     private float textureScale;
+    /** Boolean for when Ursa's model and shadow should draw. */
+    private boolean isDrawing;
 
 
     /**
@@ -66,12 +68,22 @@ public class UrsaModel extends CapsuleObstacle {
     public void setMovement(float xValue,float yValue) {
         xMovement = xValue;
         yMovement = yValue;
-        // Change facing if appropriate
-        if (xMovement < 0) {
-            isFacingRight = false;
-        } else if (xMovement > 0) {
-            isFacingRight = true;
-        }
+        System.out.println("setting");
+        isFacingRight = getXMovement() > 0;
+    }
+
+    /**
+     * Stops Ursa from drawing. Used when interacting with a cave.
+     */
+    public void stopDrawing() {
+        isDrawing = false;
+    }
+
+    /**
+     * Resumes Ursa drawing.
+     */
+    public void resumeDrawing() {
+        isDrawing = true;
     }
 
     public boolean isInShadow() {
@@ -122,6 +134,10 @@ public class UrsaModel extends CapsuleObstacle {
      */
     public String getSensorName() {
         return sensorName;
+    }
+
+    public void setIsFacingRight(boolean direction) {
+        isFacingRight = direction;
     }
 
     /**
@@ -225,6 +241,7 @@ public class UrsaModel extends CapsuleObstacle {
             forceCache.set(0, getyMovement()); // Set y-movement
             body.applyForce(forceCache, getPosition(), true);
         }
+
     }
 
     /**
@@ -233,6 +250,9 @@ public class UrsaModel extends CapsuleObstacle {
      */
     @Override
     public void preDraw(GameCanvas canvas) {
+        if(!isDrawing) {
+            return;
+        }
         Texture blobShadow = SceneModel.BLOB_SHADOW_TEXTURE;
         int xcenter = blobShadow.getWidth() / 2;
         int ycenter = blobShadow.getHeight() / 2;
@@ -247,6 +267,10 @@ public class UrsaModel extends CapsuleObstacle {
      * @param canvas Drawing context
      */
     public void draw(GameCanvas canvas) {
+        if(!isDrawing) {
+            return;
+        }
+        System.out.println(isFacingRight);
         float effect = isFacingRight ? 1.0f : -1.0f;
         canvas.draw(texture, Color.WHITE,origin.x,0,getX()*drawScale.x,(getY() - data.get("yOffset").asFloat())*drawScale.y,getAngle(),effect * textureScale,textureScale);
     }

@@ -91,6 +91,7 @@ public class ShadowController {
             for(ShadowModel shadow: shadows) {
                 shadow.setDirection(starting_direction);
             }
+            //time = time - fullDayLength;
             time = 0;
             isNight = false;
         // Transition from day to night
