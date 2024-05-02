@@ -20,6 +20,7 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.physics.objects.CustomGameObject;
+import edu.cornell.gdiac.physics.pathing.EnemyMarker;
 import edu.cornell.gdiac.physics.units.Enemy;
 import edu.cornell.gdiac.physics.objects.Cave;
 import edu.cornell.gdiac.physics.objects.Decoration;
@@ -476,7 +477,7 @@ public class SceneModel extends WorldController implements ContactListener {
         if (tiles.has("properties")){
             shadowStartingRotation = tiles.get("properties").get(0).get("value").asFloat();
         }
-        shadowController = new ShadowController(blackTexture, doShadowsMove, shadowStartingRotation);
+        shadowController = new ShadowController(blackTexture, doShadowsMove);
 
         findTileIndices();
         renderUrsa();
@@ -1184,7 +1185,7 @@ public class SceneModel extends WorldController implements ContactListener {
 
             // Parse the markers
             JsonValue markerObjectData = jsonData.get("layers").get(8).get("objects");
-            Vector2[] enemyPosList = new Vector2[markerObjectData.size];
+            EnemyMarker[] enemyPosList = new EnemyMarker[markerObjectData.size];
             for(int e = 0; e < enemyPosList.length; e++) {
                 String markerName = markerObjectData.get(e).get("name").asString();
                 if (markerName.equals(enemyName)) {
@@ -1193,7 +1194,8 @@ public class SceneModel extends WorldController implements ContactListener {
                     float markerX = markerObjectData.get(e).get("x").asFloat();
                     float markerY = maxY - markerObjectData.get(e).get("y").asFloat();
 
-                    Vector2 marker = new Vector2(drawToScreenCoordinates(markerX), drawToScreenCoordinates(markerY));
+                    EnemyMarker marker = new EnemyMarker(new Vector2(drawToScreenCoordinates(markerX), drawToScreenCoordinates(markerY)),
+                        markerObjectData.get(e).get("properties"));
                     enemyPosList[orderNum - 1] = marker;
                 }
             }
@@ -1481,5 +1483,6 @@ public class SceneModel extends WorldController implements ContactListener {
         shadowController.addShadow(shadow);
 
         addObject(shadow);
+        shadow.rotateDirection(shadowStartingRotation);
     }
 }

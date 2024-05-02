@@ -119,13 +119,13 @@ public class AIController {
     /** Whether the enemy is currently looking around randomly */
     private boolean isLooking = false;
     /** The list of patrol tiles this enemy will visit if wandering */
-    private ArrayDeque<Vector2> goalLocs;
+    private ArrayDeque<EnemyMarker> goalLocs;
     /** Current goal for the enemy */
-    private Vector2 currGoal;
+    private EnemyMarker currGoal;
 
     private int times_detected;
 
-    private Vector2 firstGoal;
+    private EnemyMarker firstGoal;
 
     private Board board;
 
@@ -136,7 +136,7 @@ public class AIController {
     /**
      * Creates an AIController for the ship with the given id.
      */
-    public AIController(Enemy enemy,  UrsaModel ursa, Board board, Vector2[] patrolLocs, boolean is_stupid, int starting_rotation) {
+    public AIController(Enemy enemy,  UrsaModel ursa, Board board, EnemyMarker[] patrolLocs, boolean is_stupid, int starting_rotation) {
         this.enemy = enemy;
         this.ursa = ursa;
         //this.prevLoc = new Vector2(enemy.getX(), enemy.getY());
@@ -149,7 +149,7 @@ public class AIController {
 
         // add goal locs to player's deque
         goalLocs = new ArrayDeque<>();
-        for(Vector2 v: patrolLocs) {
+        for(EnemyMarker v: patrolLocs) {
             if(v != null) {
                 goalLocs.addLast(v);
             }
@@ -192,10 +192,6 @@ public class AIController {
         times_detected = 0;
         enemy.setX(startLoc.x);
         enemy.setY(startLoc.y);
-    }
-
-    public ArrayDeque<Vector2> getPatrol() {
-        return goalLocs;
     }
 
     private void changeStateIfApplicable() {
@@ -431,14 +427,15 @@ public class AIController {
 //               }
 
                 if (currGoal != null) {
-                    if (enemy.getX() >= currGoal.x - GOAL_DIST && enemy.getX() <= currGoal.x + GOAL_DIST /*||
+                    Vector2 goalPos = currGoal.getPosition();
+                    if (enemy.getX() >= goalPos.x - GOAL_DIST && enemy.getX() <= goalPos.x + GOAL_DIST /*||
                        Math.abs(prevLoc.x - enemy.getX()) <= 0.5 && Math.abs(prevLoc.x - enemy.getY()) <= 0.5*/) {
                         // they reached the goal, so add curr goal to end and make next goal the first in deque
                         goalLocs.addLast(currGoal);
                         currGoal = goalLocs.pop();
                     } else { // move enemy in direction of goal
-                        action.x = currGoal.x - enemy.getX();
-                        action.y = currGoal.y - enemy.getY();
+                        action.x = goalPos.x - enemy.getX();
+                        action.y = goalPos.y - enemy.getY();
                         action = action.nor();
 
                         enemy.setVX(action.x * WANDER_SPEED);
@@ -530,153 +527,153 @@ public class AIController {
         }
     }
 
-    public void wanderMove() {
-        //System.out.println("begin wander move");
-        if (ticks % 40 != 0) return;
-
-
-        board.clearMarks();
-        Vector2 nxtGoal = goalLocs.peek();
-        Coordinate nextGoal = setNextGoal();
-
-//        System.out.println("   nextGoal: " + nextGoal.x + ", " + nextGoal.y);
-//        System.out.println("   currTile: " + board.getXTile(enemy.getX()) + ", " + board.getYTile(enemy.getY()));
-//        System.out.println("   playerLoc: " + ursa.getX() + ", " + ursa.getY());
-
-        if (board.getTile(board.getXTile(enemy.getX()), board.getYTile(enemy.getY())) ==
-                board.getTile(nextGoal.x, nextGoal.y)) {
-
-            if (times_detected >= MIN_PATROL_CHANGE && ticks - last_time_detected <= ADAPTIVE_AI_MEM
-                    && !locs_spotted.isEmpty()) {
-                locs_spotted.pop();
-            } else {
-                System.out.println("REACHED GOAL");
-                Vector2 temp = goalLocs.pop();
-                goalLocs.addLast(temp);
-                nxtGoal = goalLocs.peek();
-                //System.out.println("nxtGoal: " + nxtGoal.x + ", " + nxtGoal.y);
-                nextGoal = new Coordinate(board.getXTile(nxtGoal.x), board.getYTile(nxtGoal.y));
-                System.out.println("nextGoal: " + nextGoal.x + ", " + nextGoal.y);
-            }
-        }
-
-        if (times_detected >= MIN_PATROL_CHANGE && ticks - last_time_detected <= ADAPTIVE_AI_MEM
-                && !locs_spotted.isEmpty()) {
-            nxtGoal = locs_spotted.getLast();
-            nextGoal.x = board.getXTile(nxtGoal.x);
-            nextGoal.x = board.getXTile(nxtGoal.x);
-        }
-
-        board.setGoal(nextGoal.x, nextGoal.y, true);
-
-        // clear data structures
-        queue.clear();
-        backpack.clear();
-
-        Coordinate currTile = new Coordinate(board.getXTile(enemy.getX()), board.getYTile(enemy.getY()));
-
-        if (!board.getBlocked(currTile.x, currTile.y)) {
-            queue.add(currTile);
-            backpack.put(currTile, null);
-        } else {
-            //System.out.println("Not on safe tile");
-            moveToSafeTile(currTile);
-        }
-
-        boolean foundGoal = false; // determines whether we have found a goal tile yet
-        Coordinate closest_goal = null; // coordinate of first found goal tile
-
-        //System.out.println("about to start bfs while loop");
-        // loop for BFS
-        while (!foundGoal && !queue.isEmpty()) {
-            //System.out.println("bfs while loop iteration");
-            Coordinate nextTile = queue.poll(); // get first item in queue
-            // System.out.println(ship.getId() + " current tile is " + nextTile.x + " " + nextTile.y);
-
-            if (!board.getVisited(nextTile.x, nextTile.y)) {
-
-                board.setVisited(nextTile.x, nextTile.y, true);
-
-                for (Coordinate c : adjacents) {
-                    // break out of loop if we already found a goal tile
-                    if (foundGoal) break;
-
-                    if ((nextTile.x + c.x == nextGoal.x && nextTile.y + c.y == nextGoal.y)
-                            || !board.getBlocked(nextTile.x + c.x, nextTile.y + c.y) &&
-                            !board.getVisited(nextTile.x + c.x, nextTile.y + c.y)) {
-                        Coordinate thisCoord = new Coordinate(nextTile.x + c.x, nextTile.y + c.y);
-                        queue.add(thisCoord);
-                        backpack.put(thisCoord, nextTile);
-
-                        // check if this tile is a goal tile
-                        if (board.getGoal(nextTile.x + c.x, nextTile.y + c.y)) {
-                            closest_goal = thisCoord;
-                            foundGoal = true;
-                        }
-                    }
-                }
-            }
-            if (queue.size() >= MAX_QUEUE_SIZE) return;
-        }
-
-        if (!foundGoal) {
-            //System.out.println("CANNOT FIND GOAL");
-            return; // pick random direction
-        } else { // if we found a goal, backtrace to find the first step to get there
-            Coordinate this_tile = closest_goal;
-            Coordinate prev_tile = backpack.get(this_tile);
-
-            while (prev_tile != null && (prev_tile.x != currTile.x || prev_tile.y != currTile.y)) {
-                //System.out.println(prev_tile.x + ", " + prev_tile.y);
-                this_tile = prev_tile;
-                prev_tile = backpack.get(this_tile);
-            }
-
-            action.x = (this_tile.x * board.tileWidth()) + (board.tileWidth() / 2) - enemy.getX();
-            action.y = (this_tile.y * board.tileHeight()) + (board.tileHeight() / 2) - enemy.getY();
-            action.nor();
-            enemy.setVX(action.x * WANDER_SPEED);
-            enemy.setVY(action.y * WANDER_SPEED);
-            enemy.setLookDirection(action.x, action.y);
-        }
-
-//        if (board.getBlocked((int) currTile.x, (int) currTile.y)) {
-//            if (!board.getBlocked((int) currTile.x + 1, (int) currTile.y)) {
-//                board.setGoal(board.getXTile((int) currTile.x + 1),
-//                        board.getYTile((int) currTile.y), true);
-//            }
-//            if (!board.getBlocked((int) currTile.x, (int) currTile.y + 1)) {
-//                board.setGoal(board.getXTile((int) currTile.x),
-//                        board.getYTile((int) currTile.y + 1), true);
-//            }
-//            if (!board.getBlocked((int) currTile.x + 1, (int) currTile.y + 1)) {
-//                board.setGoal(board.getXTile((int) currTile.x + 1),
-//                        board.getYTile((int) currTile.y + 1), true);
-//            }
-//            if (!board.getBlocked((int) currTile.x - 1, (int) currTile.y)) {
-//                board.setGoal(board.getXTile((int) currTile.x - 1),
-//                        board.getYTile((int) currTile.y), true);
-//            }
-//            if (!board.getBlocked((int) currTile.x, (int) currTile.y - 1)) {
-//                board.setGoal(board.getXTile((int) currTile.x),
-//                        board.getYTile((int) currTile.y - 1), true);
-//            }
-//            if (!board.getBlocked((int) currTile.x - 1, (int) currTile.y - 1)) {
-//                board.setGoal(board.getXTile((int) currTile.x - 1),
-//                        board.getYTile((int) currTile.y - 1), true);
-//            }
-//            if (!board.getBlocked((int) currTile.x + 1, (int) currTile.y - 1)) {
-//                board.setGoal(board.getXTile((int) currTile.x + 1),
-//                        board.getYTile((int) currTile.y - 1), true);
-//            }
-//            if (!board.getBlocked((int) currTile.x - 1, (int) currTile.y + 1)) {
-//                board.setGoal(board.getXTile((int) currTile.x - 1),
-//                        board.getYTile((int) currTile.y + 1), true);
+//    public void wanderMove() {
+//        //System.out.println("begin wander move");
+//        if (ticks % 40 != 0) return;
+//
+//
+//        board.clearMarks();
+//        EnemyMarker nxtGoal = goalLocs.peek();
+//        Coordinate nextGoal = setNextGoal();
+//
+////        System.out.println("   nextGoal: " + nextGoal.x + ", " + nextGoal.y);
+////        System.out.println("   currTile: " + board.getXTile(enemy.getX()) + ", " + board.getYTile(enemy.getY()));
+////        System.out.println("   playerLoc: " + ursa.getX() + ", " + ursa.getY());
+//
+//        if (board.getTile(board.getXTile(enemy.getX()), board.getYTile(enemy.getY())) ==
+//                board.getTile(nextGoal.x, nextGoal.y)) {
+//
+//            if (times_detected >= MIN_PATROL_CHANGE && ticks - last_time_detected <= ADAPTIVE_AI_MEM
+//                    && !locs_spotted.isEmpty()) {
+//                locs_spotted.pop();
+//            } else {
+//                System.out.println("REACHED GOAL");
+//                EnemyMarker temp = goalLocs.pop();
+//                goalLocs.addLast(temp);
+//                nxtGoal = goalLocs.peek();
+//                //System.out.println("nxtGoal: " + nxtGoal.x + ", " + nxtGoal.y);
+//                nextGoal = new Coordinate(board.getXTile(nxtGoal.x), board.getYTile(nxtGoal.y));
+//                System.out.println("nextGoal: " + nextGoal.x + ", " + nextGoal.y);
 //            }
 //        }
-
-
-    }
+//
+//        if (times_detected >= MIN_PATROL_CHANGE && ticks - last_time_detected <= ADAPTIVE_AI_MEM
+//                && !locs_spotted.isEmpty()) {
+//            nxtGoal = locs_spotted.getLast();
+//            nextGoal.x = board.getXTile(nxtGoal.x);
+//            nextGoal.x = board.getXTile(nxtGoal.x);
+//        }
+//
+//        board.setGoal(nextGoal.x, nextGoal.y, true);
+//
+//        // clear data structures
+//        queue.clear();
+//        backpack.clear();
+//
+//        Coordinate currTile = new Coordinate(board.getXTile(enemy.getX()), board.getYTile(enemy.getY()));
+//
+//        if (!board.getBlocked(currTile.x, currTile.y)) {
+//            queue.add(currTile);
+//            backpack.put(currTile, null);
+//        } else {
+//            //System.out.println("Not on safe tile");
+//            moveToSafeTile(currTile);
+//        }
+//
+//        boolean foundGoal = false; // determines whether we have found a goal tile yet
+//        Coordinate closest_goal = null; // coordinate of first found goal tile
+//
+//        //System.out.println("about to start bfs while loop");
+//        // loop for BFS
+//        while (!foundGoal && !queue.isEmpty()) {
+//            //System.out.println("bfs while loop iteration");
+//            Coordinate nextTile = queue.poll(); // get first item in queue
+//            // System.out.println(ship.getId() + " current tile is " + nextTile.x + " " + nextTile.y);
+//
+//            if (!board.getVisited(nextTile.x, nextTile.y)) {
+//
+//                board.setVisited(nextTile.x, nextTile.y, true);
+//
+//                for (Coordinate c : adjacents) {
+//                    // break out of loop if we already found a goal tile
+//                    if (foundGoal) break;
+//
+//                    if ((nextTile.x + c.x == nextGoal.x && nextTile.y + c.y == nextGoal.y)
+//                            || !board.getBlocked(nextTile.x + c.x, nextTile.y + c.y) &&
+//                            !board.getVisited(nextTile.x + c.x, nextTile.y + c.y)) {
+//                        Coordinate thisCoord = new Coordinate(nextTile.x + c.x, nextTile.y + c.y);
+//                        queue.add(thisCoord);
+//                        backpack.put(thisCoord, nextTile);
+//
+//                        // check if this tile is a goal tile
+//                        if (board.getGoal(nextTile.x + c.x, nextTile.y + c.y)) {
+//                            closest_goal = thisCoord;
+//                            foundGoal = true;
+//                        }
+//                    }
+//                }
+//            }
+//            if (queue.size() >= MAX_QUEUE_SIZE) return;
+//        }
+//
+//        if (!foundGoal) {
+//            //System.out.println("CANNOT FIND GOAL");
+//            return; // pick random direction
+//        } else { // if we found a goal, backtrace to find the first step to get there
+//            Coordinate this_tile = closest_goal;
+//            Coordinate prev_tile = backpack.get(this_tile);
+//
+//            while (prev_tile != null && (prev_tile.x != currTile.x || prev_tile.y != currTile.y)) {
+//                //System.out.println(prev_tile.x + ", " + prev_tile.y);
+//                this_tile = prev_tile;
+//                prev_tile = backpack.get(this_tile);
+//            }
+//
+//            action.x = (this_tile.x * board.tileWidth()) + (board.tileWidth() / 2) - enemy.getX();
+//            action.y = (this_tile.y * board.tileHeight()) + (board.tileHeight() / 2) - enemy.getY();
+//            action.nor();
+//            enemy.setVX(action.x * WANDER_SPEED);
+//            enemy.setVY(action.y * WANDER_SPEED);
+//            enemy.setLookDirection(action.x, action.y);
+//        }
+//
+////        if (board.getBlocked((int) currTile.x, (int) currTile.y)) {
+////            if (!board.getBlocked((int) currTile.x + 1, (int) currTile.y)) {
+////                board.setGoal(board.getXTile((int) currTile.x + 1),
+////                        board.getYTile((int) currTile.y), true);
+////            }
+////            if (!board.getBlocked((int) currTile.x, (int) currTile.y + 1)) {
+////                board.setGoal(board.getXTile((int) currTile.x),
+////                        board.getYTile((int) currTile.y + 1), true);
+////            }
+////            if (!board.getBlocked((int) currTile.x + 1, (int) currTile.y + 1)) {
+////                board.setGoal(board.getXTile((int) currTile.x + 1),
+////                        board.getYTile((int) currTile.y + 1), true);
+////            }
+////            if (!board.getBlocked((int) currTile.x - 1, (int) currTile.y)) {
+////                board.setGoal(board.getXTile((int) currTile.x - 1),
+////                        board.getYTile((int) currTile.y), true);
+////            }
+////            if (!board.getBlocked((int) currTile.x, (int) currTile.y - 1)) {
+////                board.setGoal(board.getXTile((int) currTile.x),
+////                        board.getYTile((int) currTile.y - 1), true);
+////            }
+////            if (!board.getBlocked((int) currTile.x - 1, (int) currTile.y - 1)) {
+////                board.setGoal(board.getXTile((int) currTile.x - 1),
+////                        board.getYTile((int) currTile.y - 1), true);
+////            }
+////            if (!board.getBlocked((int) currTile.x + 1, (int) currTile.y - 1)) {
+////                board.setGoal(board.getXTile((int) currTile.x + 1),
+////                        board.getYTile((int) currTile.y - 1), true);
+////            }
+////            if (!board.getBlocked((int) currTile.x - 1, (int) currTile.y + 1)) {
+////                board.setGoal(board.getXTile((int) currTile.x - 1),
+////                        board.getYTile((int) currTile.y + 1), true);
+////            }
+////        }
+//
+//
+//    }
 
     public void moveToSafeTile(Coordinate currTile) {
         ArrayList<Vector2> safeTiles = new ArrayList<>();
@@ -811,8 +808,9 @@ public class AIController {
 //    }
 
     public Coordinate setNextGoal() {
-        Vector2 nxtGoal = goalLocs.peek();
-        Coordinate nextGoal = new Coordinate(board.getXTile(nxtGoal.x), board.getYTile(nxtGoal.y));
+        EnemyMarker nxtGoal = goalLocs.peek();
+        Vector2 pos = nxtGoal.getPosition();
+        Coordinate nextGoal = new Coordinate(board.getXTile(pos.x), board.getYTile(pos.y));
 
         while (board.getBlocked(nextGoal.x, nextGoal.y)) {
             if (!board.getBlocked(nextGoal.x - 1, nextGoal.y)) {

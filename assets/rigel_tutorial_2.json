@@ -1137,6 +1137,17 @@
                  "height":256,
                  "id":459,
                  "name":"",
+                 "properties":[
+                        {
+                         "name":"is_stupid",
+                         "type":"bool",
+                         "value":true
+                        }, 
+                        {
+                         "name":"starting_rotation",
+                         "type":"int",
+                         "value":180
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -1166,7 +1177,25 @@
          "draworder":"topdown",
          "id":8,
          "name":"markers",
-         "objects":[],
+         "objects":[
+                {
+                 "height":0,
+                 "id":568,
+                 "name":"",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"rotations",
+                         "type":"string",
+                         "value":"90,180"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1080,
+                 "y":1720
+                }],
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
@@ -1197,7 +1226,7 @@
          "y":0
         }],
  "nextlayerid":16,
- "nextobjectid":568,
+ "nextobjectid":569,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.10.2",
