@@ -122,6 +122,8 @@ public class AIController {
     private ArrayDeque<EnemyMarker> goalLocs;
     /** Current goal for the enemy */
     private EnemyMarker currGoal;
+    private float[] currRotations;
+    private int currRotationIndex = 0;
 
     private int times_detected;
 
@@ -230,6 +232,11 @@ public class AIController {
                 break;
 
             case WANDER:
+
+                if (currRotations != null) {
+                    state = FSMState.LOOKING;
+                    break;
+                }
 
                 if (ticks % 90 == 0 && Math.random() > 0.98) {
                     ticks_looking = 26;
@@ -431,6 +438,7 @@ public class AIController {
                     if (enemy.getX() >= goalPos.x - GOAL_DIST && enemy.getX() <= goalPos.x + GOAL_DIST /*||
                        Math.abs(prevLoc.x - enemy.getX()) <= 0.5 && Math.abs(prevLoc.x - enemy.getY()) <= 0.5*/) {
                         // they reached the goal, so add curr goal to end and make next goal the first in deque
+                        currRotations = currGoal.getRotations();
                         goalLocs.addLast(currGoal);
                         currGoal = goalLocs.pop();
                     } else { // move enemy in direction of goal
@@ -460,14 +468,27 @@ public class AIController {
                 enemy.setVX(0);
                 enemy.setVY(0);
 
-                if (ticks_looking > CONFUSE_TIME) {
+                if (currRotations != null) {
+                    float goalAngle = currRotations[currRotationIndex];
+                    if (enemy.getLookAngle() >= goalAngle && enemy.getLookAngle() <= goalAngle + ROTATE_SPEED) {
+                        currRotationIndex++;
+                        if (currRotationIndex < currRotations.length) {
+                            goalAngle = currRotations[currRotationIndex];
+                        } else {
+                            currRotationIndex = 0;
+                            currRotations = null;
+                            break;
+                        }
+                    }
+
+                    rotateEnemy((float) Math.random() * 4, goalAngle);
+                } else if (ticks_looking > CONFUSE_TIME) {
                     if (enemy.getAngle() >= goalAngle - ROTATE_SPEED && enemy.getAngle() <= goalAngle + ROTATE_SPEED) {
                         goalAngle = enemy.getAngle() - 30 + (float) (Math.random() * 60);
                     }
 
                     rotateEnemy((float) Math.random() * 4, goalAngle);
                 }
-
 
                 break;
 
@@ -744,9 +765,9 @@ public class AIController {
 
 
     public void rotateEnemy(float rotSpeed, float goalAngle) {
-        if (enemy.getAngle() < goalAngle) {
+        if (enemy.getLookAngle() < goalAngle) {
             enemy.rotateLookDirection(rotSpeed);
-        } else if (enemy.getAngle() > goalAngle) {
+        } else if (enemy.getLookAngle() > goalAngle) {
             enemy.rotateLookDirection(-rotSpeed);
         }
     }

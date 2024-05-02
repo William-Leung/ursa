@@ -352,6 +352,10 @@ public class Enemy extends BoxObstacle {
 		lookDirection.rotateDeg(degrees);
 	}
 
+	public float getLookAngle() {
+		return lookDirection.angleDeg();
+	}
+
 	/**
 	 * Sets whether or not the enemy is alerted by the player
 	 * @param alerted True if the enemy should be alerted, false otherwise.
