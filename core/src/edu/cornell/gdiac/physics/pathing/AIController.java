@@ -129,6 +129,7 @@ public class AIController {
     private int maxRotationDelay = 60;
     private int rotationDelay = 0;
     private float rotationSpeed = 0;
+    private int moveDelay = 0;
 
     private int times_detected;
 
@@ -391,7 +392,9 @@ public class AIController {
                 break;
             case WANDER:
 
-                if (is_stupid) {
+                if (is_stupid || --moveDelay > 0) {
+                    enemy.setVX(0);
+                    enemy.setVY(0);
                     break;
                 }
 
@@ -446,6 +449,7 @@ public class AIController {
                         // they reached the goal, so add curr goal to end and make next goal the first in deque
                         currRotations = currGoal.getRotations();
                         maxRotationDelay = rotationDelay = currGoal.getRotationDelay();
+                        moveDelay = currGoal.getMoveDelay();
                         rotationSpeed = currGoal.getRotationSpeed();
                         goalLocs.addLast(currGoal);
                         currGoal = goalLocs.pop();
@@ -454,8 +458,8 @@ public class AIController {
                         action.y = goalPos.y - enemy.getY();
                         action = action.nor();
 
-                        enemy.setVX(action.x * WANDER_SPEED);
-                        enemy.setVY(action.y * WANDER_SPEED);
+                        enemy.setVX(action.x * enemy.getSpeed());
+                        enemy.setVY(action.y * enemy.getSpeed());
                         enemy.setLookDirection(action.x, action.y);
 
                     }

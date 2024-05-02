@@ -1156,14 +1156,24 @@ public class SceneModel extends WorldController implements ContactListener {
 
             boolean is_stupid = false;
             int starting_rotation = 0;
+            float speed = 8f;
             try {
                 JsonValue propertyData = enemyObjectData.get(i).get("properties");
                 for(int j = 0; j < propertyData.size; j++) {
-                    String name = propertyData.get(j).get("name").asString();
-                    if(name.equals("is_stupid")) {
-                        is_stupid = propertyData.get(j).get("value").asBoolean();
-                    } else if(name.equals("starting_rotation")) {
-                        starting_rotation = propertyData.get(j).get("value").asInt();
+                    JsonValue property = propertyData.get(j);
+                    String name = property.get("name").asString();
+                    switch (property.get("name").asString()) {
+                        case "is_stupid":
+                            is_stupid = property.get("value").asBoolean();
+                            break;
+
+                        case "starting_rotation":
+                            starting_rotation = property.get("value").asInt();
+                            break;
+
+                        case "speed":
+                            speed = property.get("speed").asFloat();
+                            break;
                     }
                 }
             } catch (NullPointerException ignored) { }
@@ -1173,6 +1183,7 @@ public class SceneModel extends WorldController implements ContactListener {
             enemy.setLookDirection(1, 0);
             enemy.setTexture(salmonUprightWalkFilm);
             enemy.setName("enemy" + i);
+            enemy.setSpeed(speed);
 
             addObject(enemy);
             dynamicObjects.add(enemy);

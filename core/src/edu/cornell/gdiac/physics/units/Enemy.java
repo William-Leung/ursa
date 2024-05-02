@@ -181,6 +181,8 @@ public class Enemy extends BoxObstacle {
 
 	private float detectionRange = ENEMY_DETECTION_RANGE_SIGHT;
 
+	private float speed = 8f;
+
 	public Enemy(float xStart,float yStart,float maxX, float minX,JsonValue data, float width, float height, float textureScale) {
 		// The shrink factors fit the image to a tigher hitbox
 		super(xStart,
@@ -241,6 +243,14 @@ public class Enemy extends BoxObstacle {
 
 	public boolean isStunned() {
 		return stunDuration > 0;
+	}
+
+	public void setSpeed(float speed) {
+		this.speed = speed;
+	}
+
+	public float getSpeed() {
+		return speed;
 	}
 
 	public void setAdaptive(boolean v) { adaptive = v; }
