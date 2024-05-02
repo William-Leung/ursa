@@ -35,7 +35,7 @@ public class ShadowController {
      */
     private float timeRatio;
     /** The starting direction of the shadows */
-    private final Vector2 starting_direction = new Vector2(1, 0);
+    private final Vector2 starting_direction;
     /** List of references to all shadows. */
     private PooledList<ShadowModel> shadows = new PooledList<>();
     private boolean doShadowsMove;
@@ -48,17 +48,18 @@ public class ShadowController {
      * Empty Constructor
      */
     public ShadowController() {
-        this(null, false);
+        this(null, false, 0);
     }
 
     /**
      * Creates a new ShadowController, starting at time = 0
      */
-    public ShadowController(TextureRegion region, boolean doShadowsMove) {
+    public ShadowController(TextureRegion region, boolean doShadowsMove, float startDir) {
         time = 0;
         isNight = false;
         shadowTexture = region;
         this.doShadowsMove = doShadowsMove;
+        this.starting_direction = degreesToVector(startDir - 90);
         if(!doShadowsMove) {
             time = 300;
         }
@@ -174,4 +175,13 @@ public class ShadowController {
         beginningTimeRatio = timeRatio;
         endTimeRatio = timeRatio + amount;
     }
+
+    public Vector2 degreesToVector(float degrees) {
+        float radians = (float) Math.toRadians(degrees);
+        float x = (float) Math.cos(radians);
+        float y = (float) Math.sin(radians);
+
+        return new Vector2(x, y);
+    }
+
 }

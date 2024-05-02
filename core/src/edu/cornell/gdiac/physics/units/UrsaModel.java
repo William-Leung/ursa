@@ -68,7 +68,6 @@ public class UrsaModel extends CapsuleObstacle {
     public void setMovement(float xValue,float yValue) {
         xMovement = xValue;
         yMovement = yValue;
-        System.out.println("setting");
         isFacingRight = getXMovement() > 0;
     }
 
@@ -270,7 +269,6 @@ public class UrsaModel extends CapsuleObstacle {
         if(!isDrawing) {
             return;
         }
-        System.out.println(isFacingRight);
         float effect = isFacingRight ? 1.0f : -1.0f;
         canvas.draw(texture, Color.WHITE,origin.x,0,getX()*drawScale.x,(getY() - data.get("yOffset").asFloat())*drawScale.y,getAngle(),effect * textureScale,textureScale);
     }

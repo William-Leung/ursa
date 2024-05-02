@@ -476,7 +476,7 @@ public class SceneModel extends WorldController implements ContactListener {
         if (tiles.has("properties")){
             shadowStartingRotation = tiles.get("properties").get(0).get("value").asFloat();
         }
-        shadowController = new ShadowController(blackTexture, doShadowsMove);
+        shadowController = new ShadowController(blackTexture, doShadowsMove, shadowStartingRotation);
 
         findTileIndices();
         renderUrsa();
@@ -1401,8 +1401,10 @@ public class SceneModel extends WorldController implements ContactListener {
     private void renderDecorations() {
         if(jsonData.get("layers").get(1) == null) { return; }
         JsonValue decorationData = jsonData.get("layers").get(1).get("objects");
+        System.out.println(decorationData.size);
 
         for(int i = 0; i < decorationData.size; i++) {
+            System.out.println("Decoration Number: " + i);
             float x = decorationData.get(i).get("x").asFloat();
             float y = maxY - decorationData.get(i).get("y").asFloat();
             int decorationIndex = decorationData.get(i).get("gid").asInt();
@@ -1413,11 +1415,12 @@ public class SceneModel extends WorldController implements ContactListener {
                 textureIndex = decorationIndex - firstLargeDecorationIndex + 12;
                 Decoration decoration = new Decoration(decorationTextures[textureIndex], scale, drawToScreenCoordinates(x),drawToScreenCoordinates(y), decorationIndex + 12, textureScale);
                 groundDecorations.add(decoration);
-                return;
+                continue;
             } else {
                 System.out.println("Unidentified decoration.");
                 continue;
             }
+            System.out.println("Creating decoration with index" + textureIndex);
             Decoration decoration = new Decoration(decorationTextures[textureIndex], scale, drawToScreenCoordinates(x),drawToScreenCoordinates(y), decorationIndex, textureScale);
 
             decorations.add(decoration);
@@ -1478,6 +1481,5 @@ public class SceneModel extends WorldController implements ContactListener {
         shadowController.addShadow(shadow);
 
         addObject(shadow);
-        shadow.rotateDirection(shadowStartingRotation);
     }
 }
