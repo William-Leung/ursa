@@ -161,9 +161,9 @@ public class Enemy extends BoxObstacle {
 	/**
 	 * The default range that the enemy can hear noise/footsteps around them
 	 */
-	private static final float ENEMY_DETECTION_RANGE_NOISE = 6f;
+	private static final float ENEMY_DETECTION_RANGE_NOISE = 4f;
 
-	private static final float ENEMY_DETECTION_RANGE_SIGHT = 14f;
+	private static final float ENEMY_DETECTION_RANGE_SIGHT = 10f;
 
 	private static final float ENEMY_DETECTION_RANGE_SHADOW = 24f;
 
