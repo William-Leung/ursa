@@ -182,6 +182,8 @@ public class SceneModel extends WorldController implements ContactListener {
     /** Height of the player hitbox. */
     private float playerHeight;
 
+    private float shadowStartingRotation;
+
     /* =========== Collections of References =========== */
     /** Reference to the character avatar */
     private UrsaModel ursa;
@@ -282,8 +284,8 @@ public class SceneModel extends WorldController implements ContactListener {
         JsonReader json = new JsonReader();
         jsonData = json.parse(Gdx.files.internal(levelJson));
 
-        numTilesY = jsonData.get("layers").get(0).get(1).asFloat();
-        numTilesX = jsonData.get("layers").get(0).get(7).asFloat();
+        numTilesY = jsonData.get("layers").get(0).get("height").asFloat();
+        numTilesX = jsonData.get("layers").get(0).get("width").asFloat();
 
         float tileSideLength = 256;
         maxY = numTilesY * tileSideLength;
@@ -470,6 +472,10 @@ public class SceneModel extends WorldController implements ContactListener {
     private void populateLevel() {
         // False for static shadows, true for dynamic
         boolean doShadowsMove = false;
+        JsonValue tiles = jsonData.get("layers").get(0);
+        if (tiles.has("properties")){
+            shadowStartingRotation = tiles.get("properties").get(0).get("value").asFloat();
+        }
         shadowController = new ShadowController(blackTexture, doShadowsMove);
 
         findTileIndices();
@@ -1086,7 +1092,7 @@ public class SceneModel extends WorldController implements ContactListener {
         // The array needs to be parsed from top to bottom
         for (int i = (int) numTilesY - 1; i >= 0 ; i--) {
             for(int j = 0; j < numTilesX; j++){
-                int tileIndex = jsonData.get("layers").get(0).get(0).get(counter++).asInt();
+                int tileIndex = jsonData.get("layers").get(0).get("data").get(counter++).asInt();
                 tiles[j][i] = tileIndex;
                 if(tileIndex == 0 || tileIndex == firstTileIndex) {
                     continue;
@@ -1470,6 +1476,8 @@ public class SceneModel extends WorldController implements ContactListener {
         ShadowModel shadow = new ShadowModel(shadowVertices, obj.getX(), obj.getY(), xOffset, yOffset, moving);
         shadow.setDrawScale(scale);
         shadowController.addShadow(shadow);
+
         addObject(shadow);
+        shadow.rotateDirection(shadowStartingRotation);
     }
 }

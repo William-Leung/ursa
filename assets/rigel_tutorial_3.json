@@ -18,6 +18,12 @@
          "id":1,
          "name":"Tile Layer 1",
          "opacity":1,
+         "properties":[
+                {
+                 "name":"starting_rotation",
+                 "type":"int",
+                 "value":270
+                }],
          "type":"tilelayer",
          "visible":true,
          "width":13,
@@ -271,7 +277,7 @@
                  "type":"1",
                  "visible":true,
                  "width":0,
-                 "x":1255.51774172273,
+                 "x":1259.3255220431,
                  "y":759.456536077035
                 }, 
                 {
