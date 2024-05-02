@@ -7,6 +7,8 @@ public class EnemyMarker {
 
 	private final Vector2 pos;
 	private float[] rotations = null;
+	private float rotationSpeed = 5;
+	private int rotationDelay = 60;
 
 	public EnemyMarker(Vector2 p, JsonValue properties) {
 		pos = p;
@@ -25,6 +27,14 @@ public class EnemyMarker {
 							rotations[j] = Float.parseFloat(split[j]);
 						}
 						break;
+
+					case "rotation_speed":
+						rotationSpeed = property.get("value").asFloat();
+						break;
+
+					case "rotation_delay":
+						rotationDelay = property.get("value").asInt();
+						break;
 				}
 			}
 		}
@@ -36,6 +46,14 @@ public class EnemyMarker {
 
 	public float[] getRotations() {
 		return rotations;
+	}
+
+	public float getRotationSpeed() {
+		return rotationSpeed;
+	}
+
+	public int getRotationDelay() {
+		return rotationDelay;
 	}
 
 }

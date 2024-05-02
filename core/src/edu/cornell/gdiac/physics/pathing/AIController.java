@@ -51,8 +51,10 @@ public class AIController {
 
     /** Degrees enemy can rotate per tick */
     private static final int ROTATE_SPEED = 12;
+
+    private static final int ROTATE_LENIENCY = 5;
     /** Distance from goal enemy needs to get to */
-    private static final float GOAL_DIST = 2f;
+    private static final float GOAL_DIST = 1f;
     /** Distance from enemy that if player is within, they lose. */
     private static final float COLLISION_ERROR = 1.5f;
     /** Distance that enemy can detect a player regardless of where they are facing */
@@ -124,6 +126,9 @@ public class AIController {
     private EnemyMarker currGoal;
     private float[] currRotations;
     private int currRotationIndex = 0;
+    private int maxRotationDelay = 60;
+    private int rotationDelay = 0;
+    private float rotationSpeed = 0;
 
     private int times_detected;
 
@@ -133,15 +138,13 @@ public class AIController {
 
     private Vector2 startLoc;
     private boolean is_stupid;
-    private int starting_rotation;
 
     /**
      * Creates an AIController for the ship with the given id.
      */
-    public AIController(Enemy enemy,  UrsaModel ursa, Board board, EnemyMarker[] patrolLocs, boolean is_stupid, int starting_rotation) {
+    public AIController(Enemy enemy, UrsaModel ursa, Board board, EnemyMarker[] patrolLocs, boolean is_stupid, int starting_rotation) {
         this.enemy = enemy;
         this.ursa = ursa;
-        //this.prevLoc = new Vector2(enemy.getX(), enemy.getY());
         this.board = board;
 
         state = FSMState.SPAWN;
@@ -151,8 +154,8 @@ public class AIController {
 
         // add goal locs to player's deque
         goalLocs = new ArrayDeque<>();
-        for(EnemyMarker v: patrolLocs) {
-            if(v != null) {
+        for(EnemyMarker v : patrolLocs) {
+            if (v != null) {
                 goalLocs.addLast(v);
             }
         }
@@ -175,7 +178,6 @@ public class AIController {
                 new Coordinate(-1,1),
                 new Coordinate(1,-1),
         };
-        this.starting_rotation = starting_rotation;
         this.is_stupid = is_stupid;
         enemy.rotateLookDirection(starting_rotation);
     }
@@ -224,7 +226,7 @@ public class AIController {
                         last_time_detected = ticks;
                         ticks_confused = 1;
                     } else {
-                        state = FSMState.LOOKING;
+                        state = FSMState.WANDER;
                         ticks_looking = 26;
                     }
                 }
@@ -238,14 +240,15 @@ public class AIController {
                     break;
                 }
 
-                if (ticks % 90 == 0 && Math.random() > 0.98) {
-                    ticks_looking = 26;
-                    state = FSMState.LOOKING;
-                } else if (times_detected >= MIN_PATROL_CHANGE &&
-                        ticks % 50 == 0 && Math.random() > 0.93) {
-                    ticks_looking = 0;
-                    state = FSMState.LOOKING;
-                } else if (ticks_detected >= DETECTION_DELAY) {
+//                if (ticks % 90 == 0 && Math.random() > 0.98) {
+//                    ticks_looking = 26;
+//                    state = FSMState.LOOKING;
+//                } else if (times_detected >= MIN_PATROL_CHANGE &&
+//                               ticks % 50 == 0 && Math.random() > 0.93) {
+//                    ticks_looking = 0;
+//                    state = FSMState.LOOKING;
+//                } else
+                if (ticks_detected >= DETECTION_DELAY) {
                     state = FSMState.CONFUSED;
                     ticks_confused = 1;
                 } else {
@@ -269,11 +272,14 @@ public class AIController {
                 } else if (enemy.isAlerted() && ticks_spotted >= DETECTION_DELAY) {
                     state = FSMState.CONFUSED;
                     ticks_confused = 1;
-                } else if (isDetected() || ticks - last_time_detected <= CONFUSE_TIME) {
-                    state = FSMState.LOOKING;
-                } else if (ticks_looking >= MAX_LOOKING || Math.random() * ticks_looking > MAX_LOOKING / 3) {
+                } else if (currRotations == null) {
                     state = FSMState.WANDER;
                 }
+//                    if (isDetected() || ticks - last_time_detected <= CONFUSE_TIME) {
+//                    state = FSMState.LOOKING;
+//                } else if (ticks_looking >= MAX_LOOKING || Math.random() * ticks_looking > MAX_LOOKING / 3) {
+//                    state = FSMState.WANDER;
+//                }
 
                 break;
 
@@ -439,6 +445,8 @@ public class AIController {
                        Math.abs(prevLoc.x - enemy.getX()) <= 0.5 && Math.abs(prevLoc.x - enemy.getY()) <= 0.5*/) {
                         // they reached the goal, so add curr goal to end and make next goal the first in deque
                         currRotations = currGoal.getRotations();
+                        maxRotationDelay = rotationDelay = currGoal.getRotationDelay();
+                        rotationSpeed = currGoal.getRotationSpeed();
                         goalLocs.addLast(currGoal);
                         currGoal = goalLocs.pop();
                     } else { // move enemy in direction of goal
@@ -461,17 +469,18 @@ public class AIController {
 
             case LOOKING:
 
-                if (is_stupid) {
-                    break;
-                }
-
                 enemy.setVX(0);
                 enemy.setVY(0);
 
+                if (is_stupid || --rotationDelay >= 0) {
+                    break;
+                }
+
                 if (currRotations != null) {
                     float goalAngle = currRotations[currRotationIndex];
-                    if (enemy.getLookAngle() >= goalAngle && enemy.getLookAngle() <= goalAngle + ROTATE_SPEED) {
+                    if (enemy.getLookAngle() >= goalAngle - ROTATE_LENIENCY && enemy.getLookAngle() <= goalAngle + ROTATE_LENIENCY) {
                         currRotationIndex++;
+                        rotationDelay = maxRotationDelay;
                         if (currRotationIndex < currRotations.length) {
                             goalAngle = currRotations[currRotationIndex];
                         } else {
@@ -481,9 +490,9 @@ public class AIController {
                         }
                     }
 
-                    rotateEnemy((float) Math.random() * 4, goalAngle);
+                    rotateEnemy(rotationSpeed, goalAngle);
                 } else if (ticks_looking > CONFUSE_TIME) {
-                    if (enemy.getAngle() >= goalAngle - ROTATE_SPEED && enemy.getAngle() <= goalAngle + ROTATE_SPEED) {
+                    if (enemy.getAngle() >= goalAngle - ROTATE_LENIENCY && enemy.getAngle() <= goalAngle + ROTATE_LENIENCY) {
                         goalAngle = enemy.getAngle() - 30 + (float) (Math.random() * 60);
                     }
 

@@ -18,6 +18,12 @@
          "id":1,
          "name":"Tile Layer 1",
          "opacity":1,
+         "properties":[
+                {
+                 "name":"starting_rotation",
+                 "type":"int",
+                 "value":-50
+                }],
          "type":"tilelayer",
          "visible":true,
          "width":13,
@@ -1013,8 +1019,8 @@
                  "type":"",
                  "visible":true,
                  "width":256,
-                 "x":1922.09365519061,
-                 "y":1248.12241129139
+                 "x":2028.15426125122,
+                 "y":1305.69816886715
                 }, 
                 {
                  "gid":35,
@@ -1049,20 +1055,8 @@
                  "type":"",
                  "visible":true,
                  "width":256,
-                 "x":486.197695194925,
-                 "y":1462.42107661498
-                }, 
-                {
-                 "gid":35,
-                 "height":512,
-                 "id":559,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":256,
-                 "x":1072,
-                 "y":1250.06060606061
+                 "x":450.197695194925,
+                 "y":1245.5725917665
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -1136,13 +1130,8 @@
                  "gid":14,
                  "height":256,
                  "id":459,
-                 "name":"",
+                 "name":"1",
                  "properties":[
-                        {
-                         "name":"is_stupid",
-                         "type":"bool",
-                         "value":true
-                        }, 
                         {
                          "name":"starting_rotation",
                          "type":"int",
@@ -1152,20 +1141,20 @@
                  "type":"",
                  "visible":true,
                  "width":256,
-                 "x":947.254883620535,
-                 "y":1750.45014450001
+                 "x":881.254883620535,
+                 "y":1792.45014450001
                 }, 
                 {
                  "gid":14,
                  "height":256,
                  "id":470,
-                 "name":"",
+                 "name":"2",
                  "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":256,
-                 "x":1996.72233214616,
-                 "y":641.620894341116
+                 "x":1923.99505941889,
+                 "y":617.378470098692
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -1181,20 +1170,58 @@
                 {
                  "height":0,
                  "id":568,
-                 "name":"",
+                 "name":"1",
                  "point":true,
                  "properties":[
                         {
+                         "name":"rotation_delay",
+                         "type":"int",
+                         "value":180
+                        }, 
+                        {
+                         "name":"rotation_speed",
+                         "type":"float",
+                         "value":1.5
+                        }, 
+                        {
                          "name":"rotations",
                          "type":"string",
-                         "value":"90,180"
+                         "value":"70,200"
                         }],
                  "rotation":0,
-                 "type":"",
+                 "type":"1",
                  "visible":true,
                  "width":0,
-                 "x":1080,
-                 "y":1720
+                 "x":1010,
+                 "y":1784
+                }, 
+                {
+                 "height":0,
+                 "id":570,
+                 "name":"2",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"rotation_delay",
+                         "type":"int",
+                         "value":150
+                        }, 
+                        {
+                         "name":"rotation_speed",
+                         "type":"float",
+                         "value":4
+                        }, 
+                        {
+                         "name":"rotations",
+                         "type":"string",
+                         "value":"310,0"
+                        }],
+                 "rotation":0,
+                 "type":"1",
+                 "visible":true,
+                 "width":0,
+                 "x":2054.54545454545,
+                 "y":606.060606060606
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -1226,7 +1253,7 @@
          "y":0
         }],
  "nextlayerid":16,
- "nextobjectid":569,
+ "nextobjectid":571,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.10.2",
