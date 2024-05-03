@@ -22,7 +22,7 @@
                 {
                  "name":"starting_rotation",
                  "type":"int",
-                 "value":-50
+                 "value": 40
                 }],
          "type":"tilelayer",
          "visible":true,

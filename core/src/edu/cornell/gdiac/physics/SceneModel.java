@@ -1538,6 +1538,6 @@ public class SceneModel extends WorldController implements ContactListener {
         shadowController.addShadow(shadow);
 
         addObject(shadow);
-        shadow.rotateDirection(shadowStartingRotation);
+        shadow.rotateDirection(shadowStartingRotation - 90);
     }
 }
