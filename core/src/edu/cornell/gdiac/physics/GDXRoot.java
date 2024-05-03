@@ -81,7 +81,7 @@ public class GDXRoot extends Game implements ScreenListener {
 	public void create() {
 		testing();
 		prefs = Gdx.app.getPreferences("Completed Data");
-		levelsCompleted = 10;
+		levelsCompleted = 20;
 		System.out.println("levels completed " + levelsCompleted);
 		canvas  = new GameCanvas();
 		loading = new LoadingMode("assets.json",canvas,1);

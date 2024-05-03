@@ -50,6 +50,11 @@
   <object id="395" gid="35" x="2762.86" y="1372.5" width="256" height="512"/>
  </objectgroup>
  <objectgroup id="4" name="objects">
+  <object id="396" gid="36" x="3008.4" y="1919.17" width="256" height="512"/>
+  <object id="397" gid="39" x="1513.72" y="1187.19" width="512" height="512"/>
+  <object id="398" gid="39" x="1041.18" y="1177.92" width="512" height="512"/>
+  <object id="399" gid="39" x="638.128" y="1187.19" width="512" height="512"/>
+  <object id="400" gid="39" x="258.239" y="1182.56" width="512" height="512"/>
   <object id="413" gid="43" x="1260.98" y="670.036" width="128" height="256"/>
   <object id="414" gid="44" x="1470.31" y="582.872" width="256" height="128"/>
  </objectgroup>

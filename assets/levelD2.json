@@ -243,6 +243,66 @@
          "name":"objects",
          "objects":[
                 {
+                 "gid":36,
+                 "height":512,
+                 "id":396,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":256,
+                 "x":3008.4,
+                 "y":1919.17
+                }, 
+                {
+                 "gid":39,
+                 "height":512,
+                 "id":397,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":512,
+                 "x":1513.72,
+                 "y":1187.19
+                }, 
+                {
+                 "gid":39,
+                 "height":512,
+                 "id":398,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":512,
+                 "x":1041.18,
+                 "y":1177.92
+                }, 
+                {
+                 "gid":39,
+                 "height":512,
+                 "id":399,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":512,
+                 "x":638.128,
+                 "y":1187.19
+                }, 
+                {
+                 "gid":39,
+                 "height":512,
+                 "id":400,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":512,
+                 "x":258.239,
+                 "y":1182.56
+                }, 
+                {
                  "gid":43,
                  "height":256,
                  "id":413,
