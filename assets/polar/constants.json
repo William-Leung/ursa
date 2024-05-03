@@ -96,7 +96,7 @@
     "width": 8,
     "height": 4,
     "yOffset": 0.8,
-    "force": 250.0,
+    "force": 200.0,
     "damping": 70.0,
     "density": 1.0,
     "friction": 5,

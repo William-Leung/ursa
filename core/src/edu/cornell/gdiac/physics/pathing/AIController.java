@@ -140,6 +140,7 @@ public class AIController {
     private Vector2 startLoc;
     private boolean is_stupid;
     private Vector2 directionCache = new Vector2();
+    private boolean didEnemyMove = false;
 
     /**
      * Creates an AIController for the ship with the given id.
@@ -459,7 +460,10 @@ public class AIController {
                         goalLocs.addLast(currGoal);
                         currGoal = goalLocs.pop();
 
-                        enemy.setLookDirection(action.x, action.y); // We force the look direction just in case the rotation didn't finish.
+                        if (didEnemyMove) {
+                            enemy.setLookDirection(action.x, action.y); // We force the look direction just in case the rotation didn't finish.
+                            didEnemyMove = false;
+                        }
                     } else { // move enemy in direction of goal
                         enemy.setVX(action.x * enemy.getSpeed());
                         enemy.setVY(action.y * enemy.getSpeed());
@@ -471,6 +475,7 @@ public class AIController {
                         } else {
                             enemy.rotateLookDirection(Math.min(WANDER_ROTATE, angleDiff));
                         }
+                        didEnemyMove = true;
                     }
                 }
 
