@@ -1265,7 +1265,7 @@
                         {
                          "name":"starting_rotation",
                          "type":"int",
-                         "value":100
+                         "value":180
                         }],
                  "rotation":0,
                  "type":"",
@@ -1283,14 +1283,14 @@
                         {
                          "name":"speed",
                          "type":"float",
-                         "value":3.5
+                         "value":3.25
                         }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":256,
-                 "x":2160.12121212121,
-                 "y":2359.87878787879
+                 "x":2176.12121212121,
+                 "y":2311.87878787879
                 }, 
                 {
                  "gid":14,
@@ -1301,7 +1301,7 @@
                         {
                          "name":"starting_rotation",
                          "type":"int",
-                         "value":160
+                         "value":275
                         }],
                  "rotation":0,
                  "type":"",
@@ -1330,7 +1330,7 @@
                         {
                          "name":"rotation_delay",
                          "type":"int",
-                         "value":180
+                         "value":190
                         }, 
                         {
                          "name":"rotation_speed",
@@ -1340,7 +1340,7 @@
                         {
                          "name":"rotations",
                          "type":"string",
-                         "value":"180,100"
+                         "value":"100,180"
                         }],
                  "rotation":0,
                  "type":"1",
@@ -1376,8 +1376,8 @@
                  "type":"2",
                  "visible":true,
                  "width":0,
-                 "x":2310.78787878788,
-                 "y":2266.66666666667
+                 "x":2338.78787878788,
+                 "y":2239.66666666667
                 }, 
                 {
                  "height":0,
@@ -1388,12 +1388,12 @@
                         {
                          "name":"rotation_delay",
                          "type":"int",
-                         "value":150
+                         "value":180
                         }, 
                         {
                          "name":"rotation_speed",
                          "type":"float",
-                         "value":1.5
+                         "value":1
                         }, 
                         {
                          "name":"rotations",
