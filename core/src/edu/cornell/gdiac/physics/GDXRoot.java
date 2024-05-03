@@ -93,7 +93,7 @@ public class GDXRoot extends Game implements ScreenListener {
 		controllers = new WorldController[25];
 		controllers[0] = new SceneModel("rigel_tutorial_1.json");
 		controllers[1] = new SceneModel("rigel_tutorial_2.json");
-		controllers[2] = new SceneModel("rigel_tutorial_3.json");
+		controllers[2] = new SceneModel("rigel_level_4.json");
 		for(int i = 0; i < prefs.getFloat("completed");i++){
 			controllers[i].setWasCompleted(true);
 		}

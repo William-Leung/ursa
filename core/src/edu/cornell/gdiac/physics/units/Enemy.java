@@ -487,11 +487,9 @@ public class Enemy extends BoxObstacle {
 	}
 
 	public void draw(GameCanvas canvas) {
-		Color color = alerted ? Color.RED : Color.GREEN;
+		drawSightCone(canvas, detectionRange, lookDirection, 8);
 		canvas.draw(texture, Color.WHITE,origin.x,0,getX()*drawScale.x,(getY() - getHeight() / 2) * drawScale.y,getAngle(),
 				(lookDirection.x > 0 ? 1 : -1) * textureScale,textureScale);
-
-		drawSightCone(canvas, detectionRange, lookDirection, 8);
 
 		screenWidth = canvas.getWidth();
 	}

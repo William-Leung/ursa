@@ -1162,7 +1162,7 @@ public class SceneModel extends WorldController implements ContactListener {
                 for(int j = 0; j < propertyData.size; j++) {
                     JsonValue property = propertyData.get(j);
                     String name = property.get("name").asString();
-                    switch (property.get("name").asString()) {
+                    switch (name) {
                         case "is_stupid":
                             is_stupid = property.get("value").asBoolean();
                             break;
@@ -1172,7 +1172,7 @@ public class SceneModel extends WorldController implements ContactListener {
                             break;
 
                         case "speed":
-                            speed = property.get("speed").asFloat();
+                            speed = property.get("value").asFloat();
                             break;
                     }
                 }

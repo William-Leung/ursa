@@ -92,7 +92,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         buttons[0] = new TextureRegion(directory.getEntry("levelSelect:Level1", Texture.class));
         buttons[1] = new TextureRegion(directory.getEntry("levelSelect:Level2", Texture.class));
         buttons[2] = new TextureRegion(directory.getEntry("levelSelect:Level3", Texture.class));
-        buttons[3] = new TextureRegion(directory.getEntry("levelSelect:Level3", Texture.class));
+        buttons[3] = new TextureRegion(directory.getEntry("levelSelect:Level4", Texture.class));
 
         ursa = new TextureRegion(directory.getEntry("player:ursaWalk",Texture.class));
         ursaFilm = new FilmStrip(ursa.getTexture(),2,8);
