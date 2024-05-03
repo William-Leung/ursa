@@ -62,7 +62,7 @@ public class AIController {
     /** Distance that if chasing the player, the enemy will still attack them */
     private static final float CHASE_RADIUS = 2f;
 
-    private static final float WANDER_SPEED = 9f;
+    private static final int WANDER_ROTATE = 5;
 
     private static final float CHASE_SPEED = 15f;
 
@@ -139,6 +139,7 @@ public class AIController {
 
     private Vector2 startLoc;
     private boolean is_stupid;
+    private Vector2 directionCache = new Vector2();
 
     /**
      * Creates an AIController for the ship with the given id.
@@ -444,6 +445,10 @@ public class AIController {
 
                 if (currGoal != null) {
                     Vector2 goalPos = currGoal.getPosition();
+                    action.x = goalPos.x - enemy.getX();
+                    action.y = goalPos.y - enemy.getY();
+                    action = action.nor();
+                    directionCache.set(action.x, action.y);
                     if (enemy.getX() >= goalPos.x - GOAL_DIST && enemy.getX() <= goalPos.x + GOAL_DIST /*||
                        Math.abs(prevLoc.x - enemy.getX()) <= 0.5 && Math.abs(prevLoc.x - enemy.getY()) <= 0.5*/) {
                         // they reached the goal, so add curr goal to end and make next goal the first in deque
@@ -453,15 +458,19 @@ public class AIController {
                         rotationSpeed = currGoal.getRotationSpeed();
                         goalLocs.addLast(currGoal);
                         currGoal = goalLocs.pop();
-                    } else { // move enemy in direction of goal
-                        action.x = goalPos.x - enemy.getX();
-                        action.y = goalPos.y - enemy.getY();
-                        action = action.nor();
 
+                        enemy.setLookDirection(action.x, action.y); // We force the look direction just in case the rotation didn't finish.
+                    } else { // move enemy in direction of goal
                         enemy.setVX(action.x * enemy.getSpeed());
                         enemy.setVY(action.y * enemy.getSpeed());
-                        enemy.setLookDirection(action.x, action.y);
 
+                        // Naturally rotate the enemy to face the direction.
+                        float angleDiff = directionCache.angleDeg() - enemy.getLookAngle();
+                        if (angleDiff < 0) {
+                            enemy.rotateLookDirection(Math.max(-WANDER_ROTATE, angleDiff));
+                        } else {
+                            enemy.rotateLookDirection(Math.min(WANDER_ROTATE, angleDiff));
+                        }
                     }
                 }
 
