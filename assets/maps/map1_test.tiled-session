@@ -533,8 +533,8 @@
             "scale": 0.1982,
             "selectedLayer": 4,
             "viewCenter": {
-                "x": 1934.9142280524723,
-                "y": 2303.229061553986
+                "x": 1924.8234106962668,
+                "y": 2293.1382441977803
             }
         },
         "testing.tmx": {
@@ -608,8 +608,6 @@
     ],
     "project": "map1_test.tiled-project",
     "recentFiles": [
-        "C:/Users/danbp/Desktop/School/Junioir year cornell/3152/ursa/assets/template.json",
-        "template.tmx",
         "tiles.tsx",
         "testing.tmx",
         "map4.tmx",
@@ -619,6 +617,8 @@
         "level1.tmx",
         "level 10.tmx",
         "tutorial.tmx",
+        "C:/Users/danbp/Desktop/School/Junioir year cornell/3152/ursa/assets/template.json",
+        "template.tmx",
         "C:/Users/williamleung/Documents/GitHub/ursa/assets/template.json"
     ],
     "tileset.lastUsedFilter": "Tiled tileset files (*.tsx *.xml)",

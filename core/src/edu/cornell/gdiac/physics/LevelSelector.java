@@ -2,6 +2,7 @@ package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
@@ -39,8 +40,10 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
     private float ursaStartY;
     private float ursaNewX;
     private float ursaNewY;
+    private float direction;
     private float time;
     private JsonValue jsonData;
+    private float ursaMoveDist;
     private boolean button2Pressed;
     private boolean button3Pressed;
     private float[] completedLevels;
@@ -69,6 +72,8 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
 
     private Music levelSelectMusic;
     public LevelSelector(GameCanvas NewCanvas,float completion){
+        direction = 1;
+        ursaMoveDist = 2.5f;
         ursaStartX = 78;
         ursaStartY = 196f;
         ursaNewX = 78;
@@ -132,15 +137,46 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
 
     }
     private void update(float delta){
+        if(ursaFilm.getFrame() == 11){
+            ursaFilm.setFrame(0);
 
+        }
+        time += 1;
+        if((Gdx.input.isKeyPressed(Input.Keys.LEFT))){
+            ursaStartX -= ursaMoveDist;
+            ursaNewX = ursaStartX;
+            direction = -1;
+
+
+        }
+        if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)){
+            direction = 1;
+            ursaStartX += ursaMoveDist;
+            ursaNewX = ursaStartX;
+
+        }
+        if(Gdx.input.isKeyPressed(Input.Keys.UP)){
+            ursaStartY += ursaMoveDist;
+            ursaNewY = ursaStartY;
+
+        }
+        if(Gdx.input.isKeyPressed(Input.Keys.DOWN)){
+            ursaStartY -= ursaMoveDist;
+            ursaNewY = ursaStartY;
+
+        }
+        if(Gdx.input.isKeyPressed(Input.Keys.DOWN) ||Gdx.input.isKeyPressed(Input.Keys.UP)||Gdx.input.isKeyPressed(Input.Keys.RIGHT)|| Gdx.input.isKeyPressed(Input.Keys.LEFT)){
+            if(time % 3 == 0){
+                System.out.println("Running Film");
+                ursaFilm.setFrame(ursaFilm.getFrame() + 1);
+            }
+        }
         if(levelsCompleted == 1){
             button2Locked = false;
         }
-        if(ursaFilm.getFrame() == 11){
-            ursaFilm.setFrame(0);
-        }
 
-        time += 1;
+
+
 
         if(button1Pressed){
             buttonsFilms[0].setFrame(1);
@@ -232,7 +268,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
             ursaFilm.setFrame(ursaFilm.getFrame() + 1);
         }
 
-        if(Math.abs(ursaStartX - ursaNewX) < 10 && Math.abs(ursaStartY - ursaNewY) < 10){
+        if(Math.abs(ursaStartX - ursaNewX) < 10 && Math.abs(ursaStartY - ursaNewY) < 10 && !Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT)){
             ursaFilm.setFrame(3);
         }
 
@@ -251,7 +287,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         float buttonWidth = 128 * backgroundScaleFactor;
         float buttonHeight = 128 * backgroundScaleFactor;
         canvas.draw(background,Color.WHITE,0,0,background.getRegionWidth() * backgroundScaleFactor,background.getRegionHeight() * backgroundScaleFactor);
-        System.out.println(background.getRegionWidth() * backgroundScaleFactor + " " + background.getRegionHeight() * backgroundScaleFactor);
+        //System.out.println(background.getRegionWidth() * backgroundScaleFactor + " " + background.getRegionHeight() * backgroundScaleFactor);
         //canvas.draw(buttonsFilms[0],Color.WHITE, buttonCenter.x, buttonCenter.y, buttonPositions[0] * backgroundScaleFactor,buttonPositions[1] * backgroundScaleFactor,256 * backgroundScaleFactor,256 * backgroundScaleFactor
 
         //System.out.println("Button " + buttonPositions[0] * backgroundScaleFactor + " " + buttonPositions[1] * backgroundScaleFactor);
