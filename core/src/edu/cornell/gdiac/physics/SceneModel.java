@@ -37,6 +37,7 @@ import edu.cornell.gdiac.physics.shadows.ShadowModel;
 import edu.cornell.gdiac.physics.objects.Tree;
 import edu.cornell.gdiac.util.FilmStrip;
 import edu.cornell.gdiac.util.PooledList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedList;
 
@@ -123,7 +124,7 @@ public class SceneModel extends WorldController implements ContactListener {
     /** Current index of the cave ZZZ animation */
     private int caveZZZIndex = 0;
 
-    private float[] caveRotations = new float[]{0,0.2f,0.4f,0.6f,0.8f,1f};
+    private float[] caveRotations = new float[]{0, 90,180, 360, 720};
     private int currCaveRotation = 0;
 
 
@@ -296,8 +297,8 @@ public class SceneModel extends WorldController implements ContactListener {
         float tileSideLength = 256;
         maxY = numTilesY * tileSideLength;
 
-        colors = new Color[4];
-        intervals = new float[4];
+        colors = new Color[5];
+        intervals = new float[5];
         colors[0] = new Color(1f,1f,1f,0f);
         intervals[0] = 0f;
         colors[1] = new Color(1f,1f,1f,0f);
@@ -306,6 +307,8 @@ public class SceneModel extends WorldController implements ContactListener {
         intervals[2] = 0.5f;
         colors[3] = new Color(0f,0f,0f,shadowAlpha);
         intervals[3] = 0.9f;
+        colors[4] = new Color(1f,1f,1f,0f);
+        intervals[4] = 1.0f;
     }
     /**
      * Gather the assets for this controller.
@@ -453,8 +456,10 @@ public class SceneModel extends WorldController implements ContactListener {
         shakingTree = null;
         treeShakeIndex = 0;
         isTimeSkipping = false;
+        currCaveRotation = 0;
+        interactedCave = null;
+        caveZZZIndex = 0;
 
-        //for (AIController c : controls) c.reset();
         controls.clear();
 
         world = new World(gravity,false);
@@ -480,7 +485,7 @@ public class SceneModel extends WorldController implements ContactListener {
     private void populateLevel() {
         // False for static shadows, true for dynamic
         boolean doShadowsMove = false;
-        // Parse the cave rotations
+        // Parse the cave rotations and shadow starting rotation
         JsonValue tileProperties = jsonData.get("layers").get(0).get("properties");
         if (tileProperties != null){
             for(JsonValue property: tileProperties) {
@@ -490,13 +495,13 @@ public class SceneModel extends WorldController implements ContactListener {
                         caveRotations = new float[split.length];
 
                         for (int j = 0; j < split.length; j++) {
+                            if(j == 0) { shadowStartingRotation = Float.parseFloat(split[j]); }
                             caveRotations[j] = Float.parseFloat(split[j]);
                         }
                         break;
                     case "starting_rotation":
                         shadowStartingRotation = property.get("value").asFloat();
                         break;
-
                 }
             }
         }
@@ -708,26 +713,24 @@ public class SceneModel extends WorldController implements ContactListener {
             // Ursa Walks to the Cave
             if((currentFrame - timeBeganSkippingFrame) < walkingDuration) {
                 walkToCave(interactedCave);
-                System.out.println("Walking Duration" + walkingDuration);
                 return;
             }
             ursa.stopDrawing();
 
             // Rotate the shadows over fastForwardDuration update loops
-            int fastForwardDuration = 69 + walkingDuration;
+            int caveZZZAnimBuffer = 8;
+
+            int fastForwardDuration = (caveZZZAnimBuffer * 9 + caveZZZAnimBuffer - 1) + walkingDuration;
             if((currentFrame - timeBeganSkippingFrame) % fastForwardDuration == 0) {
                 isTimeSkipping = false;
                 ursa.resumeDrawing();
                 interactedCave.setIsUrsaSleeping(false);
                 caveZZZIndex = 0;
             } else {
-                System.out.println(currentFrame - timeBeganSkippingFrame);
-                System.out.println(caveZZZIndex);
 
                 shadowController.animateFastForward(currentFrame - timeBeganSkippingFrame - walkingDuration + 1,
                         fastForwardDuration - walkingDuration);
 
-                int caveZZZAnimBuffer = 7;
                 if((currentFrame - timeBeganSkippingFrame - walkingDuration + 1) % caveZZZAnimBuffer == 0) {
                     caveZZZIndex = (caveZZZIndex + 1) % 9;
                 }
@@ -868,11 +871,12 @@ public class SceneModel extends WorldController implements ContactListener {
         }
         //cave.interact();
         walkingDuration = (int) ((cave.getPosition().dst(ursa.getPosition()) * 10));
+        System.out.println(Arrays.toString(caveRotations));
         if(currCaveRotation < caveRotations.length - 1) {
             shadowController.forwardTimeRatio(caveRotations[currCaveRotation + 1] - caveRotations[currCaveRotation]);
             currCaveRotation++;
         } else {
-            shadowController.forwardTimeRatio(0.2f);
+            shadowController.forwardTimeRatio(180);
         }
         isTimeSkipping = true;
         timeBeganSkippingFrame = currentFrame;
@@ -1000,7 +1004,9 @@ public class SceneModel extends WorldController implements ContactListener {
      */
     @Override
     public void preDraw(float dt) {
+        // Draw an ocean bordering
         canvas.draw(tileTextures[0], Color.WHITE,canvas.getCameraX() - canvas.getWidth() / 2f, canvas.getCameraY() - canvas.getHeight() / 2f, canvas.getWidth(), canvas.getHeight());
+        // Draw snow on the map
         canvas.draw(whiteTexture, Color.WHITE, 0, 0, numTilesX * 16 * textureScale * scale.x, numTilesY * 16 * textureScale * scale.y);
         for(Decoration d: groundDecorations) {
             d.draw(canvas);
@@ -1009,6 +1015,7 @@ public class SceneModel extends WorldController implements ContactListener {
         for(Decoration d: decorations) {
             d.draw(canvas);
         }
+        // Draw a tinting over everything
         canvas.draw(whiteTexture,backgroundColor, canvas.getCameraX() - canvas.getWidth() / 2f, canvas.getCameraY() - canvas.getHeight() / 2f, canvas.getWidth(), canvas.getHeight());
         super.updateTinting(backgroundColor);
         // Draws shadows for moving objects (enemy/player)

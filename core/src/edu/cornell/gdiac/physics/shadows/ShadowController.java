@@ -81,7 +81,7 @@ public class ShadowController {
      */
     public void update(Color backgroundColor) {
         // Transition from night to day
-        if (time > fullDayLength) {
+        if (time >= fullDayLength) {
             //time = time - fullDayLength;
             time -= fullDayLength;
             isNight = false;
@@ -147,7 +147,11 @@ public class ShadowController {
     public void animateFastForward(float framesIntoAnimation, float animationLength) {
         timeRatio = beginningTimeRatio + (endTimeRatio - beginningTimeRatio) * framesIntoAnimation / animationLength;
         time = (int) (timeRatio * fullDayLength);
-        if (time > dayLength) {
+        if (time >= fullDayLength) {
+            time -= fullDayLength;
+            timeRatio -= 1;
+            isNight = false;
+        } else if (time > dayLength) {
             isNight = true;
         }
         for (ShadowModel shadow : shadows) {
@@ -158,13 +162,14 @@ public class ShadowController {
         }
     }
 
-    public void forwardTimeRatio(float amount) {
+    public void forwardTimeRatio(float degrees) {
         // Forward to day with dynamic shadows
+        // Convert the degrees to a time ratio (180 -> 0.25, 360 -> 0.5, 720 -> 1)
+        float timeRatioRotation = degrees / 720f;
         if(doShadowsMove) {
-            amount = 1 - timeRatio;
+            timeRatioRotation = 1 - timeRatio;
         }
         beginningTimeRatio = timeRatio;
-        endTimeRatio = timeRatio + amount;
+        endTimeRatio = timeRatio + timeRatioRotation;
     }
-
 }
