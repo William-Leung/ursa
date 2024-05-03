@@ -123,6 +123,9 @@ public class SceneModel extends WorldController implements ContactListener {
     /** Current index of the cave ZZZ animation */
     private int caveZZZIndex = 0;
 
+    private float[] caveRotations = new float[]{0,0.2f,0.4f,0.6f,0.8f,1f};
+    private int currCaveRotation = 0;
+
 
 
     /* =========== Tree Shaking Variables =========== */
@@ -477,9 +480,25 @@ public class SceneModel extends WorldController implements ContactListener {
     private void populateLevel() {
         // False for static shadows, true for dynamic
         boolean doShadowsMove = false;
-        JsonValue tiles = jsonData.get("layers").get(0);
-        if (tiles.has("properties")){
-            shadowStartingRotation = tiles.get("properties").get(0).get("value").asFloat();
+        // Parse the cave rotations
+        JsonValue tileProperties = jsonData.get("layers").get(0).get("properties");
+        if (tileProperties != null){
+            for(JsonValue property: tileProperties) {
+                switch (property.get("name").asString()) {
+                    case "cave_rotations":
+                        String[] split = property.get("value").asString().split(",");
+                        caveRotations = new float[split.length];
+
+                        for (int j = 0; j < split.length; j++) {
+                            caveRotations[j] = Float.parseFloat(split[j]);
+                        }
+                        break;
+                    case "starting_rotation":
+                        shadowStartingRotation = property.get("value").asFloat();
+                        break;
+
+                }
+            }
         }
         shadowController = new ShadowController(blackTexture, doShadowsMove);
 
@@ -705,8 +724,8 @@ public class SceneModel extends WorldController implements ContactListener {
                 System.out.println(currentFrame - timeBeganSkippingFrame);
                 System.out.println(caveZZZIndex);
 
-                shadowController.animateFastForward(currentFrame - timeBeganSkippingFrame,
-                        fastForwardDuration);
+                shadowController.animateFastForward(currentFrame - timeBeganSkippingFrame - walkingDuration + 1,
+                        fastForwardDuration - walkingDuration);
 
                 int caveZZZAnimBuffer = 7;
                 if((currentFrame - timeBeganSkippingFrame - walkingDuration + 1) % caveZZZAnimBuffer == 0) {
@@ -849,7 +868,12 @@ public class SceneModel extends WorldController implements ContactListener {
         }
         //cave.interact();
         walkingDuration = (int) ((cave.getPosition().dst(ursa.getPosition()) * 10));
-        shadowController.forwardTimeRatio(0.2f);
+        if(currCaveRotation < caveRotations.length - 1) {
+            shadowController.forwardTimeRatio(caveRotations[currCaveRotation + 1] - caveRotations[currCaveRotation]);
+            currCaveRotation++;
+        } else {
+            shadowController.forwardTimeRatio(0.2f);
+        }
         isTimeSkipping = true;
         timeBeganSkippingFrame = currentFrame;
         interactedCave = cave;
