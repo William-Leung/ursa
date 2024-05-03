@@ -52,13 +52,13 @@ public class GDXRoot extends Game implements ScreenListener {
 	 */
 	public GDXRoot() { }
 	public static void testing() {
-		float[] arr = new float[]{};
+		float[] arr = new float[]{7,44,36,9,98,5,123,32,116,257,42,257,9,227};
 
 
 
-		float imageX = 256;
+		float imageX = 128;
 		float imageY = 256;
-		float yOffset = imageY - 244;
+		float yOffset = imageY - 246;
 		for(int i = 0; i < arr.length; i++) {
 			float elem = arr[i];
 			if(i % 2 == 1) {
@@ -81,7 +81,7 @@ public class GDXRoot extends Game implements ScreenListener {
 	public void create() {
 		testing();
 		prefs = Gdx.app.getPreferences("Completed Data");
-		levelsCompleted = 10;
+		levelsCompleted = 20;
 		System.out.println("levels completed " + levelsCompleted);
 		canvas  = new GameCanvas();
 		loading = new LoadingMode("assets.json",canvas,1);
@@ -91,9 +91,9 @@ public class GDXRoot extends Game implements ScreenListener {
 		// Initialize the three game worlds
 
 		controllers = new WorldController[25];
-		controllers[0] = new SceneModel("rigel_tutorial_1.json");
-		controllers[1] = new SceneModel("rigel_tutorial_2.json");
-		controllers[2] = new SceneModel("rigel_level_4.json");
+		controllers[0] = new SceneModel("template.json");
+		controllers[1] = new SceneModel("levelD2.json");
+		controllers[2] = new SceneModel("level_athena.json");
 		for(int i = 0; i < prefs.getFloat("completed");i++){
 			controllers[i].setWasCompleted(true);
 		}
