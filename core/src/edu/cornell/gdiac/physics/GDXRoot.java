@@ -52,13 +52,13 @@ public class GDXRoot extends Game implements ScreenListener {
 	 */
 	public GDXRoot() { }
 	public static void testing() {
-		float[] arr = new float[]{19,236,77,39,147,31,234,140,132,249,195,267,187,301,227,332,244,396,232,455,123,505,40,471,33,366,53,297};
+		float[] arr = new float[]{};
 
 
 
 		float imageX = 256;
-		float imageY = 512;
-		float yOffset = imageY - 495;
+		float imageY = 256;
+		float yOffset = imageY - 244;
 		for(int i = 0; i < arr.length; i++) {
 			float elem = arr[i];
 			if(i % 2 == 1) {
@@ -79,7 +79,7 @@ public class GDXRoot extends Game implements ScreenListener {
 	 * the asynchronous loader for all other assets.
 	 */
 	public void create() {
-		//testing();
+		testing();
 		prefs = Gdx.app.getPreferences("Completed Data");
 		levelsCompleted = 10;
 		System.out.println("levels completed " + levelsCompleted);
@@ -91,9 +91,9 @@ public class GDXRoot extends Game implements ScreenListener {
 		// Initialize the three game worlds
 
 		controllers = new WorldController[25];
-		controllers[0] = new SceneModel("template.json");
-		controllers[1] = new SceneModel("levelD.json");
-		controllers[2] = new SceneModel("level_athena.json");
+		controllers[0] = new SceneModel("rigel_tutorial_1.json");
+		controllers[1] = new SceneModel("rigel_tutorial_2.json");
+		controllers[2] = new SceneModel("rigel_level_4.json");
 		for(int i = 0; i < prefs.getFloat("completed");i++){
 			controllers[i].setWasCompleted(true);
 		}

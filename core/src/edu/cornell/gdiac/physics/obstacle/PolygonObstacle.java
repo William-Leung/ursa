@@ -64,6 +64,9 @@ public class PolygonObstacle extends SimpleObstacle {
 	 * Used to determine drawing order of objects
 	 */
 	private float sortingY = 0f;
+	/** Do we apply the shadow tinting to the object? */
+	private boolean doesTint = true;
+
 	/** 
 	 * Returns the dimensions of this box
 	 *
@@ -106,6 +109,10 @@ public class PolygonObstacle extends SimpleObstacle {
 	 */
 	public float getWidth() {
 		return dimension.x;
+	}
+
+	public void setDoesTint(boolean b) {
+		doesTint = b;
 	}
 	
 	/**
@@ -395,7 +402,11 @@ public class PolygonObstacle extends SimpleObstacle {
 					.translate(getX() * drawScale.x, getY()* drawScale.y)
 					.scale(textureScale, textureScale)
 					;
-			canvas.draw(texture, Color.WHITE, texture.getRegionWidth() / 2f, yOffset, affine);
+			if(doesTint) {
+				canvas.draw(texture, tint, texture.getRegionWidth() / 2f, yOffset, affine);
+			} else {
+				canvas.draw(texture, Color.WHITE, texture.getRegionWidth() / 2f, yOffset, affine);
+			}
 		}
 	}
 

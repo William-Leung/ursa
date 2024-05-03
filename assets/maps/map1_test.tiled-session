@@ -9,119 +9,6 @@
     ],
     "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
-        "/Users/williamleung/Documents/GitHub/ursa/assets/LEVEL1.0.json": {
-            "scale": 0.06751051682692308,
-            "selectedLayer": 0,
-            "viewCenter": {
-                "x": 3147.6577278290865,
-                "y": 3399.470346055413
-            }
-        },
-        "/Users/williamleung/Documents/GitHub/ursa/assets/level 10.json": {
-            "scale": 0.0871,
-            "selectedLayer": 0,
-            "viewCenter": {
-                "x": 3610.792192881746,
-                "y": 1039.0355912743976
-            }
-        },
-        "/Users/williamleung/Documents/GitHub/ursa/assets/level1.json": {
-            "scale": 0.2886,
-            "selectedLayer": 0,
-            "viewCenter": {
-                "x": 3844.421344421344,
-                "y": 2974.7054747054744
-            }
-        },
-        "/Users/williamleung/Documents/GitHub/ursa/assets/level2.json": {
-            "scale": 0.08667689732142857,
-            "selectedLayer": 0,
-            "viewCenter": {
-                "x": 1713.2592950265573,
-                "y": 2140.1319813294704
-            }
-        },
-        "/Users/williamleung/Documents/GitHub/ursa/assets/level3.json": {
-            "scale": 0.0303369140625,
-            "selectedLayer": 0,
-            "viewCenter": {
-                "x": 5389.473684210525,
-                "y": 10960.244648318043
-            }
-        },
-        "/Users/williamleung/Documents/GitHub/ursa/assets/level4.json": {
-            "scale": 0.055158025568181814,
-            "selectedLayer": 0,
-            "viewCenter": {
-                "x": 3344.93481409947,
-                "y": 2819.172702398198
-            }
-        },
-        "/Users/williamleung/Documents/GitHub/ursa/assets/levelD.json": {
-            "expandedObjectLayers": [
-                4,
-                5
-            ],
-            "scale": 0.2256,
-            "selectedLayer": 4,
-            "viewCenter": {
-                "x": 503.10283687943263,
-                "y": 698.1382978723403
-            }
-        },
-        "/Users/williamleung/Documents/GitHub/ursa/assets/level_athena.json": {
-            "scale": 0.1646,
-            "selectedLayer": 4,
-            "viewCenter": {
-                "x": 3320.170109356015,
-                "y": 1795.2612393681654
-            }
-        },
-        "/Users/williamleung/Documents/GitHub/ursa/assets/rigel_level.json": {
-            "expandedObjectLayers": [
-                4,
-                9,
-                5
-            ],
-            "scale": 0.136,
-            "selectedLayer": 4,
-            "viewCenter": {
-                "x": 1959.5588235294117,
-                "y": 1944.8529411764703
-            }
-        },
-        "/Users/williamleung/Documents/GitHub/ursa/assets/template.json": {
-            "scale": 0.2364,
-            "selectedLayer": 3,
-            "viewCenter": {
-                "x": 962.3519458544839,
-                "y": 2108.714043993232
-            }
-        },
-        "/Users/williamleung/Documents/GitHub/ursa/assets/template.tmx": {
-            "scale": 0.15936414930555554,
-            "selectedLayer": 0,
-            "viewCenter": {
-                "x": 1364.7988016613335,
-                "y": 1408.7233607952612
-            }
-        },
-        "/Users/williamleung/Documents/GitHub/ursa/assets/tiletesting.json": {
-            "scale": 0.08776367187499999,
-            "selectedLayer": 0,
-            "viewCenter": {
-                "x": 2569.400244798042,
-                "y": 1281.8515633693119
-            }
-        },
-        "/Users/williamleung/Documents/GitHub/ursa/assets/tutorial.json": {
-            "scale": 0.06751051682692308,
-            "selectedLayer": 0,
-            "viewCenter": {
-                "x": 3340.220318237454,
-                "y": 1799.7195949705133
-            }
-        },
         "128x128.tsx": {
             "dynamicWrapping": false,
             "scaleInDock": 0.553,
@@ -184,8 +71,8 @@
             "scale": 0.21399739583333333,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 2303.766352296928,
-                "y": 1408.8956495284456
+                "x": 2264.046242774567,
+                "y": 1366.8390629753576
             }
         },
         "C:/Users/danbp/Desktop/School/Junioir year cornell/3152/ursa/assets/template.tmx": {
@@ -194,6 +81,22 @@
             "viewCenter": {
                 "x": 2304,
                 "y": 1412
+            }
+        },
+        "C:/Users/williamleung/Documents/GitHub/ursa/assets/LEVEL1.0.json": {
+            "scale": 0.06751051682692308,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 3147.6577278290865,
+                "y": 3399.470346055413
+            }
+        },
+        "C:/Users/williamleung/Documents/GitHub/ursa/assets/level 10.json": {
+            "scale": 0.0871,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 3610.792192881746,
+                "y": 1039.0355912743976
             }
         },
         "C:/Users/williamleung/Documents/GitHub/ursa/assets/level1.json": {
@@ -212,6 +115,14 @@
                 "y": 1794.0189924352164
             }
         },
+        "C:/Users/williamleung/Documents/GitHub/ursa/assets/level3.json": {
+            "scale": 0.0303369140625,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 5389.473684210525,
+                "y": 10960.244648318043
+            }
+        },
         "C:/Users/williamleung/Documents/GitHub/ursa/assets/level4.json": {
             "scale": 0.07499186197916666,
             "selectedLayer": 0,
@@ -223,12 +134,69 @@
         "C:/Users/williamleung/Documents/GitHub/ursa/assets/level4.json#tiles": {
             "scaleInDock": 1
         },
+        "C:/Users/williamleung/Documents/GitHub/ursa/assets/levelD.json": {
+            "expandedObjectLayers": [
+                4,
+                5
+            ],
+            "scale": 0.2256,
+            "selectedLayer": 4,
+            "viewCenter": {
+                "x": 503.10283687943263,
+                "y": 698.1382978723403
+            }
+        },
+        "C:/Users/williamleung/Documents/GitHub/ursa/assets/level_athena.json": {
+            "scale": 0.1646,
+            "selectedLayer": 4,
+            "viewCenter": {
+                "x": 3320.170109356015,
+                "y": 1795.2612393681654
+            }
+        },
+        "C:/Users/williamleung/Documents/GitHub/ursa/assets/rigel_level.json": {
+            "expandedObjectLayers": [
+                4,
+                9,
+                5
+            ],
+            "scale": 0.136,
+            "selectedLayer": 4,
+            "viewCenter": {
+                "x": 1959.5588235294117,
+                "y": 1944.8529411764703
+            }
+        },
+        "C:/Users/williamleung/Documents/GitHub/ursa/assets/template.json": {
+            "scale": 0.2364,
+            "selectedLayer": 3,
+            "viewCenter": {
+                "x": 962.3519458544839,
+                "y": 2108.714043993232
+            }
+        },
+        "C:/Users/williamleung/Documents/GitHub/ursa/assets/template.tmx": {
+            "scale": 0.15936414930555554,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 1364.7988016613335,
+                "y": 1408.7233607952612
+            }
+        },
         "C:/Users/williamleung/Documents/GitHub/ursa/assets/testing.json": {
             "scale": 0.2742,
             "selectedLayer": 0,
             "viewCenter": {
                 "x": 1921.9547775346464,
                 "y": 897.1553610503283
+            }
+        },
+        "C:/Users/williamleung/Documents/GitHub/ursa/assets/tiletesting.json": {
+            "scale": 0.08776367187499999,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 2569.400244798042,
+                "y": 1281.8515633693119
             }
         },
         "C:/Users/williamleung/Documents/GitHub/ursa/assets/tutorial.json": {
@@ -378,12 +346,16 @@
             "scaleInDock": 1
         },
         "Polar_Ice.tsx": {
+            "scaleInDock": 1,
             "scaleInEditor": 1
         },
         "Polar_Rock_1.tsx": {
             "dynamicWrapping": false,
             "scaleInDock": 0.1519,
             "scaleInEditor": 1
+        },
+        "Polar_Rock_2.tsx": {
+            "scaleInDock": 1
         },
         "Polar_Rock_4.tsx": {
             "dynamicWrapping": false,
@@ -394,6 +366,12 @@
             "dynamicWrapping": true,
             "scaleInDock": 0.1083,
             "scaleInEditor": 1
+        },
+        "Polar_Trunk_1.tsx": {
+            "scaleInDock": 1
+        },
+        "Polar_Trunk_2.tsx": {
+            "scaleInDock": 1
         },
         "Ursa.tsx": {
             "dynamicWrapping": true,
@@ -424,23 +402,23 @@
             "scale": 0.20335937499999998,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 2043.1809450633884,
-                "y": 1276.066077602766
+                "x": 2045.63964656166,
+                "y": 1280.9834805993085
             }
         },
         "level1.tmx": {
             "scale": 0.107,
             "selectedLayer": 3,
             "viewCenter": {
-                "x": 3070.0934579439254,
-                "y": 3070.0934579439254
+                "x": 3065.4205607476633,
+                "y": 3070.093457943925
             }
         },
         "map1.tmx": {
             "scale": 0.08,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 5118.75,
+                "x": 5112.5,
                 "y": 5118.75
             }
         },
@@ -449,44 +427,44 @@
         },
         "map2.tmx": {
             "expandedObjectLayers": [
+                7,
+                3,
+                5,
+                9,
                 2,
                 4,
-                8,
-                5,
-                3,
-                7,
-                9
+                8
             ],
             "scale": 0.25,
             "selectedLayer": 9,
             "viewCenter": {
-                "x": 1790,
+                "x": 1792,
                 "y": 1790
             }
         },
         "map3.tmx": {
             "expandedObjectLayers": [
-                2,
-                4,
+                7,
                 5,
-                7
+                2,
+                4
             ],
             "scale": 0.15,
             "selectedLayer": 3,
             "viewCenter": {
-                "x": 3070,
+                "x": 3066.666666666667,
                 "y": 3070
             }
         },
         "map4.tmx": {
             "expandedObjectLayers": [
-                4,
-                9
+                9,
+                4
             ],
             "scale": 0.25,
             "selectedLayer": 8,
             "viewCenter": {
-                "x": 3326,
+                "x": 3328,
                 "y": 2206
             }
         },
@@ -544,27 +522,27 @@
         },
         "template.tmx": {
             "expandedObjectLayers": [
-                4,
-                3,
-                8,
                 7,
-                2,
+                3,
+                5,
                 9,
-                5
+                2,
+                4,
+                8
             ],
             "scale": 0.1982,
-            "selectedLayer": 5,
+            "selectedLayer": 4,
             "viewCenter": {
-                "x": 1945.0050454086784,
-                "y": 1551.46316851665
+                "x": 1934.9142280524723,
+                "y": 2303.229061553986
             }
         },
         "testing.tmx": {
             "scale": 0.18,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 1919.4444444444443,
-                "y": 897.2222222222223
+                "x": 1877.7777777777776,
+                "y": 3352.7777777777774
             }
         },
         "testing.tmx.tmj": {
@@ -592,16 +570,16 @@
         },
         "tutorial.tmx": {
             "expandedObjectLayers": [
-                2,
-                4,
                 5,
-                9
+                9,
+                2,
+                4
             ],
             "scale": 0.0904,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 3313.053097345133,
-                "y": 116.15044247787614
+                "x": 3318.58407079646,
+                "y": 116.15044247787591
             }
         }
     },
@@ -630,18 +608,18 @@
     ],
     "project": "map1_test.tiled-project",
     "recentFiles": [
-        "/Users/williamleung/Documents/GitHub/ursa/assets/template.json",
-        "tutorial.tmx",
-        "level 10.tmx",
-        "level1.tmx",
-        "map1.tmx",
-        "map3.tmx",
-        "map2.tmx",
-        "map4.tmx",
-        "testing.tmx",
+        "C:/Users/danbp/Desktop/School/Junioir year cornell/3152/ursa/assets/template.json",
+        "template.tmx",
         "tiles.tsx",
-        "C:/Users/danbp/Desktop/School/Junioir year cornell/3152/ursa/assets/levelD.json",
-        "C:/Users/danbp/Desktop/School/Junioir year cornell/3152/ursa/assets/template.tmx"
+        "testing.tmx",
+        "map4.tmx",
+        "map2.tmx",
+        "map3.tmx",
+        "map1.tmx",
+        "level1.tmx",
+        "level 10.tmx",
+        "tutorial.tmx",
+        "C:/Users/williamleung/Documents/GitHub/ursa/assets/template.json"
     ],
     "tileset.lastUsedFilter": "Tiled tileset files (*.tsx *.xml)",
     "tileset.lastUsedFormat": "tsx",

@@ -49,6 +49,7 @@
 
         "polar:cave_animation" : "polar/animations/Cave_Animation.png",
         "polar:tree_shake_animation": "polar/animations/Polar_Tree_Shake.png",
+        "polar:cave_sleep_animation": "polar/animations/Cave_Sleep.png",
 
         "polar:white": "polar/white.png",
         "polar:black": "polar/black.png",

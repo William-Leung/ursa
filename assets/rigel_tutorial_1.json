@@ -18,6 +18,12 @@
          "id":1,
          "name":"Tile Layer 1",
          "opacity":1,
+         "properties":[
+                {
+                 "name":"starting_rotation",
+                 "type":"int",
+                 "value":-50
+                }],
          "type":"tilelayer",
          "visible":true,
          "width":13,
@@ -826,18 +832,6 @@
                 {
                  "gid":35,
                  "height":512,
-                 "id":387,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":256,
-                 "x":2140,
-                 "y":2088
-                }, 
-                {
-                 "gid":35,
-                 "height":512,
                  "id":389,
                  "name":"",
                  "rotation":0,
@@ -856,8 +850,8 @@
                  "type":"",
                  "visible":true,
                  "width":256,
-                 "x":1804,
-                 "y":1872
+                 "x":1860,
+                 "y":1838
                 }, 
                 {
                  "gid":35,
@@ -949,12 +943,17 @@
                          "name":"is_stupid",
                          "type":"bool",
                          "value":true
+                        }, 
+                        {
+                         "name":"starting_rotation",
+                         "type":"int",
+                         "value":-42
                         }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":256,
-                 "x":1600,
+                 "x":1663.63636363636,
                  "y":1124
                 }],
          "opacity":1,
