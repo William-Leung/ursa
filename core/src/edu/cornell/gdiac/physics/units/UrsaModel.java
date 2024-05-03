@@ -152,14 +152,12 @@ public class UrsaModel extends CapsuleObstacle {
      */
     public UrsaModel(float xPos,float yPos,JsonValue data, float width, float height, float textureScale) {
         // The shrink factors fit the image to a tigher hitbox
-
         super(xPos, yPos,
                 width,
                 height);
         setDensity(data.getFloat("density", 0));
         setFriction(data.getFloat("friction", 0));  /// HE WILL STICK TO WALLS IF YOU FORGET
         setFixedRotation(true);
-
 
         maxspeed = data.getFloat("maxspeed", 0);
         damping = data.getFloat("damping", 0);
@@ -169,6 +167,7 @@ public class UrsaModel extends CapsuleObstacle {
 
         // Gameplay attributes
         isFacingRight = true;
+        isDrawing = true;
         setName("ursa");
         this.textureScale = textureScale;
     }

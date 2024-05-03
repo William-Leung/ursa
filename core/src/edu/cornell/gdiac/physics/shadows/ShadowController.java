@@ -57,9 +57,6 @@ public class ShadowController {
         isNight = false;
         shadowTexture = region;
         this.doShadowsMove = doShadowsMove;
-        if(!doShadowsMove) {
-            time = 300;
-        }
     }
 
     /**
@@ -86,7 +83,7 @@ public class ShadowController {
         // Transition from night to day
         if (time > fullDayLength) {
             //time = time - fullDayLength;
-            time = 0;
+            time -= fullDayLength;
             isNight = false;
         // Transition from day to night
         } else if (time > dayLength) {
@@ -162,6 +159,7 @@ public class ShadowController {
     }
 
     public void forwardTimeRatio(float amount) {
+        // Forward to day with dynamic shadows
         if(doShadowsMove) {
             amount = 1 - timeRatio;
         }

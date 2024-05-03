@@ -90,7 +90,7 @@ public class SceneModel extends WorldController implements ContactListener {
     /** Filmstrip for little ursa idle animation */
     private FilmStrip smolUrsaIdleFilm;
     /** Filmstrip for cave sleep animation */
-    private FilmStrip caveSleepFilm;
+    private FilmStrip caveZZZFilm;
 
 
     /* =========== Animation Variables =========== */
@@ -120,6 +120,9 @@ public class SceneModel extends WorldController implements ContactListener {
     private int cavePortalIndex = 0;
     /** Current index of the smol ursa idle animation */
     private int smolUrsaIdleIndex = 0;
+    /** Current index of the cave ZZZ animation */
+    private int caveZZZIndex = 0;
+
 
 
     /* =========== Tree Shaking Variables =========== */
@@ -137,7 +140,7 @@ public class SceneModel extends WorldController implements ContactListener {
     /** The position at which Ursa was when interacting with the cave.*/
     private Vector2 ursaStartingPosition;
     /** How long Ursa will walk to the cave for */
-    private float walkingDuration = 0f;
+    private int walkingDuration = 0;
 
 
     /* =========== Tiled Parsing Variables =========== */
@@ -270,7 +273,6 @@ public class SceneModel extends WorldController implements ContactListener {
     private FrameBuffer fb = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), false);
 
 
-
     /**
      * Creates and initialize a new instance of the platformer game
      * The game has default gravity and other settings
@@ -293,14 +295,14 @@ public class SceneModel extends WorldController implements ContactListener {
 
         colors = new Color[4];
         intervals = new float[4];
-        colors[0] = new Color(0f,0f,0f,shadowAlpha);
+        colors[0] = new Color(1f,1f,1f,0f);
         intervals[0] = 0f;
         colors[1] = new Color(1f,1f,1f,0f);
-        intervals[1] = 0.1f;
-        colors[2] = new Color(1f,1f,1f,0f);
-        intervals[2] = 0.4f;
+        intervals[1] = 0.4f;
+        colors[2] = new Color(0f,0f,0f,shadowAlpha);
+        intervals[2] = 0.5f;
         colors[3] = new Color(0f,0f,0f,shadowAlpha);
-        intervals[3] = 0.5f;
+        intervals[3] = 0.9f;
     }
     /**
      * Gather the assets for this controller.
@@ -362,7 +364,8 @@ public class SceneModel extends WorldController implements ContactListener {
         TextureRegion cavePortalAnimation = new TextureRegion(directory.getEntry("polar:cave_animation", Texture.class));
         cavePortalFilm = new FilmStrip(cavePortalAnimation.getTexture(), 2, 8);
         TextureRegion caveSleepAnimation = new TextureRegion(directory.getEntry("polar:cave_sleep_animation", Texture.class));
-        cavePortalFilm = new FilmStrip(cavePortalAnimation.getTexture(), 2, 8);
+        caveZZZFilm = new FilmStrip(caveSleepAnimation.getTexture(), 2, 8);
+        caveZZZFilm.setFrame(0);
 
         TextureRegion smolUrsaIdleAnimation = new TextureRegion(directory.getEntry("smolursa:idle", Texture.class));
         smolUrsaIdleFilm = new FilmStrip(smolUrsaIdleAnimation.getTexture(), 5, 8);
@@ -446,6 +449,7 @@ public class SceneModel extends WorldController implements ContactListener {
         currentFrame = 0;
         shakingTree = null;
         treeShakeIndex = 0;
+        isTimeSkipping = false;
 
         //for (AIController c : controls) c.reset();
         controls.clear();
@@ -674,7 +678,6 @@ public class SceneModel extends WorldController implements ContactListener {
             levelMusic.play();
             levelMusic.setLooping(true);
         }
-
         shadowController.update(backgroundColor);
 
         // If the time is fast forwarding
@@ -686,21 +689,34 @@ public class SceneModel extends WorldController implements ContactListener {
             // Ursa Walks to the Cave
             if((currentFrame - timeBeganSkippingFrame) < walkingDuration) {
                 walkToCave(interactedCave);
+                System.out.println("Walking Duration" + walkingDuration);
                 return;
             }
             ursa.stopDrawing();
 
             // Rotate the shadows over fastForwardDuration update loops
-            int fastForwardDuration = 60;
+            int fastForwardDuration = 69 + walkingDuration;
             if((currentFrame - timeBeganSkippingFrame) % fastForwardDuration == 0) {
                 isTimeSkipping = false;
+                ursa.resumeDrawing();
+                interactedCave.setIsUrsaSleeping(false);
+                caveZZZIndex = 0;
             } else {
+                System.out.println(currentFrame - timeBeganSkippingFrame);
+                System.out.println(caveZZZIndex);
+
                 shadowController.animateFastForward(currentFrame - timeBeganSkippingFrame,
                         fastForwardDuration);
+
+                int caveZZZAnimBuffer = 7;
+                if((currentFrame - timeBeganSkippingFrame - walkingDuration + 1) % caveZZZAnimBuffer == 0) {
+                    caveZZZIndex = (caveZZZIndex + 1) % 9;
+                }
             }
+            caveZZZFilm.setFrame(caveZZZIndex);
+            interactedCave.setZZZTexture(caveZZZFilm);
             return;
         }
-        ursa.resumeDrawing();
 
         // Move Ursa
         float xVal = InputController.getInstance().getHorizontal() * ursa.getForce();
@@ -832,7 +848,7 @@ public class SceneModel extends WorldController implements ContactListener {
             return;
         }
         //cave.interact();
-        walkingDuration = cave.getPosition().dst(ursa.getPosition()) * 10;
+        walkingDuration = (int) ((cave.getPosition().dst(ursa.getPosition()) * 10));
         shadowController.forwardTimeRatio(0.2f);
         isTimeSkipping = true;
         timeBeganSkippingFrame = currentFrame;
@@ -841,6 +857,7 @@ public class SceneModel extends WorldController implements ContactListener {
         ursaWalkAnimIndex = 0;
         ursaIdleAnimIndex = 0;
         ursa.setIsFacingRight(cave.getX() > ursa.getX());
+        interactedCave.setIsUrsaSleeping(true);
     }
 
     /**
@@ -996,8 +1013,11 @@ public class SceneModel extends WorldController implements ContactListener {
         super.postDraw(dt);
 
         // Draws the day/night UI element
+        for(Cave cave: caves) {
+            cave.postDraw(canvas);
+        }
 
-        float uiDrawScale = 0.1f;
+        float uiDrawScale = 0.08f;
         canvas.draw(dayNightUITexture, Color.WHITE, dayNightUITexture.getRegionWidth() / 2f, dayNightUITexture.getRegionHeight() / 2f, canvas.getCameraX(), canvas.getCameraY() + canvas.getHeight() / 2f, uiRotationAngle,
                 uiDrawScale, uiDrawScale);
     }
@@ -1231,6 +1251,7 @@ public class SceneModel extends WorldController implements ContactListener {
 
         goal = new GameObject(getVertices(smolUrsaConstants), drawToScreenCoordinates(x),
                 drawToScreenCoordinates(y), 0, textureScale);
+        goal.setDoesTint(false);
         goal.setSensor(true);
         goal.setDrawScale(scale);
         goal.setTexture(smolUrsaIdleFilm);
@@ -1389,8 +1410,10 @@ public class SceneModel extends WorldController implements ContactListener {
             float y = maxY - caveObjectData.get(i).get(9).asFloat() + yOffset;
             x = drawToScreenCoordinates(x);
             y = drawToScreenCoordinates(y);
+            Vector2 caveBubblePos = new Vector2(drawToScreenCoordinates(caveConstants.get("bubbleX").asFloat()), drawToScreenCoordinates(caveConstants.get("bubbleY").asFloat()));
 
-            Cave obj = new Cave(getVertices(caveConstants), x, y, yOffset,textureScale);
+            Cave obj = new Cave(getVertices(caveConstants), x, y, yOffset,textureScale, caveBubblePos);
+            obj.setZZZTexture(caveZZZFilm);
             obj.setDrawScale(scale);
             obj.setTexture(cavePortalFilm);
             obj.setName("cave" + i);
@@ -1414,10 +1437,8 @@ public class SceneModel extends WorldController implements ContactListener {
     private void renderDecorations() {
         if(jsonData.get("layers").get(1) == null) { return; }
         JsonValue decorationData = jsonData.get("layers").get(1).get("objects");
-        System.out.println(decorationData.size);
 
         for(int i = 0; i < decorationData.size; i++) {
-            System.out.println("Decoration Number: " + i);
             float x = decorationData.get(i).get("x").asFloat();
             float y = maxY - decorationData.get(i).get("y").asFloat();
             int decorationIndex = decorationData.get(i).get("gid").asInt();
@@ -1433,7 +1454,6 @@ public class SceneModel extends WorldController implements ContactListener {
                 System.out.println("Unidentified decoration.");
                 continue;
             }
-            System.out.println("Creating decoration with index" + textureIndex);
             Decoration decoration = new Decoration(decorationTextures[textureIndex], scale, drawToScreenCoordinates(x),drawToScreenCoordinates(y), decorationIndex, textureScale);
 
             decorations.add(decoration);
