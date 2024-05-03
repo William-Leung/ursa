@@ -177,6 +177,9 @@ public class GameCanvas {
 	public float getCameraX() {
 		return camera.position.x;
 	}
+	public OrthographicCamera getCamera() {
+		return camera;
+	}
 
 	public float getCameraY() {
 		return camera.position.y;

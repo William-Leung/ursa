@@ -9,10 +9,12 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonReader;
@@ -455,54 +457,27 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         if(active){
-            //System.out.println("Screen x + L: " + screenX);
-            //System.out.println("Screen y: " + (canvas.getHeight()-screenY));
-            float radius = (buttonsFilms[0].getRegionWidth()/2.0f) -25;
-            //System.out.println("RAdius is: " + radius);
-            float centerX = 78f;
-            float centerY = 196f;
-            screenY = canvas.getHeight()-screenY;
-            float formula = (screenX-centerX)*(screenX-centerX)+(screenY-centerY)*(screenY-centerY);
-            formula = (float) Math.sqrt(formula);
-            //System.out.println("Formula: "+ formula);
-            if(formula < radius  ){
-                System.out.println("running this");
-                if(Math.abs(ursaStartX - centerX) < 10 && Math.abs(ursaStartY - centerY) < 10){
-                    button1Pressed = true;
-                }
-               ursaNewX = centerX;
-               ursaNewY = centerY;
-            }
-            centerX = 189f;
-            centerY = 196f;
-            formula = (screenX-centerX)*(screenX-centerX)+(screenY-centerY)*(screenY-centerY);
-            formula = (float) Math.sqrt(formula);
-            System.out.println("levels complete: "+ levelsCompleted);
-            if(formula < radius && button2Locked == false ){
-                if(Math.abs(ursaStartX - centerX) < 7 && Math.abs(ursaStartY - centerY) < 7){
-                    button2Pressed = true;
-                }
 
-                ursaNewX = centerX;
-                ursaNewY = centerY;
+            OrthographicCamera cam = canvas.getCamera();
+            Vector3 touch = new Vector3();
+            cam.unproject(touch.set(screenX, screenY, 0));
+            ursaNewX = touch.x;
+            ursaNewY = touch.y;
+
+
+            for (int j = 0; j < positions.length / 2; j++) {
+                float posX = positions[j * 2];
+                float posY = positions[j * 2 + 1];
+
+                if(touch.x - posX < 80 && touch.y - posY < 80 && touch.x - posX > 0 && touch.y - posY > 0)
+                {
+                   if(Math.abs(ursaStartX - touch.x) < 8){
+                       buttonsFilms[j].setFrame(4);
+                       updateButtons();
+                   }
+                }
             }
 
-
-            centerX = 189f;
-            centerY = 434;
-            formula = (screenX-centerX)*(screenX-centerX)+(screenY-centerY)*(screenY-centerY);
-            formula = (float) Math.sqrt(formula);
-
-            if(formula < radius && button3Locked == false ){
-                System.out.println(button3Locked + "button 3 locked");
-                if(Math.abs(ursaStartX - centerX) < 7 && Math.abs(ursaStartY - centerY) < 7){
-                    button3Pressed = true;
-                }
-
-                ursaNewX = centerX;
-                ursaNewY = centerY;
-                System.out.println(ursaNewY + " ursa new y is ");
-            }
 
 
         }
@@ -515,52 +490,32 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
 
         if(active){
-            button3Pressed = false;
-            button2Pressed = false;
-            button1Pressed = false;
-            System.out.println("Screen x + L: " + screenX);
-            System.out.println("Screen y: " + (canvas.getHeight()-screenY));
-            float radius = (buttonsFilms[0].getRegionWidth()/2.0f) -25;
-            System.out.println("RAdius is: " + radius);
-            float centerX = 78f;
-            float centerY = 196f;
-            screenY = canvas.getHeight()-screenY;
-            float formula = (screenX-centerX)*(screenX-centerX)+(screenY-centerY)*(screenY-centerY);
-            formula = (float) Math.sqrt(formula);
-            System.out.println("Formula: "+ formula);
-            if(formula < radius && Math.abs(ursaStartX - centerX) < 7 && Math.abs(ursaStartX - centerX) < 7){
 
-               listener.exitScreen(this,1);
-            }
-            centerX = 189f;
-            centerY = 196f;
-            formula = (screenX-centerX)*(screenX-centerX)+(screenY-centerY)*(screenY-centerY);
-            formula = (float) Math.sqrt(formula);
+            OrthographicCamera cam = canvas.getCamera();
+            Vector3 touch = new Vector3();
+            cam.unproject(touch.set(screenX, screenY, 0));
+            ursaNewX = touch.x;
+            ursaNewY = touch.y;
 
-            if(formula < radius && button2Locked == false && Math.abs(ursaStartX - centerX) <7 && Math.abs(ursaStartY - centerY) < 7){
-               listener.exitScreen(this,2);
-            }
-            if(formula < radius && levelsCompleted == 1 ){
-                button2Locked = false;
-            }
-            centerX = 189f;
-            centerY = 434;
-            formula = (screenX-centerX)*(screenX-centerX)+(screenY-centerY)*(screenY-centerY);
-            formula = (float) Math.sqrt(formula);
-            if(formula < radius && button3Locked == false && Math.abs(ursaStartX - centerX) <7 && Math.abs(ursaStartY - centerY) < 7){
 
-                listener.exitScreen(this,3);
-            }
-            if(formula < radius && levelsCompleted == 2 ){
-                button3Locked = false;
+            for (int j = 0; j < positions.length / 2; j++) {
+                float posX = positions[j * 2];
+                float posY = positions[j * 2 + 1];
+
+                if(touch.x - posX < 80 && touch.y - posY < 80 && touch.x - posX > 0 && touch.y - posY > 0)
+                {
+                    if(Math.abs(ursaStartX - touch.x) < 8){
+                        listener.exitScreen(this,j+1);
+                    }
+                }
             }
 
 
 
         }
-        button3Pressed = false;
-        button2Pressed = false;
-        button1Pressed = false;
+        for(int i = 0; i < buttonsPressed.length; i++ ){
+            buttonsPressed[i] = false;
+        }
 
         return false;
     }
