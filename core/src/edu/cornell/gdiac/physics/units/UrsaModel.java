@@ -68,7 +68,6 @@ public class UrsaModel extends CapsuleObstacle {
     public void setMovement(float xValue,float yValue) {
         xMovement = xValue;
         yMovement = yValue;
-        System.out.println("setting");
         isFacingRight = getXMovement() > 0;
     }
 
@@ -153,14 +152,12 @@ public class UrsaModel extends CapsuleObstacle {
      */
     public UrsaModel(float xPos,float yPos,JsonValue data, float width, float height, float textureScale) {
         // The shrink factors fit the image to a tigher hitbox
-
         super(xPos, yPos,
                 width,
                 height);
         setDensity(data.getFloat("density", 0));
         setFriction(data.getFloat("friction", 0));  /// HE WILL STICK TO WALLS IF YOU FORGET
         setFixedRotation(true);
-
 
         maxspeed = data.getFloat("maxspeed", 0);
         damping = data.getFloat("damping", 0);
@@ -170,6 +167,7 @@ public class UrsaModel extends CapsuleObstacle {
 
         // Gameplay attributes
         isFacingRight = true;
+        isDrawing = true;
         setName("ursa");
         this.textureScale = textureScale;
     }
@@ -270,7 +268,6 @@ public class UrsaModel extends CapsuleObstacle {
         if(!isDrawing) {
             return;
         }
-        System.out.println(isFacingRight);
         float effect = isFacingRight ? 1.0f : -1.0f;
         canvas.draw(texture, Color.WHITE,origin.x,0,getX()*drawScale.x,(getY() - data.get("yOffset").asFloat())*drawScale.y,getAngle(),effect * textureScale,textureScale);
     }

@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "newLevel.tmx",
+    "activeFile": "C:/Users/danbp/Desktop/School/Junioir year cornell/3152/ursa/assets/DannyCurrent.json",
     "expandedProjectPaths": [
         "."
     ],
@@ -71,8 +71,8 @@
             "scale": 0.21399739583333333,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 2303.766352296928,
-                "y": 1408.8956495284456
+                "x": 2264.046242774567,
+                "y": 1366.8390629753576
             }
         },
         "C:/Users/danbp/Desktop/School/Junioir year cornell/3152/ursa/assets/template.tmx": {
@@ -403,7 +403,7 @@
             "selectedLayer": 0,
             "viewCenter": {
                 "x": 2045.63964656166,
-                "y": 1276.066077602766
+                "y": 1280.9834805993085
             }
         },
         "level1.tmx": {
@@ -411,7 +411,7 @@
             "selectedLayer": 3,
             "viewCenter": {
                 "x": 3065.4205607476633,
-                "y": 3070.0934579439254
+                "y": 3070.093457943925
             }
         },
         "map1.tmx": {
@@ -427,13 +427,13 @@
         },
         "map2.tmx": {
             "expandedObjectLayers": [
-                4,
-                5,
-                2,
-                3,
                 7,
-                8,
-                9
+                3,
+                5,
+                9,
+                2,
+                4,
+                8
             ],
             "scale": 0.25,
             "selectedLayer": 9,
@@ -444,10 +444,10 @@
         },
         "map3.tmx": {
             "expandedObjectLayers": [
-                4,
+                7,
                 5,
                 2,
-                7
+                4
             ],
             "scale": 0.15,
             "selectedLayer": 3,
@@ -458,8 +458,8 @@
         },
         "map4.tmx": {
             "expandedObjectLayers": [
-                4,
-                9
+                9,
+                4
             ],
             "scale": 0.25,
             "selectedLayer": 8,
@@ -484,25 +484,6 @@
         "marker.tsx": {
             "dynamicWrapping": false,
             "scaleInDock": 1
-        },
-        "newLevel.tmx": {
-            "expandedObjectLayers": [
-                4,
-                6,
-                5,
-                2,
-                3,
-                7,
-                8,
-                9,
-                1
-            ],
-            "scale": 0.2158528645833333,
-            "selectedLayer": 2,
-            "viewCenter": {
-                "x": 2307.1271301462825,
-                "y": 1410.6831548786008
-            }
         },
         "nya.tsx": {
             "scaleInDock": 1,
@@ -541,27 +522,27 @@
         },
         "template.tmx": {
             "expandedObjectLayers": [
-                3,
-                2,
-                9,
-                5,
                 7,
+                3,
+                5,
+                9,
+                2,
                 4,
                 8
             ],
             "scale": 0.1982,
-            "selectedLayer": 9,
+            "selectedLayer": 4,
             "viewCenter": {
-                "x": 2300.7063572149345,
-                "y": 1410.191725529768
+                "x": 1934.9142280524723,
+                "y": 2303.229061553986
             }
         },
         "testing.tmx": {
             "scale": 0.18,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 1916.6666666666665,
-                "y": 891.6666666666665
+                "x": 1877.7777777777776,
+                "y": 3352.7777777777774
             }
         },
         "testing.tmx.tmj": {
@@ -589,20 +570,20 @@
         },
         "tutorial.tmx": {
             "expandedObjectLayers": [
-                4,
                 5,
+                9,
                 2,
-                9
+                4
             ],
             "scale": 0.0904,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 8617.25663716814,
-                "y": 326.3274336283189
+                "x": 3318.58407079646,
+                "y": 116.15044247787591
             }
         }
     },
-    "last.exportedFilePath": "C:/Users/video/Desktop/ursa/assets",
+    "last.exportedFilePath": "C:/Users/danbp/Desktop/School/Junioir year cornell/3152/ursa/assets",
     "last.externalTilesetPath": "/Users/ykhadir/3300/p2/ursa/assets/maps",
     "last.imagePath": "/Users/williamleung/Documents/GitHub/ursa/assets/polar",
     "map.height": 10,
@@ -612,14 +593,6 @@
     "map.tileWidth": 256,
     "map.width": 20,
     "openFiles": [
-        "template.tmx",
-        "newLevel.tmx"
-    ],
-    "project": "map1_test.tiled-project",
-    "property.type": "int",
-    "recentFiles": [
-        "template.tmx",
-        "newLevel.tmx",
         "tiles.tsx",
         "testing.tmx",
         "map4.tmx",
@@ -627,8 +600,25 @@
         "map3.tmx",
         "map1.tmx",
         "level1.tmx",
-        "tutorial.tmx",
         "level 10.tmx",
+        "tutorial.tmx",
+        "C:/Users/danbp/Desktop/School/Junioir year cornell/3152/ursa/assets/template.tmx",
+        "C:/Users/danbp/Desktop/School/Junioir year cornell/3152/ursa/assets/DannyCurrent.json",
+        "C:/Users/danbp/Desktop/School/Junioir year cornell/3152/ursa/assets/template.json"
+    ],
+    "project": "map1_test.tiled-project",
+    "recentFiles": [
+        "C:/Users/danbp/Desktop/School/Junioir year cornell/3152/ursa/assets/template.json",
+        "template.tmx",
+        "tiles.tsx",
+        "testing.tmx",
+        "map4.tmx",
+        "map2.tmx",
+        "map3.tmx",
+        "map1.tmx",
+        "level1.tmx",
+        "level 10.tmx",
+        "tutorial.tmx",
         "C:/Users/williamleung/Documents/GitHub/ursa/assets/template.json"
     ],
     "tileset.lastUsedFilter": "Tiled tileset files (*.tsx *.xml)",

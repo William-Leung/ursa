@@ -1015,7 +1015,7 @@ public abstract class Obstacle {
 	public abstract void drawDebug(GameCanvas canvas);
 
 	public void updateTint(Color color) {
-		tint = color;
+		tint = new Color(0.6f + color.r,0.6f + color.g,0.6f + color.b,1);
 	}
 
 }

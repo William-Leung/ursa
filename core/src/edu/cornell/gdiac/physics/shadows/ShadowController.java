@@ -34,8 +34,6 @@ public class ShadowController {
      * Always stays between 0 and 1
      */
     private float timeRatio;
-    /** The starting direction of the shadows */
-    private final Vector2 starting_direction = new Vector2(1, 0);
     /** List of references to all shadows. */
     private PooledList<ShadowModel> shadows = new PooledList<>();
     private boolean doShadowsMove;
@@ -59,9 +57,6 @@ public class ShadowController {
         isNight = false;
         shadowTexture = region;
         this.doShadowsMove = doShadowsMove;
-        if(!doShadowsMove) {
-            time = 300;
-        }
     }
 
     /**
@@ -77,7 +72,6 @@ public class ShadowController {
      */
     public void addShadow(ShadowModel shadow) {
         shadow.setTexture(shadowTexture);
-        shadow.setDirection(starting_direction);
         shadows.add(shadow);
     }
 
@@ -88,11 +82,8 @@ public class ShadowController {
     public void update(Color backgroundColor) {
         // Transition from night to day
         if (time > fullDayLength) {
-            for(ShadowModel shadow: shadows) {
-                shadow.setDirection(starting_direction);
-            }
             //time = time - fullDayLength;
-            time = 0;
+            time -= fullDayLength;
             isNight = false;
         // Transition from day to night
         } else if (time > dayLength) {
@@ -168,10 +159,12 @@ public class ShadowController {
     }
 
     public void forwardTimeRatio(float amount) {
+        // Forward to day with dynamic shadows
         if(doShadowsMove) {
             amount = 1 - timeRatio;
         }
         beginningTimeRatio = timeRatio;
         endTimeRatio = timeRatio + amount;
     }
+
 }

@@ -270,13 +270,14 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 */
 	private void draw() {
 		canvas.begin();
-		canvas.draw(background,Color.WHITE,0,0,0,0,0,.25f,.3f);
+		float scaleFactor = canvas.getHeight() / (float) background.getHeight();
+		canvas.draw(background,Color.WHITE,0,0,0,0,0,scaleFactor,scaleFactor);
 
 		if (playButton == null) {
 			drawProgress(canvas);
 		} else {
 			Color tint = (pressState == 1 ? Color.GRAY: Color.WHITE);
-			canvas.draw(startFilm, tint, startFilm.getRegionWidth()/2, startFilm.getRegionHeight()/2,
+			canvas.draw(startFilm, tint, startFilm.getRegionWidth()/2f, startFilm.getRegionHeight()/2f,
 						centerX, centerY, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 		}
 		canvas.end();

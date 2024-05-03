@@ -20,7 +20,7 @@ public class ShadowModel extends PolygonObstacle {
      * The direction that the shadow is facing.
      * Invariant: This vector is always normalized.
      */
-    private Vector2 direction = new Vector2(0, 1);
+    private Vector2 direction = new Vector2(1, 0);
     /** X offset of the shadow. */
     private float xOffset;
     /** Y offset of the shadow. */
