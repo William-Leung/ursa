@@ -52,13 +52,13 @@ public class GDXRoot extends Game implements ScreenListener {
 	 */
 	public GDXRoot() { }
 	public static void testing() {
-		float[] arr = new float[]{};
+		float[] arr = new float[]{7,44,36,9,98,5,123,32,116,257,42,257,9,227};
 
 
 
-		float imageX = 256;
+		float imageX = 128;
 		float imageY = 256;
-		float yOffset = imageY - 244;
+		float yOffset = imageY - 246;
 		for(int i = 0; i < arr.length; i++) {
 			float elem = arr[i];
 			if(i % 2 == 1) {
@@ -81,7 +81,7 @@ public class GDXRoot extends Game implements ScreenListener {
 	public void create() {
 		testing();
 		prefs = Gdx.app.getPreferences("Completed Data");
-		levelsCompleted = 10;
+		levelsCompleted = 20;
 		System.out.println("levels completed " + levelsCompleted);
 		canvas  = new GameCanvas();
 		loading = new LoadingMode("assets.json",canvas,1);
@@ -93,11 +93,23 @@ public class GDXRoot extends Game implements ScreenListener {
 		controllers = new WorldController[25];
 		controllers[0] = new SceneModel("rigel_tutorial_1.json");
 		controllers[1] = new SceneModel("rigel_tutorial_2.json");
-		controllers[2] = new SceneModel("rigel_level_4.json");
+		controllers[2] = new SceneModel("rigel_level_5.json");
+		controllers[3] = new SceneModel("rigel_level_4.json");
+		controllers[4] = new SceneModel("rigel_level_5.json");
+		controllers[5] = new SceneModel("rigel_tutorial_1.json");
+		controllers[6] = new SceneModel("rigel_tutorial_1.json");
+		controllers[7] = new SceneModel("rigel_tutorial_1.json");
+		controllers[8] = new SceneModel("rigel_tutorial_1.json");
+		controllers[9] =new SceneModel("rigel_tutorial_1.json");
+		controllers[10] = new SceneModel("rigel_tutorial_1.json");
+		controllers[11] =new SceneModel("rigel_tutorial_1.json");
+		controllers[12] = new SceneModel("rigel_tutorial_1.json");
+		controllers[13] =new SceneModel("rigel_tutorial_1.json");
+		controllers[14] = new SceneModel("rigel_tutorial_1.json");
+
 		for(int i = 0; i < prefs.getFloat("completed");i++){
 			controllers[i].setWasCompleted(true);
 		}
-		System.out.println("controller 0 " + controllers[0].isWasCompleted());
 
 		current = 0;
 		loading.setScreenListener(this);
@@ -211,6 +223,160 @@ public class GDXRoot extends Game implements ScreenListener {
 			levelSelector.dispose();
 			levelSelector = null;
 
+		}
+		else if (screen == levelSelector && exitCode == 4) {
+			current = 3;
+
+			controllers[current].gatherAssets(directory);
+			controllers[current].setScreenListener(this);
+			controllers[current].setCanvas(canvas);
+			controllers[current].reset();
+			setScreen(controllers[current]);
+			controllers[current].active = true;
+
+			levelSelector.setActive(false);
+			levelSelector.dispose();
+			levelSelector = null;
+		}
+		else if (screen == levelSelector && exitCode == 5) {
+			current = 4;
+
+			controllers[current].gatherAssets(directory);
+			controllers[current].setScreenListener(this);
+			controllers[current].setCanvas(canvas);
+			controllers[current].reset();
+			setScreen(controllers[current]);
+			controllers[current].active = true;
+
+			levelSelector.setActive(false);
+			levelSelector.dispose();
+			levelSelector = null;
+		}
+		else if (screen == levelSelector && exitCode == 6) {
+			current = 5;
+
+			controllers[current].gatherAssets(directory);
+			controllers[current].setScreenListener(this);
+			controllers[current].setCanvas(canvas);
+			controllers[current].reset();
+			setScreen(controllers[current]);
+			controllers[current].active = true;
+
+			levelSelector.setActive(false);
+			levelSelector.dispose();
+			levelSelector = null;
+		}
+		else if (screen == levelSelector && exitCode == 7) {
+			current = 6;
+
+			controllers[current].gatherAssets(directory);
+			controllers[current].setScreenListener(this);
+			controllers[current].setCanvas(canvas);
+			controllers[current].reset();
+			setScreen(controllers[current]);
+			controllers[current].active = true;
+
+			levelSelector.setActive(false);
+			levelSelector.dispose();
+			levelSelector = null;
+		}
+		else if (screen == levelSelector && exitCode == 8) {
+			current = 7;
+
+			controllers[current].gatherAssets(directory);
+			controllers[current].setScreenListener(this);
+			controllers[current].setCanvas(canvas);
+			controllers[current].reset();
+			setScreen(controllers[current]);
+			controllers[current].active = true;
+
+			levelSelector.setActive(false);
+			levelSelector.dispose();
+			levelSelector = null;
+		}
+		else if (screen == levelSelector && exitCode == 9) {
+			current = 8;
+
+			controllers[current].gatherAssets(directory);
+			controllers[current].setScreenListener(this);
+			controllers[current].setCanvas(canvas);
+			controllers[current].reset();
+			setScreen(controllers[current]);
+			controllers[current].active = true;
+
+			levelSelector.setActive(false);
+			levelSelector.dispose();
+			levelSelector = null;
+		}
+		else if (screen == levelSelector && exitCode == 10) {
+			current = 9;
+
+			controllers[current].gatherAssets(directory);
+			controllers[current].setScreenListener(this);
+			controllers[current].setCanvas(canvas);
+			controllers[current].reset();
+			setScreen(controllers[current]);
+			controllers[current].active = true;
+
+			levelSelector.setActive(false);
+			levelSelector.dispose();
+			levelSelector = null;
+		}
+		else if (screen == levelSelector && exitCode == 11) {
+			current = 10;
+
+			controllers[current].gatherAssets(directory);
+			controllers[current].setScreenListener(this);
+			controllers[current].setCanvas(canvas);
+			controllers[current].reset();
+			setScreen(controllers[current]);
+			controllers[current].active = true;
+
+			levelSelector.setActive(false);
+			levelSelector.dispose();
+			levelSelector = null;
+		}
+		else if (screen == levelSelector && exitCode == 12) {
+			current = 11;
+
+			controllers[current].gatherAssets(directory);
+			controllers[current].setScreenListener(this);
+			controllers[current].setCanvas(canvas);
+			controllers[current].reset();
+			setScreen(controllers[current]);
+			controllers[current].active = true;
+
+			levelSelector.setActive(false);
+			levelSelector.dispose();
+			levelSelector = null;
+		}
+		else if (screen == levelSelector && exitCode == 13) {
+			current = 12;
+
+			controllers[current].gatherAssets(directory);
+			controllers[current].setScreenListener(this);
+			controllers[current].setCanvas(canvas);
+			controllers[current].reset();
+			setScreen(controllers[current]);
+			controllers[current].active = true;
+
+			levelSelector.setActive(false);
+			levelSelector.dispose();
+			levelSelector = null;
+		}
+		else if (screen == levelSelector && exitCode == 14) {
+			current = 13;
+
+			controllers[current].gatherAssets(directory);
+			controllers[current].setScreenListener(this);
+			controllers[current].setCanvas(canvas);
+			controllers[current].reset();
+			setScreen(controllers[current]);
+			controllers[current].active = true;
+
+			levelSelector.setActive(false);
+			levelSelector.dispose();
+			levelSelector = null;
 		}
 		else if (exitCode == 32 && screen != levelSelector && screen != loading) {
 			canvas.setCam(camX,camY);

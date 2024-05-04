@@ -1,12 +1,9 @@
 package edu.cornell.gdiac.physics.shadows;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.Transform;
 import com.badlogic.gdx.math.*;
 import edu.cornell.gdiac.physics.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.PolygonObstacle;
-import edu.cornell.gdiac.util.PooledList;
 
 /**
  * This class represents dynamic shadows for all static game objects.

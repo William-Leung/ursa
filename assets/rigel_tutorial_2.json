@@ -22,7 +22,7 @@
                 {
                  "name":"starting_rotation",
                  "type":"int",
-                 "value":-50
+                 "value":40
                 }],
          "type":"tilelayer",
          "visible":true,
@@ -1188,12 +1188,12 @@
                         {
                          "name":"rotation_delay",
                          "type":"int",
-                         "value":180
+                         "value":240
                         }, 
                         {
                          "name":"rotation_speed",
                          "type":"float",
-                         "value":1.5
+                         "value":1
                         }, 
                         {
                          "name":"rotations",
@@ -1216,12 +1216,12 @@
                         {
                          "name":"rotation_delay",
                          "type":"int",
-                         "value":150
+                         "value":210
                         }, 
                         {
                          "name":"rotation_speed",
                          "type":"float",
-                         "value":4
+                         "value":3
                         }, 
                         {
                          "name":"rotations",

@@ -2,16 +2,19 @@ package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonReader;
@@ -39,10 +42,16 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
     private float ursaStartY;
     private float ursaNewX;
     private float ursaNewY;
+    private float direction;
+    private float[] positions;
     private float time;
     private JsonValue jsonData;
+    private float ursaMoveDist;
+    private boolean[] buttonsPressed = new boolean[14];
+    private boolean[] buttonsUnlocked = new boolean[14];
     private boolean button2Pressed;
     private boolean button3Pressed;
+    private boolean exiting;
     private float[] completedLevels;
     private boolean button1Locked;
     private boolean button2Locked;
@@ -53,9 +62,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
     private float levelsCompleted;
     private FilmStrip button1;
     private FilmStrip[] buttonsFilms = new FilmStrip[20];
-    private FilmStrip button2;
-    private FilmStrip button3;
-    private FilmStrip button4;
+
     private TextureRegion background = new TextureRegion();
     private ScreenListener listener;
     private final float ScreenWidthStart = 1024;
@@ -69,6 +76,8 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
 
     private Music levelSelectMusic;
     public LevelSelector(GameCanvas NewCanvas,float completion){
+        direction = 1;
+        ursaMoveDist = 2.5f;
         ursaStartX = 78;
         ursaStartY = 196f;
         ursaNewX = 78;
@@ -78,8 +87,21 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         active = false;
         Gdx.input.setInputProcessor( this );
         button1Pressed = false;
-
-
+        for(int i = 0; i < buttonsPressed.length;i++){
+            buttonsPressed[i] = false;
+        }
+        buttonsUnlocked[0] = true;
+        for(int i = 1; i < buttonsUnlocked.length;i++){
+            buttonsUnlocked[i] = false;
+        }
+        positions = new float[]{.0391f * canvas.getWidth(),.2691f * canvas.getHeight(),.1523f* canvas.getWidth(),.2691f * canvas.getHeight(),
+                .1523f * canvas.getWidth(),.684f * canvas.getHeight(),.2773f * canvas.getWidth(),.684f * canvas.getHeight(),
+                .2773f * canvas.getWidth(),.41f * canvas.getHeight(),0.416015625f * canvas.getWidth(),.41f * canvas.getHeight(),
+                0.416015625f * canvas.getWidth(),.1181f * canvas.getHeight(),.5586f * canvas.getWidth(),.1181f * canvas.getHeight(),
+                .5586f * canvas.getWidth(),.4931f * canvas.getHeight(),.5586f * canvas.getWidth(),.8507f * canvas.getHeight(),
+                .706f * canvas.getWidth(),.8507f * canvas.getHeight(),.706f * canvas.getWidth(),.5417f * canvas.getHeight(),
+                .8496f * canvas.getWidth(),.5417f * canvas.getHeight(),.8496f * canvas.getWidth(),.2656f * canvas.getHeight()};
+        exiting = false;
 
 
 
@@ -93,6 +115,17 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         buttons[1] = new TextureRegion(directory.getEntry("levelSelect:Level2", Texture.class));
         buttons[2] = new TextureRegion(directory.getEntry("levelSelect:Level3", Texture.class));
         buttons[3] = new TextureRegion(directory.getEntry("levelSelect:Level4", Texture.class));
+        buttons[4] = new TextureRegion(directory.getEntry("levelSelect:Level5", Texture.class));
+        buttons[5] = new TextureRegion(directory.getEntry("levelSelect:Level6", Texture.class));
+        buttons[6] = new TextureRegion(directory.getEntry("levelSelect:Level7", Texture.class));
+        buttons[7] = new TextureRegion(directory.getEntry("levelSelect:Level8", Texture.class));
+        buttons[8] = new TextureRegion(directory.getEntry("levelSelect:Level9", Texture.class));
+        buttons[9] = new TextureRegion(directory.getEntry("levelSelect:Level10", Texture.class));
+        buttons[10] = new TextureRegion(directory.getEntry("levelSelect:Level11", Texture.class));
+        buttons[11] = new TextureRegion(directory.getEntry("levelSelect:Level12", Texture.class));
+        buttons[12] = new TextureRegion(directory.getEntry("levelSelect:Level13", Texture.class));
+        buttons[13] = new TextureRegion(directory.getEntry("levelSelect:Level14", Texture.class));
+
 
         ursa = new TextureRegion(directory.getEntry("player:ursaWalk",Texture.class));
         ursaFilm = new FilmStrip(ursa.getTexture(),2,8);
@@ -106,104 +139,156 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         buttonsFilms[2].setFrame(0);
         buttonsFilms[3] = new FilmStrip(buttons[3].getTexture(),1,5);
         buttonsFilms[3].setFrame(0);
+        buttonsFilms[4] = new FilmStrip(buttons[4].getTexture(),1,5);
+        buttonsFilms[4].setFrame(0);
+        buttonsFilms[5] = new FilmStrip(buttons[5].getTexture(),1,5);
+        buttonsFilms[5].setFrame(0);
+        buttonsFilms[6] = new FilmStrip(buttons[6].getTexture(),1,5);
+        buttonsFilms[6].setFrame(0);
+        buttonsFilms[7] = new FilmStrip(buttons[7].getTexture(),1,5);
+        buttonsFilms[7].setFrame(0);
+        buttonsFilms[8] = new FilmStrip(buttons[8].getTexture(),1,5);
+        buttonsFilms[8].setFrame(0);
+        buttonsFilms[9] = new FilmStrip(buttons[9].getTexture(),1,5);
+        buttonsFilms[9].setFrame(0);
+        buttonsFilms[10] = new FilmStrip(buttons[10].getTexture(),1,5);
+        buttonsFilms[10].setFrame(0);
+        buttonsFilms[11] = new FilmStrip(buttons[11].getTexture(),1,5);
+        buttonsFilms[11].setFrame(0);
+        buttonsFilms[12] = new FilmStrip(buttons[12].getTexture(),1,5);
+        buttonsFilms[12].setFrame(0);
+        buttonsFilms[13] = new FilmStrip(buttons[13].getTexture(),1,5);
+        buttonsFilms[13].setFrame(0);
         background = new TextureRegion(directory.getEntry("levelSelect:background", Texture.class));
         levelSelectMusic = directory.getEntry("soundtracks:level_select", Music.class);
 
-        button2Locked = true;
-        button3Locked = true;
-        button4Locked = true;
+
         if(levelsCompleted >= 1){
-            button2Locked = false;
+            buttonsUnlocked[1] = true;
             if(levelsCompleted >= 2){
                 buttonsFilms[1].setFrame(3);
             }
         }
 
         if(levelsCompleted >= 2){
-            button3Locked = false;
+            buttonsUnlocked[2] = true;
             if(levelsCompleted >= 3){
                 buttonsFilms[2].setFrame(3);
             }
 
         }
         if(levelsCompleted >= 3){
-            button4Locked = false;
+            buttonsUnlocked[3] = true;
+            if(levelsCompleted >= 4){
+                buttonsFilms[3].setFrame(3);
+            }
+        }
+        if(levelsCompleted >= 4){
+            buttonsUnlocked[4] = true;
+            if(levelsCompleted >= 5){
+                buttonsFilms[4].setFrame(3);
+            }
+        }
+        if(levelsCompleted >= 5){
+            buttonsUnlocked[5] = true;
+            if(levelsCompleted >= 6){
+                buttonsFilms[5].setFrame(3);
+            }
+        }
+        if(levelsCompleted >= 6){
+            buttonsUnlocked[6] = true;
+            if(levelsCompleted >= 7){
+                buttonsFilms[6].setFrame(3);
+            }
+        }
+        if(levelsCompleted >= 7){
+            buttonsUnlocked[7] = true;
+            if(levelsCompleted >= 8){
+                buttonsFilms[7].setFrame(3);
+            }
+        }
+        if(levelsCompleted >= 8){
+            buttonsUnlocked[8] = true;
+            if(levelsCompleted >= 9){
+                buttonsFilms[8].setFrame(3);
+            }
+        }
+        if(levelsCompleted >= 9){
+            buttonsUnlocked[9] = true;
+            if(levelsCompleted >= 10){
+                buttonsFilms[9].setFrame(3);
+            }
+        }
+        if(levelsCompleted >= 10){
+            buttonsUnlocked[10] = true;
+            if(levelsCompleted >= 11){
+                buttonsFilms[10].setFrame(3);
+            }
+        }
+        if(levelsCompleted >= 11){
+            buttonsUnlocked[11] = true;
+            if(levelsCompleted >= 12){
+                buttonsFilms[11].setFrame(3);
+            }
+        }
+        if(levelsCompleted >= 12){
+            buttonsUnlocked[12] = true;
+            if(levelsCompleted >= 13){
+                buttonsFilms[12].setFrame(3);
+            }
+        }
+        if(levelsCompleted >= 13){
+            buttonsUnlocked[13] = true;
+            if(levelsCompleted >= 14){
+                buttonsFilms[13].setFrame(3);
+            }
         }
 
     }
     private void update(float delta){
-
-        if(levelsCompleted == 1){
-            button2Locked = false;
-        }
         if(ursaFilm.getFrame() == 11){
             ursaFilm.setFrame(0);
-        }
 
+        }
         time += 1;
+        if((Gdx.input.isKeyPressed(Input.Keys.LEFT))){
+            ursaStartX -= ursaMoveDist;
+            ursaNewX = ursaStartX;
+            direction = -1;
 
-        if(button1Pressed){
-            buttonsFilms[0].setFrame(1);
-        }else {
-            buttonsFilms[0].setFrame(0);
-        }
-        if(button2Pressed){
-
-            buttonsFilms[1].setFrame(4);
-        }
-        else if(button2Locked ){
-            buttonsFilms[1].setFrame(0);
-        }
-        else {
-
-            if(buttonsFilms[1].getFrame() == 0 ){
-                if(time%30 == 0){
-                    buttonsFilms[1].setFrame(1);
-                }
-
-            }
-            else if(buttonsFilms[1].getFrame() ==1 ){
-                if(time%30 == 0){
-                    buttonsFilms[1].setFrame(2);
-                }
-            }
-            else if(buttonsFilms[1].getFrame() ==2 ){
-                if(time%30 == 0){
-                    buttonsFilms[1].setFrame(3);
-                }
-            }
-            else{
-                buttonsFilms[1].setFrame(3);
-            }
 
         }
+        if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)){
+            direction = 1;
+            ursaStartX += ursaMoveDist;
+            ursaNewX = ursaStartX;
 
-        if(button3Pressed){
-            buttonsFilms[2].setFrame(4);
         }
-        else if(button3Locked){
-            buttonsFilms[2].setFrame(0);
-        }
-        else {
+        if(Gdx.input.isKeyPressed(Input.Keys.UP)){
+            ursaStartY += ursaMoveDist;
+            ursaNewY = ursaStartY;
 
-            if(buttonsFilms[2].getFrame() == 0 ){
-                if(time%30 == 0){
-                    buttonsFilms[2].setFrame(1);
-                }
-
-            }
-            else if(buttonsFilms[2].getFrame() ==1 ){
-                if(time%30 == 0){
-                    buttonsFilms[2].setFrame(2);
-                }
-            }
-            else if(buttonsFilms[2].getFrame() ==2 ){
-                if(time%30 == 0){
-                    buttonsFilms[2].setFrame(3);
-                }
-            }
-            else buttonsFilms[2].setFrame(3);
         }
+        if(Gdx.input.isKeyPressed(Input.Keys.DOWN)){
+            ursaStartY -= ursaMoveDist;
+            ursaNewY = ursaStartY;
+
+        }
+        if(Gdx.input.isKeyPressed(Input.Keys.DOWN) ||Gdx.input.isKeyPressed(Input.Keys.UP)||Gdx.input.isKeyPressed(Input.Keys.RIGHT)|| Gdx.input.isKeyPressed(Input.Keys.LEFT)){
+            if(time % 3 == 0){
+                System.out.println("Running Film");
+                ursaFilm.setFrame(ursaFilm.getFrame() + 1);
+            }
+        }
+
+
+        updateButtons();
+
+
+
+
+
+
         if(Math.abs(ursaStartX-ursaNewX) > 5 && ursaStartX < ursaNewX){
 
             if(time% 2 == 0){
@@ -232,10 +317,72 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
             ursaFilm.setFrame(ursaFilm.getFrame() + 1);
         }
 
-        if(Math.abs(ursaStartX - ursaNewX) < 10 && Math.abs(ursaStartY - ursaNewY) < 10){
+        if(Math.abs(ursaStartX - ursaNewX) < 10 && Math.abs(ursaStartY - ursaNewY) < 10 && !Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT)&& !Gdx.input.isKeyPressed(Input.Keys.UP) && !Gdx.input.isKeyPressed(Input.Keys.DOWN)){
             ursaFilm.setFrame(3);
         }
 
+
+    }
+    private void updateButtons(){
+        if(buttonsPressed[0]){
+            buttonsFilms[0].setFrame(1);
+        }else {
+            buttonsFilms[0].setFrame(0);
+        }
+
+
+        for(int i =1; i< buttonsPressed.length; i++){
+            if(buttonsPressed[i]){
+
+                buttonsFilms[i].setFrame(4);
+            }
+            else if(!buttonsUnlocked[i] ){
+                buttonsFilms[i].setFrame(0);
+            }
+            else {
+
+                if(buttonsFilms[i].getFrame() == 0 ){
+                    if(time%30 == 0){
+                        buttonsFilms[i].setFrame(1);
+                    }
+
+                }
+                else if(buttonsFilms[i].getFrame() ==1 ){
+                    if(time%30 == 0){
+                        buttonsFilms[i].setFrame(2);
+                    }
+                }
+                else if(buttonsFilms[i].getFrame() ==2 ){
+                    if(time%30 == 0){
+                        buttonsFilms[i].setFrame(3);
+                    }
+                }
+                else{
+                    buttonsFilms[i].setFrame(3);
+                }
+
+            }
+        }
+
+
+
+
+
+
+    }
+
+    private void enterPressed() {
+        System.out.println("enter Pressed");
+        for (int j = 0; j < positions.length / 2; j++) {
+            float posX = positions[j * 2];
+            float posY = positions[j * 2 + 1];
+
+            if(buttonsUnlocked[j] && Math.abs(posX-ursaStartX) < 30 && Math.abs(posY-ursaStartY)<30){
+                listener.exitScreen(this,j+1);
+            }
+
+
+        }
     }
 
     private void draw(){
@@ -244,14 +391,15 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
 
         canvas.begin();
 
-
+        float defaultHeight = 576;
+        float defaultWidth = 1024;
 
         // We only care about the full height of the image fitting in the image, the width can go off the screen
         backgroundScaleFactor = (float) canvas.getHeight() / background.getRegionHeight();
         float buttonWidth = 128 * backgroundScaleFactor;
         float buttonHeight = 128 * backgroundScaleFactor;
         canvas.draw(background,Color.WHITE,0,0,background.getRegionWidth() * backgroundScaleFactor,background.getRegionHeight() * backgroundScaleFactor);
-        System.out.println(background.getRegionWidth() * backgroundScaleFactor + " " + background.getRegionHeight() * backgroundScaleFactor);
+        //System.out.println(background.getRegionWidth() * backgroundScaleFactor + " " + background.getRegionHeight() * backgroundScaleFactor);
         //canvas.draw(buttonsFilms[0],Color.WHITE, buttonCenter.x, buttonCenter.y, buttonPositions[0] * backgroundScaleFactor,buttonPositions[1] * backgroundScaleFactor,256 * backgroundScaleFactor,256 * backgroundScaleFactor
 
         //System.out.println("Button " + buttonPositions[0] * backgroundScaleFactor + " " + buttonPositions[1] * backgroundScaleFactor);
@@ -262,16 +410,31 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         //canvas.draw(buttonsFilms[0],Color.WHITE, buttonCenter.x, buttonCenter.y, buttonPositions[0] * backgroundScaleFactor,buttonPositions[1] * backgroundScaleFactor,256 * backgroundScaleFactor,256 * backgroundScaleFactor);
         canvas.draw(buttonsFilms[1],Color.WHITE,buttonsFilms[1].getRegionWidth() / 4f,buttonsFilms[1].getRegionHeight() / 4f,buttonPositions[2] * backgroundScaleFactor,buttonPositions[3] * backgroundScaleFactor, buttonWidth, buttonHeight);
         canvas.draw(buttonsFilms[2],Color.WHITE,buttonsFilms[2].getRegionWidth() / 4f,buttonsFilms[2].getRegionHeight() / 4f,buttonPositions[4] * backgroundScaleFactor,buttonPositions[5] * backgroundScaleFactor, buttonWidth, buttonHeight);*/
-        //canvas.draw(background,Color.WHITE,0,0,background.getRegionWidth() * .25f,background.getRegionHeight() * .285f);
-        canvas.draw(buttonsFilms[0],Color.WHITE,40,155,buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
-        canvas.draw(buttonsFilms[1],Color.WHITE,152.5f,155,buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
-        canvas.draw(buttonsFilms[2],Color.WHITE,152.5f,395,buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
-        canvas.draw(buttonsFilms[3],Color.WHITE,285f,395,buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
+        canvas.draw(background,Color.WHITE,0,0,background.getRegionWidth() * .25f,background.getRegionHeight() * .285f);
+       canvas.draw(buttonsFilms[0],Color.WHITE,.0391f * canvas.getWidth(),.2691f * canvas.getHeight(),buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
+        canvas.draw(buttonsFilms[1],Color.WHITE,.1523f* canvas.getWidth(),.2691f * canvas.getHeight(),buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
+        canvas.draw(buttonsFilms[2],Color.WHITE,.1523f * canvas.getWidth(),.684f * canvas.getHeight(),buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
+        canvas.draw(buttonsFilms[3],Color.WHITE,.2773f * canvas.getWidth(),.684f * canvas.getHeight(),buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
+        canvas.draw(buttonsFilms[4],Color.WHITE,.2773f * canvas.getWidth(),.41f * canvas.getHeight(),buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
+        canvas.draw(buttonsFilms[5],Color.WHITE,0.416015625f * canvas.getWidth(),.41f * canvas.getHeight(),buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
+        canvas.draw(buttonsFilms[6],Color.WHITE,0.416015625f * canvas.getWidth(),.1181f * canvas.getHeight(),buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
+        canvas.draw(buttonsFilms[7],Color.WHITE,.5586f * canvas.getWidth(),.1181f * canvas.getHeight(),buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
+        canvas.draw(buttonsFilms[8],Color.WHITE,.5586f * canvas.getWidth(),.4931f * canvas.getHeight(),buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
+        canvas.draw(buttonsFilms[9],Color.WHITE,.5586f * canvas.getWidth(),.8507f * canvas.getHeight(),buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
+        canvas.draw(buttonsFilms[10],Color.WHITE,.706f * canvas.getWidth(),.8507f * canvas.getHeight(),buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
+        canvas.draw(buttonsFilms[11],Color.WHITE,.706f * canvas.getWidth(),.5417f * canvas.getHeight(),buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
+        canvas.draw(buttonsFilms[12],Color.WHITE,.8496f * canvas.getWidth(),.5417f * canvas.getHeight(),buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
+        canvas.draw(buttonsFilms[13],Color.WHITE,.8496f * canvas.getWidth(),.2656f * canvas.getHeight(),buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
         canvas.draw(ursaFilm,Color.WHITE,ursaStartX,ursaStartY,ursaFilm.getRegionWidth() * .3f,ursaFilm.getRegionHeight() * .3f);
         //canvas.draw(redTextureregion,Color.WHITE, 0,0,86,189,10,10);
 
         canvas.end();
+        if(Gdx.input.isKeyPressed(Input.Keys.ENTER) && !exiting){
+
+            enterPressed();
+        }
     }
+
 
 
 
@@ -294,54 +457,27 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         if(active){
-            //System.out.println("Screen x + L: " + screenX);
-            //System.out.println("Screen y: " + (canvas.getHeight()-screenY));
-            float radius = (buttonsFilms[0].getRegionWidth()/2.0f) -25;
-            //System.out.println("RAdius is: " + radius);
-            float centerX = 78f;
-            float centerY = 196f;
-            screenY = canvas.getHeight()-screenY;
-            float formula = (screenX-centerX)*(screenX-centerX)+(screenY-centerY)*(screenY-centerY);
-            formula = (float) Math.sqrt(formula);
-            //System.out.println("Formula: "+ formula);
-            if(formula < radius  ){
-                System.out.println("running this");
-                if(Math.abs(ursaStartX - centerX) < 10 && Math.abs(ursaStartY - centerY) < 10){
-                    button1Pressed = true;
-                }
-               ursaNewX = centerX;
-               ursaNewY = centerY;
-            }
-            centerX = 189f;
-            centerY = 196f;
-            formula = (screenX-centerX)*(screenX-centerX)+(screenY-centerY)*(screenY-centerY);
-            formula = (float) Math.sqrt(formula);
-            System.out.println("levels complete: "+ levelsCompleted);
-            if(formula < radius && button2Locked == false ){
-                if(Math.abs(ursaStartX - centerX) < 7 && Math.abs(ursaStartY - centerY) < 7){
-                    button2Pressed = true;
-                }
 
-                ursaNewX = centerX;
-                ursaNewY = centerY;
+            OrthographicCamera cam = canvas.getCamera();
+            Vector3 touch = new Vector3();
+            cam.unproject(touch.set(screenX, screenY, 0));
+            ursaNewX = touch.x;
+            ursaNewY = touch.y;
+
+
+            for (int j = 0; j < positions.length / 2; j++) {
+                float posX = positions[j * 2];
+                float posY = positions[j * 2 + 1];
+
+                if(touch.x - posX < 80 && touch.y - posY < 80 && touch.x - posX > 0 && touch.y - posY > 0)
+                {
+                   if(Math.abs(ursaStartX - touch.x) < 8){
+                       buttonsFilms[j].setFrame(4);
+                       updateButtons();
+                   }
+                }
             }
 
-
-            centerX = 189f;
-            centerY = 434;
-            formula = (screenX-centerX)*(screenX-centerX)+(screenY-centerY)*(screenY-centerY);
-            formula = (float) Math.sqrt(formula);
-
-            if(formula < radius && button3Locked == false ){
-                System.out.println(button3Locked + "button 3 locked");
-                if(Math.abs(ursaStartX - centerX) < 7 && Math.abs(ursaStartY - centerY) < 7){
-                    button3Pressed = true;
-                }
-
-                ursaNewX = centerX;
-                ursaNewY = centerY;
-                System.out.println(ursaNewY + " ursa new y is ");
-            }
 
 
         }
@@ -354,52 +490,32 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
 
         if(active){
-            button3Pressed = false;
-            button2Pressed = false;
-            button1Pressed = false;
-            System.out.println("Screen x + L: " + screenX);
-            System.out.println("Screen y: " + (canvas.getHeight()-screenY));
-            float radius = (buttonsFilms[0].getRegionWidth()/2.0f) -25;
-            System.out.println("RAdius is: " + radius);
-            float centerX = 78f;
-            float centerY = 196f;
-            screenY = canvas.getHeight()-screenY;
-            float formula = (screenX-centerX)*(screenX-centerX)+(screenY-centerY)*(screenY-centerY);
-            formula = (float) Math.sqrt(formula);
-            System.out.println("Formula: "+ formula);
-            if(formula < radius && Math.abs(ursaStartX - centerX) < 7 && Math.abs(ursaStartX - centerX) < 7){
 
-               listener.exitScreen(this,1);
-            }
-            centerX = 189f;
-            centerY = 196f;
-            formula = (screenX-centerX)*(screenX-centerX)+(screenY-centerY)*(screenY-centerY);
-            formula = (float) Math.sqrt(formula);
+            OrthographicCamera cam = canvas.getCamera();
+            Vector3 touch = new Vector3();
+            cam.unproject(touch.set(screenX, screenY, 0));
+            ursaNewX = touch.x;
+            ursaNewY = touch.y;
 
-            if(formula < radius && button2Locked == false && Math.abs(ursaStartX - centerX) <7 && Math.abs(ursaStartY - centerY) < 7){
-               listener.exitScreen(this,2);
-            }
-            if(formula < radius && levelsCompleted == 1 ){
-                button2Locked = false;
-            }
-            centerX = 189f;
-            centerY = 434;
-            formula = (screenX-centerX)*(screenX-centerX)+(screenY-centerY)*(screenY-centerY);
-            formula = (float) Math.sqrt(formula);
-            if(formula < radius && button3Locked == false && Math.abs(ursaStartX - centerX) <7 && Math.abs(ursaStartY - centerY) < 7){
 
-                listener.exitScreen(this,3);
-            }
-            if(formula < radius && levelsCompleted == 2 ){
-                button3Locked = false;
+            for (int j = 0; j < positions.length / 2; j++) {
+                float posX = positions[j * 2];
+                float posY = positions[j * 2 + 1];
+
+                if(touch.x - posX < 80 && touch.y - posY < 80 && touch.x - posX > 0 && touch.y - posY > 0)
+                {
+                    if(Math.abs(ursaStartX - touch.x) < 8){
+                        listener.exitScreen(this,j+1);
+                    }
+                }
             }
 
 
 
         }
-        button3Pressed = false;
-        button2Pressed = false;
-        button1Pressed = false;
+        for(int i = 0; i < buttonsPressed.length; i++ ){
+            buttonsPressed[i] = false;
+        }
 
         return false;
     }
