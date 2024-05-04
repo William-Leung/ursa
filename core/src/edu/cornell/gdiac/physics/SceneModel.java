@@ -471,7 +471,7 @@ public class SceneModel extends WorldController implements ContactListener {
         levelMusicTense.stop();
         levelMusicNight.setLooping(true);
         levelMusicTense.setLooping(true);
-        levelMusicTense.setVolume(0);
+        levelMusicNight.setVolume(0);
         levelMusicTense.setVolume(0);
 
         populateLevel();
