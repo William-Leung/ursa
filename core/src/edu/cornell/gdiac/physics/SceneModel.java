@@ -37,7 +37,6 @@ import edu.cornell.gdiac.physics.shadows.ShadowModel;
 import edu.cornell.gdiac.physics.objects.Tree;
 import edu.cornell.gdiac.util.FilmStrip;
 import edu.cornell.gdiac.util.PooledList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedList;
 
@@ -63,6 +62,10 @@ public class SceneModel extends WorldController implements ContactListener {
     private final TextureRegion[] objectTextures = new TextureRegion[9];
     /** Texture asset for the cave in the polar map */
     private TextureRegion polarCaveTexture;
+    /** Texture asset for the portal in the polar map */
+    private TextureRegion polarPortalTexture;
+    /** Texture asset for the ZZZ fully realized in the polar map */
+    private TextureRegion polarZZZTexture;
     /** Texture asset for the ice in the polar map (moveable) */
     private TextureRegion polarIceTexture;
     /** Texture asset for a single white pixel (background) */
@@ -203,14 +206,14 @@ public class SceneModel extends WorldController implements ContactListener {
     private Enemy[] enemies;
     /** List of references to all AIControllers */
     private final LinkedList<AIController> controls = new LinkedList<>();
-    /** List of references to all trees */
-    private final PooledList<Tree> trees = new PooledList<>();
+    /** List of references to all interactable trees */
+    private final PooledList<Tree> interactableTrees = new PooledList<>();
     /** List of references to all decorations */
     private final PooledList<Decoration> decorations= new PooledList<>();
     /** List of references to decorations on the ground */
     private final PooledList<Decoration> groundDecorations = new PooledList<>();
-    /** List of references to all caves */
-    private final PooledList<Cave> caves = new PooledList<>();
+    /** List of references to all interactable caves */
+    private final PooledList<Cave> interactableCaves = new PooledList<>();
     /** List of references to dynamic objects (ursa + enemies) */
     private final PooledList<Obstacle> dynamicObjects = new PooledList<>();
 
@@ -329,6 +332,8 @@ public class SceneModel extends WorldController implements ContactListener {
         treeTextures[1] = new TextureRegion(directory.getEntry("polar:tree_no_snow",Texture.class));
 
         polarCaveTexture = new TextureRegion(directory.getEntry("polar:cave",Texture.class));
+        polarPortalTexture = new TextureRegion(directory.getEntry("polar:portal",Texture.class));
+        polarZZZTexture = new TextureRegion(directory.getEntry("polar:ZZZ",Texture.class));
         polarIceTexture = new TextureRegion(directory.getEntry("polar:ice",Texture.class));
 
         levelMusic = directory.getEntry("soundtracks:level_track", Music.class);
@@ -367,7 +372,7 @@ public class SceneModel extends WorldController implements ContactListener {
         TextureRegion treeShakeAnimation = new TextureRegion(directory.getEntry("polar:tree_shake_animation", Texture.class));
         treeShakeFilm = new FilmStrip(treeShakeAnimation.getTexture(), 2, 8);
 
-        TextureRegion cavePortalAnimation = new TextureRegion(directory.getEntry("polar:cave_animation", Texture.class));
+        TextureRegion cavePortalAnimation = new TextureRegion(directory.getEntry("polar:cave_portal_animation", Texture.class));
         cavePortalFilm = new FilmStrip(cavePortalAnimation.getTexture(), 2, 8);
         TextureRegion caveSleepAnimation = new TextureRegion(directory.getEntry("polar:cave_sleep_animation", Texture.class));
         caveZZZFilm = new FilmStrip(caveSleepAnimation.getTexture(), 2, 8);
@@ -459,6 +464,7 @@ public class SceneModel extends WorldController implements ContactListener {
         currCaveRotation = 0;
         interactedCave = null;
         caveZZZIndex = 0;
+        caveZZZFilm.setFrame(caveZZZIndex);
 
         controls.clear();
 
@@ -648,6 +654,9 @@ public class SceneModel extends WorldController implements ContactListener {
         if(currentFrame % cavePortalAnimBuffer == 0) {
             cavePortalIndex = (cavePortalIndex + 1) % 11;
         }
+        for(Cave cave: interactableCaves) {
+            cave.setPortalTexture(cavePortalFilm);
+        }
     }
 
     private void animateSmolUrsa() {
@@ -704,6 +713,7 @@ public class SceneModel extends WorldController implements ContactListener {
         }
         shadowController.update(backgroundColor);
 
+        animateCaves();
         // If the time is fast forwarding
         if(isTimeSkipping) {
             // Stop Ursa
@@ -720,14 +730,14 @@ public class SceneModel extends WorldController implements ContactListener {
             // Rotate the shadows over fastForwardDuration update loops
             int caveZZZAnimBuffer = 8;
 
-            int fastForwardDuration = (caveZZZAnimBuffer * 9 + caveZZZAnimBuffer - 1) + walkingDuration;
+            int fastForwardDuration = (caveZZZAnimBuffer * 9) + walkingDuration;
             if((currentFrame - timeBeganSkippingFrame) % fastForwardDuration == 0) {
                 isTimeSkipping = false;
                 ursa.resumeDrawing();
-                interactedCave.setIsUrsaSleeping(false);
+                interactedCave.setPortalTexture(polarPortalTexture);
                 caveZZZIndex = 0;
+                interactableCaves.remove(interactedCave);
             } else {
-
                 shadowController.animateFastForward(currentFrame - timeBeganSkippingFrame - walkingDuration + 1,
                         fastForwardDuration - walkingDuration);
 
@@ -745,13 +755,12 @@ public class SceneModel extends WorldController implements ContactListener {
         float yVal = InputController.getInstance().getVertical() * ursa.getForce();
         ursa.setMovement(xVal,yVal);
 
-        checkForInteraction();
+        checkForTreeInteraction();
 
         // Animates the game objects
         animatePlayerModel();
         animateEnemies();
         animateTree();
-        animateCaves();
         animateSmolUrsa();
 
         boolean alerted = false;
@@ -805,36 +814,40 @@ public class SceneModel extends WorldController implements ContactListener {
      *  Find the closest interactable obstacle among caves and trees.
      *  Then, shake the tree or fast forward the time if applicable.
      */
-    public void checkForInteraction() {
-        float treeInteractionRange = 7;
-        PolygonObstacle closestInteractableObstacle = null;
+    public void checkForTreeInteraction() {
+        float treeInteractionRange = 5;
+        Tree closestInteractableTree = null;
+        Cave closestInteractableCave = null;
         float minDistance = 1000;
         float tempDistance;
-        for(Tree tree: trees) {
+        for(Tree tree: interactableTrees) {
             tempDistance = ursa.getPosition().dst(tree.getPosition());
-            if (tree.canShake() && tempDistance < treeInteractionRange && (closestInteractableObstacle == null || tempDistance < minDistance)) {
-                closestInteractableObstacle = tree;
+            System.out.println(tempDistance);
+            if (tree.canShake() && tempDistance < treeInteractionRange && (closestInteractableTree == null || tempDistance < minDistance)) {
+                closestInteractableTree = tree;
                 minDistance = tempDistance;
             }
         }
-        for(Cave cave: caves) {
+        for(Cave cave: interactableCaves) {
             float caveInteractionRange = 3;
             tempDistance = ursa.getPosition().dst(cave.getPosition());
-            if (cave.canInteract() && tempDistance < caveInteractionRange && (closestInteractableObstacle == null || tempDistance < minDistance)) {
-                closestInteractableObstacle = cave;
+            if (cave.canInteract() && tempDistance < caveInteractionRange && (closestInteractableCave == null || tempDistance < minDistance)) {
+                closestInteractableCave = cave;
                 minDistance = tempDistance;
+            }
+        }
+
+        // Take cave entering as a priority
+        if(InputController.getInstance().didEnterCave()) {
+            if(closestInteractableCave != null) {
+                beginCaveFastForward(closestInteractableCave);
+                return;
             }
         }
         if(InputController.getInstance().didInteract()) {
-            System.out.println("Attempting to interact. ");
-            if (closestInteractableObstacle != null) {
-                if (closestInteractableObstacle instanceof Tree) {
-                    shakeTree((Tree) closestInteractableObstacle);
-                    System.out.println("Shaking tree. ");
-                } else {
-                    beginCaveFastForward((Cave) closestInteractableObstacle);
-                    System.out.println("Fast forwarding time. ");
-                }
+            if(closestInteractableTree != null) {
+                shakeTree(closestInteractableTree);
+                interactableTrees.remove(closestInteractableTree);
             }
         }
     }
@@ -869,9 +882,8 @@ public class SceneModel extends WorldController implements ContactListener {
         if(!cave.canInteract()) {
             return;
         }
-        //cave.interact();
+        cave.interact();
         walkingDuration = (int) ((cave.getPosition().dst(ursa.getPosition()) * 10));
-        System.out.println(Arrays.toString(caveRotations));
         if(currCaveRotation < caveRotations.length - 1) {
             shadowController.forwardTimeRatio(caveRotations[currCaveRotation + 1] - caveRotations[currCaveRotation]);
             currCaveRotation++;
@@ -881,11 +893,12 @@ public class SceneModel extends WorldController implements ContactListener {
         isTimeSkipping = true;
         timeBeganSkippingFrame = currentFrame;
         interactedCave = cave;
+        interactedCave.setZZZTexture(caveZZZFilm);
+        // Record where Ursa started to smoothly walk her to cave
         ursaStartingPosition = new Vector2(ursa.getPosition());
         ursaWalkAnimIndex = 0;
         ursaIdleAnimIndex = 0;
         ursa.setIsFacingRight(cave.getX() > ursa.getX());
-        interactedCave.setIsUrsaSleeping(true);
     }
 
     /**
@@ -1043,11 +1056,12 @@ public class SceneModel extends WorldController implements ContactListener {
     public void postDraw(float dt) {
         super.postDraw(dt);
 
-        // Draws the day/night UI element
-        for(Cave cave: caves) {
+        // Draw the ZZZ UI
+        for(Cave cave: interactableCaves) {
             cave.postDraw(canvas);
         }
 
+        // Draws the day/night UI element
         float uiDrawScale = 0.08f;
         canvas.draw(dayNightUITexture, Color.WHITE, dayNightUITexture.getRegionWidth() / 2f, dayNightUITexture.getRegionHeight() / 2f, canvas.getCameraX(), canvas.getCameraY() + canvas.getHeight() / 2f, uiRotationAngle,
                 uiDrawScale, uiDrawScale);
@@ -1408,13 +1422,15 @@ public class SceneModel extends WorldController implements ContactListener {
             Tree tree = new Tree(getVertices(treeConstants),drawToScreenCoordinates(x),drawToScreenCoordinates(y), yOffset, textureScale);
             tree.setDrawScale(scale);
             tree.setTexture(treeTextures[treeIndex - firstTreeIndex]);
+            tree.setName("tree" + i);
+            // If the tree has no snow
             if(treeIndex - firstTreeIndex == 1) {
                 tree.putOnShakeCooldown();
+            } else {
+                interactableTrees.add(tree);
             }
-            tree.setName("tree" + i);
 
             addObject(tree);
-            trees.add(tree);
 
             makeShadow(treeConstants,tree);
 
@@ -1444,13 +1460,13 @@ public class SceneModel extends WorldController implements ContactListener {
             Vector2 caveBubblePos = new Vector2(drawToScreenCoordinates(caveConstants.get("bubbleX").asFloat()), drawToScreenCoordinates(caveConstants.get("bubbleY").asFloat()));
 
             Cave obj = new Cave(getVertices(caveConstants), x, y, yOffset,textureScale, caveBubblePos);
-            obj.setZZZTexture(caveZZZFilm);
+            obj.setZZZTexture(polarZZZTexture);
             obj.setDrawScale(scale);
-            obj.setTexture(cavePortalFilm);
+            obj.setTexture(polarCaveTexture);
             obj.setName("cave" + i);
 
             addObject(obj);
-            caves.add(obj);
+            interactableCaves.add(obj);
 
             makeShadow(caveConstants,obj);
 
