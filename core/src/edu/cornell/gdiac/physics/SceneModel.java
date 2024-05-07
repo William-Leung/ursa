@@ -723,11 +723,9 @@ public class SceneModel extends WorldController implements ContactListener {
         // Increment the current frame (used for animation slow downs)
         currentFrame++;
 
-        // Continuously rotate the day/night UI
-        uiRotationAngle = -(timeRatio * 2) * (float) Math.PI + (float) Math.PI;
-
-        // Update the timeRatio (used for UI element and tinting)
+        // Update the timeRatio then UI rotation + shadow tinting correspondingly
         timeRatio = shadowController.getTimeRatio();
+        uiRotationAngle = -(timeRatio * 2) * (float) Math.PI + (float) Math.PI;
         // If it's night, reset the tinting
         if(timeRatio > 0.5) {
             colorNextPointer = 1;
@@ -742,20 +740,23 @@ public class SceneModel extends WorldController implements ContactListener {
             }
             updateBackgroundColor(intervals[colorNextPointer-1],timeRatio);
         }
+        shadowController.update(backgroundColor);
 
-        // Move the camera to Ursa
+
+        // Center the camera around Ursa
         canvas.moveCam(ursa.getPosition().x,ursa.getPosition().y);
         effect.getEmitters().first().setPosition(canvas.getWidth()/2,canvas.getHeight());
         effect.start();
 
+        // Play the music if it is not
         if (!levelMusic.isPlaying()) {
             levelMusicNight.play();
             levelMusicTense.play();
             levelMusic.play();
             levelMusic.setLooping(true);
         }
-        shadowController.update(backgroundColor);
 
+        // Always animate the cave portals even if time is fast forwarding
         animateCaves();
         // If the time is fast forwarding
         if(isTimeSkipping) {
@@ -805,7 +806,7 @@ public class SceneModel extends WorldController implements ContactListener {
         float yVal = InputController.getInstance().getVertical() * ursa.getForce();
         ursa.setMovement(xVal,yVal);
 
-        checkForTreeInteraction();
+        checkForInteraction();
 
         // Animates the game objects
         animatePlayerModel();
@@ -831,6 +832,7 @@ public class SceneModel extends WorldController implements ContactListener {
                     enemy.getPlayerPos(ursa.getPosition());
                 }
                 enemy.setInShadow(ursa.isInShadow());
+                enemy.createSightCone(world);
             }
         }
 
@@ -864,7 +866,7 @@ public class SceneModel extends WorldController implements ContactListener {
      *  Find the closest interactable obstacle among caves and trees.
      *  Then, shake the tree or fast forward the time if applicable.
      */
-    public void checkForTreeInteraction() {
+    public void checkForInteraction() {
         float treeInteractionRange = 5;
         Tree closestInteractableTree = null;
         Cave closestInteractableCave = null;
@@ -872,7 +874,6 @@ public class SceneModel extends WorldController implements ContactListener {
         float tempDistance;
         for(Tree tree: interactableTrees) {
             tempDistance = ursa.getPosition().dst(tree.getPosition());
-            System.out.println(tempDistance);
             if (tree.canShake() && tempDistance < treeInteractionRange && (closestInteractableTree == null || tempDistance < minDistance)) {
                 closestInteractableTree = tree;
                 minDistance = tempDistance;
@@ -1446,6 +1447,9 @@ public class SceneModel extends WorldController implements ContactListener {
             obj.setName("game object" + i);
             addObject(obj);
 
+            if(name.equals("house")) {
+                continue;
+            }
             makeShadow(objectConstants,obj);
 
             // ===================
