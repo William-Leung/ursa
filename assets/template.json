@@ -446,8 +446,8 @@
                 {
                  "gid":14,
                  "height":256,
-                 "id":314,
-                 "name":"1",
+                 "id":376,
+                 "name":"2",
                  "properties":[
                         {
                          "name":"is_stupid",
@@ -458,8 +458,8 @@
                  "type":"",
                  "visible":true,
                  "width":256,
-                 "x":66.0876274018375,
-                 "y":2502.59499025341
+                 "x":44.7272727272724,
+                 "y":2596.24242424243
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -514,7 +514,7 @@
          "y":0
         }],
  "nextlayerid":16,
- "nextobjectid":376,
+ "nextobjectid":377,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.10.2",

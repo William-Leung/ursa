@@ -138,15 +138,20 @@ public class Enemy extends BoxObstacle {
 	}
 
 	private static class ObstacleCallback implements RayCastCallback {
+		private final Vector2 rayOrigin;
+
 		/**
 		 * The point at which the raycast terminates, if interrupted by something.
 		 */
 		private Vector2 rayTerm;
 
+		private float rayDist;
+
 		/** was the raycast blocked by an obstacle? */
 		private boolean blocked;
 
-		public ObstacleCallback() {
+		public ObstacleCallback(Vector2 origin) {
+			rayOrigin = origin;
 			rayTerm = null;
 			blocked = false;
 		}
@@ -165,9 +170,12 @@ public class Enemy extends BoxObstacle {
 			Body body = fixture.getBody();
 
 			if (body.getType() == BodyDef.BodyType.StaticBody) { // For simplicity's sake, we're considering all static bodies to be obstacles
-				rayTerm = point;
+				if (rayTerm == null || point.dst2(rayOrigin) < rayTerm.dst(rayOrigin)) { // Get the closest point to the ray origin
+					rayTerm = point;
+					rayDist = rayTerm.dst(rayOrigin);
+				}
 				blocked = true;
-				return 0;
+				return 1;
 			}
 			return 1;
 		}
@@ -514,6 +522,8 @@ public class Enemy extends BoxObstacle {
 		for(int i = 1; i < vertices.length; i += 2) {
 			canvas.draw(redTextureregion,Color.WHITE, 0,0, vertices[i-1] + getX() * drawScale.x,vertices[i] + getY() * drawScale.y, 5,5);
 		}
+		canvas.draw(grayTextureRegion,Color.WHITE, 0,0, getX() * drawScale.x,getY() * drawScale.y, 10,10);
+
 	}
 
 
@@ -541,14 +551,15 @@ public class Enemy extends BoxObstacle {
 			sightConePoint.x = range * (float) Math.cos(Math.toRadians(curr_angle));
 			sightConePoint.y = range * (float) Math.sin(Math.toRadians(curr_angle));
 
-			ObstacleCallback callback = new ObstacleCallback();
-			world.rayCast(callback, getPosition(), sightConePoint);
+			ObstacleCallback callback = new ObstacleCallback(getPosition());
+			world.rayCast(callback, getPosition(), sightConePoint.cpy().add(getPosition()));
 
-			System.out.println(callback.wasBlocked());
 			if (callback.wasBlocked()) {
+				float distRatio = callback.rayDist / range;
 				//System.out.println("Blocked at " + callback.rayTerm.x + " " + callback.rayTerm.y);
-				vertices[i] = callback.getRayTermination().x;
-				vertices[i+1] = callback.getRayTermination().y;
+				System.out.println("Vertice " + i + " blocked");
+				vertices[i] = distRatio * sightConePoint.x * drawScale.x;
+				vertices[i+1] = distRatio * sightConePoint.y * drawScale.y;
 			} else {
 				//System.out.println("Unblocked @" + sightConePoint.x + " " + sightConePoint.y);
 				vertices[i] = sightConePoint.x * drawScale.x;
