@@ -94,12 +94,18 @@ public class SceneModel extends WorldController implements ContactListener {
     private FilmStrip cavePortalFilm;
     /** Filmstrip for little ursa idle animation */
     private FilmStrip smolUrsaIdleFilm;
+    /** Filmstrip for little ursa rescue 1 animation */
+    private FilmStrip smolUrsaRescue1Film;
+    /** Filmstrip for little ursa rescue 2 animation */
+    private FilmStrip smolUrsaRescue2Film;
     /** Filmstrip for cave sleep animation */
     private FilmStrip caveZZZFilm;
     /** Filmstrip for enemy diving animation */
     private FilmStrip salmonDiveFilm;
     /** Filmstrip for player caught animation */
     private FilmStrip playerCaughtFilm;
+    /** Filmstrip for player rescue animation */
+    private FilmStrip playerRescueFilm;
 
     /* =========== Animation Variables =========== */
     /** Current frame number (used to slow down animations) */
@@ -289,6 +295,7 @@ public class SceneModel extends WorldController implements ContactListener {
 
     private FrameBuffer fb = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), false);
 
+    private boolean hasWon = false;
 
     /**
      * Creates and initialize a new instance of the platformer game
@@ -375,6 +382,8 @@ public class SceneModel extends WorldController implements ContactListener {
         playerIdleFilm = new FilmStrip(playerIdleTextureAnimation.getTexture(),4,8);
         TextureRegion playerCaughtAnimation = new TextureRegion(directory.getEntry("player:ursaDown", Texture.class));
         playerCaughtFilm = new FilmStrip(playerCaughtAnimation.getTexture(),2,8);
+        TextureRegion playerRescueAnimation = new TextureRegion(directory.getEntry("player:ursaRescue", Texture.class));
+        playerRescueFilm = new FilmStrip(playerRescueAnimation.getTexture(),2,8);
 
         TextureRegion salmonUprightWalkAnimation = new TextureRegion(directory.getEntry("enemies:salmonUprightWalk", Texture.class));
         salmonUprightWalkFilm = new FilmStrip(salmonUprightWalkAnimation.getTexture(),4,8);
@@ -399,6 +408,12 @@ public class SceneModel extends WorldController implements ContactListener {
 
         TextureRegion smolUrsaIdleAnimation = new TextureRegion(directory.getEntry("smolursa:idle", Texture.class));
         smolUrsaIdleFilm = new FilmStrip(smolUrsaIdleAnimation.getTexture(), 5, 8);
+        TextureRegion smolUrsaRescue1Animation = new TextureRegion(directory.getEntry("smolursa:rescue_1", Texture.class));
+        smolUrsaRescue1Film = new FilmStrip(smolUrsaRescue1Animation.getTexture(), 7, 7);
+        smolUrsaRescue1Film.setFrame(0);
+        TextureRegion smolUrsaRescue2Animation = new TextureRegion(directory.getEntry("smolursa:idle", Texture.class));
+        smolUrsaRescue2Film = new FilmStrip(smolUrsaRescue2Animation.getTexture(), 5, 5);
+        smolUrsaRescue2Film.setFrame(0);
     }
     /**
      * Gathers all tile textures into a single array.
@@ -486,6 +501,9 @@ public class SceneModel extends WorldController implements ContactListener {
         caveZZZIndex = 0;
         caveZZZFilm.setFrame(caveZZZIndex);
         player_dive_anim = 0;
+        hasWon = false;
+        smolUrsaRescue1Film.setFrame(0);
+        smolUrsaRescue2Film.setFrame(0);
 
         controls.clear();
 
@@ -702,6 +720,7 @@ public class SceneModel extends WorldController implements ContactListener {
 
     private void animateSmolUrsa() {
         smolUrsaIdleFilm.setFrame(smolUrsaIdleIndex);
+        goal.setTexture(smolUrsaIdleFilm);
 
         int smolUrsaIdleAnimBuffer = 3;
         if(currentFrame % smolUrsaIdleAnimBuffer == 0) {
@@ -722,6 +741,18 @@ public class SceneModel extends WorldController implements ContactListener {
     public void update(float dt) {
         // Increment the current frame (used for animation slow downs)
         currentFrame++;
+
+        if(hasWon) {
+            if(smolUrsaRescue1Film.getFrame() < 48) {
+                if(currentFrame % 2 == 0) {
+                    smolUrsaRescue1Film.setFrame(smolUrsaRescue1Film.getFrame() + 1);
+                }
+                goal.setTexture(smolUrsaRescue1Film);
+                return;
+            } else {
+                setComplete(true);
+            }
+        }
 
         // Update the timeRatio then UI rotation + shadow tinting correspondingly
         timeRatio = shadowController.getTimeRatio();
@@ -1004,7 +1035,7 @@ public class SceneModel extends WorldController implements ContactListener {
 
             // Check for win condition
             if ((bd1 == ursa && bd2 == goal) || (bd1 == goal && bd2 == ursa)) {
-                setComplete(true);
+                hasWon = true;
                 levelMusic.stop();
                 levelMusicTense.stop();
                 levelMusicNight.stop();

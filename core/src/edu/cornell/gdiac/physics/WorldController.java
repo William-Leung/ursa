@@ -407,7 +407,7 @@ public abstract class WorldController implements Screen {
 			listener.exitScreen(this, EXIT_NEXT);
 			return false;
 		} else if(complete){
-
+			System.out.println("WOW");
 			listener.exitScreen(this, 12);
 			return false;
 		}else if(failed){
