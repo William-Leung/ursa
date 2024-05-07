@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.PolygonRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -24,6 +25,16 @@ import edu.cornell.gdiac.util.PooledList;
 
 public class Enemy extends BoxObstacle {
 
+	private static final TextureRegion redTextureregion;
+
+	static {
+		Pixmap redPixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+		redPixmap.setColor(new Color(1, 0, 0, 1));
+		redPixmap.fill();
+		Texture redTexture = new Texture(redPixmap);
+		redTextureregion = new TextureRegion(redTexture);
+		redPixmap.dispose();
+	}
 
 	private static final float SIGHT_RANGE_INCREMENT = 0.75f;
 	private static final float BLOB_SHADOW_SIZE = 0.85f;
@@ -32,6 +43,10 @@ public class Enemy extends BoxObstacle {
 	private static final int STUN_DAMPENING = 25;
 
 	private static final int STUN_DURATION = 60 * 5;
+
+	private final int num_vertices = 4;
+
+	private float[] vertices = new float[num_vertices * 2];
 
 	/** A Pixmap used for drawing sightcones */
 	private TextureRegion redTextureRegion;
@@ -49,8 +64,9 @@ public class Enemy extends BoxObstacle {
 
 	private float textureScale;
 
+	private World world;
+
 	private boolean playerInShadow = false;
-	private float screenWidth = 1280f;
 	private boolean playerCurrentInSight;
 	private boolean playerInDynamicShadow = false;
 	private boolean stunned = false;
@@ -88,7 +104,6 @@ public class Enemy extends BoxObstacle {
 		 */
 		private Vector2 rayTerm;
 
-
 		/**
 		 * Constructs a new EnemyLoSCallback object used for raycasting.
 		 * @param target
@@ -122,39 +137,39 @@ public class Enemy extends BoxObstacle {
 		}
 	}
 
-	private static class ObstObstrctCallback implements RayCastCallback {
-
+	private static class ObstacleCallback implements RayCastCallback {
 		/**
 		 * The point at which the raycast terminates, if interrupted by something.
 		 */
 		private Vector2 rayTerm;
 
 		/** was the raycast blocked by an obstacle? */
-		private boolean blocked = false;
+		private boolean blocked;
 
-		/**
-		 * Constructs a new EnemyLoSCallback object used for raycasting.
-		 */
-		private ObstObstrctCallback() { }
+		public ObstacleCallback() {
+			rayTerm = null;
+			blocked = false;
+		}
+
+		public Vector2 getRayTermination() {
+			return rayTerm;
+		}
 
 		public boolean wasBlocked() {
 			return blocked;
 		}
 
-		private void resetRayTerm() {
-			rayTerm = null;
-		}
 
 		@Override
 		public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
 			Body body = fixture.getBody();
 
 			if (body.getType() == BodyDef.BodyType.StaticBody) { // For simplicity's sake, we're considering all static bodies to be obstacles
+				rayTerm = point;
 				blocked = true;
-			} else {
-				blocked = false;
+				return 0;
 			}
-			return -1;
+			return 1;
 		}
 	}
 
@@ -476,6 +491,10 @@ public class Enemy extends BoxObstacle {
 		}
 	}*/
 
+	public void updateWorld(World world) {
+		this.world = world;
+	}
+
 	@Override
 	public void preDraw(GameCanvas canvas) {
 		Texture blobShadow = SceneModel.BLOB_SHADOW_TEXTURE;
@@ -487,24 +506,30 @@ public class Enemy extends BoxObstacle {
 	}
 
 	public void draw(GameCanvas canvas) {
-		drawSightCone(canvas, detectionRange, lookDirection, 8);
+		canvas.draw(createSightCone(detectionRange, lookDirection), Color.WHITE, origin.x,origin.y,getX()*drawScale.x,
+				getY()*drawScale.y,getAngle(),1.0f,1.0f);
 		canvas.draw(texture, Color.WHITE,origin.x,0,getX()*drawScale.x,(getY() - getHeight() / 2) * drawScale.y,getAngle(),
 				(lookDirection.x > 0 ? 1 : -1) * textureScale,textureScale);
 
-		screenWidth = canvas.getWidth();
+		for(int i = 1; i < vertices.length; i += 2) {
+			canvas.draw(redTextureregion,Color.WHITE, 0,0, vertices[i-1] + getX() * drawScale.x,vertices[i] + getY() * drawScale.y, 5,5);
+		}
+	}
+
+
+	public void generateVertices() {
+
 	}
 
 	/**
 	 * drawSightCones(canvas, num_vertices) uses PolygonRegion to
-	 * @param canvas This is the canvas you can draw with.
 	 * @param range how far the enemy can see
 	 * @param direction direction in which cone faces
-	 * @param num_vertices Number of vertices in PolygonRegion. Higher values increase smoothness.
 	 * Invariant: num_vertices must be even and >= 4.
 	 */
-	public void drawSightCone(GameCanvas canvas, float range, Vector2 direction, int num_vertices) {
+	public PolygonRegion createSightCone(float range, Vector2 direction) {
 		// Create the vertices which will form the cone
-		float[] vertices = new float[num_vertices * 2];
+		//float[] vertices = new float[num_vertices * 2];
 		vertices[0] = 0f;
 		vertices[1] = 0f;
 		float curr_angle = ENEMY_DETECTION_ANGLE_SIGHT + direction.angleDeg();
@@ -512,10 +537,26 @@ public class Enemy extends BoxObstacle {
 				(float) (num_vertices - 2) / 2);
 
 		for(int i = 2; i < vertices.length - 1; i += 2) {
-			vertices[i] = drawScale.x * range * (float) Math.cos(Math.toRadians(curr_angle));
-			vertices[i+1] = drawScale.y * range * (float) Math.sin(Math.toRadians(curr_angle));
+			Vector2 sightConePoint = new Vector2();
+			sightConePoint.x = range * (float) Math.cos(Math.toRadians(curr_angle));
+			sightConePoint.y = range * (float) Math.sin(Math.toRadians(curr_angle));
+
+			ObstacleCallback callback = new ObstacleCallback();
+			world.rayCast(callback, getPosition(), sightConePoint);
+
+			System.out.println(callback.wasBlocked());
+			if (callback.wasBlocked()) {
+				//System.out.println("Blocked at " + callback.rayTerm.x + " " + callback.rayTerm.y);
+				vertices[i] = callback.getRayTermination().x;
+				vertices[i+1] = callback.getRayTermination().y;
+			} else {
+				//System.out.println("Unblocked @" + sightConePoint.x + " " + sightConePoint.y);
+				vertices[i] = sightConePoint.x * drawScale.x;
+				vertices[i+1] = sightConePoint.y * drawScale.y;
+			}
 			curr_angle -= angle_scale_factor;
 		}
+		System.out.println("Update");
 
 		// Specify triangles to draw our texture region.
 		// For example, triangles = {0,1,2} draws a triangle between vertices 0, 1, and 2
@@ -539,8 +580,7 @@ public class Enemy extends BoxObstacle {
 		} else {
 			polygonRegion = new PolygonRegion(greenTextureRegion,vertices, triangles);
 		}
-		canvas.draw(polygonRegion, Color.WHITE, origin.x,origin.y,getX()*drawScale.x,
-			getY()*drawScale.y,getAngle(),1.0f,1.0f);
+		return polygonRegion;
 	}
 
 	public boolean isInShadow() {
