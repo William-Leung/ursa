@@ -23,6 +23,11 @@
                  "name":"cave_rotations",
                  "type":"string",
                  "value":"90,360,720"
+                }, 
+                {
+                 "name":"starting_rotation",
+                 "type":"int",
+                 "value":50
                 }],
          "type":"tilelayer",
          "visible":true,
