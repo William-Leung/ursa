@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.JsonValue;
@@ -32,9 +33,10 @@ public class Enemy extends BoxObstacle {
 
 	private static final int STUN_DURATION = 60 * 5;
 
-	private final int num_vertices = 16;
+	private final int num_vertices = 24;
 
 	private float[] vertices = new float[num_vertices * 2];
+	private Vector2[] coneVectors = new Vector2[num_vertices * 2];
 
 	/** A Pixmap used for drawing sightcones */
 	private TextureRegion redTextureRegion;
@@ -157,14 +159,14 @@ public class Enemy extends BoxObstacle {
 			Body body = fixture.getBody();
 
 			if (body.getType() == BodyDef.BodyType.StaticBody) { // For simplicity's sake, we're considering all static bodies to be obstacles
-				if (rayTerm == null || point.dst2(rayOrigin) < rayTerm.dst(rayOrigin)) { // Get the closest point to the ray origin
-					rayTerm = point;
-					rayDist = rayTerm.dst(rayOrigin);
+				if (rayTerm == null || point.dst2(rayOrigin) < rayDist) { // Get the closest point to the ray origin
+					rayTerm = point.cpy();
+					rayDist = rayTerm.dst2(rayOrigin);
 				}
 				blocked = true;
 				return 1;
 			}
-			return 1;
+			return -1;
 		}
 	}
 
@@ -468,15 +470,16 @@ public class Enemy extends BoxObstacle {
 
 			ObstacleCallback callback = new ObstacleCallback(getPosition());
 			world.rayCast(callback, getPosition(), sightConePoint.cpy().add(getPosition()));
-
-			if (callback.wasBlocked()) {
-				float distRatio = callback.rayDist / detectionRange;
-				vertices[i] = distRatio * sightConePoint.x * drawScale.x;
-				vertices[i+1] = distRatio * sightConePoint.y * drawScale.y;
-			} else {
-				vertices[i] = sightConePoint.x * drawScale.x;
-				vertices[i+1] = sightConePoint.y * drawScale.y;
+			coneVectors[i] = callback.rayTerm;
+			if (coneVectors[i] != null) {
+				coneVectors[i] = coneVectors[i].cpy();
 			}
+
+			if (callback.rayTerm != null) {
+				sightConePoint = callback.rayTerm.cpy().sub(getPosition());
+			}
+			vertices[i] = sightConePoint.x * drawScale.x;
+			vertices[i+1] = sightConePoint.y * drawScale.y;
 			curr_angle -= angle_scale_factor;
 		}
 
@@ -517,4 +520,17 @@ public class Enemy extends BoxObstacle {
 	public float getMaxStun() { return STUN_DURATION; }
 
 	public void setStunned(boolean value) { stunned = value; }
+
+	@Override
+	public void drawDebug(GameCanvas canvas) {
+		super.drawDebug(canvas);
+		PolygonShape shape = new PolygonShape();
+		shape.setAsBox(0.5f, 0.5f);
+		for (Vector2 rayTerm : coneVectors) {
+			if (rayTerm != null) {
+				canvas.drawPhysics(shape, Color.BLACK,rayTerm.x,rayTerm.y,getAngle(),drawScale.x,drawScale.y);
+			}
+		}
+
+	}
 }
