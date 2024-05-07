@@ -40,8 +40,8 @@ shape: square
 - Spawn Width - 
 lowMin: 0.0
 lowMax: 0.0
-highMin: 800.0
-highMax: 800.0
+highMin: 900.0
+highMax: 900.0
 relative: false
 scalingCount: 1
 scaling0: 1.0
@@ -86,8 +86,8 @@ timeline2: 0.9936034
 active: true
 lowMin: 0.0
 lowMax: 0.0
-highMin: 520.0
-highMax: 600.0
+highMin: 300.0
+highMax: 400.0
 relative: false
 scalingCount: 1
 scaling0: 1.0
