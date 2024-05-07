@@ -116,3 +116,4 @@ core/build/libs/core-1.0.jar
 /core/build/classes
 *.class
 desktop/build/resources/main/META-INF/MANIFEST.MF
+assets/maps/map1_test.tiled-session

@@ -47,12 +47,14 @@
         "player:ursaIdle": "player/Idle.png",
         "player:ursa": "player/Ursa.png",
 
-        "polar:cave_animation" : "polar/animations/Cave_Animation.png",
+        "polar:cave_portal_animation" : "polar/animations/Cave_Portal_Animation.png",
         "polar:tree_shake_animation": "polar/animations/Polar_Tree_Shake.png",
         "polar:cave_sleep_animation": "polar/animations/Cave_Sleep.png",
 
         "polar:white": "polar/white.png",
         "polar:black": "polar/black.png",
+        "polar:portal": "polar/objects/Portal.png",
+        "polar:ZZZ": "polar/objects/ZZZ.png",
         "polar:falling_snow": "polar/falling_snow.png",
         "polar:tree_no_snow": "polar/objects/tree_no_snow.png",
         "polar:tree_snow": "polar/objects/tree_snow.png",
