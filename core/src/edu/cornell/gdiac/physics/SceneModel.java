@@ -95,7 +95,10 @@ public class SceneModel extends WorldController implements ContactListener {
     private FilmStrip smolUrsaIdleFilm;
     /** Filmstrip for cave sleep animation */
     private FilmStrip caveZZZFilm;
-
+    /** Filmstrip for enemy diving animation */
+    private FilmStrip salmonDiveFilm;
+    /** Filmstrip for player caught animation */
+    private FilmStrip playerCaughtFilm;
 
     /* =========== Animation Variables =========== */
     /** Current frame number (used to slow down animations) */
@@ -240,6 +243,11 @@ public class SceneModel extends WorldController implements ContactListener {
 
     public static final Texture BLOB_SHADOW_TEXTURE;
 
+    private static final int DIVE_ANIM_DIFF = 10;
+    private static final int ENEMY_DIVE_FRAMES = 49;
+    int player_dive_anim = 0;
+    boolean player_caught = false;
+
     static {
         Pixmap pixmap = new Pixmap(BLOB_SHADOW_RESOLUTION * 2, BLOB_SHADOW_RESOLUTION * 2, Pixmap.Format.RGBA8888);
         pixmap.setColor(new Color(0f,0f,0f,shadowAlpha));
@@ -359,6 +367,8 @@ public class SceneModel extends WorldController implements ContactListener {
         playerWalkFilm = new FilmStrip(playerWalkTextureAnimation.getTexture(),2,8);
         TextureRegion playerIdleTextureAnimation = new TextureRegion(directory.getEntry("player:ursaIdle", Texture.class));
         playerIdleFilm = new FilmStrip(playerIdleTextureAnimation.getTexture(),4,8);
+        TextureRegion playerCaughtAnimation = new TextureRegion(directory.getEntry("player:ursaDown", Texture.class));
+        playerCaughtFilm = new FilmStrip(playerCaughtAnimation.getTexture(),2,8);
 
         TextureRegion salmonUprightWalkAnimation = new TextureRegion(directory.getEntry("enemies:salmonUprightWalk", Texture.class));
         salmonUprightWalkFilm = new FilmStrip(salmonUprightWalkAnimation.getTexture(),4,8);
@@ -368,6 +378,9 @@ public class SceneModel extends WorldController implements ContactListener {
         salmonIdleFilm = new FilmStrip(salmonIdleAnimation.getTexture(), 5, 8);
         TextureRegion salmonDetectedAnimation = new TextureRegion(directory.getEntry("enemies:salmonDetected", Texture.class));
         salmonDetectedFilm = new FilmStrip(salmonDetectedAnimation.getTexture(), 4, 8);
+
+        TextureRegion salmonDiveAnimation = new TextureRegion(directory.getEntry("enemies:salmonDive", Texture.class));
+        salmonDiveFilm = new FilmStrip(salmonDiveAnimation.getTexture(), 7, 8);
 
         TextureRegion treeShakeAnimation = new TextureRegion(directory.getEntry("polar:tree_shake_animation", Texture.class));
         treeShakeFilm = new FilmStrip(treeShakeAnimation.getTexture(), 2, 8);
@@ -465,6 +478,7 @@ public class SceneModel extends WorldController implements ContactListener {
         interactedCave = null;
         caveZZZIndex = 0;
         caveZZZFilm.setFrame(caveZZZIndex);
+        player_dive_anim = 0;
 
         controls.clear();
 
@@ -552,7 +566,14 @@ public class SceneModel extends WorldController implements ContactListener {
     private void animateEnemies(){
         for (AIController i : controls) {
             if (i != null) {
-                if (i.isWon() || i.isSurprised()) {
+                if (i.isWon()) {
+                    System.out.println("enemy won");
+                    System.out.println(player_dive_anim);
+                    salmonDiveFilm.setFrame(player_dive_anim);
+                    i.getEnemy().setTexture(salmonDiveFilm);
+                    player_dive_anim = Math.min(player_dive_anim + 1, ENEMY_DIVE_FRAMES);
+                    player_caught = true;
+                } else if (i.isSurprised()) {
                     System.out.println("Enemy is surprised");
                     System.out.println("Salmon detected index: " + salmonDetectedIndex);
                     System.out.println();
@@ -571,8 +592,9 @@ public class SceneModel extends WorldController implements ContactListener {
                     i.getEnemy().setTexture(salmonIdleFilm);
                     salmonIdleAnimIndex = (salmonIdleAnimIndex + 1) % 40;
                 } else {
-                    //i.reset_anim_index();
-                    //salmonDetectedIndex = 0;
+                    i.reset_anim_index();
+                    salmonDetectedIndex = 0;
+                    i.reset_dive_anim_index();
                     salmonUprightWalkFilm.setFrame(salmonWalkAnimIndex);
                     i.getEnemy().setTexture(salmonUprightWalkFilm);
                 }
@@ -588,7 +610,11 @@ public class SceneModel extends WorldController implements ContactListener {
      */
     private void animatePlayerModel(){
         // If the player is moving
-        if(ursa.getXMovement() != 0 || ursa.getyMovement() != 0){
+        if (player_caught && player_dive_anim - DIVE_ANIM_DIFF >= 0) {
+            System.out.println("Ursa caught");
+            playerCaughtFilm.setFrame(Math.min(9, player_dive_anim - DIVE_ANIM_DIFF));
+            ursa.setTexture(playerCaughtFilm);
+        } else if(ursa.getXMovement() != 0 || ursa.getyMovement() != 0){
             // If the player was idling, now changing states
             if(!ursaCurrentState) {
                 ursaCurrentState = true;
@@ -786,7 +812,7 @@ public class SceneModel extends WorldController implements ContactListener {
                 alerted = true;
             }
 
-            if (c.isWon()) setFailure(true);
+            if (c.isWon() && player_dive_anim >= ENEMY_DIVE_FRAMES) setFailure(true);
         }
 
         for (Enemy enemy : enemies) {
@@ -808,7 +834,7 @@ public class SceneModel extends WorldController implements ContactListener {
 
 
         // If the game is lost, stop the player
-        if (!isFailure()) {
+        if (!isFailure() && player_dive_anim < 16) {
             ursa.applyForce();
         } else {
             ursa.setVX(0);
@@ -1577,4 +1603,5 @@ public class SceneModel extends WorldController implements ContactListener {
         addObject(shadow);
         shadow.rotateDirection(shadowStartingRotation - 90);
     }
+
 }

@@ -56,7 +56,7 @@ public class AIController {
     /** Distance from goal enemy needs to get to */
     private static final float GOAL_DIST = 1f;
     /** Distance from enemy that if player is within, they lose. */
-    private static final float COLLISION_ERROR = 1.5f;
+    private static final float COLLISION_ERROR = 0f;
     /** Distance that enemy can detect a player regardless of where they are facing */
     private static final float ENEMY_RADIUS = 3f;
     /** Distance that if chasing the player, the enemy will still attack them */
@@ -109,6 +109,7 @@ public class AIController {
     private int ticks_collided = 0;
 
     private int confused_anim_index = 0;
+    private int dive_anim_index = 0;
 
     /* WANDER STATE DATA STRUCTURES */
     LinkedList<Coordinate> queue;
@@ -332,7 +333,7 @@ public class AIController {
                 break;
 
             case ATTACK:
-                if (checkRange(3f)) {
+                if (checkRange(1f)) {
                     if (ticks_collided >= DETECTION_DELAY * 0.25) {
                         state = FSMState.WON;
                     } else {
@@ -566,10 +567,10 @@ public class AIController {
                 rotateEnemy(360 / enemy.getMaxStun(), enemy.getAngle() + ROTATE_SPEED);
                 enemy.setVX(0);
                 enemy.setVY(0);
-//                if (ticks % 20 == 0) {
-//                    enemy.setVX(4 * (float) Math.random());
-//                    enemy.setVY(4 * (float) Math.random());
-//                }
+                if (ticks % 20 == 0) {
+                    enemy.setVX(4 * (float) Math.random());
+                    enemy.setVY(4 * (float) Math.random());
+                }
 
                 break;
         }
@@ -789,6 +790,10 @@ public class AIController {
 
     }
 
+    public boolean shouldDive() {
+        return state == FSMState.ATTACK;
+    }
+
 
 
     public void rotateEnemy(float rotSpeed, float goalAngle) {
@@ -846,6 +851,12 @@ public class AIController {
     }
 
     public void reset_anim_index() { confused_anim_index = 0; }
+
+    public int get_dive_anim_index() { return dive_anim_index; }
+
+    public int inc_dive_anim_index() { return dive_anim_index = (dive_anim_index + 1) % 50; }
+
+    public void reset_dive_anim_index() { dive_anim_index = 0; }
 
 //    public void lookAround() {
 //        if (goalAngle == 0 || enemy.getAngle() == goalAngle) {

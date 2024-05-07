@@ -20,6 +20,7 @@
         "enemies:salmonConfused": "enemies/Lost.png",
         "enemies:salmonIdle": "enemies/Idle.png",
         "enemies:salmonDetected": "enemies/Detected.png",
+            "enemies:salmonDive": "enemies/Catch.png",
 
         "levelSelect:background": "levelSelect/LevelSelect.png",
         "levelSelect:win": "levelSelect/win.png",
@@ -46,6 +47,7 @@
         "player:ursaWalk": "player/Walk.png",
         "player:ursaIdle": "player/Idle.png",
         "player:ursa": "player/Ursa.png",
+            "player:ursaDown": "player/Down.png",
 
         "polar:cave_portal_animation" : "polar/animations/Cave_Portal_Animation.png",
         "polar:tree_shake_animation": "polar/animations/Polar_Tree_Shake.png",
