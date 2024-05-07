@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.PolygonRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -23,8 +24,6 @@ import edu.cornell.gdiac.physics.shadows.ShadowModel;
 import edu.cornell.gdiac.util.PooledList;
 
 public class Enemy extends BoxObstacle {
-
-
 	private static final float SIGHT_RANGE_INCREMENT = 0.75f;
 	private static final float BLOB_SHADOW_SIZE = 0.85f;
 
@@ -32,6 +31,10 @@ public class Enemy extends BoxObstacle {
 	private static final int STUN_DAMPENING = 25;
 
 	private static final int STUN_DURATION = 60 * 5;
+
+	private final int num_vertices = 16;
+
+	private float[] vertices = new float[num_vertices * 2];
 
 	/** A Pixmap used for drawing sightcones */
 	private TextureRegion redTextureRegion;
@@ -50,7 +53,6 @@ public class Enemy extends BoxObstacle {
 	private float textureScale;
 
 	private boolean playerInShadow = false;
-	private float screenWidth = 1280f;
 	private boolean playerCurrentInSight;
 	private boolean playerInDynamicShadow = false;
 	private boolean stunned = false;
@@ -65,6 +67,7 @@ public class Enemy extends BoxObstacle {
 	 * Invariant: This direction is always normalized.
 	 */
 	private Vector2 lookDirection = new Vector2(1, 0);
+	private PolygonRegion sightConeRegion;
 
 	/**
 	 * The callback class for the enemy line-of-sight raycast towards the targeted body. This is used to detect whether or not there are any obstacles
@@ -87,7 +90,6 @@ public class Enemy extends BoxObstacle {
 		 * The point at which the raycast terminates, if interrupted by something.
 		 */
 		private Vector2 rayTerm;
-
 
 		/**
 		 * Constructs a new EnemyLoSCallback object used for raycasting.
@@ -122,39 +124,47 @@ public class Enemy extends BoxObstacle {
 		}
 	}
 
-	private static class ObstObstrctCallback implements RayCastCallback {
+	private static class ObstacleCallback implements RayCastCallback {
+		private final Vector2 rayOrigin;
 
 		/**
 		 * The point at which the raycast terminates, if interrupted by something.
 		 */
 		private Vector2 rayTerm;
 
-		/** was the raycast blocked by an obstacle? */
-		private boolean blocked = false;
+		private float rayDist;
 
-		/**
-		 * Constructs a new EnemyLoSCallback object used for raycasting.
-		 */
-		private ObstObstrctCallback() { }
+		/** was the raycast blocked by an obstacle? */
+		private boolean blocked;
+
+		public ObstacleCallback(Vector2 origin) {
+			rayOrigin = origin;
+			rayTerm = null;
+			blocked = false;
+		}
+
+		public Vector2 getRayTermination() {
+			return rayTerm;
+		}
 
 		public boolean wasBlocked() {
 			return blocked;
 		}
 
-		private void resetRayTerm() {
-			rayTerm = null;
-		}
 
 		@Override
 		public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
 			Body body = fixture.getBody();
 
 			if (body.getType() == BodyDef.BodyType.StaticBody) { // For simplicity's sake, we're considering all static bodies to be obstacles
+				if (rayTerm == null || point.dst2(rayOrigin) < rayTerm.dst(rayOrigin)) { // Get the closest point to the ray origin
+					rayTerm = point;
+					rayDist = rayTerm.dst(rayOrigin);
+				}
 				blocked = true;
-			} else {
-				blocked = false;
+				return 1;
 			}
-			return -1;
+			return 1;
 		}
 	}
 
@@ -422,60 +432,6 @@ public class Enemy extends BoxObstacle {
 		return false;
 	}
 
-//	public boolean isObjectInLineOfSight(World world) {
-//		ObstObstrctCallback callback = new ObstObstrctCallback();
-//
-//		Vector2 pos = new Vector2(getPosition());
-//		float fov = 30f;
-//		int numRays = 10;
-//		float dtAng = fov / (numRays - 1);
-//		Vector2 dir = new Vector2(
-//                        (float) Math.cos(Math.toRadians(lookDirection.angleDeg())),
-//				(float) Math.sin(Math.toRadians(lookDirection.angleDeg()))).nor();
-//		float ang = -fov/2;
-//		Vector2 rayDir = dir.rotateDeg(ang);
-//		Vector2 rayPos = pos.cpy().add(rayDir.scl(40f));
-//		world.rayCast(callback, pos, rayPos);
-//		if (callback.getRayTerm() != null) {
-//			rayPos = callback.getRayTerm();
-//			callback.resetRayTerm();
-//		}
-//		Vector2 prevRay = rayPos.cpy();
-//		for (int i = 1; i < numRays; i++) {
-//			ang = -fov / 2 + dtAng * i;
-//			rayDir = dir.rotateDeg(ang);
-//			rayPos = pos.add(rayDir.scl(40f));
-//			if (callback.getRayTerm() != null) {
-//				rayPos = callback.getRayTerm();
-//				callback.resetRayTerm();
-//			}
-//
-//		}
-//	}
-
-
-/**
-	public void generateVertices(World world, PolygonObstacle[] obstacles) {
-		float[] points;
-		Vector2 currPos = this.getPosition();
-		Vector2 obstaclePos;
-		ObstObstrctCallback callback = new ObstObstrctCallback();
-		for(PolygonObstacle obstacle: obstacles) {
-			points = obstacle.getPoints();
-			for(int i = 0; i < points.length - 1; i += 2) {
-				obstaclePos = new Vector2(points[i], points[i+1]);
-				// If the point is out of range of the sight cone, there's no point in ray casting
-				if(currPos.dst(obstaclePos) > detectionRange) {
-					continue;
-				}
-				world.rayCast(callback, currPos, obstaclePos);
-				if(callback.wasBlocked()) {
-
-				}
-			}
-		}
-	}*/
-
 	@Override
 	public void preDraw(GameCanvas canvas) {
 		Texture blobShadow = SceneModel.BLOB_SHADOW_TEXTURE;
@@ -487,33 +443,40 @@ public class Enemy extends BoxObstacle {
 	}
 
 	public void draw(GameCanvas canvas) {
-		drawSightCone(canvas, detectionRange, lookDirection, 8);
+		canvas.draw(sightConeRegion, Color.WHITE, origin.x,origin.y,getX()*drawScale.x,
+				getY()*drawScale.y,getAngle(),1.0f,1.0f);
 		canvas.draw(texture, Color.WHITE,origin.x,0,getX()*drawScale.x,(getY() - getHeight() / 2) * drawScale.y,getAngle(),
 				(lookDirection.x > 0 ? 1 : -1) * textureScale,textureScale);
-
-		screenWidth = canvas.getWidth();
 	}
 
 	/**
 	 * drawSightCones(canvas, num_vertices) uses PolygonRegion to
-	 * @param canvas This is the canvas you can draw with.
-	 * @param range how far the enemy can see
-	 * @param direction direction in which cone faces
-	 * @param num_vertices Number of vertices in PolygonRegion. Higher values increase smoothness.
-	 * Invariant: num_vertices must be even and >= 4.
 	 */
-	public void drawSightCone(GameCanvas canvas, float range, Vector2 direction, int num_vertices) {
+	public void createSightCone(World world) {
 		// Create the vertices which will form the cone
-		float[] vertices = new float[num_vertices * 2];
+		//float[] vertices = new float[num_vertices * 2];
 		vertices[0] = 0f;
 		vertices[1] = 0f;
-		float curr_angle = ENEMY_DETECTION_ANGLE_SIGHT + direction.angleDeg();
+		float curr_angle = ENEMY_DETECTION_ANGLE_SIGHT + lookDirection.angleDeg();
 		float angle_scale_factor =  (ENEMY_DETECTION_ANGLE_SIGHT)/ (
 				(float) (num_vertices - 2) / 2);
 
 		for(int i = 2; i < vertices.length - 1; i += 2) {
-			vertices[i] = drawScale.x * range * (float) Math.cos(Math.toRadians(curr_angle));
-			vertices[i+1] = drawScale.y * range * (float) Math.sin(Math.toRadians(curr_angle));
+			Vector2 sightConePoint = new Vector2();
+			sightConePoint.x = detectionRange * (float) Math.cos(Math.toRadians(curr_angle));
+			sightConePoint.y = detectionRange * (float) Math.sin(Math.toRadians(curr_angle));
+
+			ObstacleCallback callback = new ObstacleCallback(getPosition());
+			world.rayCast(callback, getPosition(), sightConePoint.cpy().add(getPosition()));
+
+			if (callback.wasBlocked()) {
+				float distRatio = callback.rayDist / detectionRange;
+				vertices[i] = distRatio * sightConePoint.x * drawScale.x;
+				vertices[i+1] = distRatio * sightConePoint.y * drawScale.y;
+			} else {
+				vertices[i] = sightConePoint.x * drawScale.x;
+				vertices[i+1] = sightConePoint.y * drawScale.y;
+			}
 			curr_angle -= angle_scale_factor;
 		}
 
@@ -539,8 +502,7 @@ public class Enemy extends BoxObstacle {
 		} else {
 			polygonRegion = new PolygonRegion(greenTextureRegion,vertices, triangles);
 		}
-		canvas.draw(polygonRegion, Color.WHITE, origin.x,origin.y,getX()*drawScale.x,
-			getY()*drawScale.y,getAngle(),1.0f,1.0f);
+		sightConeRegion = polygonRegion;
 	}
 
 	public boolean isInShadow() {

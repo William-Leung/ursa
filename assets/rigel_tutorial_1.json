@@ -20,9 +20,9 @@
          "opacity":1,
          "properties":[
                 {
-                 "name":"starting_rotation",
-                 "type":"int",
-                 "value": 40
+                 "name":"cave_rotations",
+                 "type":"string",
+                 "value":"90,360,720"
                 }],
          "type":"tilelayer",
          "visible":true,
@@ -778,8 +778,8 @@
                  "type":"",
                  "visible":true,
                  "width":256,
-                 "x":1328,
-                 "y":864
+                 "x":1140.54339273316,
+                 "y":1484.226799352
                 }, 
                 {
                  "gid":35,
@@ -919,8 +919,8 @@
                  "type":"",
                  "visible":true,
                  "width":256,
-                 "x":2670.99666666667,
-                 "y":1984.01393939394
+                 "x":1490.64173476407,
+                 "y":1005.88764967046
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -998,7 +998,7 @@
          "y":0
         }],
  "nextlayerid":16,
- "nextobjectid":470,
+ "nextobjectid":473,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.10.2",
