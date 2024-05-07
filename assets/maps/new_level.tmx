@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="18" height="11" tilewidth="256" tileheight="256" infinite="0" nextlayerid="16" nextobjectid="413">
+ <editorsettings>
+  <export target="../template.json" format="json"/>
+ </editorsettings>
+ <tileset firstgid="1" source="64x64.tsx"/>
+ <tileset firstgid="9" source="128x128.tsx"/>
+ <tileset firstgid="13" source="256x256(Ursa + Salmon).tsx"/>
+ <tileset firstgid="19" source="tiles.tsx"/>
+ <tileset firstgid="34" source="256x512.tsx"/>
+ <tileset firstgid="38" source="512x512.tsx"/>
+ <tileset firstgid="42" source="Polar_Rock_2.tsx"/>
+ <tileset firstgid="43" source="Polar_Trunk_1.tsx"/>
+ <tileset firstgid="44" source="Polar_Trunk_2.tsx"/>
+ <tileset firstgid="45" source="Polar_Ice.tsx"/>
+ <layer id="1" name="Tile Layer 1" width="18" height="11">
+  <data encoding="csv">
+19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,
+19,20,31,31,21,19,20,31,31,31,31,21,19,19,19,19,19,19,
+19,32,0,0,25,31,26,0,24,27,0,30,19,19,19,19,19,19,
+19,33,0,0,24,28,27,0,25,26,0,30,19,19,19,19,19,19,
+19,32,0,24,22,19,23,28,28,27,0,29,19,19,19,19,19,19,
+19,32,0,30,20,31,31,31,21,33,0,25,21,19,19,19,19,19,
+19,23,27,25,26,0,0,0,25,26,0,0,30,19,19,19,19,19,
+19,19,32,0,0,0,0,0,0,0,0,0,30,19,19,19,19,19,
+19,19,23,28,27,0,0,0,24,28,28,28,22,19,19,19,19,19,
+19,19,19,19,23,28,28,28,22,19,19,19,19,19,19,19,19,19,
+19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19
+</data>
+ </layer>
+ <objectgroup id="1" name="decorations"/>
+ <objectgroup id="2" name="cave"/>
+ <objectgroup id="3" name="trees">
+  <object id="387" gid="19" x="3331.53" y="1811.57" width="256" height="256"/>
+  <object id="388" gid="19" x="3018.43" y="1349.61" width="256" height="256"/>
+  <object id="389" gid="19" x="3531.71" y="2365.91" width="256" height="256"/>
+  <object id="391" gid="34" x="2068.85" y="1790.72" width="256" height="512"/>
+  <object id="392" gid="34" x="2079.12" y="2191.08" width="256" height="512"/>
+  <object id="394" gid="34" x="2797.71" y="1559.74" width="256" height="512"/>
+ </objectgroup>
+ <objectgroup id="4" name="objects"/>
+ <objectgroup id="5" name="ice"/>
+ <objectgroup id="6" name="smolursa"/>
+ <objectgroup id="7" name="enemies">
+  <object id="395" gid="15" x="462.276" y="656.682" width="256" height="256"/>
+  <object id="396" gid="13" x="754.847" y="2001.48" width="256" height="256"/>
+  <object id="397" name="2" gid="14" x="1170.61" y="2350.52" width="256" height="256">
+   <properties>
+    <property name="is_stupid" type="bool" value="true"/>
+    <property name="starting_rotation" type="int" value="45"/>
+   </properties>
+  </object>
+  <object id="398" name="1" gid="14" x="1129.54" y="1554.93" width="256" height="256">
+   <properties>
+    <property name="is_stupid" type="bool" value="true"/>
+    <property name="starting_rotation" type="int" value="-45"/>
+   </properties>
+  </object>
+  <object id="399" name="4" gid="14" x="1827.61" y="1057.04" width="256" height="256"/>
+  <object id="402" name="5" gid="14" x="534.135" y="1580.59" width="256" height="256"/>
+  <object id="404" name="3" gid="14" x="2884.97" y="2073.34" width="256" height="256">
+   <properties>
+    <property name="is_stupid" type="bool" value="true"/>
+    <property name="starting_rotation" type="int" value="135"/>
+   </properties>
+  </object>
+  <object id="405" name="4" type="1" x="2710.14" y="990.637">
+   <point/>
+  </object>
+  <object id="406" name="4" type="2" x="2705" y="533.815">
+   <point/>
+  </object>
+  <object id="407" name="4" type="3" x="1919.68" y="528.682">
+   <point/>
+  </object>
+  <object id="408" name="4" type="4" x="1914.55" y="985.504">
+   <point/>
+  </object>
+  <object id="409" name="5" type="1" x="775.058" y="1437.19">
+   <point/>
+  </object>
+  <object id="410" name="5" type="2" x="636.471" y="1134.36">
+   <point/>
+  </object>
+  <object id="411" name="5" type="3" x="487.619" y="1401.26">
+   <point/>
+  </object>
+  <object id="412" name="5" type="4" x="641.604" y="1550.12">
+   <point/>
+  </object>
+ </objectgroup>
+ <objectgroup id="8" name="markers"/>
+ <objectgroup id="9" name="player"/>
+</map>
