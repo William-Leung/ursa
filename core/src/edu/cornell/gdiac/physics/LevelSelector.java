@@ -493,7 +493,13 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
                 if(touch.x - posX < 80 && touch.y - posY < 80 && touch.x - posX > 0 && touch.y - posY > 0)
                 {
                    if(Math.abs(ursaStartX - touch.x) < 8){
-                       buttonsFilms[j].setFrame(4);
+                       if(j == 0){
+                           buttonsFilms[j].setFrame(1);
+                       }
+                       else {
+                           buttonsFilms[j].setFrame(4);
+                       }
+
                        updateButtons();
                    }
                 }
