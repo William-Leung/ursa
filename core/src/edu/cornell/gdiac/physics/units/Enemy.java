@@ -24,18 +24,6 @@ import edu.cornell.gdiac.physics.shadows.ShadowModel;
 import edu.cornell.gdiac.util.PooledList;
 
 public class Enemy extends BoxObstacle {
-
-	private static final TextureRegion redTextureregion;
-
-	static {
-		Pixmap redPixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
-		redPixmap.setColor(new Color(1, 0, 0, 1));
-		redPixmap.fill();
-		Texture redTexture = new Texture(redPixmap);
-		redTextureregion = new TextureRegion(redTexture);
-		redPixmap.dispose();
-	}
-
 	private static final float SIGHT_RANGE_INCREMENT = 0.75f;
 	private static final float BLOB_SHADOW_SIZE = 0.85f;
 
@@ -44,7 +32,7 @@ public class Enemy extends BoxObstacle {
 
 	private static final int STUN_DURATION = 60 * 5;
 
-	private final int num_vertices = 4;
+	private final int num_vertices = 16;
 
 	private float[] vertices = new float[num_vertices * 2];
 
@@ -64,8 +52,6 @@ public class Enemy extends BoxObstacle {
 
 	private float textureScale;
 
-	private World world;
-
 	private boolean playerInShadow = false;
 	private boolean playerCurrentInSight;
 	private boolean playerInDynamicShadow = false;
@@ -81,6 +67,7 @@ public class Enemy extends BoxObstacle {
 	 * Invariant: This direction is always normalized.
 	 */
 	private Vector2 lookDirection = new Vector2(1, 0);
+	private PolygonRegion sightConeRegion;
 
 	/**
 	 * The callback class for the enemy line-of-sight raycast towards the targeted body. This is used to detect whether or not there are any obstacles
@@ -445,64 +432,6 @@ public class Enemy extends BoxObstacle {
 		return false;
 	}
 
-//	public boolean isObjectInLineOfSight(World world) {
-//		ObstObstrctCallback callback = new ObstObstrctCallback();
-//
-//		Vector2 pos = new Vector2(getPosition());
-//		float fov = 30f;
-//		int numRays = 10;
-//		float dtAng = fov / (numRays - 1);
-//		Vector2 dir = new Vector2(
-//                        (float) Math.cos(Math.toRadians(lookDirection.angleDeg())),
-//				(float) Math.sin(Math.toRadians(lookDirection.angleDeg()))).nor();
-//		float ang = -fov/2;
-//		Vector2 rayDir = dir.rotateDeg(ang);
-//		Vector2 rayPos = pos.cpy().add(rayDir.scl(40f));
-//		world.rayCast(callback, pos, rayPos);
-//		if (callback.getRayTerm() != null) {
-//			rayPos = callback.getRayTerm();
-//			callback.resetRayTerm();
-//		}
-//		Vector2 prevRay = rayPos.cpy();
-//		for (int i = 1; i < numRays; i++) {
-//			ang = -fov / 2 + dtAng * i;
-//			rayDir = dir.rotateDeg(ang);
-//			rayPos = pos.add(rayDir.scl(40f));
-//			if (callback.getRayTerm() != null) {
-//				rayPos = callback.getRayTerm();
-//				callback.resetRayTerm();
-//			}
-//
-//		}
-//	}
-
-
-/**
-	public void generateVertices(World world, PolygonObstacle[] obstacles) {
-		float[] points;
-		Vector2 currPos = this.getPosition();
-		Vector2 obstaclePos;
-		ObstObstrctCallback callback = new ObstObstrctCallback();
-		for(PolygonObstacle obstacle: obstacles) {
-			points = obstacle.getPoints();
-			for(int i = 0; i < points.length - 1; i += 2) {
-				obstaclePos = new Vector2(points[i], points[i+1]);
-				// If the point is out of range of the sight cone, there's no point in ray casting
-				if(currPos.dst(obstaclePos) > detectionRange) {
-					continue;
-				}
-				world.rayCast(callback, currPos, obstaclePos);
-				if(callback.wasBlocked()) {
-
-				}
-			}
-		}
-	}*/
-
-	public void updateWorld(World world) {
-		this.world = world;
-	}
-
 	@Override
 	public void preDraw(GameCanvas canvas) {
 		Texture blobShadow = SceneModel.BLOB_SHADOW_TEXTURE;
@@ -514,60 +443,42 @@ public class Enemy extends BoxObstacle {
 	}
 
 	public void draw(GameCanvas canvas) {
-		canvas.draw(createSightCone(detectionRange, lookDirection), Color.WHITE, origin.x,origin.y,getX()*drawScale.x,
+		canvas.draw(sightConeRegion, Color.WHITE, origin.x,origin.y,getX()*drawScale.x,
 				getY()*drawScale.y,getAngle(),1.0f,1.0f);
 		canvas.draw(texture, Color.WHITE,origin.x,0,getX()*drawScale.x,(getY() - getHeight() / 2) * drawScale.y,getAngle(),
 				(lookDirection.x > 0 ? 1 : -1) * textureScale,textureScale);
-
-		for(int i = 1; i < vertices.length; i += 2) {
-			canvas.draw(redTextureregion,Color.WHITE, 0,0, vertices[i-1] + getX() * drawScale.x,vertices[i] + getY() * drawScale.y, 5,5);
-		}
-		canvas.draw(grayTextureRegion,Color.WHITE, 0,0, getX() * drawScale.x,getY() * drawScale.y, 10,10);
-
-	}
-
-
-	public void generateVertices() {
-
 	}
 
 	/**
 	 * drawSightCones(canvas, num_vertices) uses PolygonRegion to
-	 * @param range how far the enemy can see
-	 * @param direction direction in which cone faces
-	 * Invariant: num_vertices must be even and >= 4.
 	 */
-	public PolygonRegion createSightCone(float range, Vector2 direction) {
+	public void createSightCone(World world) {
 		// Create the vertices which will form the cone
 		//float[] vertices = new float[num_vertices * 2];
 		vertices[0] = 0f;
 		vertices[1] = 0f;
-		float curr_angle = ENEMY_DETECTION_ANGLE_SIGHT + direction.angleDeg();
+		float curr_angle = ENEMY_DETECTION_ANGLE_SIGHT + lookDirection.angleDeg();
 		float angle_scale_factor =  (ENEMY_DETECTION_ANGLE_SIGHT)/ (
 				(float) (num_vertices - 2) / 2);
 
 		for(int i = 2; i < vertices.length - 1; i += 2) {
 			Vector2 sightConePoint = new Vector2();
-			sightConePoint.x = range * (float) Math.cos(Math.toRadians(curr_angle));
-			sightConePoint.y = range * (float) Math.sin(Math.toRadians(curr_angle));
+			sightConePoint.x = detectionRange * (float) Math.cos(Math.toRadians(curr_angle));
+			sightConePoint.y = detectionRange * (float) Math.sin(Math.toRadians(curr_angle));
 
 			ObstacleCallback callback = new ObstacleCallback(getPosition());
 			world.rayCast(callback, getPosition(), sightConePoint.cpy().add(getPosition()));
 
 			if (callback.wasBlocked()) {
-				float distRatio = callback.rayDist / range;
-				//System.out.println("Blocked at " + callback.rayTerm.x + " " + callback.rayTerm.y);
-				System.out.println("Vertice " + i + " blocked");
+				float distRatio = callback.rayDist / detectionRange;
 				vertices[i] = distRatio * sightConePoint.x * drawScale.x;
 				vertices[i+1] = distRatio * sightConePoint.y * drawScale.y;
 			} else {
-				//System.out.println("Unblocked @" + sightConePoint.x + " " + sightConePoint.y);
 				vertices[i] = sightConePoint.x * drawScale.x;
 				vertices[i+1] = sightConePoint.y * drawScale.y;
 			}
 			curr_angle -= angle_scale_factor;
 		}
-		System.out.println("Update");
 
 		// Specify triangles to draw our texture region.
 		// For example, triangles = {0,1,2} draws a triangle between vertices 0, 1, and 2
@@ -591,7 +502,7 @@ public class Enemy extends BoxObstacle {
 		} else {
 			polygonRegion = new PolygonRegion(greenTextureRegion,vertices, triangles);
 		}
-		return polygonRegion;
+		sightConeRegion = polygonRegion;
 	}
 
 	public boolean isInShadow() {

@@ -818,12 +818,11 @@ public class SceneModel extends WorldController implements ContactListener {
 
         for (Enemy enemy : enemies) {
             if(enemy != null) {
-                enemy.generateVertices();
                 if (enemy.isPlayerInLineOfSight(world,ursa)) {
                     enemy.getPlayerPos(ursa.getPosition());
                 }
                 enemy.setInShadow(ursa.isInShadow());
-                enemy.updateWorld(world);
+                enemy.createSightCone(world);
             }
         }
 
