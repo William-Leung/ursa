@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -56,6 +57,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
     private boolean button1Locked;
     private boolean button2Locked;
     private FilmStrip ursaFilm;
+    private ParticleEffect effect;
 
     private boolean button3Locked;
     private boolean button4Locked;
@@ -102,8 +104,13 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
                 .706f * canvas.getWidth(),.8507f * canvas.getHeight(),.706f * canvas.getWidth(),.5417f * canvas.getHeight(),
                 .8496f * canvas.getWidth(),.5417f * canvas.getHeight(),.8496f * canvas.getWidth(),.2656f * canvas.getHeight()};
         exiting = false;
+        effect = new ParticleEffect();
+        effect.load(Gdx.files.internal("particle.p"),Gdx.files.internal(""));
+        effect.getEmitters().first().setPosition(canvas.getWidth()/2,canvas.getHeight());
+        effect.start();
+        effect.scaleEffect(1);
 
-
+        System.out.println(effect.isComplete() + " is comple");
 
 
     }
@@ -246,6 +253,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
 
     }
     private void update(float delta){
+        effect.update(delta);
         if(ursaFilm.getFrame() == 11){
             ursaFilm.setFrame(0);
 
@@ -324,6 +332,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
 
     }
     private void updateButtons(){
+
         if(buttonsPressed[0]){
             buttonsFilms[0].setFrame(1);
         }else {
@@ -391,6 +400,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
 
         canvas.begin();
 
+
         float defaultHeight = 576;
         float defaultWidth = 1024;
 
@@ -426,6 +436,11 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         canvas.draw(buttonsFilms[12],Color.WHITE,.8496f * canvas.getWidth(),.5417f * canvas.getHeight(),buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
         canvas.draw(buttonsFilms[13],Color.WHITE,.8496f * canvas.getWidth(),.2656f * canvas.getHeight(),buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
         canvas.draw(ursaFilm,Color.WHITE,ursaStartX,ursaStartY,ursaFilm.getRegionWidth() * .3f,ursaFilm.getRegionHeight() * .3f);
+        effect.update(1/60);
+        if(effect.isComplete()){
+            effect.reset();
+        }
+        effect.draw(canvas.getSpriteBatch());
         //canvas.draw(redTextureregion,Color.WHITE, 0,0,86,189,10,10);
 
         canvas.end();

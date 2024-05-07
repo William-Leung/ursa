@@ -162,6 +162,9 @@ public class GameCanvas {
 		}
 		resize();
 	}
+	public PolygonSpriteBatch getSpriteBatch(){
+		return spriteBatch;
+	}
 
 	protected void moveCam(float x, float y){
 		camera.position.x = x * 16;
