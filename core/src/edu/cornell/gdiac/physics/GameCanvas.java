@@ -162,9 +162,7 @@ public class GameCanvas {
 		}
 		resize();
 	}
-	public PolygonSpriteBatch getSpriteBatch(){
-		return spriteBatch;
-	}
+
 
 	protected void moveCam(float x, float y){
 		camera.position.x = x * 16;
@@ -298,6 +296,10 @@ public class GameCanvas {
 		// Resizing screws up the spriteBatch projection matrix
 		spriteBatch.getProjectionMatrix().setToOrtho2D(0, 0, getWidth(), getHeight());
 	}
+	public PolygonSpriteBatch getSpriteBatch(){
+		return spriteBatch;
+	}
+
 	
 	/**
 	 * Returns the current color blending state for this canvas.

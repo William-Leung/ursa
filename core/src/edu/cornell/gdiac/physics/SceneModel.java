@@ -5,6 +5,7 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Vector2;
@@ -178,6 +179,7 @@ public class SceneModel extends WorldController implements ContactListener {
     private int polarTrunk1Index;
     /** The index of trunk 2 in terms of all textures in json*/
     private int polarTrunk2Index;
+    private ParticleEffect effect;
     /** The index of rock 2 in terms of all textures in json*/
     private int polarRock2Index;
     /** Scaling between textures and drawing (256x256 -> 192x192)
@@ -320,6 +322,10 @@ public class SceneModel extends WorldController implements ContactListener {
         intervals[3] = 0.9f;
         colors[4] = new Color(1f,1f,1f,0f);
         intervals[4] = 1.0f;
+
+        effect = new ParticleEffect();
+        effect.load(Gdx.files.internal("particle.p"),Gdx.files.internal(""));
+
     }
     /**
      * Gather the assets for this controller.
@@ -462,6 +468,7 @@ public class SceneModel extends WorldController implements ContactListener {
         for(Obstacle obj : objects) {
             obj.deactivatePhysics(world);
         }
+        effect.reset();
         objects.clear();
         addQueue.clear();
         dynamicObjects.clear();
@@ -551,6 +558,7 @@ public class SceneModel extends WorldController implements ContactListener {
      * @return whether to process the update loop
      */
     public boolean preUpdate(float dt) {
+        effect.update(dt);
         if (!super.preUpdate(dt)) {
             return false;
         }
@@ -737,6 +745,8 @@ public class SceneModel extends WorldController implements ContactListener {
 
         // Move the camera to Ursa
         canvas.moveCam(ursa.getPosition().x,ursa.getPosition().y);
+        effect.getEmitters().first().setPosition(canvas.getWidth()/2,canvas.getHeight());
+        effect.start();
 
         if (!levelMusic.isPlaying()) {
             levelMusicNight.play();
@@ -1059,6 +1069,7 @@ public class SceneModel extends WorldController implements ContactListener {
     public void preDraw(float dt) {
         // Draw an ocean bordering
         canvas.draw(tileTextures[0], Color.WHITE,canvas.getCameraX() - canvas.getWidth() / 2f, canvas.getCameraY() - canvas.getHeight() / 2f, canvas.getWidth(), canvas.getHeight());
+
         // Draw snow on the map
         canvas.draw(whiteTexture, Color.WHITE, 0, 0, numTilesX * 16 * textureScale * scale.x, numTilesY * 16 * textureScale * scale.y);
         for(Decoration d: groundDecorations) {
@@ -1100,7 +1111,7 @@ public class SceneModel extends WorldController implements ContactListener {
         for(Cave cave: interactableCaves) {
             cave.postDraw(canvas);
         }
-
+        effect.draw(canvas.getSpriteBatch());
         // Draws the day/night UI element
         float uiDrawScale = 0.08f;
         canvas.draw(dayNightUITexture, Color.WHITE, dayNightUITexture.getRegionWidth() / 2f, dayNightUITexture.getRegionHeight() / 2f, canvas.getCameraX(), canvas.getCameraY() + canvas.getHeight() / 2f, uiRotationAngle,

@@ -59,6 +59,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
     private FilmStrip ursaFilm;
     private ParticleEffect effect;
 
+
     private boolean button3Locked;
     private boolean button4Locked;
     private float levelsCompleted;
@@ -108,7 +109,9 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         effect.load(Gdx.files.internal("particle.p"),Gdx.files.internal(""));
         effect.getEmitters().first().setPosition(canvas.getWidth()/2,canvas.getHeight());
         effect.start();
-        effect.scaleEffect(1);
+
+
+
 
         System.out.println(effect.isComplete() + " is comple");
 
@@ -254,6 +257,8 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
     }
     private void update(float delta){
         effect.update(delta);
+
+
         if(ursaFilm.getFrame() == 11){
             ursaFilm.setFrame(0);
 
@@ -435,12 +440,13 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         canvas.draw(buttonsFilms[11],Color.WHITE,.706f * canvas.getWidth(),.5417f * canvas.getHeight(),buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
         canvas.draw(buttonsFilms[12],Color.WHITE,.8496f * canvas.getWidth(),.5417f * canvas.getHeight(),buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
         canvas.draw(buttonsFilms[13],Color.WHITE,.8496f * canvas.getWidth(),.2656f * canvas.getHeight(),buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
-        canvas.draw(ursaFilm,Color.WHITE,ursaStartX,ursaStartY,ursaFilm.getRegionWidth() * .3f,ursaFilm.getRegionHeight() * .3f);
-        effect.update(1/60);
+        canvas.draw(ursaFilm,Color.WHITE,ursaStartX,ursaStartY,ursaFilm.getRegionWidth() * .4f,ursaFilm.getRegionHeight() * .4f);effect.update(1/60);
         if(effect.isComplete()){
             effect.reset();
         }
+
         effect.draw(canvas.getSpriteBatch());
+
         //canvas.draw(redTextureregion,Color.WHITE, 0,0,86,189,10,10);
 
         canvas.end();
