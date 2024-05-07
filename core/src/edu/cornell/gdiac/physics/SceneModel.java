@@ -383,7 +383,7 @@ public class SceneModel extends WorldController implements ContactListener {
         TextureRegion playerCaughtAnimation = new TextureRegion(directory.getEntry("player:ursaDown", Texture.class));
         playerCaughtFilm = new FilmStrip(playerCaughtAnimation.getTexture(),2,8);
         TextureRegion playerRescueAnimation = new TextureRegion(directory.getEntry("player:ursaRescue", Texture.class));
-        playerRescueFilm = new FilmStrip(playerRescueAnimation.getTexture(),2,8);
+        playerRescueFilm = new FilmStrip(playerRescueAnimation.getTexture(),5,8);
 
         TextureRegion salmonUprightWalkAnimation = new TextureRegion(directory.getEntry("enemies:salmonUprightWalk", Texture.class));
         salmonUprightWalkFilm = new FilmStrip(salmonUprightWalkAnimation.getTexture(),4,8);
@@ -743,6 +743,14 @@ public class SceneModel extends WorldController implements ContactListener {
         currentFrame++;
 
         if(hasWon) {
+            ursa.setVX(0);
+            ursa.setVY(0);
+            if(playerRescueFilm.getFrame() < 33) {
+                if(currentFrame % 2 == 0) {
+                    playerRescueFilm.setFrame(playerRescueFilm.getFrame() + 1);
+                }
+                ursa.setTexture(playerRescueFilm);
+            }
             if(smolUrsaRescue1Film.getFrame() < 48) {
                 if(currentFrame % 2 == 0) {
                     smolUrsaRescue1Film.setFrame(smolUrsaRescue1Film.getFrame() + 1);
