@@ -36,7 +36,7 @@ public class Enemy extends BoxObstacle {
 	private final int num_vertices = 24;
 
 	private float[] vertices = new float[num_vertices * 2];
-	private Vector2[] coneVectors = new Vector2[num_vertices * 2];
+	protected Vector2[] coneVectors = new Vector2[num_vertices * 2];
 
 	/** A Pixmap used for drawing sightcones */
 	private TextureRegion redTextureRegion;
@@ -55,7 +55,7 @@ public class Enemy extends BoxObstacle {
 	private float textureScale;
 
 	private boolean playerInShadow = false;
-	private boolean playerCurrentInSight;
+	protected boolean playerCurrentInSight;
 	private boolean playerInDynamicShadow = false;
 	private boolean stunned = false;
 	private boolean adaptive = false;
@@ -69,43 +69,43 @@ public class Enemy extends BoxObstacle {
 	 * Invariant: This direction is always normalized.
 	 */
 	private Vector2 lookDirection = new Vector2(1, 0);
-	private PolygonRegion sightConeRegion;
+	protected PolygonRegion sightConeRegion;
 
 	/**
 	 * The callback class for the enemy line-of-sight raycast towards the targeted body. This is used to detect whether or not there are any obstacles
 	 * between the body position and the enemy position. If so, it will cancel the raycast callback and report that we could
 	 * not hit the body (If we were able to hit the player then there wouldn't be any obstacles in between the body and the enemy)
 	 */
-	private static class EnemyLoSCallback implements RayCastCallback {
+	protected static class EnemyLoSCallback implements RayCastCallback {
 
 		/**
 		 * The targeted body by the line-of-sight raycast
 		 */
-		private final Body target;
+		protected final Body target;
 
 		/**
 		 * The indication if the body was hit or not.
 		 */
-		private boolean hitPlayer = false;
+		protected boolean hitPlayer = false;
 
 		/**
 		 * The point at which the raycast terminates, if interrupted by something.
 		 */
-		private Vector2 rayTerm;
+		protected Vector2 rayTerm;
 
 		/**
 		 * Constructs a new EnemyLoSCallback object used for raycasting.
 		 * @param target
 		 */
-		private EnemyLoSCallback(Body target) {
+		protected EnemyLoSCallback(Body target) {
 			this.target = target;
 		}
 
-		private Vector2 getRayTerm() {
+		protected Vector2 getRayTerm() {
 			return rayTerm;
 		}
 
-		private void resetRayTerm() {
+		protected void resetRayTerm() {
 			rayTerm = null;
 		}
 
@@ -126,18 +126,18 @@ public class Enemy extends BoxObstacle {
 		}
 	}
 
-	private static class ObstacleCallback implements RayCastCallback {
-		private final Vector2 rayOrigin;
+	protected static class ObstacleCallback implements RayCastCallback {
+		protected final Vector2 rayOrigin;
 
 		/**
 		 * The point at which the raycast terminates, if interrupted by something.
 		 */
-		private Vector2 rayTerm;
+		protected Vector2 rayTerm;
 
-		private float rayDist;
+		protected float rayDist;
 
 		/** was the raycast blocked by an obstacle? */
-		private boolean blocked;
+		protected boolean blocked;
 
 		public ObstacleCallback(Vector2 origin) {
 			rayOrigin = origin;
