@@ -76,30 +76,30 @@ public class SceneModel extends WorldController implements ContactListener {
 
 
     /* =========== Film Strips =========== */
+    /** Filmstrip for cave portal whirl animation */
+    private FilmStrip cavePortalFilm;
+    /** Filmstrip for cave sleep animation */
+    private FilmStrip caveZZZFilm;
     /** Filmstrip for player walking animation */
     private FilmStrip playerWalkFilm;
-    /** Filmstrip for salmon walking animation */
-    private FilmStrip salmonUprightWalkFilm;
     /** Filmstrip for player idling animation */
     private FilmStrip playerIdleFilm;
+    /** Filmstrip for salmon walking animation */
+    private FilmStrip salmonUprightWalkFilm;
     /** Filmstrip for salmon confused animation */
     private FilmStrip salmonConfusedFilm;
     /** Filmstrip for salmon idling animation */
     private FilmStrip salmonIdleFilm;
     /** Filmstrip for salmon detecting animation */
     private FilmStrip salmonDetectedFilm;
-    /** Filmstrip for tree shaking animation */
-    private FilmStrip treeShakeFilm;
-    /** Filmstrip for cave portal whirl animation */
-    private FilmStrip cavePortalFilm;
     /** Filmstrip for little ursa idle animation */
     private FilmStrip smolUrsaIdleFilm;
     /** Filmstrip for little ursa rescue 1 animation */
     private FilmStrip smolUrsaRescue1Film;
     /** Filmstrip for little ursa rescue 2 animation */
     private FilmStrip smolUrsaRescue2Film;
-    /** Filmstrip for cave sleep animation */
-    private FilmStrip caveZZZFilm;
+    /** Filmstrip for tree shaking animation */
+    private FilmStrip treeShakeFilm;
     /** Filmstrip for enemy diving animation */
     private FilmStrip salmonDiveFilm;
     /** Filmstrip for player caught animation */
@@ -110,12 +110,8 @@ public class SceneModel extends WorldController implements ContactListener {
     /* =========== Animation Variables =========== */
     /** Current frame number (used to slow down animations) */
     private int currentFrame = 0;
-    /** Current index of the player walk animation */
-    private int ursaWalkAnimIndex = 0;
     /** The frame at which Ursa began idling */
     private int ursaBeganWalkingFrame = 0;
-    /** Current index of the player idling animation */
-    private int ursaIdleAnimIndex = 0;
     /** The frame at which Ursa began idling */
     private int ursaBeganIdlingFrame = 0;
     /** Player's current state: true corresponds to walking, false for idling */
@@ -126,20 +122,17 @@ public class SceneModel extends WorldController implements ContactListener {
     private int salmonIdleAnimIndex = 0;
     /** Current index of the salmon detection animation */
     private int salmonDetectedIndex = 0;
-    /** Current index of the tree shaking animation */
-    private int treeShakeIndex = 0;
     /** The frame at which the tree began shaking */
     private int beganShakingTreeFrame = 0;
-    /** Current index of the cave portal animation */
-    private int cavePortalIndex = 0;
-    /** Current index of the smol ursa idle animation */
-    private int smolUrsaIdleIndex = 0;
     /** Current index of the cave ZZZ animation */
     private int caveZZZIndex = 0;
-
-    private float[] caveRotations = new float[]{0, 90,180, 360, 720};
+    /**
+     * A default listing of cave rotations if none are provided.
+     * Stores the starting rotation of shadows and subsequent rotations when caves are interacted
+     * */
+    private float[] caveRotations = new float[]{0, 90, 180, 360, 720};
+    /** Pointer to the current rotation of the shadows in caveRotations. */
     private int currCaveRotation = 0;
-
 
 
     /* =========== Tree Shaking Variables =========== */
@@ -203,7 +196,7 @@ public class SceneModel extends WorldController implements ContactListener {
     private int[][] tiles;
     /** Height of the player hitbox. */
     private float playerHeight;
-
+    /** The starting rotation of all shadows for this level. */
     private float shadowStartingRotation;
 
     /* =========== Collections of References =========== */
@@ -484,22 +477,34 @@ public class SceneModel extends WorldController implements ContactListener {
             obj.deactivatePhysics(world);
         }
         effect.reset();
+        // Dispose and clear and references to objects
         objects.clear();
         addQueue.clear();
         dynamicObjects.clear();
         groundDecorations.clear();
+        interactableCaves.clear();
+        interactableTrees.clear();
         shadowController.reset();
         world.dispose();
+
+        // Rewind all film strips to the beginning
+        cavePortalFilm.setFrame(0);
+        caveZZZFilm.setFrame(0);
+        playerWalkFilm.setFrame(0);
+        playerIdleFilm.setFrame(0);
+        playerRescueFilm.setFrame(0);
+        treeShakeFilm.setFrame(0);
+        smolUrsaIdleFilm.setFrame(0);
+        smolUrsaRescue1Film.setFrame(0);
+        smolUrsaRescue2Film.setFrame(0);
+
         colorNextPointer = 1;
         uiRotationAngle = 0;
         currentFrame = 0;
         shakingTree = null;
-        treeShakeIndex = 0;
         isTimeSkipping = false;
         currCaveRotation = 0;
         interactedCave = null;
-        caveZZZIndex = 0;
-        caveZZZFilm.setFrame(caveZZZIndex);
         player_dive_anim = 0;
         hasWon = false;
         smolUrsaRescue1Film.setFrame(0);
@@ -530,29 +535,10 @@ public class SceneModel extends WorldController implements ContactListener {
     private void populateLevel() {
         // False for static shadows, true for dynamic
         boolean doShadowsMove = false;
-        // Parse the cave rotations and shadow starting rotation
-        JsonValue tileProperties = jsonData.get("layers").get(0).get("properties");
-        if (tileProperties != null){
-            for(JsonValue property: tileProperties) {
-                switch (property.get("name").asString()) {
-                    case "cave_rotations":
-                        String[] split = property.get("value").asString().split(",");
-                        caveRotations = new float[split.length];
-
-                        for (int j = 0; j < split.length; j++) {
-                            if(j == 0) { shadowStartingRotation = Float.parseFloat(split[j]); }
-                            caveRotations[j] = Float.parseFloat(split[j]);
-                        }
-                        break;
-                    case "starting_rotation":
-                        shadowStartingRotation = property.get("value").asFloat();
-                        break;
-                }
-            }
-        }
         shadowController = new ShadowController(blackTexture, doShadowsMove);
 
         findTileIndices();
+        renderShadows();
         renderUrsa();
         renderWalls();
         renderEnemies();
@@ -632,7 +618,8 @@ public class SceneModel extends WorldController implements ContactListener {
     /**
      * Animates the player.
      * If the player is moving, uses the walking animation and if not walking, plays idling animation
-     * Idling animation is slowed by 1/ursaIdleAnimBuffer
+     * Uses ursaBeganWalkingFrame and ursaBeganIdlingFrame to reset animation speeds
+     * If time is skipping, we should also animating Ursa as walking since she's only drawn when walking to cave
      */
     private void animatePlayerModel(){
         // If the player is moving
@@ -640,43 +627,38 @@ public class SceneModel extends WorldController implements ContactListener {
             System.out.println("Ursa caught");
             playerCaughtFilm.setFrame(Math.min(9, player_dive_anim - DIVE_ANIM_DIFF));
             ursa.setTexture(playerCaughtFilm);
-        } else if(ursa.getXMovement() != 0 || ursa.getyMovement() != 0){
+        } else if(ursa.getXMovement() != 0 || ursa.getYMovement() != 0 || isTimeSkipping){
             // If the player was idling, now changing states
             if(!ursaCurrentState) {
                 ursaCurrentState = true;
                 ursaBeganWalkingFrame = currentFrame;
+                playerIdleFilm.setFrame(0);
             }
-            ursaIdleAnimIndex = 0;
-            // Rewind the film
-            if(ursaWalkAnimIndex == 12){
-                ursaWalkAnimIndex = 0;
-            }
-            playerWalkFilm.setFrame(ursaWalkAnimIndex);
-            ursa.setTexture(playerWalkFilm);
 
-            int ursaWalkAnimBuffer = 2;
-            if((currentFrame - ursaBeganWalkingFrame) % ursaWalkAnimBuffer == 0) {
-                ursaWalkAnimIndex += 1;
+            if((currentFrame - ursaBeganWalkingFrame) % 2 == 0) {
+                playerWalkFilm.setFrame(playerWalkFilm.getFrame() + 1);
+                // Rewind the film if we've past
+                if(playerWalkFilm.getFrame() == 12){
+                    playerWalkFilm.setFrame(0);
+                }
             }
+            ursa.setTexture(playerWalkFilm);
         // If the player is not moving
         } else {
             // If the player changed states
             if(ursaCurrentState) {
                 ursaCurrentState = false;
                 ursaBeganIdlingFrame = currentFrame;
+                playerWalkFilm.setFrame(0);
             }
-            ursaWalkAnimIndex = 0;
-            // Rewind the film
-            if(ursaIdleAnimIndex == 30){
-                ursaIdleAnimIndex = 0;
-            }
-            playerIdleFilm.setFrame(ursaIdleAnimIndex);
-            ursa.setTexture(playerIdleFilm);
 
-            int ursaIdleAnimBuffer = 3;
-            if((currentFrame - ursaBeganIdlingFrame) % ursaIdleAnimBuffer == 0) {
-                ursaIdleAnimIndex += 1;
+            if((currentFrame - ursaBeganIdlingFrame) % 3 == 0) {
+                playerIdleFilm.setFrame(playerIdleFilm.getFrame() + 1);
+                if(playerIdleFilm.getFrame() == 30){
+                    playerIdleFilm.setFrame(0);
+                }
             }
+            ursa.setTexture(playerIdleFilm);
         }
     }
 
@@ -689,43 +671,46 @@ public class SceneModel extends WorldController implements ContactListener {
             return;
         }
 
-        treeShakeFilm.setFrame(treeShakeIndex);
+        if((currentFrame - beganShakingTreeFrame) % 4 == 0) {
+            treeShakeFilm.setFrame(treeShakeFilm.getFrame() + 1);
+            if(treeShakeFilm.getFrame() == 12){
+                treeShakeFilm.setFrame(0);
+                shakingTree.setTexture(treeTextures[1]);
+                shakingTree = null;
+                return;
+            }
+        }
         shakingTree.setTexture(treeShakeFilm);
-
-        int treeShakeAnimBuffer = 4;
-        if((currentFrame - beganShakingTreeFrame) % treeShakeAnimBuffer == 0) {
-            treeShakeIndex = (treeShakeIndex + 1) % 12;
-        }
-
-        if(treeShakeIndex == 11) {
-            // Change the shakingTree to no snow texture
-            shakingTree.setTexture(treeTextures[1]);
-            treeShakeIndex = 0;
-            // Reset the currently shaking tree
-            shakingTree = null;
-        }
     }
 
+    /**
+     * Animates the portal of all interactable caves.
+     * Once they become non-interactable, they should not animate.
+     */
     private void animateCaves() {
-        cavePortalFilm.setFrame(cavePortalIndex);
-
-        int cavePortalAnimBuffer = 3;
-        if(currentFrame % cavePortalAnimBuffer == 0) {
-            cavePortalIndex = (cavePortalIndex + 1) % 11;
+        if(currentFrame % 3 == 0) {
+            cavePortalFilm.setFrame(cavePortalFilm.getFrame() + 1);
+            if(cavePortalFilm.getFrame() == 12){
+                cavePortalFilm.setFrame(0);
+            }
         }
+
         for(Cave cave: interactableCaves) {
             cave.setPortalTexture(cavePortalFilm);
         }
     }
 
+    /**
+     * Animates smol ursa to idle.
+     */
     private void animateSmolUrsa() {
-        smolUrsaIdleFilm.setFrame(smolUrsaIdleIndex);
-        goal.setTexture(smolUrsaIdleFilm);
-
-        int smolUrsaIdleAnimBuffer = 3;
-        if(currentFrame % smolUrsaIdleAnimBuffer == 0) {
-            smolUrsaIdleIndex = (smolUrsaIdleIndex + 1) % 39;
+        if(currentFrame % 3 == 0) {
+            smolUrsaIdleFilm.setFrame(smolUrsaIdleFilm.getFrame() + 1);
+            if(smolUrsaIdleFilm.getFrame() == 39){
+                smolUrsaIdleFilm.setFrame(0);
+            }
         }
+        goal.setTexture(smolUrsaIdleFilm);
     }
 
 
@@ -742,15 +727,27 @@ public class SceneModel extends WorldController implements ContactListener {
         // Increment the current frame (used for animation slow downs)
         currentFrame++;
 
+        // If we've won, perform the rescue animations
         if(hasWon) {
             ursa.setVX(0);
             ursa.setVY(0);
+            // Animate Ursa's rescue and then
             if(playerRescueFilm.getFrame() < 33) {
                 if(currentFrame % 2 == 0) {
                     playerRescueFilm.setFrame(playerRescueFilm.getFrame() + 1);
                 }
                 ursa.setTexture(playerRescueFilm);
+                ursaBeganIdlingFrame = currentFrame;
+            } else {
+                if((currentFrame - ursaBeganIdlingFrame) % 3 == 0) {
+                    playerIdleFilm.setFrame(playerIdleFilm.getFrame() + 1);
+                    if(playerIdleFilm.getFrame() == 30){
+                        playerIdleFilm.setFrame(0);
+                    }
+                }
+                ursa.setTexture(playerIdleFilm);
             }
+
             if(smolUrsaRescue1Film.getFrame() < 48) {
                 if(currentFrame % 2 == 0) {
                     smolUrsaRescue1Film.setFrame(smolUrsaRescue1Film.getFrame() + 1);
@@ -797,12 +794,9 @@ public class SceneModel extends WorldController implements ContactListener {
 
         // Always animate the cave portals even if time is fast forwarding
         animateCaves();
+        animatePlayerModel();
         // If the time is fast forwarding
         if(isTimeSkipping) {
-            // Stop Ursa
-            ursa.setVX(0f);
-            ursa.setVY(0f);
-
             for (Enemy e : enemies) {
                 if (e != null) {
                     e.setVY(0);
@@ -812,7 +806,7 @@ public class SceneModel extends WorldController implements ContactListener {
 
             // Ursa Walks to the Cave
             if((currentFrame - timeBeganSkippingFrame) < walkingDuration) {
-                walkToCave(interactedCave);
+                walkToPoint(interactedCave.getX(), interactedCave.getY());
                 return;
             }
             ursa.stopDrawing();
@@ -825,18 +819,20 @@ public class SceneModel extends WorldController implements ContactListener {
                 isTimeSkipping = false;
                 ursa.resumeDrawing();
                 interactedCave.setPortalTexture(polarPortalTexture);
-                caveZZZIndex = 0;
+                caveZZZFilm.setFrame(0);
                 interactableCaves.remove(interactedCave);
             } else {
                 shadowController.animateFastForward(currentFrame - timeBeganSkippingFrame - walkingDuration + 1,
                         fastForwardDuration - walkingDuration);
 
                 if((currentFrame - timeBeganSkippingFrame - walkingDuration + 1) % caveZZZAnimBuffer == 0) {
-                    caveZZZIndex = (caveZZZIndex + 1) % 9;
+                    caveZZZFilm.setFrame(caveZZZFilm.getFrame() + 1);
+                    if(caveZZZFilm.getFrame() == 9){
+                        caveZZZFilm.setFrame(0);
+                    }
                 }
+                interactedCave.setZZZTexture(caveZZZFilm);
             }
-            caveZZZFilm.setFrame(caveZZZIndex);
-            interactedCave.setZZZTexture(caveZZZFilm);
             return;
         }
 
@@ -848,7 +844,6 @@ public class SceneModel extends WorldController implements ContactListener {
         checkForInteraction();
 
         // Animates the game objects
-        animatePlayerModel();
         animateEnemies();
         animateTree();
         animateSmolUrsa();
@@ -986,31 +981,20 @@ public class SceneModel extends WorldController implements ContactListener {
         interactedCave.setZZZTexture(caveZZZFilm);
         // Record where Ursa started to smoothly walk her to cave
         ursaStartingPosition = new Vector2(ursa.getPosition());
-        ursaWalkAnimIndex = 0;
-        ursaIdleAnimIndex = 0;
         ursa.setIsFacingRight(cave.getX() > ursa.getX());
     }
 
     /**
      * Walks Ursa to the cave she interacted with.
      */
-    private void walkToCave(Cave cave) {
+    private void walkToPoint(float pointX, float pointY) {
+        ursa.setVX(0f);
+        ursa.setVY(0f);
         // Move Ursa towards the cave over walkingDuration
-        float newX = ursaStartingPosition.x + (cave.getX() - ursaStartingPosition.x) * (currentFrame - timeBeganSkippingFrame) / walkingDuration;
-        float newY = ursaStartingPosition.y + (cave.getY() - ursaStartingPosition.y) * (currentFrame - timeBeganSkippingFrame) / walkingDuration;
+        float newX = ursaStartingPosition.x + (pointX - ursaStartingPosition.x) * (currentFrame - timeBeganSkippingFrame) / walkingDuration;
+        float newY = ursaStartingPosition.y + (pointY - ursaStartingPosition.y) * (currentFrame - timeBeganSkippingFrame) / walkingDuration;
         ursa.setX(newX);
         ursa.setY(newY);
-        // Animate Ursa to be walking
-        if(ursaWalkAnimIndex == 12){
-            ursaWalkAnimIndex = 0;
-        }
-        playerWalkFilm.setFrame(ursaWalkAnimIndex);
-        ursa.setTexture(playerWalkFilm);
-
-        int ursaWalkAnimBuffer = 2;
-        if((currentFrame - ursaBeganWalkingFrame) % ursaWalkAnimBuffer == 0) {
-            ursaWalkAnimIndex += 1;
-        }
     }
 
     /**
@@ -1236,6 +1220,32 @@ public class SceneModel extends WorldController implements ContactListener {
             }
         }
     }
+
+    /**
+     * Parses the shadow starting rotations or the degrees caves rotate the shadows by
+     */
+    private void renderShadows() {
+        JsonValue tileProperties = jsonData.get("layers").get(0).get("properties");
+        if (tileProperties != null){
+            for(JsonValue property: tileProperties) {
+                switch (property.get("name").asString()) {
+                    case "cave_rotations":
+                        String[] split = property.get("value").asString().split(",");
+                        caveRotations = new float[split.length];
+
+                        for (int j = 0; j < split.length; j++) {
+                            if(j == 0) { shadowStartingRotation = Float.parseFloat(split[j]); }
+                            caveRotations[j] = Float.parseFloat(split[j]);
+                        }
+                        break;
+                    case "starting_rotation":
+                        shadowStartingRotation = property.get("value").asFloat();
+                        break;
+                }
+            }
+        }
+    }
+
     /**
      * Creates invisible walls depending on the tile types
      */
@@ -1485,10 +1495,6 @@ public class SceneModel extends WorldController implements ContactListener {
             obj.setTexture(objectTextures[textureIndex]);
             obj.setName("game object" + i);
             addObject(obj);
-
-            if(name.equals("house")) {
-                continue;
-            }
             makeShadow(objectConstants,obj);
 
             // ===================

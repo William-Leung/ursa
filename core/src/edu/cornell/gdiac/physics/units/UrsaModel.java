@@ -54,7 +54,7 @@ public class UrsaModel extends CapsuleObstacle {
     public float getXMovement() {
         return xMovement;
     }
-    public float getyMovement(){
+    public float getYMovement(){
         return yMovement;
     }
 
@@ -221,7 +221,7 @@ public class UrsaModel extends CapsuleObstacle {
             forceCache.set(-getDamping() * getVX(), 0);
             body.applyForce(forceCache, getPosition(), true);
         }
-        if (getyMovement() == 0f) {
+        if (getYMovement() == 0f) {
             forceCache.set(0, -getDamping() * getVY());
             body.applyForce(forceCache, getPosition(), true);
         }
@@ -236,7 +236,7 @@ public class UrsaModel extends CapsuleObstacle {
         if (Math.abs(getVY()) >= getMaxSpeed()) {
             setVY(Math.signum(getVY()) * getMaxSpeed()); // Set y-velocity, not x-velocity
         } else {
-            forceCache.set(0, getyMovement()); // Set y-movement
+            forceCache.set(0, getYMovement()); // Set y-movement
             body.applyForce(forceCache, getPosition(), true);
         }
 
