@@ -37,7 +37,6 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
     }
     private TextureRegion[] buttons = new TextureRegion[20];
     private boolean button1Pressed;
-    private TextureRegion ursa;
     private JsonReader json;
     private float ursaStartX;
     private float ursaStartY;
@@ -56,7 +55,9 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
     private float[] completedLevels;
     private boolean button1Locked;
     private boolean button2Locked;
-    private FilmStrip ursaFilm;
+    private FilmStrip ursaWalkFilm;
+    private FilmStrip ursaIdleFilm;
+    private TextureRegion ursaTexture;
     private ParticleEffect effect;
 
 
@@ -137,9 +138,12 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         buttons[13] = new TextureRegion(directory.getEntry("levelSelect:Level14", Texture.class));
 
 
-        ursa = new TextureRegion(directory.getEntry("player:ursaWalk",Texture.class));
-        ursaFilm = new FilmStrip(ursa.getTexture(),2,8);
-        ursaFilm.setFrame(0);
+        TextureRegion ursaWalk = new TextureRegion(directory.getEntry("player:ursaWalk",Texture.class));
+        ursaWalkFilm = new FilmStrip(ursaWalk.getTexture(),2,16);
+        ursaWalkFilm.setFrame(0);
+        TextureRegion ursaIdle = new TextureRegion(directory.getEntry("player:ursaIdle", Texture.class));
+        ursaIdleFilm = new FilmStrip(ursaIdle.getTexture(),2,16);
+        ursaIdleFilm.setFrame(0);
 
         buttonsFilms[0] = new FilmStrip(buttons[0].getTexture(),1,2);
         buttonsFilms[0].setFrame(0);
@@ -258,40 +262,49 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
     private void update(float delta){
         effect.update(delta);
 
-
-        if(ursaFilm.getFrame() == 11){
-            ursaFilm.setFrame(0);
-
-        }
         time += 1;
+        boolean isMoving = false;
         if((Gdx.input.isKeyPressed(Input.Keys.LEFT))){
             ursaStartX -= ursaMoveDist;
             ursaNewX = ursaStartX;
             direction = -1;
-
-
+            isMoving = true;
         }
         if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)){
-            direction = 1;
             ursaStartX += ursaMoveDist;
             ursaNewX = ursaStartX;
-
+            direction = 1;
+            isMoving = true;
         }
         if(Gdx.input.isKeyPressed(Input.Keys.UP)){
             ursaStartY += ursaMoveDist;
             ursaNewY = ursaStartY;
-
+            isMoving = true;
         }
         if(Gdx.input.isKeyPressed(Input.Keys.DOWN)){
             ursaStartY -= ursaMoveDist;
             ursaNewY = ursaStartY;
-
+            isMoving = true;
         }
-        if(Gdx.input.isKeyPressed(Input.Keys.DOWN) ||Gdx.input.isKeyPressed(Input.Keys.UP)||Gdx.input.isKeyPressed(Input.Keys.RIGHT)|| Gdx.input.isKeyPressed(Input.Keys.LEFT)){
-            if(time % 3 == 0){
-                System.out.println("Running Film");
-                ursaFilm.setFrame(ursaFilm.getFrame() + 1);
+
+        if(isMoving){
+            if(time % 2 == 0){
+                if(ursaWalkFilm.getFrame() == 19){
+                    ursaWalkFilm.setFrame(0);
+                }
+                ursaWalkFilm.setFrame(ursaWalkFilm.getFrame() + 1);
             }
+            ursaTexture = ursaWalkFilm;
+            ursaIdleFilm.setFrame(0);
+        } else {
+            if(time % 2 == 0){
+                if(ursaIdleFilm.getFrame() == 29){
+                    ursaIdleFilm.setFrame(0);
+                }
+                ursaIdleFilm.setFrame(ursaIdleFilm.getFrame() + 1);
+            }
+            ursaTexture = ursaIdleFilm;
+            ursaWalkFilm.setFrame(0);
         }
 
 
@@ -305,14 +318,14 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         if(Math.abs(ursaStartX-ursaNewX) > 5 && ursaStartX < ursaNewX){
 
             if(time% 2 == 0){
-                ursaFilm.setFrame(ursaFilm.getFrame() +1);
+                ursaWalkFilm.setFrame(ursaWalkFilm.getFrame() +1);
             }
 
             ursaStartX += 2.0f;
         }
         if(Math.abs(ursaStartX-ursaNewX) > 5 && ursaStartX > ursaNewX){
             if(time% 2 == 0){
-                ursaFilm.setFrame(ursaFilm.getFrame() +1);
+                ursaWalkFilm.setFrame(ursaWalkFilm.getFrame() +1);
             }
 
             ursaStartX -= 2.0f;
@@ -326,12 +339,12 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
 
             ursaStartY -= 3.0f;
         }
-        if(Math.abs(ursaStartY-ursaNewY) > 5 && Math.abs(ursaStartX - ursaNewX) <5 && ursaFilm.getFrame() < 20){
-            ursaFilm.setFrame(ursaFilm.getFrame() + 1);
+        if(Math.abs(ursaStartY-ursaNewY) > 5 && Math.abs(ursaStartX - ursaNewX) <5 && ursaWalkFilm.getFrame() < 20){
+            ursaWalkFilm.setFrame(ursaWalkFilm.getFrame() + 1);
         }
 
         if(Math.abs(ursaStartX - ursaNewX) < 10 && Math.abs(ursaStartY - ursaNewY) < 10 && !Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT)&& !Gdx.input.isKeyPressed(Input.Keys.UP) && !Gdx.input.isKeyPressed(Input.Keys.DOWN)){
-            ursaFilm.setFrame(3);
+            ursaWalkFilm.setFrame(3);
         }
 
 
@@ -440,7 +453,8 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         canvas.draw(buttonsFilms[11],Color.WHITE,.706f * canvas.getWidth(),.5417f * canvas.getHeight(),buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
         canvas.draw(buttonsFilms[12],Color.WHITE,.8496f * canvas.getWidth(),.5417f * canvas.getHeight(),buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
         canvas.draw(buttonsFilms[13],Color.WHITE,.8496f * canvas.getWidth(),.2656f * canvas.getHeight(),buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
-        canvas.draw(ursaFilm,Color.WHITE,ursaStartX,ursaStartY,ursaFilm.getRegionWidth() * .4f,ursaFilm.getRegionHeight() * .4f);effect.update(1/60);
+        canvas.draw(ursaTexture, Color.WHITE, ursaWalkFilm.getRegionWidth() / 2f, ursaWalkFilm.getRegionHeight() / 2f,ursaStartX + ursaWalkFilm.getRegionWidth() /2f * 0.4f,ursaStartY+ursaWalkFilm.getRegionHeight() /2f * 0.4f,0,direction * 0.4f,0.4f);
+        effect.update(1/60f);
         if(effect.isComplete()){
             effect.reset();
         }
