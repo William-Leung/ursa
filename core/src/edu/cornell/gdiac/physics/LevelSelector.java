@@ -71,6 +71,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
     private final float ScreenWidthStart = 1024;
     private final float ScreenHeightStart = 576;
     private float buttonWidth;
+    private int levelExited;
     GameCanvas canvas;
     private boolean active;
 
@@ -80,6 +81,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
     private Music levelSelectMusic;
     public LevelSelector(GameCanvas NewCanvas,float completion){
         direction = 1;
+        levelExited = 0;
         ursaMoveDist = 2.5f;
         ursaStartX = 78;
         ursaStartY = 196f;
@@ -119,6 +121,14 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
     }
     public void setActive(boolean b){
         active = b;
+
+    }
+    public void setLevelExited(int num){
+        levelExited = num;
+        ursaStartX = positions[num * 2];
+        ursaStartY = positions[num * 2 + 1];
+        ursaNewX = ursaStartX;
+        ursaNewY = ursaStartY;
     }
     public void gatherAssets(AssetDirectory directory) {
         buttons[0] = new TextureRegion(directory.getEntry("levelSelect:Level1", Texture.class));

@@ -437,8 +437,10 @@ public class GDXRoot extends Game implements ScreenListener {
 
 
 		}else if(exitCode == 2 && screen == retryMenu){
+			int cur = current;
 			current = -1;
 			levelSelector = new LevelSelector(canvas,levelsCompleted);
+			levelSelector.setLevelExited(cur);
 			levelSelector.gatherAssets(directory);
 			levelSelector.setScreenListener(this);
 			setScreen(levelSelector);
