@@ -59,7 +59,7 @@ public abstract class WorldController implements Screen {
 	public void setWasCompleted(boolean b){
 		wasCompleted = b;
 	}
-	public boolean isWasCompleted(){
+	public boolean wasCompleted(){
 		return wasCompleted;
 	}
 
@@ -77,7 +77,9 @@ public abstract class WorldController implements Screen {
 	/** Exit code for advancing to next level */
 	public static final int EXIT_NEXT = 1;
 	/** Exit code for jumping back to previous level */
-	public static final int EXIT_PREV = 2;
+	public static final int LEVEL_COMPLETE = 112;
+	/** Exit code for jumping back to previous level */
+	public static final int LEVEL_FAILED = 113;
 	/** How many frames after winning/losing do we continue? */
 	public static final int EXIT_COUNT = 120;
 
@@ -399,20 +401,15 @@ public abstract class WorldController implements Screen {
 
 		// Now it is time to maybe switch screens.
 		if (input.didExit()) {
+			System.out.println("exit");
 			pause();
 			listener.exitScreen(this, EXIT_QUIT);
 			return false;
-		} else if (input.didAdvance()) {
-			pause();
-			listener.exitScreen(this, EXIT_NEXT);
-			return false;
 		} else if(complete){
-			System.out.println("WOW");
-			listener.exitScreen(this, 12);
+			listener.exitScreen(this, LEVEL_COMPLETE);
 			return false;
 		}else if(failed){
-
-			listener.exitScreen(this, 13);
+			listener.exitScreen(this, LEVEL_FAILED);
 			return false;
 		}else if (countdown > 0) {
 			countdown--;

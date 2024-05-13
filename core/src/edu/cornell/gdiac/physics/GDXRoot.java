@@ -135,7 +135,6 @@ public class GDXRoot extends Game implements ScreenListener {
 		canvas = null;
 
 		// Unload all of the resources
-		// Unload all of the resources
 		if (directory != null) {
 			directory.unloadAssets();
 			directory.dispose();
@@ -167,289 +166,97 @@ public class GDXRoot extends Game implements ScreenListener {
 	 * @param exitCode The state of the screen upon exit
 	 */
 	public void exitScreen(Screen screen, int exitCode) {
-
 		if (screen == loading) {
+			// Go into the level select
 			directory = loading.getAssets();
 			levelSelector = new LevelSelector(canvas,levelsCompleted, 0);
 			levelSelector.gatherAssets(directory);
 			levelSelector.setScreenListener(this);
-
-
-			//controllers[current].reset();
 			setScreen(levelSelector);
 			levelSelector.setActive(true);
 
 			loading.dispose();
 			loading = null;
-		} else if (screen == levelSelector && exitCode == 1) {
-			current = 0;
+		} else if (screen == levelSelector) {
+			if(exitCode == WorldController.EXIT_QUIT) {
+				Gdx.app.exit();
+				return;
+			}
+			// Enter the corresponding level from the level select
+			for(int i = 1; i < 14; i++) {
+				if(exitCode != i) {
+					continue;
+				}
+				current = i - 1;
 
-			controllers[current].gatherAssets(directory);
-			controllers[current].setScreenListener(this);
-			controllers[current].setCanvas(canvas);
-			controllers[current].reset();
-			setScreen(controllers[current]);
-			controllers[current].active = true;
+				controllers[current].gatherAssets(directory);
+				controllers[current].setScreenListener(this);
+				controllers[current].setCanvas(canvas);
+				controllers[current].reset();
+				setScreen(controllers[current]);
+				controllers[current].active = true;
 
-			levelSelector.setActive(false);
-			levelSelector.dispose();
-			levelSelector = null;
-
-		} else if (screen == levelSelector && exitCode == 2) {
-			current = 1;
-
-			controllers[current].gatherAssets(directory);
-			controllers[current].setScreenListener(this);
-			controllers[current].setCanvas(canvas);
-			controllers[current].reset();
-			setScreen(controllers[current]);
-			controllers[current].active = true;
-
-			levelSelector.setActive(false);
-			levelSelector.dispose();
-			levelSelector = null;
-
-		}else if (screen == levelSelector && exitCode == 3) {
-			current = 2;
-
-			controllers[current].gatherAssets(directory);
-			controllers[current].setScreenListener(this);
-			controllers[current].setCanvas(canvas);
-			controllers[current].reset();
-			setScreen(controllers[current]);
-			controllers[current].active = true;
-
-			levelSelector.setActive(false);
-			levelSelector.dispose();
-			levelSelector = null;
-
-		}
-		else if (screen == levelSelector && exitCode == 4) {
-			current = 3;
-
-			controllers[current].gatherAssets(directory);
-			controllers[current].setScreenListener(this);
-			controllers[current].setCanvas(canvas);
-			controllers[current].reset();
-			setScreen(controllers[current]);
-			controllers[current].active = true;
-
-			levelSelector.setActive(false);
-			levelSelector.dispose();
-			levelSelector = null;
-		}
-		else if (screen == levelSelector && exitCode == 5) {
-			current = 4;
-
-			controllers[current].gatherAssets(directory);
-			controllers[current].setScreenListener(this);
-			controllers[current].setCanvas(canvas);
-			controllers[current].reset();
-			setScreen(controllers[current]);
-			controllers[current].active = true;
-
-			levelSelector.setActive(false);
-			levelSelector.dispose();
-			levelSelector = null;
-		}
-		else if (screen == levelSelector && exitCode == 6) {
-			current = 5;
-
-			controllers[current].gatherAssets(directory);
-			controllers[current].setScreenListener(this);
-			controllers[current].setCanvas(canvas);
-			controllers[current].reset();
-			setScreen(controllers[current]);
-			controllers[current].active = true;
-
-			levelSelector.setActive(false);
-			levelSelector.dispose();
-			levelSelector = null;
-		}
-		else if (screen == levelSelector && exitCode == 7) {
-			current = 6;
-
-			controllers[current].gatherAssets(directory);
-			controllers[current].setScreenListener(this);
-			controllers[current].setCanvas(canvas);
-			controllers[current].reset();
-			setScreen(controllers[current]);
-			controllers[current].active = true;
-
-			levelSelector.setActive(false);
-			levelSelector.dispose();
-			levelSelector = null;
-		}
-		else if (screen == levelSelector && exitCode == 8) {
-			current = 7;
-
-			controllers[current].gatherAssets(directory);
-			controllers[current].setScreenListener(this);
-			controllers[current].setCanvas(canvas);
-			controllers[current].reset();
-			setScreen(controllers[current]);
-			controllers[current].active = true;
-
-			levelSelector.setActive(false);
-			levelSelector.dispose();
-			levelSelector = null;
-		}
-		else if (screen == levelSelector && exitCode == 9) {
-			current = 8;
-
-			controllers[current].gatherAssets(directory);
-			controllers[current].setScreenListener(this);
-			controllers[current].setCanvas(canvas);
-			controllers[current].reset();
-			setScreen(controllers[current]);
-			controllers[current].active = true;
-
-			levelSelector.setActive(false);
-			levelSelector.dispose();
-			levelSelector = null;
-		}
-		else if (screen == levelSelector && exitCode == 10) {
-			current = 9;
-
-			controllers[current].gatherAssets(directory);
-			controllers[current].setScreenListener(this);
-			controllers[current].setCanvas(canvas);
-			controllers[current].reset();
-			setScreen(controllers[current]);
-			controllers[current].active = true;
-
-			levelSelector.setActive(false);
-			levelSelector.dispose();
-			levelSelector = null;
-		}
-		else if (screen == levelSelector && exitCode == 11) {
-			current = 10;
-
-			controllers[current].gatherAssets(directory);
-			controllers[current].setScreenListener(this);
-			controllers[current].setCanvas(canvas);
-			controllers[current].reset();
-			setScreen(controllers[current]);
-			controllers[current].active = true;
-
-			levelSelector.setActive(false);
-			levelSelector.dispose();
-			levelSelector = null;
-		}
-		else if (screen == levelSelector && exitCode == 12) {
-			current = 11;
-
-			controllers[current].gatherAssets(directory);
-			controllers[current].setScreenListener(this);
-			controllers[current].setCanvas(canvas);
-			controllers[current].reset();
-			setScreen(controllers[current]);
-			controllers[current].active = true;
-
-			levelSelector.setActive(false);
-			levelSelector.dispose();
-			levelSelector = null;
-		}
-		else if (screen == levelSelector && exitCode == 13) {
-			current = 12;
-
-			controllers[current].gatherAssets(directory);
-			controllers[current].setScreenListener(this);
-			controllers[current].setCanvas(canvas);
-			controllers[current].reset();
-			setScreen(controllers[current]);
-			controllers[current].active = true;
-
-			levelSelector.setActive(false);
-			levelSelector.dispose();
-			levelSelector = null;
-		}
-		else if (screen == levelSelector && exitCode == 14) {
-			current = 13;
-
-			controllers[current].gatherAssets(directory);
-			controllers[current].setScreenListener(this);
-			controllers[current].setCanvas(canvas);
-			controllers[current].reset();
-			setScreen(controllers[current]);
-			controllers[current].active = true;
-
-			levelSelector.setActive(false);
-			levelSelector.dispose();
-			levelSelector = null;
-		}
-		else if (exitCode == 32 && screen != levelSelector && screen != loading) {
-			canvas.setCam(camX,camY);
-			setScreen(levelSelector);
-			levelSelector.setActive(true);
-			controllers[current].active = false;
-
-
-		}
-		else if (exitCode == 12 && screen != levelSelector && screen != loading) {
-
-			if(!controllers[current].isWasCompleted()){
+				levelSelector.setActive(false);
+				levelSelector.dispose();
+				levelSelector = null;
+				break;
+			}
+		} else if(screen == retryMenu) {
+			if (exitCode == 1) {
+				// Go back into the level
+				controllers[current].setScreenListener(this);
+				controllers[current].setCanvas(canvas);
+				controllers[current].reset();
+				setScreen(controllers[current]);
+				controllers[current].active = true;
+			} else if (exitCode == 2) {
+				// Go to the level selector
+				levelSelector = new LevelSelector(canvas, levelsCompleted, current);
+				current = -1;
+				levelSelector.gatherAssets(directory);
+				levelSelector.setScreenListener(this);
+				setScreen(levelSelector);
+				levelSelector.setActive(true);
+			}
+			retryMenu.setActive(false);
+			retryMenu.dispose();
+			retryMenu = null;
+		} else if (exitCode == WorldController.LEVEL_COMPLETE) {
+			if(!controllers[current].wasCompleted()){
 				levelsCompleted += 1;
 				controllers[current].setWasCompleted(true);
 				prefs.putFloat("completed", prefs.getFloat("completed")+1);
 				System.out.println(prefs.getFloat("completed"));
 				prefs.flush();
 			}
+			// Create the retry menu where we've won
 			controllers[current].setWasCompleted(true);
 			retryMenu = new RetryMenu(canvas,true);
 			retryMenu.gatherAssets(directory);
 			retryMenu.setScreenListener(this);
-			canvas.setCam(camX,camY);
 			setScreen(retryMenu);
 			retryMenu.setActive(true);
+
+			canvas.setCam(camX,camY);
 			controllers[current].active = false;
-
-
-
-
-
-
-		}else if (exitCode == 13 && screen != levelSelector && screen != loading) {
-
+		} else if (exitCode == WorldController.LEVEL_FAILED) {
+			// Create the retry menu where we've lost
 			retryMenu = new RetryMenu(canvas,false);
 			retryMenu.gatherAssets(directory);
 			retryMenu.setScreenListener(this);
-			canvas.setCam(camX,camY);
 			setScreen(retryMenu);
 			retryMenu.setActive(true);
+
+			canvas.setCam(camX,camY);
 			controllers[current].active = false;
-
-
-
-
-
-
-		}else if(screen == retryMenu && exitCode ==1){
-			controllers[current].setScreenListener(this);
-			controllers[current].setCanvas(canvas);
-			controllers[current].reset();
-			setScreen(controllers[current]);
-			controllers[current].active = true;
-			retryMenu.setActive(false);
-			retryMenu.dispose();
-			retryMenu = null;
-
-
-
-		}else if(exitCode == 2 && screen == retryMenu){
+		} else if (exitCode == WorldController.EXIT_QUIT) {
 			levelSelector = new LevelSelector(canvas,levelsCompleted, current);
-			current = -1;
+			canvas.setCam(camX,camY);
 			levelSelector.gatherAssets(directory);
 			levelSelector.setScreenListener(this);
 			setScreen(levelSelector);
 			levelSelector.setActive(true);
-			retryMenu.setActive(false);
-			retryMenu.dispose();
-			retryMenu = null;
-
-		}else if (exitCode == WorldController.EXIT_QUIT) {
-			// We quit the main application
-			Gdx.app.exit();
+			controllers[current].active = false;
 		}
 	}
 

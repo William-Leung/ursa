@@ -71,10 +71,12 @@ public class SceneModel extends WorldController implements ContactListener {
     private TextureRegion polarZZZTexture;
     /** Texture asset for the ice in the polar map (moveable) */
     private TextureRegion polarIceTexture;
-    /** Texture asset for a single white pixel (background) */
+    /** Texture asset for a single white pixel (tinting) */
     protected TextureRegion whiteTexture;
     /** Texture asset for a single black pixel (shadows) */
     protected TextureRegion blackTexture;
+    /** Texture asset for the ground */
+    private TextureRegion groundTexture;
 
 
     /* =========== Film Strips =========== */
@@ -337,6 +339,7 @@ public class SceneModel extends WorldController implements ContactListener {
     public void gatherAssets(AssetDirectory directory) {
         whiteTexture = new TextureRegion(directory.getEntry("polar:white", Texture.class));
         blackTexture = new TextureRegion(directory.getEntry("polar:black", Texture.class));
+        groundTexture = new TextureRegion(directory.getEntry("polar:ground", Texture.class));
         dayNightUITexture = new TextureRegion(directory.getEntry("ui:dayNightUI", Texture.class));
         salmonTexture = new TextureRegion(directory.getEntry("enemies:salmon", Texture.class));
         ursaTexture = new TextureRegion(directory.getEntry("player:ursa", Texture.class));
@@ -1089,19 +1092,27 @@ public class SceneModel extends WorldController implements ContactListener {
         canvas.draw(tileTextures[0], Color.WHITE,canvas.getCameraX() - canvas.getWidth() / 2f, canvas.getCameraY() - canvas.getHeight() / 2f, canvas.getWidth(), canvas.getHeight());
 
         // Draw snow on the map
-        canvas.draw(whiteTexture, Color.WHITE, 0, 0, numTilesX * 16 * textureScale * scale.x, numTilesY * 16 * textureScale * scale.y);
+        canvas.draw(groundTexture, Color.WHITE, 0, 0, numTilesX * 16 * textureScale * scale.x, numTilesY * 16 * textureScale * scale.y);
+
         for(Decoration d: groundDecorations) {
+            d.draw(canvas);
+        }
+
+
+        for(Decoration d: decorations) {
             d.draw(canvas);
         }
         // Draws shadows for moving objects (enemy/player)
         for(Obstacle obj: dynamicObjects) {
             obj.preDraw(canvas);
         }
+        // Draw shadow for static objects (trees, etc)
+        shadowController.drawShadows(canvas);
+
 
         drawTiles();
-        for(Decoration d: decorations) {
-            d.draw(canvas);
-        }
+
+
         // Draw a tinting over everything
         canvas.draw(whiteTexture,backgroundColor, canvas.getCameraX() - canvas.getWidth() / 2f, canvas.getCameraY() - canvas.getHeight() / 2f, canvas.getWidth(), canvas.getHeight());
         super.updateTinting(backgroundColor);
@@ -1110,7 +1121,6 @@ public class SceneModel extends WorldController implements ContactListener {
 //        Gdx.gl.glClearColor(1, 1, 1, 1);
 //        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         // Draws shadows for static objects (trees, rocks, trunks, etc)
-        shadowController.drawShadows(canvas);
 //        canvas.draw(salmonTexture,Color.WHITE,128,128,400f,400f);
 //        fb.end();
     }

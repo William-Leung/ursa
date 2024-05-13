@@ -52,9 +52,6 @@ public class InputController {
 	/** Whether the reset button was pressed. */
 	private boolean resetPressed;
 	private boolean resetPrevious;
-	/** Whether the button to advanced worlds was pressed. */
-	private boolean nextPressed;
-	private boolean nextPrevious;
 	/** Whether the button to step back worlds was pressed. */
 	private boolean prevPressed;
 	private boolean prevPrevious;
@@ -187,14 +184,6 @@ public class InputController {
 		return caveEnterPressed & !caveEnterPrevious;
 	}
 
-	/**
-	 * Returns true if the player wants to go to the next level.
-	 *
-	 * @return true if the player wants to go to the next level.
-	 */
-	public boolean didAdvance() {
-		return nextPressed && !nextPrevious;
-	}
 	
 	/**
 	 * Returns true if the player wants to go to the previous level.
@@ -259,7 +248,6 @@ public class InputController {
 		resetPrevious  = resetPressed;
 		debugPrevious  = debugPressed;
 		exitPrevious = exitPressed;
-		nextPrevious = nextPressed;
 		prevPrevious = prevPressed;
 		interactPrevious = interactPressed;
 		caveEnterPrevious = caveEnterPressed;
@@ -286,7 +274,6 @@ public class InputController {
 	private void readGamepad(Rectangle bounds, Vector2 scale) {
 		resetPressed = xbox.getStart();
 		exitPressed  = xbox.getBack();
-		nextPressed  = xbox.getRBumper();
 		prevPressed  = xbox.getLBumper();
 		primePressed = xbox.getA();
 		debugPressed  = xbox.getY();
@@ -328,7 +315,6 @@ public class InputController {
 		primePressed = (secondary && primePressed) || (Gdx.input.isKeyPressed(Input.Keys.UP));
 		secondPressed = (secondary && secondPressed) || (Gdx.input.isKeyPressed(Input.Keys.SPACE));
 		prevPressed = (secondary && prevPressed) || (Gdx.input.isKeyPressed(Input.Keys.P));
-		nextPressed = (secondary && nextPressed) || (Gdx.input.isKeyPressed(Input.Keys.N));
 		exitPressed  = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
 		interactPressed = (secondPressed && interactPressed) || (Gdx.input.isKeyPressed(Input.Keys.E));
 		caveEnterPressed = Gdx.input.isKeyPressed(Input.Keys.E);

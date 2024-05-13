@@ -442,11 +442,11 @@ public class Enemy extends BoxObstacle {
 		canvas.draw(blobShadow, Color.WHITE,xcenter,ycenter,
 				getX()*drawScale.x,(getY() - 1.25f) * drawScale.y,getAngle(),BLOB_SHADOW_SIZE / drawScale.x,
 				(BLOB_SHADOW_SIZE / 2f) / drawScale.y);
+		canvas.draw(sightConeRegion, Color.WHITE, origin.x,origin.y,getX()*drawScale.x,
+				getY()*drawScale.y,getAngle(),1.0f,1.0f);
 	}
 
 	public void draw(GameCanvas canvas) {
-		canvas.draw(sightConeRegion, Color.WHITE, origin.x,origin.y,getX()*drawScale.x,
-				getY()*drawScale.y,getAngle(),1.0f,1.0f);
 		canvas.draw(texture, Color.WHITE,origin.x,0,getX()*drawScale.x,(getY() - getHeight() / 2) * drawScale.y,getAngle(),
 				(lookDirection.x > 0 ? 1 : -1) * textureScale,textureScale);
 	}

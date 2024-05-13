@@ -11,16 +11,11 @@ import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.box2d.ContactListener;
-import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.utils.JsonReader;
-import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.util.FilmStrip;
 import edu.cornell.gdiac.util.ScreenListener;
@@ -35,13 +30,12 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
     private FilmStrip ursaWalkFilm;
     private FilmStrip ursaIdleFilm;
     private TextureRegion ursaTexture;
+    private TextureRegion ursaShadow;
     private ParticleEffect effect;
     private float levelsCompleted;
     private FilmStrip[] buttonsFilms = new FilmStrip[20];
     private TextureRegion background = new TextureRegion();
     private ScreenListener listener;
-    private final float ScreenWidthStart = 1024;
-    private final float ScreenHeightStart = 576;
     GameCanvas canvas;
     private boolean active;
 
@@ -71,7 +65,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
     private boolean isSecondPress = false;
     private float moveX;
     private float moveY;
-    private final int moveDuration = 120;
+    private final int moveDuration = 90;
     private Vector2 buttonTarget;
     private float buttonRadius;
 
@@ -90,7 +84,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
        exiting = false;
         effect = new ParticleEffect();
         effect.load(Gdx.files.internal("particle.p"),Gdx.files.internal(""));
-        effect.getEmitters().first().setPosition(canvas.getWidth()/2,canvas.getHeight());
+        effect.getEmitters().first().setPosition(canvas.getWidth()/2f,canvas.getHeight());
         effect.start();
 
         // I know this is bad but it works lol.
@@ -123,7 +117,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         TextureRegion ursaIdle = new TextureRegion(directory.getEntry("player:ursaIdle", Texture.class));
         ursaIdleFilm = new FilmStrip(ursaIdle.getTexture(),2,16);
         ursaIdleFilm.setFrame(0);
-      //   ursaShadow = new TextureRegion(directory.getEntry("player:ursaShadow", Texture.class));
+        ursaShadow = new TextureRegion(directory.getEntry("player:ursaShadow", Texture.class));
 
         // Set the first level to unlocked and every other level to locked
         buttonsFilms[0] = new FilmStrip(buttons[0].getTexture(),1,2);
@@ -190,51 +184,13 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         }
 
         if(isMovingToButton) {
-            System.out.println("Moving to Button");
             ursaPos.x += moveX;
             ursaPos.y += moveY;
             isMoving = true;
         }
 
         // Animate Ursa to be walking or idling
-        System.out.println(isMoving);
         animateUrsa(isMoving);
-
-//
-//
-//
-//        if(Math.abs(ursaStartX-ursaNewX) > 5 && ursaStartX < ursaNewX){
-//
-//            if(time% 2 == 0){
-//                ursaWalkFilm.setFrame(ursaWalkFilm.getFrame() +1);
-//            }
-//
-//            ursaStartX += 2.0f;
-//        }
-//        if(Math.abs(ursaStartX-ursaNewX) > 5 && ursaStartX > ursaNewX){
-//            if(time% 2 == 0){
-//                ursaWalkFilm.setFrame(ursaWalkFilm.getFrame() +1);
-//            }
-//
-//            ursaStartX -= 2.0f;
-//        }
-//        if(Math.abs(ursaStartY-ursaNewY) > 5 && ursaStartY < ursaNewY){
-//            ursaStartY += 3.0f;
-//
-//
-//        }
-//        if(Math.abs(ursaStartY-ursaNewY) > 5 && ursaStartY > ursaNewY){
-//
-//            ursaStartY -= 3.0f;
-//        }
-//        if(Math.abs(ursaStartY-ursaNewY) > 5 && Math.abs(ursaStartX - ursaNewX) <5 && ursaWalkFilm.getFrame() < 20){
-//            ursaWalkFilm.setFrame(ursaWalkFilm.getFrame() + 1);
-//        }
-//
-//        if(Math.abs(ursaStartX - ursaNewX) < 10 && Math.abs(ursaStartY - ursaNewY) < 10 && !Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT)&& !Gdx.input.isKeyPressed(Input.Keys.UP) && !Gdx.input.isKeyPressed(Input.Keys.DOWN)){
-//            ursaWalkFilm.setFrame(3);
-//        }
-
     }
 
     private void animateUrsa(boolean isMoving) {
@@ -307,9 +263,8 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         for(int i = 0; i < numButtons; i++) {
             canvas.draw(buttonsFilms[i], Color.WHITE, buttonOX, buttonOY, buttonPositions[2*i], buttonPositions[2*i+1],0f,buttonScale,buttonScale);
         }
-        System.out.println(ursaPos.x + " " + ursaPos.y);
+        canvas.draw(ursaShadow, Color.WHITE, ursaShadow.getRegionWidth() / 2f, 0, ursaPos.x, ursaPos.y - ursaScale * ursaWalkFilm.getRegionHeight() / 2f, 0, ursaScale, ursaScale);
         canvas.draw(ursaTexture, Color.WHITE, ursaWalkFilm.getRegionWidth() / 2f, ursaWalkFilm.getRegionHeight() / 2f,ursaPos.x,ursaPos.y,0,direction * ursaScale,ursaScale);
-        //canvas.draw(buttonsFilms[0], Color.WHITE, buttonOX,buttonOY,ursaPos.x,ursaPos.y,0,direction * buttonScale,buttonScale);
 
 
         effect.update(1/60f);

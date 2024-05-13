@@ -51,6 +51,7 @@ public class RetryMenu implements Screen, InputProcessor, ControllerListener {
         levelRetryMusic = directory.getEntry("soundtracks:level_retry", Music.class);
 
     }
+
     private void update(float delta){
 
     }
