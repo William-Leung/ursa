@@ -49,6 +49,7 @@
         "player:ursa": "player/Ursa.png",
         "player:ursaDown": "player/Down.png",
         "player:ursaRescue": "player/Rescue.png",
+        "player:ursaShadow": "player/Ursa_Shadow.png",
 
         "polar:cave_portal_animation" : "polar/animations/Cave_Portal_Animation.png",
         "polar:tree_shake_animation": "polar/animations/Polar_Tree_Shake.png",

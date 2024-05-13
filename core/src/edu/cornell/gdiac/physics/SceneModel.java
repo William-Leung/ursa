@@ -55,6 +55,8 @@ public class SceneModel extends WorldController implements ContactListener {
     private TextureRegion salmonTexture;
     /** Texture asset for ursa texture */
     private TextureRegion ursaTexture;
+    /** Texture asset for ursa shadow texture */
+    private TextureRegion ursaShadowTexture;
     /** Texture asset for smol ursa texture */
     private TextureRegion smolUrsaTexture;
     /** Texture asset for trees in the polar map (first is snow, second is no snow) */
@@ -78,7 +80,7 @@ public class SceneModel extends WorldController implements ContactListener {
     /* =========== Film Strips =========== */
     /** Filmstrip for cave portal whirl animation */
     private FilmStrip cavePortalFilm;
-    /** Filmstrip for cave sleep animation */
+    /** FilmstripplayerWalkFilm for cave sleep animation */
     private FilmStrip caveZZZFilm;
     /** Filmstrip for player walking animation */
     private FilmStrip playerWalkFilm;
@@ -338,6 +340,7 @@ public class SceneModel extends WorldController implements ContactListener {
         dayNightUITexture = new TextureRegion(directory.getEntry("ui:dayNightUI", Texture.class));
         salmonTexture = new TextureRegion(directory.getEntry("enemies:salmon", Texture.class));
         ursaTexture = new TextureRegion(directory.getEntry("player:ursa", Texture.class));
+        ursaShadowTexture = new TextureRegion(directory.getEntry("player:ursaShadow", Texture.class));
         smolUrsaTexture = new TextureRegion(directory.getEntry("smolursa:model", Texture.class));
 
         treeTextures[0] = new TextureRegion(directory.getEntry("polar:tree_snow", Texture.class));
@@ -714,7 +717,7 @@ public class SceneModel extends WorldController implements ContactListener {
      * @param dt	Number of seconds since last animation frame
      */
     public void update(float dt) {
-        System.out.println("FPS: " + (1/dt));
+        //System.out.println("FPS: " + (1/dt));
         // Increment the current frame (used for animation slow downs)
         currentFrame++;
 
@@ -1090,6 +1093,11 @@ public class SceneModel extends WorldController implements ContactListener {
         for(Decoration d: groundDecorations) {
             d.draw(canvas);
         }
+        // Draws shadows for moving objects (enemy/player)
+        for(Obstacle obj: dynamicObjects) {
+            obj.preDraw(canvas);
+        }
+
         drawTiles();
         for(Decoration d: decorations) {
             d.draw(canvas);
@@ -1097,10 +1105,7 @@ public class SceneModel extends WorldController implements ContactListener {
         // Draw a tinting over everything
         canvas.draw(whiteTexture,backgroundColor, canvas.getCameraX() - canvas.getWidth() / 2f, canvas.getCameraY() - canvas.getHeight() / 2f, canvas.getWidth(), canvas.getHeight());
         super.updateTinting(backgroundColor);
-        // Draws shadows for moving objects (enemy/player)
-        for(Obstacle obj: dynamicObjects) {
-            obj.preDraw(canvas);
-        }
+
 //        fb.begin();
 //        Gdx.gl.glClearColor(1, 1, 1, 1);
 //        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -1288,6 +1293,7 @@ public class SceneModel extends WorldController implements ContactListener {
                 ursaConstants, playerWidth, playerHeight, textureScale);
         ursa.setDrawScale(scale);
         ursa.setTexture(playerWalkFilm);
+        ursa.setShadowTexture(ursaShadowTexture);
         addObject(ursa);
         dynamicObjects.add(ursa);
     }

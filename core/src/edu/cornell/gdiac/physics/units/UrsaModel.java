@@ -2,6 +2,7 @@ package edu.cornell.gdiac.physics.units;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
@@ -42,6 +43,7 @@ public class UrsaModel extends CapsuleObstacle {
     private float textureScale;
     /** Boolean for when Ursa's model and shadow should draw. */
     private boolean isDrawing;
+    private TextureRegion shadowTexture;
 
 
     /**
@@ -68,7 +70,9 @@ public class UrsaModel extends CapsuleObstacle {
     public void setMovement(float xValue,float yValue) {
         xMovement = xValue;
         yMovement = yValue;
-        isFacingRight = getXMovement() > 0;
+        if(getXMovement() != 0) {
+            isFacingRight = getXMovement() > 0;
+        }
     }
 
     /**
@@ -205,6 +209,10 @@ public class UrsaModel extends CapsuleObstacle {
         return true;
     }
 
+    public void setShadowTexture(TextureRegion t) {
+        shadowTexture = t;
+    }
+
     /**
      * Applies the force to the body of this dude
      *
@@ -251,12 +259,7 @@ public class UrsaModel extends CapsuleObstacle {
         if(!isDrawing) {
             return;
         }
-        Texture blobShadow = SceneModel.BLOB_SHADOW_TEXTURE;
-        int xcenter = blobShadow.getWidth() / 2;
-        int ycenter = blobShadow.getHeight() / 2;
-        canvas.draw(blobShadow, Color.WHITE,xcenter,ycenter,
-           getX() * drawScale.x,getY() * drawScale.y,getAngle(),BLOB_SHADOW_SIZE / drawScale.x,
-          (BLOB_SHADOW_SIZE / 2f) / drawScale.y);
+        canvas.draw(shadowTexture, Color.WHITE, shadowTexture.getRegionWidth() / 2f, 0, getX() * drawScale.x, (getY() - data.get("yOffset").asFloat())*drawScale.y,getAngle(), textureScale, textureScale);
     }
 
     /**
