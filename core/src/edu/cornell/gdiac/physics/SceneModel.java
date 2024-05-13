@@ -55,6 +55,8 @@ public class SceneModel extends WorldController implements ContactListener {
     private TextureRegion salmonTexture;
     /** Texture asset for ursa texture */
     private TextureRegion ursaTexture;
+    /** Texture asset for ursa shadow texture */
+    private TextureRegion ursaShadowTexture;
     /** Texture asset for smol ursa texture */
     private TextureRegion smolUrsaTexture;
     /** Texture asset for trees in the polar map (first is snow, second is no snow) */
@@ -78,7 +80,7 @@ public class SceneModel extends WorldController implements ContactListener {
     /* =========== Film Strips =========== */
     /** Filmstrip for cave portal whirl animation */
     private FilmStrip cavePortalFilm;
-    /** Filmstrip for cave sleep animation */
+    /** FilmstripplayerWalkFilm for cave sleep animation */
     private FilmStrip caveZZZFilm;
     /** Filmstrip for player walking animation */
     private FilmStrip playerWalkFilm;
@@ -94,10 +96,8 @@ public class SceneModel extends WorldController implements ContactListener {
     private FilmStrip salmonDetectedFilm;
     /** Filmstrip for little ursa idle animation */
     private FilmStrip smolUrsaIdleFilm;
-    /** Filmstrip for little ursa rescue 1 animation */
-    private FilmStrip smolUrsaRescue1Film;
-    /** Filmstrip for little ursa rescue 2 animation */
-    private FilmStrip smolUrsaRescue2Film;
+    /** Filmstrip for little ursa rescue animation */
+    private FilmStrip smolUrsaRescueFilm;
     /** Filmstrip for tree shaking animation */
     private FilmStrip treeShakeFilm;
     /** Filmstrip for enemy diving animation */
@@ -340,6 +340,7 @@ public class SceneModel extends WorldController implements ContactListener {
         dayNightUITexture = new TextureRegion(directory.getEntry("ui:dayNightUI", Texture.class));
         salmonTexture = new TextureRegion(directory.getEntry("enemies:salmon", Texture.class));
         ursaTexture = new TextureRegion(directory.getEntry("player:ursa", Texture.class));
+        ursaShadowTexture = new TextureRegion(directory.getEntry("player:ursaShadow", Texture.class));
         smolUrsaTexture = new TextureRegion(directory.getEntry("smolursa:model", Texture.class));
 
         treeTextures[0] = new TextureRegion(directory.getEntry("polar:tree_snow", Texture.class));
@@ -370,13 +371,13 @@ public class SceneModel extends WorldController implements ContactListener {
     public void gatherAnimations(AssetDirectory directory)
     {
         TextureRegion playerWalkTextureAnimation = new TextureRegion(directory.getEntry("player:ursaWalk", Texture.class));
-        playerWalkFilm = new FilmStrip(playerWalkTextureAnimation.getTexture(),2,8);
+        playerWalkFilm = new FilmStrip(playerWalkTextureAnimation.getTexture(),2,16);
         TextureRegion playerIdleTextureAnimation = new TextureRegion(directory.getEntry("player:ursaIdle", Texture.class));
-        playerIdleFilm = new FilmStrip(playerIdleTextureAnimation.getTexture(),4,8);
+        playerIdleFilm = new FilmStrip(playerIdleTextureAnimation.getTexture(),2,16);
         TextureRegion playerCaughtAnimation = new TextureRegion(directory.getEntry("player:ursaDown", Texture.class));
         playerCaughtFilm = new FilmStrip(playerCaughtAnimation.getTexture(),2,8);
         TextureRegion playerRescueAnimation = new TextureRegion(directory.getEntry("player:ursaRescue", Texture.class));
-        playerRescueFilm = new FilmStrip(playerRescueAnimation.getTexture(),5,8);
+        playerRescueFilm = new FilmStrip(playerRescueAnimation.getTexture(),4,16);
 
         TextureRegion salmonUprightWalkAnimation = new TextureRegion(directory.getEntry("enemies:salmonUprightWalk", Texture.class));
         salmonUprightWalkFilm = new FilmStrip(salmonUprightWalkAnimation.getTexture(),4,8);
@@ -400,13 +401,9 @@ public class SceneModel extends WorldController implements ContactListener {
         caveZZZFilm.setFrame(0);
 
         TextureRegion smolUrsaIdleAnimation = new TextureRegion(directory.getEntry("smolursa:idle", Texture.class));
-        smolUrsaIdleFilm = new FilmStrip(smolUrsaIdleAnimation.getTexture(), 5, 8);
-        TextureRegion smolUrsaRescue1Animation = new TextureRegion(directory.getEntry("smolursa:rescue_1", Texture.class));
-        smolUrsaRescue1Film = new FilmStrip(smolUrsaRescue1Animation.getTexture(), 7, 7);
-        smolUrsaRescue1Film.setFrame(0);
-        TextureRegion smolUrsaRescue2Animation = new TextureRegion(directory.getEntry("smolursa:idle", Texture.class));
-        smolUrsaRescue2Film = new FilmStrip(smolUrsaRescue2Animation.getTexture(), 5, 5);
-        smolUrsaRescue2Film.setFrame(0);
+        smolUrsaIdleFilm = new FilmStrip(smolUrsaIdleAnimation.getTexture(), 3, 16);
+        TextureRegion smolUrsaRescueAnimation = new TextureRegion(directory.getEntry("smolursa:rescue", Texture.class));
+        smolUrsaRescueFilm = new FilmStrip(smolUrsaRescueAnimation.getTexture(), 5, 16);
     }
     /**
      * Gathers all tile textures into a single array.
@@ -495,8 +492,7 @@ public class SceneModel extends WorldController implements ContactListener {
         playerRescueFilm.setFrame(0);
         treeShakeFilm.setFrame(0);
         smolUrsaIdleFilm.setFrame(0);
-        smolUrsaRescue1Film.setFrame(0);
-        smolUrsaRescue2Film.setFrame(0);
+        smolUrsaRescueFilm.setFrame(0);
 
         colorNextPointer = 1;
         uiRotationAngle = 0;
@@ -507,8 +503,6 @@ public class SceneModel extends WorldController implements ContactListener {
         interactedCave = null;
         player_dive_anim = 0;
         hasWon = false;
-        smolUrsaRescue1Film.setFrame(0);
-        smolUrsaRescue2Film.setFrame(0);
 
         controls.clear();
 
@@ -636,11 +630,10 @@ public class SceneModel extends WorldController implements ContactListener {
             }
 
             if((currentFrame - ursaBeganWalkingFrame) % 2 == 0) {
-                playerWalkFilm.setFrame(playerWalkFilm.getFrame() + 1);
-                // Rewind the film if we've past
-                if(playerWalkFilm.getFrame() == 12){
+                if(playerWalkFilm.getFrame() == 19) {
                     playerWalkFilm.setFrame(0);
                 }
+                playerWalkFilm.setFrame(playerWalkFilm.getFrame() + 1);
             }
             ursa.setTexture(playerWalkFilm);
         // If the player is not moving
@@ -653,10 +646,10 @@ public class SceneModel extends WorldController implements ContactListener {
             }
 
             if((currentFrame - ursaBeganIdlingFrame) % 3 == 0) {
-                playerIdleFilm.setFrame(playerIdleFilm.getFrame() + 1);
-                if(playerIdleFilm.getFrame() == 30){
+                if(playerIdleFilm.getFrame() == 29){
                     playerIdleFilm.setFrame(0);
                 }
+                playerIdleFilm.setFrame(playerIdleFilm.getFrame() + 1);
             }
             ursa.setTexture(playerIdleFilm);
         }
@@ -704,9 +697,9 @@ public class SceneModel extends WorldController implements ContactListener {
      * Animates smol ursa to idle.
      */
     private void animateSmolUrsa() {
-        if(currentFrame % 3 == 0) {
+        if(currentFrame % 2 == 0) {
             smolUrsaIdleFilm.setFrame(smolUrsaIdleFilm.getFrame() + 1);
-            if(smolUrsaIdleFilm.getFrame() == 39){
+            if(smolUrsaIdleFilm.getFrame() == 47){
                 smolUrsaIdleFilm.setFrame(0);
             }
         }
@@ -724,6 +717,7 @@ public class SceneModel extends WorldController implements ContactListener {
      * @param dt	Number of seconds since last animation frame
      */
     public void update(float dt) {
+        //System.out.println("FPS: " + (1/dt));
         // Increment the current frame (used for animation slow downs)
         currentFrame++;
 
@@ -732,7 +726,7 @@ public class SceneModel extends WorldController implements ContactListener {
             ursa.setVX(0);
             ursa.setVY(0);
             // Animate Ursa's rescue and then
-            if(playerRescueFilm.getFrame() < 33) {
+            if(playerRescueFilm.getFrame() < 51) {
                 if(currentFrame % 2 == 0) {
                     playerRescueFilm.setFrame(playerRescueFilm.getFrame() + 1);
                 }
@@ -748,11 +742,11 @@ public class SceneModel extends WorldController implements ContactListener {
                 ursa.setTexture(playerIdleFilm);
             }
 
-            if(smolUrsaRescue1Film.getFrame() < 48) {
+            if(smolUrsaRescueFilm.getFrame() < 73) {
                 if(currentFrame % 2 == 0) {
-                    smolUrsaRescue1Film.setFrame(smolUrsaRescue1Film.getFrame() + 1);
+                    smolUrsaRescueFilm.setFrame(smolUrsaRescueFilm.getFrame() + 1);
                 }
-                goal.setTexture(smolUrsaRescue1Film);
+                goal.setTexture(smolUrsaRescueFilm);
                 return;
             } else {
                 setComplete(true);
@@ -1099,6 +1093,11 @@ public class SceneModel extends WorldController implements ContactListener {
         for(Decoration d: groundDecorations) {
             d.draw(canvas);
         }
+        // Draws shadows for moving objects (enemy/player)
+        for(Obstacle obj: dynamicObjects) {
+            obj.preDraw(canvas);
+        }
+
         drawTiles();
         for(Decoration d: decorations) {
             d.draw(canvas);
@@ -1106,10 +1105,7 @@ public class SceneModel extends WorldController implements ContactListener {
         // Draw a tinting over everything
         canvas.draw(whiteTexture,backgroundColor, canvas.getCameraX() - canvas.getWidth() / 2f, canvas.getCameraY() - canvas.getHeight() / 2f, canvas.getWidth(), canvas.getHeight());
         super.updateTinting(backgroundColor);
-        // Draws shadows for moving objects (enemy/player)
-        for(Obstacle obj: dynamicObjects) {
-            obj.preDraw(canvas);
-        }
+
 //        fb.begin();
 //        Gdx.gl.glClearColor(1, 1, 1, 1);
 //        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -1297,6 +1293,7 @@ public class SceneModel extends WorldController implements ContactListener {
                 ursaConstants, playerWidth, playerHeight, textureScale);
         ursa.setDrawScale(scale);
         ursa.setTexture(playerWalkFilm);
+        ursa.setShadowTexture(ursaShadowTexture);
         addObject(ursa);
         dynamicObjects.add(ursa);
     }

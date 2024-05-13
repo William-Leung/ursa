@@ -49,6 +49,7 @@
         "player:ursa": "player/Ursa.png",
         "player:ursaDown": "player/Down.png",
         "player:ursaRescue": "player/Rescue.png",
+        "player:ursaShadow": "player/Ursa_Shadow.png",
 
         "polar:cave_portal_animation" : "polar/animations/Cave_Portal_Animation.png",
         "polar:tree_shake_animation": "polar/animations/Polar_Tree_Shake.png",
@@ -85,8 +86,7 @@
 
         "smolursa:model": "smolursa/Little Ursa.png",
         "smolursa:idle": "smolursa/Idle.png",
-        "smolursa:rescue_1": "smolursa/Rescured_1.png",
-        "smolursa:rescue_2": "smolursa/Rescured_2.png",
+        "smolursa:rescue": "smolursa/Rescued.png",
 
         "tiles:polar_cliff_center" : "tiles/polar/Polar_Cliff_Center.png",
         "tiles:polar_corner_1": "tiles/polar/Polar_Cliff_Corner_1.png",

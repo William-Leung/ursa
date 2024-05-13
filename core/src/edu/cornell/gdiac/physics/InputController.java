@@ -330,7 +330,7 @@ public class InputController {
 		prevPressed = (secondary && prevPressed) || (Gdx.input.isKeyPressed(Input.Keys.P));
 		nextPressed = (secondary && nextPressed) || (Gdx.input.isKeyPressed(Input.Keys.N));
 		exitPressed  = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
-		interactPressed = (secondPressed && interactPressed) || (Gdx.input.isKeyPressed(Input.Keys.F));
+		interactPressed = (secondPressed && interactPressed) || (Gdx.input.isKeyPressed(Input.Keys.E));
 		caveEnterPressed = Gdx.input.isKeyPressed(Input.Keys.E);
 		
 		// Directional controls

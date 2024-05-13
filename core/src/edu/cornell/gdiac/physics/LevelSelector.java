@@ -3,6 +3,7 @@ package edu.cornell.gdiac.physics;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
@@ -23,113 +24,83 @@ import com.badlogic.gdx.utils.JsonValue;
 import edu.cornell.gdiac.assets.AssetDirectory;
 import edu.cornell.gdiac.util.FilmStrip;
 import edu.cornell.gdiac.util.ScreenListener;
+import java.util.Arrays;
 
 
 public class LevelSelector implements Screen, InputProcessor, ControllerListener {
-    private static final TextureRegion redTextureregion;
-
-    static {
-        Pixmap redPixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
-        redPixmap.setColor(new Color(1, 0, 0, 1));
-        redPixmap.fill();
-        Texture redTexture = new Texture(redPixmap);
-        redTextureregion = new TextureRegion(redTexture);
-    }
     private TextureRegion[] buttons = new TextureRegion[20];
-    private boolean button1Pressed;
-    private TextureRegion ursa;
-    private JsonReader json;
-    private float ursaStartX;
-    private float ursaStartY;
-    private float ursaNewX;
-    private float ursaNewY;
-    private float direction;
-    private float[] positions;
-    private float time;
-    private JsonValue jsonData;
-    private float ursaMoveDist;
-    private boolean[] buttonsPressed = new boolean[14];
+    private final float ursaMoveDist = 2.5f;
     private boolean[] buttonsUnlocked = new boolean[14];
-    private boolean button2Pressed;
-    private boolean button3Pressed;
     private boolean exiting;
-    private float[] completedLevels;
-    private boolean button1Locked;
-    private boolean button2Locked;
-    private FilmStrip ursaFilm;
+    private FilmStrip ursaWalkFilm;
+    private FilmStrip ursaIdleFilm;
+    private TextureRegion ursaTexture;
     private ParticleEffect effect;
-
-
-    private boolean button3Locked;
-    private boolean button4Locked;
     private float levelsCompleted;
-    private FilmStrip button1;
     private FilmStrip[] buttonsFilms = new FilmStrip[20];
-
     private TextureRegion background = new TextureRegion();
     private ScreenListener listener;
     private final float ScreenWidthStart = 1024;
     private final float ScreenHeightStart = 576;
-    private float buttonWidth;
-    private int levelExited;
     GameCanvas canvas;
     private boolean active;
 
-    private final float[] buttonPositions = new float[]{153, 337, 388, 337, 388, 760,};
-    float backgroundScaleFactor;
-
+    /** Represents the positions of the buttons in the level selection.
+     * (buttonPositions[2i], buttonPositions[2i+1]) is the coordinate of the ith button */
+    private final float[] buttonPositions;
+    private final float interactDistance = 45f;
+    /** Scales between original image size and what we draw. */
+    private float scale;
+    /** The number of currently active levels */
+    private final int numButtons = 8;
+    /** The index of the level we last played. */
+    private final int startingLevel;
     private Music levelSelectMusic;
-    public LevelSelector(GameCanvas NewCanvas,float completion){
-        direction = 1;
-        levelExited = 0;
-        ursaMoveDist = 2.5f;
-        ursaStartX = 78;
-        ursaStartY = 196f;
-        ursaNewX = 78;
-        ursaNewY = 196f;
+    /** The frame we are on */
+    private int time;
+    /** The current position of Ursa */
+    private Vector2 ursaPos;
+    /** The drawing scale of the buttons */
+    private final float buttonScale = 0.6f;
+    /** The drawing scale of Ursa */
+    private final float ursaScale = 0.4f;
+    /** The direction Ursa is facing (1 for right, -1 for left) */
+    private float direction = 1;
+    private boolean isMovingToButton = false;
+    private int clickedLevel = -1;
+    private boolean isSecondPress = false;
+    private float moveX;
+    private float moveY;
+    private final int moveDuration = 120;
+    private Vector2 buttonTarget;
+    private float buttonRadius;
+
+
+
+    public LevelSelector(GameCanvas NewCanvas, float completion, int currLevel){
+        startingLevel = currLevel;
         levelsCompleted = completion;
         canvas = NewCanvas;
         active = false;
+
         Gdx.input.setInputProcessor( this );
-        button1Pressed = false;
-        for(int i = 0; i < buttonsPressed.length;i++){
-            buttonsPressed[i] = false;
-        }
+        Arrays.fill(buttonsUnlocked, false);
         buttonsUnlocked[0] = true;
-        for(int i = 1; i < buttonsUnlocked.length;i++){
-            buttonsUnlocked[i] = false;
-        }
-        positions = new float[]{.0391f * canvas.getWidth(),.2691f * canvas.getHeight(),.1523f* canvas.getWidth(),.2691f * canvas.getHeight(),
-                .1523f * canvas.getWidth(),.684f * canvas.getHeight(),.2773f * canvas.getWidth(),.684f * canvas.getHeight(),
-                .2773f * canvas.getWidth(),.41f * canvas.getHeight(),0.416015625f * canvas.getWidth(),.41f * canvas.getHeight(),
-                0.416015625f * canvas.getWidth(),.1181f * canvas.getHeight(),.5586f * canvas.getWidth(),.1181f * canvas.getHeight(),
-                .5586f * canvas.getWidth(),.4931f * canvas.getHeight(),.5586f * canvas.getWidth(),.8507f * canvas.getHeight(),
-                .706f * canvas.getWidth(),.8507f * canvas.getHeight(),.706f * canvas.getWidth(),.5417f * canvas.getHeight(),
-                .8496f * canvas.getWidth(),.5417f * canvas.getHeight(),.8496f * canvas.getWidth(),.2656f * canvas.getHeight()};
-        exiting = false;
+
+       exiting = false;
         effect = new ParticleEffect();
         effect.load(Gdx.files.internal("particle.p"),Gdx.files.internal(""));
         effect.getEmitters().first().setPosition(canvas.getWidth()/2,canvas.getHeight());
         effect.start();
 
-
-
-
-        System.out.println(effect.isComplete() + " is comple");
-
-
+        // I know this is bad but it works lol.
+        buttonPositions = new float[]{304,674,770,674,769.5f,1520,1286,1520,1285,955,1859,955,1860,387,2442,387,2442,1115,2442,1841,3040,1841,3040,1237,3626.5f,1237,3626.5f,676.6f};
     }
     public void setActive(boolean b){
         active = b;
 
     }
-    public void setLevelExited(int num){
-        levelExited = num;
-        ursaStartX = positions[num * 2];
-        ursaStartY = positions[num * 2 + 1];
-        ursaNewX = ursaStartX;
-        ursaNewY = ursaStartY;
-    }
+
     public void gatherAssets(AssetDirectory directory) {
         buttons[0] = new TextureRegion(directory.getEntry("levelSelect:Level1", Texture.class));
         buttons[1] = new TextureRegion(directory.getEntry("levelSelect:Level2", Texture.class));
@@ -146,323 +117,217 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         buttons[12] = new TextureRegion(directory.getEntry("levelSelect:Level13", Texture.class));
         buttons[13] = new TextureRegion(directory.getEntry("levelSelect:Level14", Texture.class));
 
+        TextureRegion ursaWalk = new TextureRegion(directory.getEntry("player:ursaWalk",Texture.class));
+        ursaWalkFilm = new FilmStrip(ursaWalk.getTexture(),2,16);
+        ursaWalkFilm.setFrame(0);
+        TextureRegion ursaIdle = new TextureRegion(directory.getEntry("player:ursaIdle", Texture.class));
+        ursaIdleFilm = new FilmStrip(ursaIdle.getTexture(),2,16);
+        ursaIdleFilm.setFrame(0);
+      //   ursaShadow = new TextureRegion(directory.getEntry("player:ursaShadow", Texture.class));
 
-        ursa = new TextureRegion(directory.getEntry("player:ursaWalk",Texture.class));
-        ursaFilm = new FilmStrip(ursa.getTexture(),2,8);
-        ursaFilm.setFrame(0);
-
+        // Set the first level to unlocked and every other level to locked
         buttonsFilms[0] = new FilmStrip(buttons[0].getTexture(),1,2);
         buttonsFilms[0].setFrame(0);
-        buttonsFilms[1] = new FilmStrip(buttons[1].getTexture(),1,5);
-        buttonsFilms[1].setFrame(0);
-        buttonsFilms[2] = new FilmStrip(buttons[2].getTexture(),1,5);
-        buttonsFilms[2].setFrame(0);
-        buttonsFilms[3] = new FilmStrip(buttons[3].getTexture(),1,5);
-        buttonsFilms[3].setFrame(0);
-        buttonsFilms[4] = new FilmStrip(buttons[4].getTexture(),1,5);
-        buttonsFilms[4].setFrame(0);
-        buttonsFilms[5] = new FilmStrip(buttons[5].getTexture(),1,5);
-        buttonsFilms[5].setFrame(0);
-        buttonsFilms[6] = new FilmStrip(buttons[6].getTexture(),1,5);
-        buttonsFilms[6].setFrame(0);
-        buttonsFilms[7] = new FilmStrip(buttons[7].getTexture(),1,5);
-        buttonsFilms[7].setFrame(0);
-        buttonsFilms[8] = new FilmStrip(buttons[8].getTexture(),1,5);
-        buttonsFilms[8].setFrame(0);
-        buttonsFilms[9] = new FilmStrip(buttons[9].getTexture(),1,5);
-        buttonsFilms[9].setFrame(0);
-        buttonsFilms[10] = new FilmStrip(buttons[10].getTexture(),1,5);
-        buttonsFilms[10].setFrame(0);
-        buttonsFilms[11] = new FilmStrip(buttons[11].getTexture(),1,5);
-        buttonsFilms[11].setFrame(0);
-        buttonsFilms[12] = new FilmStrip(buttons[12].getTexture(),1,5);
-        buttonsFilms[12].setFrame(0);
-        buttonsFilms[13] = new FilmStrip(buttons[13].getTexture(),1,5);
-        buttonsFilms[13].setFrame(0);
+        for(int i = 1; i < numButtons; i++) {
+            buttonsFilms[i] = new FilmStrip(buttons[i].getTexture(),1,5);
+            buttonsFilms[i].setFrame(0);
+        }
+
         background = new TextureRegion(directory.getEntry("levelSelect:background", Texture.class));
         levelSelectMusic = directory.getEntry("soundtracks:level_select", Music.class);
 
-
-        if(levelsCompleted >= 1){
-            buttonsUnlocked[1] = true;
-            if(levelsCompleted >= 2){
-                buttonsFilms[1].setFrame(3);
-            }
-        }
-
-        if(levelsCompleted >= 2){
-            buttonsUnlocked[2] = true;
-            if(levelsCompleted >= 3){
-                buttonsFilms[2].setFrame(3);
-            }
-
-        }
-        if(levelsCompleted >= 3){
-            buttonsUnlocked[3] = true;
-            if(levelsCompleted >= 4){
-                buttonsFilms[3].setFrame(3);
-            }
-        }
-        if(levelsCompleted >= 4){
-            buttonsUnlocked[4] = true;
-            if(levelsCompleted >= 5){
-                buttonsFilms[4].setFrame(3);
-            }
-        }
-        if(levelsCompleted >= 5){
-            buttonsUnlocked[5] = true;
-            if(levelsCompleted >= 6){
-                buttonsFilms[5].setFrame(3);
-            }
-        }
-        if(levelsCompleted >= 6){
-            buttonsUnlocked[6] = true;
-            if(levelsCompleted >= 7){
-                buttonsFilms[6].setFrame(3);
-            }
-        }
-        if(levelsCompleted >= 7){
-            buttonsUnlocked[7] = true;
-            if(levelsCompleted >= 8){
-                buttonsFilms[7].setFrame(3);
-            }
-        }
-        if(levelsCompleted >= 8){
-            buttonsUnlocked[8] = true;
-            if(levelsCompleted >= 9){
-                buttonsFilms[8].setFrame(3);
-            }
-        }
-        if(levelsCompleted >= 9){
-            buttonsUnlocked[9] = true;
-            if(levelsCompleted >= 10){
-                buttonsFilms[9].setFrame(3);
-            }
-        }
-        if(levelsCompleted >= 10){
-            buttonsUnlocked[10] = true;
-            if(levelsCompleted >= 11){
-                buttonsFilms[10].setFrame(3);
-            }
-        }
-        if(levelsCompleted >= 11){
-            buttonsUnlocked[11] = true;
-            if(levelsCompleted >= 12){
-                buttonsFilms[11].setFrame(3);
-            }
-        }
-        if(levelsCompleted >= 12){
-            buttonsUnlocked[12] = true;
-            if(levelsCompleted >= 13){
-                buttonsFilms[12].setFrame(3);
-            }
-        }
-        if(levelsCompleted >= 13){
-            buttonsUnlocked[13] = true;
-            if(levelsCompleted >= 14){
-                buttonsFilms[13].setFrame(3);
-            }
-        }
-
-    }
-    private void update(float delta){
-        effect.update(delta);
-
-
-        if(ursaFilm.getFrame() == 11){
-            ursaFilm.setFrame(0);
-
-        }
-        time += 1;
-        if((Gdx.input.isKeyPressed(Input.Keys.LEFT))){
-            ursaStartX -= ursaMoveDist;
-            ursaNewX = ursaStartX;
-            direction = -1;
-
-
-        }
-        if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)){
-            direction = 1;
-            ursaStartX += ursaMoveDist;
-            ursaNewX = ursaStartX;
-
-        }
-        if(Gdx.input.isKeyPressed(Input.Keys.UP)){
-            ursaStartY += ursaMoveDist;
-            ursaNewY = ursaStartY;
-
-        }
-        if(Gdx.input.isKeyPressed(Input.Keys.DOWN)){
-            ursaStartY -= ursaMoveDist;
-            ursaNewY = ursaStartY;
-
-        }
-        if(Gdx.input.isKeyPressed(Input.Keys.DOWN) ||Gdx.input.isKeyPressed(Input.Keys.UP)||Gdx.input.isKeyPressed(Input.Keys.RIGHT)|| Gdx.input.isKeyPressed(Input.Keys.LEFT)){
-            if(time % 3 == 0){
-                System.out.println("Running Film");
-                ursaFilm.setFrame(ursaFilm.getFrame() + 1);
-            }
-        }
-
-
-        updateButtons();
-
-
-
-
-
-
-        if(Math.abs(ursaStartX-ursaNewX) > 5 && ursaStartX < ursaNewX){
-
-            if(time% 2 == 0){
-                ursaFilm.setFrame(ursaFilm.getFrame() +1);
-            }
-
-            ursaStartX += 2.0f;
-        }
-        if(Math.abs(ursaStartX-ursaNewX) > 5 && ursaStartX > ursaNewX){
-            if(time% 2 == 0){
-                ursaFilm.setFrame(ursaFilm.getFrame() +1);
-            }
-
-            ursaStartX -= 2.0f;
-        }
-        if(Math.abs(ursaStartY-ursaNewY) > 5 && ursaStartY < ursaNewY){
-            ursaStartY += 3.0f;
-
-
-        }
-        if(Math.abs(ursaStartY-ursaNewY) > 5 && ursaStartY > ursaNewY){
-
-            ursaStartY -= 3.0f;
-        }
-        if(Math.abs(ursaStartY-ursaNewY) > 5 && Math.abs(ursaStartX - ursaNewX) <5 && ursaFilm.getFrame() < 20){
-            ursaFilm.setFrame(ursaFilm.getFrame() + 1);
-        }
-
-        if(Math.abs(ursaStartX - ursaNewX) < 10 && Math.abs(ursaStartY - ursaNewY) < 10 && !Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT)&& !Gdx.input.isKeyPressed(Input.Keys.UP) && !Gdx.input.isKeyPressed(Input.Keys.DOWN)){
-            ursaFilm.setFrame(3);
-        }
-
-
-    }
-    private void updateButtons(){
-
-        if(buttonsPressed[0]){
-            buttonsFilms[0].setFrame(1);
-        }else {
-            buttonsFilms[0].setFrame(0);
-        }
-
-
-        for(int i =1; i< buttonsPressed.length; i++){
-            if(buttonsPressed[i]){
-
-                buttonsFilms[i].setFrame(4);
-            }
-            else if(!buttonsUnlocked[i] ){
-                buttonsFilms[i].setFrame(0);
-            }
-            else {
-
-                if(buttonsFilms[i].getFrame() == 0 ){
-                    if(time%30 == 0){
-                        buttonsFilms[i].setFrame(1);
-                    }
-
-                }
-                else if(buttonsFilms[i].getFrame() ==1 ){
-                    if(time%30 == 0){
-                        buttonsFilms[i].setFrame(2);
-                    }
-                }
-                else if(buttonsFilms[i].getFrame() ==2 ){
-                    if(time%30 == 0){
-                        buttonsFilms[i].setFrame(3);
-                    }
-                }
-                else{
+        // Unlock levels
+        for(int i = 1; i < numButtons; i++) {
+            if (levelsCompleted >= i) {
+                buttonsUnlocked[i] = true;
+                if (levelsCompleted >= i + 1) {
                     buttonsFilms[i].setFrame(3);
                 }
-
             }
         }
 
+        // Scale all button positions down
+        scale = (float) canvas.getHeight() / background.getRegionHeight();
+        for(int i = 0; i < buttonPositions.length; i++) {
+            buttonPositions[i] *= scale;
+        }
+
+        // Set Ursa's position to be on top of the level we just finished
+        ursaPos = new Vector2(buttonPositions[startingLevel * 2], buttonPositions[startingLevel * 2 + 1] + ursaWalkFilm.getRegionHeight() / 2f * scale);
+        buttonRadius = 64 * buttonScale;
+    }
 
 
+    private void update(float delta){
+        time += 1;
 
+        // Update the snow
+        effect.update(delta);
 
+        // Handle movement for Ursa
+        boolean isMoving = false;
+        if((Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A))){
+            ursaPos.x -= ursaMoveDist;
+            direction = -1;
+            isMoving = true;
+        }
+        if(Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.D)) {
+            ursaPos.x += ursaMoveDist;
+            direction = 1;
+            isMoving = true;
+        }
+        if(Gdx.input.isKeyPressed(Input.Keys.UP) || Gdx.input.isKeyPressed(Input.Keys.W)) {
+            ursaPos.y += ursaMoveDist;
+            isMoving = true;
+        }
+        if(Gdx.input.isKeyPressed(Input.Keys.DOWN) || Gdx.input.isKeyPressed(Input.Keys.S)) {
+            ursaPos.y -= ursaMoveDist;
+            isMoving = true;
+        }
 
+        if(isMoving) {
+            isMovingToButton = false;
+        }
+
+        if(isMovingToButton) {
+            System.out.println("Moving to Button");
+            ursaPos.x += moveX;
+            ursaPos.y += moveY;
+            isMoving = true;
+        }
+
+        // Animate Ursa to be walking or idling
+        System.out.println(isMoving);
+        animateUrsa(isMoving);
+
+//
+//
+//
+//        if(Math.abs(ursaStartX-ursaNewX) > 5 && ursaStartX < ursaNewX){
+//
+//            if(time% 2 == 0){
+//                ursaWalkFilm.setFrame(ursaWalkFilm.getFrame() +1);
+//            }
+//
+//            ursaStartX += 2.0f;
+//        }
+//        if(Math.abs(ursaStartX-ursaNewX) > 5 && ursaStartX > ursaNewX){
+//            if(time% 2 == 0){
+//                ursaWalkFilm.setFrame(ursaWalkFilm.getFrame() +1);
+//            }
+//
+//            ursaStartX -= 2.0f;
+//        }
+//        if(Math.abs(ursaStartY-ursaNewY) > 5 && ursaStartY < ursaNewY){
+//            ursaStartY += 3.0f;
+//
+//
+//        }
+//        if(Math.abs(ursaStartY-ursaNewY) > 5 && ursaStartY > ursaNewY){
+//
+//            ursaStartY -= 3.0f;
+//        }
+//        if(Math.abs(ursaStartY-ursaNewY) > 5 && Math.abs(ursaStartX - ursaNewX) <5 && ursaWalkFilm.getFrame() < 20){
+//            ursaWalkFilm.setFrame(ursaWalkFilm.getFrame() + 1);
+//        }
+//
+//        if(Math.abs(ursaStartX - ursaNewX) < 10 && Math.abs(ursaStartY - ursaNewY) < 10 && !Gdx.input.isKeyPressed(Input.Keys.LEFT) && !Gdx.input.isKeyPressed(Input.Keys.RIGHT)&& !Gdx.input.isKeyPressed(Input.Keys.UP) && !Gdx.input.isKeyPressed(Input.Keys.DOWN)){
+//            ursaWalkFilm.setFrame(3);
+//        }
+
+    }
+
+    private void animateUrsa(boolean isMoving) {
+        if(isMoving){
+            if(time % 2 == 0){
+                if(ursaWalkFilm.getFrame() == 19){
+                    ursaWalkFilm.setFrame(0);
+                }
+                ursaWalkFilm.setFrame(ursaWalkFilm.getFrame() + 1);
+            }
+            ursaTexture = ursaWalkFilm;
+            ursaIdleFilm.setFrame(0);
+        } else {
+            if(time % 2 == 0){
+                if(ursaIdleFilm.getFrame() == 29){
+                    ursaIdleFilm.setFrame(0);
+                }
+                ursaIdleFilm.setFrame(ursaIdleFilm.getFrame() + 1);
+            }
+            ursaTexture = ursaIdleFilm;
+            ursaWalkFilm.setFrame(0);
+        }
+    }
+
+    private void updateButtons(){
+        for(int i = 1; i < numButtons; i++){
+            if(buttonsFilms[i].getFrame() == 0 ){
+                if(time%30 == 0){
+                    buttonsFilms[i].setFrame(1);
+                }
+
+            }
+            else if(buttonsFilms[i].getFrame() ==1 ){
+                if(time%30 == 0){
+                    buttonsFilms[i].setFrame(2);
+                }
+            }
+            else if(buttonsFilms[i].getFrame() ==2 ){
+                if(time%30 == 0){
+                    buttonsFilms[i].setFrame(3);
+                }
+            }
+            else{
+                buttonsFilms[i].setFrame(3);
+            }
+        }
     }
 
     private void enterPressed() {
-        System.out.println("enter Pressed");
-        for (int j = 0; j < positions.length / 2; j++) {
-            float posX = positions[j * 2];
-            float posY = positions[j * 2 + 1];
+        System.out.println("Enter Pressed");
+        for (int j = 0; j < buttonPositions.length / 2; j++) {
+            float posX = buttonPositions[j * 2];
+            float posY = buttonPositions[j * 2 + 1];
 
-            if(buttonsUnlocked[j] && Math.abs(posX-ursaStartX) < 30 && Math.abs(posY-ursaStartY)<30){
+            if(buttonsUnlocked[j] && Math.abs(posX-ursaPos.x) < interactDistance && Math.abs(posY-ursaPos.y) < interactDistance){
                 listener.exitScreen(this,j+1);
             }
-
-
         }
     }
 
     private void draw(){
-
         canvas.clear();
-
         canvas.begin();
 
 
-        float defaultHeight = 576;
-        float defaultWidth = 1024;
-
         // We only care about the full height of the image fitting in the image, the width can go off the screen
-        backgroundScaleFactor = (float) canvas.getHeight() / background.getRegionHeight();
-        float buttonWidth = 128 * backgroundScaleFactor;
-        float buttonHeight = 128 * backgroundScaleFactor;
-        canvas.draw(background,Color.WHITE,0,0,background.getRegionWidth() * backgroundScaleFactor,background.getRegionHeight() * backgroundScaleFactor);
-        //System.out.println(background.getRegionWidth() * backgroundScaleFactor + " " + background.getRegionHeight() * backgroundScaleFactor);
-        //canvas.draw(buttonsFilms[0],Color.WHITE, buttonCenter.x, buttonCenter.y, buttonPositions[0] * backgroundScaleFactor,buttonPositions[1] * backgroundScaleFactor,256 * backgroundScaleFactor,256 * backgroundScaleFactor
+        canvas.draw(background,Color.WHITE,0,0,background.getRegionWidth() * scale,background.getRegionHeight() * scale);
+        float buttonOX = buttonsFilms[0].getRegionWidth() / 2f;
+        float buttonOY = buttonsFilms[0].getRegionHeight() / 2f;
+        for(int i = 0; i < numButtons; i++) {
+            canvas.draw(buttonsFilms[i], Color.WHITE, buttonOX, buttonOY, buttonPositions[2*i], buttonPositions[2*i+1],0f,buttonScale,buttonScale);
+        }
+        System.out.println(ursaPos.x + " " + ursaPos.y);
+        canvas.draw(ursaTexture, Color.WHITE, ursaWalkFilm.getRegionWidth() / 2f, ursaWalkFilm.getRegionHeight() / 2f,ursaPos.x,ursaPos.y,0,direction * ursaScale,ursaScale);
+        //canvas.draw(buttonsFilms[0], Color.WHITE, buttonOX,buttonOY,ursaPos.x,ursaPos.y,0,direction * buttonScale,buttonScale);
 
-        //System.out.println("Button " + buttonPositions[0] * backgroundScaleFactor + " " + buttonPositions[1] * backgroundScaleFactor);
-        //System.out.println("Ursa " + ursaStartX + " " + ursaStartY);
-        //System.out.println(buttonsFilms[0].getRegionWidth() + " " + buttonsFilms[0].getRegionHeight());
 
-        /**canvas.draw(buttonsFilms[0],Color.WHITE,buttonsFilms[0].getRegionWidth() / 4f,buttonsFilms[0].getRegionHeight() / 4f,buttonPositions[0] * backgroundScaleFactor,buttonPositions[1] * backgroundScaleFactor, buttonWidth, buttonHeight);
-        //canvas.draw(buttonsFilms[0],Color.WHITE, buttonCenter.x, buttonCenter.y, buttonPositions[0] * backgroundScaleFactor,buttonPositions[1] * backgroundScaleFactor,256 * backgroundScaleFactor,256 * backgroundScaleFactor);
-        canvas.draw(buttonsFilms[1],Color.WHITE,buttonsFilms[1].getRegionWidth() / 4f,buttonsFilms[1].getRegionHeight() / 4f,buttonPositions[2] * backgroundScaleFactor,buttonPositions[3] * backgroundScaleFactor, buttonWidth, buttonHeight);
-        canvas.draw(buttonsFilms[2],Color.WHITE,buttonsFilms[2].getRegionWidth() / 4f,buttonsFilms[2].getRegionHeight() / 4f,buttonPositions[4] * backgroundScaleFactor,buttonPositions[5] * backgroundScaleFactor, buttonWidth, buttonHeight);*/
-        canvas.draw(background,Color.WHITE,0,0,background.getRegionWidth() * .25f,background.getRegionHeight() * .285f);
-       canvas.draw(buttonsFilms[0],Color.WHITE,.0391f * canvas.getWidth(),.2691f * canvas.getHeight(),buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
-        canvas.draw(buttonsFilms[1],Color.WHITE,.1523f* canvas.getWidth(),.2691f * canvas.getHeight(),buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
-        canvas.draw(buttonsFilms[2],Color.WHITE,.1523f * canvas.getWidth(),.684f * canvas.getHeight(),buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
-        canvas.draw(buttonsFilms[3],Color.WHITE,.2773f * canvas.getWidth(),.684f * canvas.getHeight(),buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
-        canvas.draw(buttonsFilms[4],Color.WHITE,.2773f * canvas.getWidth(),.41f * canvas.getHeight(),buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
-        canvas.draw(buttonsFilms[5],Color.WHITE,0.416015625f * canvas.getWidth(),.41f * canvas.getHeight(),buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
-        canvas.draw(buttonsFilms[6],Color.WHITE,0.416015625f * canvas.getWidth(),.1181f * canvas.getHeight(),buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
-        canvas.draw(buttonsFilms[7],Color.WHITE,.5586f * canvas.getWidth(),.1181f * canvas.getHeight(),buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
-        canvas.draw(buttonsFilms[8],Color.WHITE,.5586f * canvas.getWidth(),.4931f * canvas.getHeight(),buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
-        canvas.draw(buttonsFilms[9],Color.WHITE,.5586f * canvas.getWidth(),.8507f * canvas.getHeight(),buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
-        canvas.draw(buttonsFilms[10],Color.WHITE,.706f * canvas.getWidth(),.8507f * canvas.getHeight(),buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
-        canvas.draw(buttonsFilms[11],Color.WHITE,.706f * canvas.getWidth(),.5417f * canvas.getHeight(),buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
-        canvas.draw(buttonsFilms[12],Color.WHITE,.8496f * canvas.getWidth(),.5417f * canvas.getHeight(),buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
-        canvas.draw(buttonsFilms[13],Color.WHITE,.8496f * canvas.getWidth(),.2656f * canvas.getHeight(),buttonsFilms[0].getRegionWidth() * .6f,buttonsFilms[0].getRegionHeight() * .6f);
-        canvas.draw(ursaFilm,Color.WHITE,ursaStartX,ursaStartY,ursaFilm.getRegionWidth() * .4f,ursaFilm.getRegionHeight() * .4f);effect.update(1/60);
+        effect.update(1/60f);
         if(effect.isComplete()){
             effect.reset();
         }
 
         effect.draw(canvas.getSpriteBatch());
-
-        //canvas.draw(redTextureregion,Color.WHITE, 0,0,86,189,10,10);
-
         canvas.end();
-        if(Gdx.input.isKeyPressed(Input.Keys.ENTER) && !exiting){
 
+
+        if((Gdx.input.isKeyPressed(Input.Keys.ENTER) || Gdx.input.isKeyPressed(Keys.SPACE)) && !exiting){
             enterPressed();
+        }
+
+        // If we've fully moved to the button
+        if(isMovingToButton && ursaPos.dst(buttonTarget) < buttonRadius) {
+            listener.exitScreen(this,clickedLevel+1);
         }
     }
 
@@ -488,70 +353,54 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         if(active){
-
             OrthographicCamera cam = canvas.getCamera();
             Vector3 touch = new Vector3();
             cam.unproject(touch.set(screenX, screenY, 0));
-            ursaNewX = touch.x;
-            ursaNewY = touch.y;
 
+            for(int i = 0; i < buttonPositions.length / 2; i++) {
+                Vector2 buttonPos = new Vector2(buttonPositions[i * 2], buttonPositions[i * 2 + 1]);
 
-            for (int j = 0; j < positions.length / 2; j++) {
-                float posX = positions[j * 2];
-                float posY = positions[j * 2 + 1];
-
-                if(touch.x - posX < 80 && touch.y - posY < 80 && touch.x - posX > 0 && touch.y - posY > 0)
-                {
-                   if(Math.abs(ursaStartX - touch.x) < 8){
-                       if(j == 0){
-                           buttonsFilms[j].setFrame(1);
-                       }
-                       else {
-                           buttonsFilms[j].setFrame(4);
-                       }
-
-                       updateButtons();
-                   }
+                // If the click was within the button radius
+                if(buttonPos.dst(touch.x,touch.y) < buttonRadius) {
+                    if(i == 0){
+                        buttonsFilms[i].setFrame(1);
+                    }
+                    else {
+                        buttonsFilms[i].setFrame(4);
+                    }
+                    clickedLevel = i;
                 }
             }
-
-
-
         }
-
 
         return false;
     }
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-
         if(active){
-
             OrthographicCamera cam = canvas.getCamera();
             Vector3 touch = new Vector3();
             cam.unproject(touch.set(screenX, screenY, 0));
-            ursaNewX = touch.x;
-            ursaNewY = touch.y;
 
+            if(clickedLevel >= 0 && clickedLevel < numButtons) {
+                Vector2 buttonPos = new Vector2(buttonPositions[clickedLevel * 2], buttonPositions[clickedLevel * 2 + 1]);
 
-            for (int j = 0; j < positions.length / 2; j++) {
-                float posX = positions[j * 2];
-                float posY = positions[j * 2 + 1];
+                // If the click is still in the same button we pressed
+                if (buttonPos.dst(touch.x, touch.y) < buttonRadius) {
+                    // Move Ursa to that button
+                    isMovingToButton = true;
+                    moveX = (buttonPos.x - ursaPos.x) / moveDuration;
+                    direction = Math.signum(buttonPos.x - ursaPos.x);
+                    moveY = (buttonPos.y - ursaPos.y + buttonRadius) / moveDuration;
 
-                if(touch.x - posX < 80 && touch.y - posY < 80 && touch.x - posX > 0 && touch.y - posY > 0)
-                {
-                    if(Math.abs(ursaStartX - touch.x) < 8){
-                        listener.exitScreen(this,j+1);
-                    }
+                    buttonTarget = buttonPos;
                 }
             }
-
-
-
         }
-        for(int i = 0; i < buttonsPressed.length; i++ ){
-            buttonsPressed[i] = false;
+        buttonsFilms[0].setFrame(0);
+        for(int i = 1; i < numButtons; i++) {
+            buttonsFilms[i].setFrame(3);
         }
 
         return false;
