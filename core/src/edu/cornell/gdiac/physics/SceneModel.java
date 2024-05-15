@@ -84,8 +84,10 @@ public class SceneModel extends WorldController implements ContactListener {
     /* =========== Film Strips =========== */
     /** Filmstrip for cave portal whirl animation */
     private FilmStrip cavePortalFilm;
-    /** FilmstripplayerWalkFilm for cave sleep animation */
+    /** Filmstrip for cave displaying sleep ui animation */
     private FilmStrip caveZZZFilm;
+    /** Filmstrip for cave looping sleep ui animation */
+    private FilmStrip caveZZZLoopFilm;
     /** Filmstrip for player walking animation */
     private FilmStrip playerWalkFilm;
     /** Filmstrip for player idling animation */
@@ -379,23 +381,22 @@ public class SceneModel extends WorldController implements ContactListener {
         TextureRegion playerWalkTextureAnimation = new TextureRegion(directory.getEntry("player:ursaWalk", Texture.class));
         playerWalkFilm = new FilmStrip(playerWalkTextureAnimation.getTexture(),2,16);
         TextureRegion playerIdleTextureAnimation = new TextureRegion(directory.getEntry("player:ursaIdle", Texture.class));
-        playerIdleFilm = new FilmStrip(playerIdleTextureAnimation.getTexture(),2,16);
+        playerIdleFilm = new FilmStrip(playerIdleTextureAnimation.getTexture(),4,16);
         TextureRegion playerCaughtAnimation = new TextureRegion(directory.getEntry("player:ursaDown", Texture.class));
-        playerCaughtFilm = new FilmStrip(playerCaughtAnimation.getTexture(),2,8);
+        playerCaughtFilm = new FilmStrip(playerCaughtAnimation.getTexture(),2,16);
         TextureRegion playerRescueAnimation = new TextureRegion(directory.getEntry("player:ursaRescue", Texture.class));
         playerRescueFilm = new FilmStrip(playerRescueAnimation.getTexture(),4,16);
 
         TextureRegion salmonUprightWalkAnimation = new TextureRegion(directory.getEntry("enemies:salmonUprightWalk", Texture.class));
-        salmonUprightWalkFilm = new FilmStrip(salmonUprightWalkAnimation.getTexture(),4,8);
+        salmonUprightWalkFilm = new FilmStrip(salmonUprightWalkAnimation.getTexture(),2,16);
         TextureRegion salmonConfusedAnimation = new TextureRegion(directory.getEntry("enemies:salmonConfused", Texture.class));
-        salmonConfusedFilm = new FilmStrip(salmonConfusedAnimation.getTexture(),4,8);
+        salmonConfusedFilm = new FilmStrip(salmonConfusedAnimation.getTexture(),2,16);
         TextureRegion salmonIdleAnimation = new TextureRegion(directory.getEntry("enemies:salmonIdle", Texture.class));
-        salmonIdleFilm = new FilmStrip(salmonIdleAnimation.getTexture(), 5, 8);
+        salmonIdleFilm = new FilmStrip(salmonIdleAnimation.getTexture(), 3,16);
         TextureRegion salmonDetectedAnimation = new TextureRegion(directory.getEntry("enemies:salmonDetected", Texture.class));
-        salmonDetectedFilm = new FilmStrip(salmonDetectedAnimation.getTexture(), 4, 8);
-
+        salmonDetectedFilm = new FilmStrip(salmonDetectedAnimation.getTexture(), 2,16);
         TextureRegion salmonDiveAnimation = new TextureRegion(directory.getEntry("enemies:salmonDive", Texture.class));
-        salmonDiveFilm = new FilmStrip(salmonDiveAnimation.getTexture(), 7, 8);
+        salmonDiveFilm = new FilmStrip(salmonDiveAnimation.getTexture(), 4,16);
 
         TextureRegion treeShakeAnimation = new TextureRegion(directory.getEntry("polar:tree_shake_animation", Texture.class));
         treeShakeFilm = new FilmStrip(treeShakeAnimation.getTexture(), 1, 16);
@@ -403,8 +404,11 @@ public class SceneModel extends WorldController implements ContactListener {
         TextureRegion cavePortalAnimation = new TextureRegion(directory.getEntry("polar:cave_portal_animation", Texture.class));
         cavePortalFilm = new FilmStrip(cavePortalAnimation.getTexture(), 2, 8);
         TextureRegion caveSleepAnimation = new TextureRegion(directory.getEntry("polar:cave_sleep_animation", Texture.class));
-        caveZZZFilm = new FilmStrip(caveSleepAnimation.getTexture(), 2, 8);
+        caveZZZFilm = new FilmStrip(caveSleepAnimation.getTexture(), 1, 16);
         caveZZZFilm.setFrame(0);
+        TextureRegion caveSleepLoopAnimation = new TextureRegion(directory.getEntry("polar:cave_sleep_loop_animation", Texture.class));
+        caveZZZLoopFilm = new FilmStrip(caveSleepLoopAnimation.getTexture(), 2, 16);
+        caveZZZLoopFilm.setFrame(0);
 
         TextureRegion smolUrsaIdleAnimation = new TextureRegion(directory.getEntry("smolursa:idle", Texture.class));
         smolUrsaIdleFilm = new FilmStrip(smolUrsaIdleAnimation.getTexture(), 3, 16);
@@ -591,7 +595,9 @@ public class SceneModel extends WorldController implements ContactListener {
                     System.out.println();
                     salmonDetectedFilm.setFrame(salmonDetectedIndex);
                     i.getEnemy().setTexture(salmonDetectedFilm);
-                    salmonDetectedIndex = (salmonDetectedIndex + 1) % 30;
+                    if (currentFrame % 2 == 0) {
+                        salmonDetectedIndex = (salmonDetectedIndex + 1) % 30;
+                    }
                 } else if (i.isConfused() || i.isStunned() || i.earlyLooking()) {
                     System.out.println("Enemy is confused or stunned");
                     System.out.println("Salmon confused index: " + i.get_confused_anim_index());
@@ -602,7 +608,9 @@ public class SceneModel extends WorldController implements ContactListener {
                 } else if (i.getEnemy().getVX() == 0 && i.getEnemy().getVY() == 0) {
                     salmonIdleFilm.setFrame(salmonIdleAnimIndex);
                     i.getEnemy().setTexture(salmonIdleFilm);
-                    salmonIdleAnimIndex = (salmonIdleAnimIndex + 1) % 40;
+                    if (currentFrame % 2 == 0) {
+                        salmonIdleAnimIndex = (salmonIdleAnimIndex + 1) % 46;
+                    }
                 } else {
                     i.reset_anim_index();
                     salmonDetectedIndex = 0;
@@ -612,7 +620,9 @@ public class SceneModel extends WorldController implements ContactListener {
                 }
             }
         }
-        salmonWalkAnimIndex = (salmonWalkAnimIndex + 1) % 25;
+        if (currentFrame % 2 == 0) {
+            salmonWalkAnimIndex = (salmonWalkAnimIndex + 1) % 24;
+        }
     }
 
     /**
@@ -636,7 +646,7 @@ public class SceneModel extends WorldController implements ContactListener {
             }
 
             if((currentFrame - ursaBeganWalkingFrame) % 2 == 0) {
-                if(playerWalkFilm.getFrame() == 19) {
+                if(playerWalkFilm.getFrame() == 23) {
                     playerWalkFilm.setFrame(0);
                 }
                 playerWalkFilm.setFrame(playerWalkFilm.getFrame() + 1);
@@ -650,8 +660,8 @@ public class SceneModel extends WorldController implements ContactListener {
                 ursaBeganIdlingFrame = currentFrame;
                 playerWalkFilm.setFrame(0);
             }
-            if((currentFrame - ursaBeganIdlingFrame) % 3 == 0) {
-                if(playerIdleFilm.getFrame() == 29){
+            if((currentFrame - ursaBeganIdlingFrame) % 2 == 0) {
+                if(playerIdleFilm.getFrame() == 45){
                     playerIdleFilm.setFrame(0);
                 }
                 playerIdleFilm.setFrame(playerIdleFilm.getFrame() + 1);
@@ -686,9 +696,9 @@ public class SceneModel extends WorldController implements ContactListener {
      * Once they become non-interactable, they should not animate.
      */
     private void animateCaves() {
-        if(currentFrame % 3 == 0) {
+        if(currentFrame % 2 == 0) {
             cavePortalFilm.setFrame(cavePortalFilm.getFrame() + 1);
-            if(cavePortalFilm.getFrame() == 12){
+            if(cavePortalFilm.getFrame() == 15){
                 cavePortalFilm.setFrame(0);
             }
         }
@@ -816,9 +826,10 @@ public class SceneModel extends WorldController implements ContactListener {
                 shadowController.animateFastForward(currentFrame - timeBeganSkippingFrame - walkingDuration + 1,
                         fastForwardDuration - walkingDuration);
 
-                if((currentFrame - timeBeganSkippingFrame - walkingDuration + 1) % caveZZZAnimBuffer == 0) {
+                //if((currentFrame - timeBeganSkippingFrame - walkingDuration + 1) % caveZZZAnimBuffer == 0) {
+                if(currentFrame % 2 == 0) {
                     caveZZZFilm.setFrame(caveZZZFilm.getFrame() + 1);
-                    if(caveZZZFilm.getFrame() == 9){
+                    if(caveZZZFilm.getFrame() == 15){
                         caveZZZFilm.setFrame(0);
                     }
                 }

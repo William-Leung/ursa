@@ -17,11 +17,11 @@
 
         "enemies:salmon":  "enemies/Salmon.png",
         "enemies:salmonShadow": "enemies/Salmon_Shadow.png",
-        "enemies:salmonUprightWalk": "enemies/Walk.png",
-        "enemies:salmonConfused": "enemies/Lost.png",
-        "enemies:salmonIdle": "enemies/Idle.png",
-        "enemies:salmonDetected": "enemies/Detected.png",
-        "enemies:salmonDive": "enemies/Catch.png",
+        "enemies:salmonUprightWalk": "enemies/Salmon_Walk.png",
+        "enemies:salmonConfused": "enemies/Salmon_Lost.png",
+        "enemies:salmonIdle": "enemies/Salmon_Idle.png",
+        "enemies:salmonDetected": "enemies/Salmon_Detected.png",
+        "enemies:salmonDive": "enemies/Salmon_Catch.png",
 
         "levelSelect:background": "levelSelect/LevelSelect.png",
         "levelSelect:win": "levelSelect/win.png",
@@ -54,7 +54,10 @@
 
         "polar:cave_portal_animation" : "polar/animations/Cave_Portal_Animation.png",
         "polar:tree_shake_animation": "polar/animations/Polar_Tree_Shake.png",
+        "polar:tree_2_shake_animation": "polar/animations/Polar_Tree_2_Shake.png",
+        "polar:tree_3_shake_animation": "polar/animations/Polar_Tree_3_Shake.png",
         "polar:cave_sleep_animation": "polar/animations/Cave_Sleep.png",
+        "polar:cave_sleep_loop_animation": "polar/animations/Cave_Sleep_Loop.png",
 
         "polar:ground": "polar/ground.png",
         "polar:white": "polar/white.png",
