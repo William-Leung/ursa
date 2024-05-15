@@ -119,6 +119,7 @@ public abstract class WorldController implements Screen {
 	public boolean complete;
 	/** Whether we have failed at this world (and need a reset) */
 	public boolean failed;
+	private boolean paused;
 	/** Whether or not debug mode is active */
 	private boolean debug;
 	/** Countdown active for winning or losing */
@@ -179,6 +180,10 @@ public abstract class WorldController implements Screen {
 			countdown = EXIT_COUNT;
 		}
 		complete = value;
+	}
+	public void setPaused(boolean value){
+		paused = value;
+
 	}
 
 	/**
@@ -400,7 +405,7 @@ public abstract class WorldController implements Screen {
 		}
 
 		// Now it is time to maybe switch screens.
-		if (input.didExit()) {
+		if (input.didExit() && paused ) {
 			System.out.println("exit");
 			pause();
 			listener.exitScreen(this, EXIT_QUIT);

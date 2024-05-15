@@ -374,7 +374,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         canvas.end();
 
 
-        boolean enterPressed = Gdx.input.isKeyPressed(Input.Keys.ENTER) || Gdx.input.isKeyPressed(Input.Keys.SPACE);
+        boolean enterPressed = Gdx.input.isKeyPressed(Input.Keys.E) || Gdx.input.isKeyPressed(Input.Keys.SPACE);
         if(enterPressed) {
             for(int i = 0; i < buttonPositions.length; i++) {
                 // If the click was within the button radius
