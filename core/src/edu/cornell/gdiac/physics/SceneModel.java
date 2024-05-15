@@ -744,7 +744,7 @@ public class SceneModel extends WorldController implements ContactListener {
     public void update(float dt) {
         //System.out.println("FPS: " + (1/dt));
         // Increment the current frame (used for animation slow downs)
-        if((Gdx.input.isKeyPressed(Input.Keys.P))){
+        if((Gdx.input.isKeyPressed(Input.Keys.P)) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE))){
             paused = true;
             setPaused(true);
             System.out.println("paused");
