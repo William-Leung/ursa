@@ -245,6 +245,7 @@ public abstract class WorldController implements Screen {
 		this.scale.y = canvas.getHeight()/bounds.getHeight();
 	}
 
+
 	/**
 	 * Creates a new game world with the default values.
 	 *

@@ -14,7 +14,9 @@
         "decoration:ground_4": "polar/decorations/Polar_Ground_4.png",
         "decoration:ground_1": "polar/decorations/Polar_Ground_1.png",
         "decoration:ground_2": "polar/decorations/Polar_Ground_2.png",
-
+        "UI:pause1" : "ui/Paused_UI_1.png",
+        "UI:pause2" : "ui/Paused_UI_Resume.png",
+        "UI:pause3" : "ui/Paused_UI_Quit.png",
         "enemies:salmon":  "enemies/Salmon.png",
         "enemies:salmonShadow": "enemies/Salmon_Shadow.png",
         "enemies:salmonUprightWalk": "enemies/Salmon_Walk.png",

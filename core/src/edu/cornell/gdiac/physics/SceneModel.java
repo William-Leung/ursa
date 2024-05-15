@@ -154,6 +154,7 @@ public class SceneModel extends WorldController implements ContactListener {
     private boolean isTimeSkipping = false;
     /** The frame at which time began to skip */
     private int timeBeganSkippingFrame = 0;
+    private TextureRegion[] pauseScreen = new TextureRegion[3];
     /** The cave recently interacted with. */
     private Cave interactedCave = null;
     /** The position at which Ursa was when interacting with the cave.*/
@@ -353,7 +354,9 @@ public class SceneModel extends WorldController implements ContactListener {
         ursaTexture = new TextureRegion(directory.getEntry("player:ursa", Texture.class));
         ursaShadowTexture = new TextureRegion(directory.getEntry("player:ursaShadow", Texture.class));
         smolUrsaTexture = new TextureRegion(directory.getEntry("smolursa:model", Texture.class));
-
+        pauseScreen[0] = new TextureRegion(directory.getEntry("UI:pause1", Texture.class));
+        pauseScreen[1] = new TextureRegion(directory.getEntry("UI:pause2", Texture.class));
+        pauseScreen[2] = new TextureRegion(directory.getEntry("UI:pause3", Texture.class));
         treeTextures[0] = new TextureRegion(directory.getEntry("polar:tree_snow", Texture.class));
         treeTextures[1] = new TextureRegion(directory.getEntry("polar:tree_no_snow",Texture.class));
 
@@ -1181,6 +1184,14 @@ public class SceneModel extends WorldController implements ContactListener {
         float uiDrawScale = 0.08f;
         canvas.draw(dayNightUITexture, Color.WHITE, dayNightUITexture.getRegionWidth() / 2f, dayNightUITexture.getRegionHeight() / 2f, canvas.getCameraX(), canvas.getCameraY() + canvas.getHeight() / 2f, uiRotationAngle,
                 uiDrawScale, uiDrawScale);
+        if(paused){
+            Color color = new Color(255,255,255,.5f);
+            canvas.draw(blackTexture,color, canvas.getCameraX() - canvas.getWidth() / 2f, canvas.getCameraY() - canvas.getHeight() / 2f, canvas.getWidth() ,canvas.getHeight());
+            canvas.draw(pauseScreen[0],Color.WHITE,0,0,canvas.getCameraX() - canvas.getWidth() /1.5f, canvas.getCameraY() - canvas.getHeight() /3.5f,0,.7f,.7f );
+            canvas.draw(pauseScreen[1],Color.WHITE,0,0,canvas.getCameraX() - canvas.getWidth() /2f, canvas.getCameraY() - canvas.getHeight() /5f,0,.7f,.7f );
+            canvas.draw(pauseScreen[2],Color.WHITE,0,0,canvas.getCameraX() - canvas.getWidth() /8f, canvas.getCameraY() - canvas.getHeight() /5f,0,.7f,.7f );
+        }
+
     }
 
 
