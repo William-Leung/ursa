@@ -16,11 +16,12 @@
         "decoration:ground_2": "polar/decorations/Polar_Ground_2.png",
 
         "enemies:salmon":  "enemies/Salmon.png",
+        "enemies:salmonShadow": "enemies/Salmon_Shadow.png",
         "enemies:salmonUprightWalk": "enemies/Walk.png",
         "enemies:salmonConfused": "enemies/Lost.png",
         "enemies:salmonIdle": "enemies/Idle.png",
         "enemies:salmonDetected": "enemies/Detected.png",
-            "enemies:salmonDive": "enemies/Catch.png",
+        "enemies:salmonDive": "enemies/Catch.png",
 
         "levelSelect:background": "levelSelect/LevelSelect.png",
         "levelSelect:win": "levelSelect/win.png",

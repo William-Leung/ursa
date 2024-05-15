@@ -70,6 +70,7 @@ public class Enemy extends BoxObstacle {
 	 */
 	private Vector2 lookDirection = new Vector2(1, 0);
 	protected PolygonRegion sightConeRegion;
+	private TextureRegion shadowTexture;
 
 	/**
 	 * The callback class for the enemy line-of-sight raycast towards the targeted body. This is used to detect whether or not there are any obstacles
@@ -391,6 +392,9 @@ public class Enemy extends BoxObstacle {
 		this.playerInDynamicShadow = shadowed;
 	}
 
+	public void setShadowTexture(TextureRegion t) {
+		shadowTexture = t;
+	}
 
 	/**
 	 * Checks if the given player object is in line of sight. This checks based on their position, centered
@@ -436,12 +440,9 @@ public class Enemy extends BoxObstacle {
 
 	@Override
 	public void preDraw(GameCanvas canvas) {
-		Texture blobShadow = SceneModel.BLOB_SHADOW_TEXTURE;
-		int xcenter = blobShadow.getWidth() / 2;
-		int ycenter = blobShadow.getHeight() / 2;
-		canvas.draw(blobShadow, Color.WHITE,xcenter,ycenter,
-				getX()*drawScale.x,(getY() - 1.25f) * drawScale.y,getAngle(),BLOB_SHADOW_SIZE / drawScale.x,
-				(BLOB_SHADOW_SIZE / 2f) / drawScale.y);
+		// i hate box obstacle
+		float yOffset = (0.3f);
+		canvas.draw(shadowTexture, Color.WHITE, shadowTexture.getRegionWidth() / 2f, 0, getX() * drawScale.x, (getY() - getHeight() / 2 - yOffset)*drawScale.y,getAngle(), textureScale, textureScale);
 		canvas.draw(sightConeRegion, Color.WHITE, origin.x,origin.y,getX()*drawScale.x,
 				getY()*drawScale.y,getAngle(),1.0f,1.0f);
 	}

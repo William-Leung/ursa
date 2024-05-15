@@ -51,26 +51,6 @@ public class GDXRoot extends Game implements ScreenListener {
 	 * or assign any screen.
 	 */
 	public GDXRoot() { }
-	public static void testing() {
-		float[] arr = new float[]{7,44,36,9,98,5,123,32,116,257,42,257,9,227};
-
-
-
-		float imageX = 128;
-		float imageY = 256;
-		float yOffset = imageY - 246;
-		for(int i = 0; i < arr.length; i++) {
-			float elem = arr[i];
-			if(i % 2 == 1) {
-				elem = (imageY-yOffset) - elem;
-			} else {
-				elem = elem - imageX / 2f;
-			}
-			elem *= 12/256f;
-			System.out.print(Math.round(elem * 10) / 10.0 + ", ") ;
-		}
-		System.out.print("\n");
-	}
 
 	/**
 	 * Called when the Application is first created.
@@ -79,7 +59,6 @@ public class GDXRoot extends Game implements ScreenListener {
 	 * the asynchronous loader for all other assets.
 	 */
 	public void create() {
-		testing();
 		prefs = Gdx.app.getPreferences("Completed Data");
 		levelsCompleted = 20;
 		System.out.println("levels completed " + levelsCompleted);
@@ -88,7 +67,6 @@ public class GDXRoot extends Game implements ScreenListener {
 
 		camX = canvas.getCameraX();
 		camY = canvas.getCameraY();
-		// Initialize the three game worlds
 
 		controllers = new WorldController[25];
 		controllers[0] = new SceneModel("rigel_tutorial_1.json");
@@ -153,6 +131,7 @@ public class GDXRoot extends Game implements ScreenListener {
 	 * @param height The new height in pixels
 	 */
 	public void resize(int width, int height) {
+		System.out.println("Resizing");
 		canvas.resize();
 		super.resize(width,height);
 	}

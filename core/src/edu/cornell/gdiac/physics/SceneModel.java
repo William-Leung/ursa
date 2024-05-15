@@ -53,6 +53,8 @@ public class SceneModel extends WorldController implements ContactListener {
     private TextureRegion dayNightUITexture;
     /** Texture asset for bipedal (2 legs) salmon */
     private TextureRegion salmonTexture;
+    /** Texture asset for salmon shadow texture */
+    private TextureRegion salmonShadowTexture;
     /** Texture asset for ursa texture */
     private TextureRegion ursaTexture;
     /** Texture asset for ursa shadow texture */
@@ -342,6 +344,7 @@ public class SceneModel extends WorldController implements ContactListener {
         groundTexture = new TextureRegion(directory.getEntry("polar:ground", Texture.class));
         dayNightUITexture = new TextureRegion(directory.getEntry("ui:dayNightUI", Texture.class));
         salmonTexture = new TextureRegion(directory.getEntry("enemies:salmon", Texture.class));
+        salmonShadowTexture = new TextureRegion(directory.getEntry("enemies:salmonShadow", Texture.class));
         ursaTexture = new TextureRegion(directory.getEntry("player:ursa", Texture.class));
         ursaShadowTexture = new TextureRegion(directory.getEntry("player:ursaShadow", Texture.class));
         smolUrsaTexture = new TextureRegion(directory.getEntry("smolursa:model", Texture.class));
@@ -395,7 +398,7 @@ public class SceneModel extends WorldController implements ContactListener {
         salmonDiveFilm = new FilmStrip(salmonDiveAnimation.getTexture(), 7, 8);
 
         TextureRegion treeShakeAnimation = new TextureRegion(directory.getEntry("polar:tree_shake_animation", Texture.class));
-        treeShakeFilm = new FilmStrip(treeShakeAnimation.getTexture(), 2, 8);
+        treeShakeFilm = new FilmStrip(treeShakeAnimation.getTexture(), 1, 16);
 
         TextureRegion cavePortalAnimation = new TextureRegion(directory.getEntry("polar:cave_portal_animation", Texture.class));
         cavePortalFilm = new FilmStrip(cavePortalAnimation.getTexture(), 2, 8);
@@ -647,7 +650,6 @@ public class SceneModel extends WorldController implements ContactListener {
                 ursaBeganIdlingFrame = currentFrame;
                 playerWalkFilm.setFrame(0);
             }
-
             if((currentFrame - ursaBeganIdlingFrame) % 3 == 0) {
                 if(playerIdleFilm.getFrame() == 29){
                     playerIdleFilm.setFrame(0);
@@ -667,14 +669,14 @@ public class SceneModel extends WorldController implements ContactListener {
             return;
         }
 
-        if((currentFrame - beganShakingTreeFrame) % 4 == 0) {
-            treeShakeFilm.setFrame(treeShakeFilm.getFrame() + 1);
-            if(treeShakeFilm.getFrame() == 12){
+        if((currentFrame - beganShakingTreeFrame) % 2 == 0) {
+            if(treeShakeFilm.getFrame() == 15){
                 treeShakeFilm.setFrame(0);
                 shakingTree.setTexture(treeTextures[1]);
                 shakingTree = null;
                 return;
             }
+            treeShakeFilm.setFrame(treeShakeFilm.getFrame() + 1);
         }
         shakingTree.setTexture(treeShakeFilm);
     }
@@ -729,20 +731,12 @@ public class SceneModel extends WorldController implements ContactListener {
             ursa.setVX(0);
             ursa.setVY(0);
             // Animate Ursa's rescue and then
-            if(playerRescueFilm.getFrame() < 51) {
+            if(playerRescueFilm.getFrame() < 50) {
                 if(currentFrame % 2 == 0) {
                     playerRescueFilm.setFrame(playerRescueFilm.getFrame() + 1);
                 }
                 ursa.setTexture(playerRescueFilm);
                 ursaBeganIdlingFrame = currentFrame;
-            } else {
-                if((currentFrame - ursaBeganIdlingFrame) % 3 == 0) {
-                    playerIdleFilm.setFrame(playerIdleFilm.getFrame() + 1);
-                    if(playerIdleFilm.getFrame() == 30){
-                        playerIdleFilm.setFrame(0);
-                    }
-                }
-                ursa.setTexture(playerIdleFilm);
             }
 
             if(smolUrsaRescueFilm.getFrame() < 73) {
@@ -1024,6 +1018,7 @@ public class SceneModel extends WorldController implements ContactListener {
 
             // Check for win condition
             if ((bd1 == ursa && bd2 == goal) || (bd1 == goal && bd2 == ursa)) {
+                ursa.setIsFacingRight(goal.getX() - ursa.getX() > 0);
                 hasWon = true;
                 levelMusic.stop();
                 levelMusicTense.stop();
@@ -1355,6 +1350,7 @@ public class SceneModel extends WorldController implements ContactListener {
             enemy.setDrawScale(scale);
             enemy.setLookDirection(1, 0);
             enemy.setTexture(salmonUprightWalkFilm);
+            enemy.setShadowTexture(salmonShadowTexture);
             enemy.setName("enemy" + i);
             enemy.setSpeed(speed);
 
