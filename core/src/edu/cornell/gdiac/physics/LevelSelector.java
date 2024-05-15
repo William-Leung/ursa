@@ -159,7 +159,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         ursaWalkFilm = new FilmStrip(ursaWalk.getTexture(),2,16);
         ursaWalkFilm.setFrame(0);
         TextureRegion ursaIdle = new TextureRegion(directory.getEntry("player:ursaIdle", Texture.class));
-        ursaIdleFilm = new FilmStrip(ursaIdle.getTexture(),2,16);
+        ursaIdleFilm = new FilmStrip(ursaIdle.getTexture(),4,16);
         ursaIdleFilm.setFrame(0);
         ursaShadow = new TextureRegion(directory.getEntry("player:ursaShadow", Texture.class));
 
