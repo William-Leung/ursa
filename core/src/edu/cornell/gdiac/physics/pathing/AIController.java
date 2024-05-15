@@ -222,17 +222,13 @@ public class AIController {
 
         switch(state) {
             case SPAWN:
-                if (ticks < SPAWN_TICKS) {
-                    state = FSMState.SPAWN;
-                } else {
-                    if (ticks_detected >= DETECTION_DELAY) {
+                if (ticks >= SPAWN_TICKS && ticks_detected >= DETECTION_DELAY) {
                         state = FSMState.CONFUSED;
                         last_time_detected = ticks;
                         ticks_confused = 1;
-                    } else {
+                } else {
                         state = FSMState.WANDER;
                         ticks_looking = 26;
-                    }
                 }
 
                 break;
@@ -244,19 +240,9 @@ public class AIController {
                     break;
                 }
 
-//                if (ticks % 90 == 0 && Math.random() > 0.98) {
-//                    ticks_looking = 26;
-//                    state = FSMState.LOOKING;
-//                } else if (times_detected >= MIN_PATROL_CHANGE &&
-//                               ticks % 50 == 0 && Math.random() > 0.93) {
-//                    ticks_looking = 0;
-//                    state = FSMState.LOOKING;
-//                } else
                 if (ticks_detected >= DETECTION_DELAY) {
                     state = FSMState.CONFUSED;
                     ticks_confused = 1;
-                } else {
-                    state = FSMState.WANDER;
                 }
 
                 if (enemy.isStunned()) {
@@ -279,11 +265,6 @@ public class AIController {
                 } else if (currRotations == null) {
                     state = FSMState.WANDER;
                 }
-//                    if (isDetected() || ticks - last_time_detected <= CONFUSE_TIME) {
-//                    state = FSMState.LOOKING;
-//                } else if (ticks_looking >= MAX_LOOKING || Math.random() * ticks_looking > MAX_LOOKING / 3) {
-//                    state = FSMState.WANDER;
-//                }
 
                 break;
 
@@ -354,7 +335,6 @@ public class AIController {
                 break;
 
             case WON:
-                state = FSMState.WON;
                 break;
 
             case STUNNED:
@@ -805,7 +785,7 @@ public class AIController {
     }
 
     private boolean isDetected() {
-        return checkRange(ENEMY_RADIUS) || enemy.isAlerted();
+        return /* checkRange(ENEMY_RADIUS) || */ enemy.isAlerted();
     }
 
     public boolean isConfused() {
@@ -891,12 +871,8 @@ public class AIController {
     }
 
     public void isAdaptive() {
-        if (times_detected >= MIN_PATROL_CHANGE &&
-                ticks - last_time_detected <= ADAPTIVE_AI_MEM && !locs_spotted.isEmpty()) {
-            enemy.setAdaptive(true);
-        } else {
-            enemy.setAdaptive(false);
-        }
+        enemy.setAdaptive(times_detected >= MIN_PATROL_CHANGE &&
+                ticks - last_time_detected <= ADAPTIVE_AI_MEM && !locs_spotted.isEmpty());
     }
 
     private class Coordinate {

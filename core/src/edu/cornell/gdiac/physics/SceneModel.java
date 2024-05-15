@@ -610,7 +610,12 @@ public class SceneModel extends WorldController implements ContactListener {
                         salmonDetectedIndex = (salmonDetectedIndex + 1) % 30;
                     }
                 } else if (i.isConfused() || i.isStunned() || i.earlyLooking()) {
-                    System.out.println("Enemy is confused or stunned");
+                    if(i.isConfused()) {
+                        System.out.println("Enemy is confused.");
+                    }
+                    if (i.isStunned()) {
+                        System.out.println("Enemy is stunned.");
+                    }
                     System.out.println("Salmon confused index: " + i.get_confused_anim_index());
                     System.out.println();
                     salmonConfusedFilm.setFrame(i.get_confused_anim_index());
