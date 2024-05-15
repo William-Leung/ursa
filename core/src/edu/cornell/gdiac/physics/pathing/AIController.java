@@ -262,21 +262,23 @@ public class AIController {
                 } else if (enemy.isAlerted() && ticks_spotted >= DETECTION_DELAY) {
                     state = FSMState.CONFUSED;
                     ticks_confused = 1;
-                } else if (currRotations == null) {
-                    state = FSMState.WANDER;
                 }
+                // TODO: Fix this (endless LOOKING <-> WANDER state loop)
+//                else if (currRotations == null) {
+//                    state = FSMState.WANDER;
+//                }
 
                 break;
 
             case CONFUSED:
-
                 if (ticks_confused == 0) {
                     state = FSMState.LOOKING;
                 } else if (ticks_confused >= CONFUSE_TIME) {
                     if (checkSpotted()) {
                         state = FSMState.CHASE;
-                    } else state = FSMState.LOOKING;
-
+                    } else {
+                        state = FSMState.LOOKING;
+                    }
                 } else if (isDetected()) {
                     ticks_confused++;
                     last_time_detected = ticks;
@@ -471,7 +473,8 @@ public class AIController {
                 enemy.setVX(0);
                 enemy.setVY(0);
 
-                if (is_stupid || --rotationDelay >= 0) {
+                // TODO: Fix this (endless CONFUSED <-> LOOKING state loop)
+                if (--rotationDelay >= 0) {
                     break;
                 }
 
@@ -785,7 +788,7 @@ public class AIController {
     }
 
     private boolean isDetected() {
-        return /* checkRange(ENEMY_RADIUS) || */ enemy.isAlerted();
+        return checkRange(ENEMY_RADIUS) || enemy.isAlerted();
     }
 
     public boolean isConfused() {
@@ -838,13 +841,9 @@ public class AIController {
 
     public void reset_dive_anim_index() { dive_anim_index = 0; }
 
-//    public void lookAround() {
-//        if (goalAngle == 0 || enemy.getAngle() == goalAngle) {
-//            goalAngle = enemy.getAngle() - (ticks_wander / 2) + (float) (Math.random() * ticks_wander);
-//        }
-//
-//        rotateEnemy(Math.abs(goalAngle - enemy.getAngle()) / 20, goalAngle);
-//    }
+    public void lookAround() {
+        rotateEnemy(Math.abs(goalAngle - enemy.getAngle()) / 20, goalAngle);
+    }
 
     public Coordinate setNextGoal() {
         EnemyMarker nxtGoal = goalLocs.peek();
