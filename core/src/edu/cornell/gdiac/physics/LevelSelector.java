@@ -31,6 +31,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
     private FilmStrip ursaIdleFilm;
     /** Texture for Ursa */
     private TextureRegion ursaTexture;
+    private int timer;
     /** Texture for Ursa's shadow */
     private TextureRegion ursaShadow;
     /** The current position of Ursa */
@@ -89,7 +90,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         levelsCompleted = completion;
         canvas = NewCanvas;
         active = false;
-
+        timer = 0;
         Gdx.input.setInputProcessor( this );
         Arrays.fill(buttonsUnlocked, false);
         buttonsUnlocked[0] = true;
@@ -201,7 +202,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
 
     private void update(float delta){
         time += 1;
-
+        timer +=1;
         // Update the snow
         effect.update(delta);
 
@@ -372,9 +373,12 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         effect.draw(canvas.getSpriteBatch());
 
         canvas.end();
+        boolean enterPressed = false;
+        if(timer >= 30){
+            enterPressed = Gdx.input.isKeyPressed(Input.Keys.ENTER) || Gdx.input.isKeyPressed(Input.Keys.SPACE);
+        }
 
 
-        boolean enterPressed = Gdx.input.isKeyPressed(Input.Keys.E) || Gdx.input.isKeyPressed(Input.Keys.SPACE);
         if(enterPressed) {
             for(int i = 0; i < buttonPositions.length; i++) {
                 // If the click was within the button radius

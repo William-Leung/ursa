@@ -147,6 +147,7 @@ public class SceneModel extends WorldController implements ContactListener {
     /* =========== Tree Shaking Variables =========== */
     /** The tree that is currently shaking. */
     private Tree shakingTree = null;
+    private float timer;
 
 
     /* =========== Cave Interaction Variables =========== */
@@ -316,7 +317,7 @@ public class SceneModel extends WorldController implements ContactListener {
         paused = false;
         numTilesY = jsonData.get("layers").get(0).get("height").asFloat();
         numTilesX = jsonData.get("layers").get(0).get("width").asFloat();
-
+        timer = 30;
         float tileSideLength = 256;
         maxY = numTilesY * tileSideLength;
 
@@ -744,15 +745,25 @@ public class SceneModel extends WorldController implements ContactListener {
     public void update(float dt) {
         //System.out.println("FPS: " + (1/dt));
         // Increment the current frame (used for animation slow downs)
-        if((Gdx.input.isKeyPressed(Input.Keys.P)) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE))){
-            paused = true;
-            setPaused(true);
-            System.out.println("paused");
-        }
+        timer += 1;
         if((Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) && paused){
-            paused = false;
-            System.out.println("unpause");
+            if(timer >=30){
+                paused = false;
+                System.out.println("unpause");
+                timer = 0;
+            }
+
         }
+        if((Gdx.input.isKeyPressed(Input.Keys.P)) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) && !paused){
+            if(timer >= 30){
+                paused = true;
+                setPaused(true);
+                System.out.println("paused situation");
+                timer = 0;
+            }
+
+        }
+
         if(paused){
             for (Enemy enemy : enemies) {
                 if (enemy != null) {
