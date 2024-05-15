@@ -308,7 +308,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
     private void animateUrsa(boolean isMoving) {
         if(isMoving){
             if(time % 2 == 0){
-                if(ursaWalkFilm.getFrame() == 19){
+                if(ursaWalkFilm.getFrame() == 23){
                     ursaWalkFilm.setFrame(0);
                 }
                 ursaWalkFilm.setFrame(ursaWalkFilm.getFrame() + 1);
@@ -317,7 +317,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
             ursaIdleFilm.setFrame(0);
         } else {
             if(time % 2 == 0){
-                if(ursaIdleFilm.getFrame() == 29){
+                if(ursaIdleFilm.getFrame() == 45){
                     ursaIdleFilm.setFrame(0);
                 }
                 ursaIdleFilm.setFrame(ursaIdleFilm.getFrame() + 1);
