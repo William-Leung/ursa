@@ -1201,9 +1201,9 @@ public class SceneModel extends WorldController implements ContactListener {
         if(paused){
             Color color = new Color(255,255,255,.5f);
             canvas.draw(blackTexture,color, canvas.getCameraX() - canvas.getWidth() / 2f, canvas.getCameraY() - canvas.getHeight() / 2f, canvas.getWidth() ,canvas.getHeight());
-            canvas.draw(pauseScreen[0],Color.WHITE,0,0,canvas.getCameraX() - canvas.getWidth() /1.5f, canvas.getCameraY() - canvas.getHeight() /3.5f,0,.7f,.7f );
-            canvas.draw(pauseScreen[1],Color.WHITE,0,0,canvas.getCameraX() - canvas.getWidth() /2f, canvas.getCameraY() - canvas.getHeight() /5f,0,.7f,.7f );
-            canvas.draw(pauseScreen[2],Color.WHITE,0,0,canvas.getCameraX() - canvas.getWidth() /8f, canvas.getCameraY() - canvas.getHeight() /5f,0,.7f,.7f );
+            canvas.draw(pauseScreen[0],Color.WHITE,0,0,canvas.getCameraX() - canvas.getWidth()/2.5f , canvas.getCameraY() - canvas.getHeight() /5.5f,0,textureScale,textureScale );
+            canvas.draw(pauseScreen[1],Color.WHITE,0,0,canvas.getCameraX() - canvas.getWidth() /3.2f, canvas.getCameraY() - canvas.getHeight() /7f,0,textureScale,textureScale );
+            canvas.draw(pauseScreen[2],Color.WHITE,0,0,canvas.getCameraX() - canvas.getWidth() /11f, canvas.getCameraY() - canvas.getHeight() /7f,0,textureScale,textureScale );
         }
 
     }
