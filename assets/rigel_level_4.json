@@ -1330,7 +1330,7 @@
                         {
                          "name":"rotation_delay",
                          "type":"int",
-                         "value":190
+                         "value":120
                         }, 
                         {
                          "name":"rotation_speed",
