@@ -31,7 +31,6 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
     private FilmStrip ursaIdleFilm;
     /** Texture for Ursa */
     private TextureRegion ursaTexture;
-    private int timer;
     /** Texture for Ursa's shadow */
     private TextureRegion ursaShadow;
     /** The current position of Ursa */
@@ -41,7 +40,8 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
     /** The direction Ursa is facing (1 for right, -1 for left) */
     private float direction = 1;
     /** How far Ursa can move in one update loop */
-    private final float ursaMoveDist = 5f;
+    private final float ursaMoveDist = 4f;
+    private Vector2 lastUrsaPos;
 
 
     private ParticleEffect effect;
@@ -58,7 +58,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
     /** Scales between original image size and what we draw. */
     private float scale;
     /** The number of currently active levels */
-    private final int numButtons = 8;
+    private final int numButtons = 14;
     private Music levelSelectMusic;
     /** The frame we are on */
     private int time;
@@ -72,25 +72,23 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
     /** The index of the level Ursa is currently standing on.
      * If Ursa is between levels, currentLevel is the lower one */
     private int currentLevel;
-    private boolean onCurrentLevel = false;
+    private boolean onCurrentLevel = true;
     private boolean levelJustChanged = false;
 
-    private int previousLevel;
     /** The coordinates of where Ursa is trying to go */
     private Vector2 moveTarget;
     /** The index of the button target */
     private int moveTargetIndex;
     /** The coordinates of where Ursa is trying to go in the long run */
     private int ultimateTargetIndex;
+    private boolean wasMoving;
 
 
     public LevelSelector(GameCanvas NewCanvas, float completion, int currLevel){
         currentLevel = currLevel;
-        previousLevel = Math.max(0,currLevel - 1);
         levelsCompleted = completion;
         canvas = NewCanvas;
         active = false;
-        timer = 0;
         Gdx.input.setInputProcessor( this );
         Arrays.fill(buttonsUnlocked, false);
         buttonsUnlocked[0] = true;
@@ -122,17 +120,18 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         // 0 = not allowed, 1 = allowed for forward, 2 = allowed for backward
         allowedInputs = new int[][]{
                 {0, 0, 2, 1},
-                {1, 2, 2, 1},
+                {1, 2, 0, 0},
                 {0, 0, 2, 1},
-                {2, 1, 2, 1},
+                {2, 1, 0, 0},
                 {0, 0, 2, 1},
-                {2, 1, 2, 1},
+                {2, 1, 0, 0},
                 {0, 0, 2, 1},
-                {1, 2, 2, 1},
-                {1, 2, 2, 1},
+                {1, 2, 0, 0},
+                {1, 2, 0, 0},
                 {0, 0, 2, 1},
-                {2, 1, 2, 1},
+                {2, 1, 0, 0},
                 {0, 0, 2, 1},
+                {2, 1, 0, 0}
         };
     }
     public void setActive(boolean b){
@@ -194,6 +193,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
 
         // Set Ursa's position to be on top of the level we just finished
         ursaPos = new Vector2(buttonPositions[currentLevel].x, buttonPositions[currentLevel].y + ursaWalkFilm.getRegionHeight() / 2f * scale);
+        lastUrsaPos = ursaPos;
         buttonRadius = 64 * buttonScale;
         moveTarget = ursaPos;
         moveTargetIndex = currentLevel;
@@ -202,30 +202,22 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
 
     private void update(float delta){
         time += 1;
-        timer +=1;
         // Update the snow
         effect.update(delta);
 
         // Update if we're on the current level
-        if(buttonPositions[currentLevel].dst(ursaPos) < 2 * buttonRadius) {
-            // Just changed from false to true (just got on level)
-            if(!onCurrentLevel) {
-                previousLevel = Math.max(0, currentLevel - 1);
-            }
+        if(buttonPositions[currentLevel].dst(ursaPos) < 2 * buttonRadius && !wasMoving) {
             onCurrentLevel = true;
         } else {
             onCurrentLevel = false;
         }
 
-
         // Updates move target based on input
-        boolean isMoving = checkForInput();
-
-
-
-
-
-        System.out.println(previousLevel + " " + currentLevel);
+        if(onCurrentLevel) {
+            wasMoving = checkForInput(currentLevel, true);
+        } else {
+            wasMoving = checkForInput(currentLevel, false);
+        }
 
         // Stop moving if we're near the button
         if(ursaPos.dst(moveTarget) <= 2 * ursaMoveDist) {
@@ -233,44 +225,60 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         } else {
             if (Math.abs(moveTarget.x - ursaPos.x) > ursaMoveDist) {
                 ursaPos.x += Math.signum(moveTarget.x - ursaPos.x) * ursaMoveDist;
-                isMoving = true;
+                wasMoving = true;
             }
             if (Math.abs(ursaPos.y - moveTarget.y) > ursaMoveDist) {
                 ursaPos.y += Math.signum(moveTarget.y - ursaPos.y) * ursaMoveDist;
-                isMoving = true;
+                wasMoving = true;
             }
         }
 
         // Animate Ursa to be walking or idling
-        animateUrsa(isMoving);
+        animateUrsa(wasMoving);
     }
 
     /**
      * Checks for user input if applicable
-     * Updates moveTarget and previousTarget accordingly
+     * Updates moveTarget accordingly
+     * If we are on a button, then we should also check the controls for backwards movement
      * @return if Ursa is moving
      */
-    private boolean checkForInput() {
-        // Iterate through the potential inputs we can have
+    private boolean checkForInput(int currLevel, boolean checkBack) {
+        // If we are on a button, then we should look at the inputs for backwards movement
+        if(checkBack && currLevel - 1 >= 0 && currLevel - 1 < allowedInputs.length) {
+            for(int i = 0; i < 4; i++) {
+                int effect = allowedInputs[currLevel - 1][i];
+                if((effect == 2) && checkKeyPress(i)) {
+                    System.out.println(i + " " + checkKeyPress(i));
+                    // If it corresponds to moving backward
+                    currentLevel--;
+                    moveTarget = new Vector2(buttonPositions[currLevel - 1]);
+                    direction = -1;
+                    moveTarget.y += ursaWalkFilm.getRegionHeight() / 2f * scale;
+                    moveTargetIndex = currLevel - 1;
+                    return true;
+                }
+            }
+        }
+
+        if(currLevel < 0 || currLevel >= allowedInputs.length) {
+            return false;
+        }
+
         for(int i = 0; i < 4; i++) {
-            int effect = allowedInputs[currentLevel][i];
+            int effect = allowedInputs[currLevel][i];
             if((effect == 1 || effect == 2) && checkKeyPress(i)) {
                 // If it corresponds to moving backward
                 if(effect == 2) {
-                    if(onCurrentLevel) {
-                        currentLevel = Math.max(0, currentLevel - 1);
-                    }
-                    moveTarget = new Vector2(buttonPositions[previousLevel]);
+                    moveTarget = new Vector2(buttonPositions[currLevel]);
                     direction = -1;
                     moveTarget.y += ursaWalkFilm.getRegionHeight() / 2f * scale;
-                    moveTargetIndex = currentLevel;
-                } else if(currentLevel < buttonPositions.length - 1) {
+                    moveTargetIndex = currLevel;
+                } else if(currLevel < buttonPositions.length - 1) {
                     // Moving forward
-                    previousLevel = currentLevel;
-                    System.out.println("Changed to " + previousLevel);
-                    moveTarget = new Vector2(buttonPositions[currentLevel + 1]);
+                    moveTarget = new Vector2(buttonPositions[currLevel + 1]);
                     moveTarget.y += ursaWalkFilm.getRegionHeight() / 2f * scale;
-                    moveTargetIndex = currentLevel + 1;
+                    moveTargetIndex = currLevel + 1;
                     direction = 1;
                 }
                 return true;
@@ -308,7 +316,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
     private void animateUrsa(boolean isMoving) {
         if(isMoving){
             if(time % 2 == 0){
-                if(ursaWalkFilm.getFrame() == 19){
+                if(ursaWalkFilm.getFrame() == 23){
                     ursaWalkFilm.setFrame(0);
                 }
                 ursaWalkFilm.setFrame(ursaWalkFilm.getFrame() + 1);
@@ -317,7 +325,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
             ursaIdleFilm.setFrame(0);
         } else {
             if(time % 2 == 0){
-                if(ursaIdleFilm.getFrame() == 29){
+                if(ursaIdleFilm.getFrame() == 45){
                     ursaIdleFilm.setFrame(0);
                 }
                 ursaIdleFilm.setFrame(ursaIdleFilm.getFrame() + 1);
@@ -374,7 +382,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
 
         canvas.end();
         boolean enterPressed = false;
-        if(timer >= 30){
+        if(time >= 30){
             enterPressed = Gdx.input.isKeyPressed(Input.Keys.ENTER) || Gdx.input.isKeyPressed(Input.Keys.SPACE);
         }
 
@@ -403,11 +411,6 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
             }
         }
         enterPrevious = enterPressed;
-
-        // If we've fully moved to the button
-//        if(isMovingToButton && ursaPos.dst(buttonTarget) < buttonRadius) {
-//            listener.exitScreen(this,clickedLevel+1);
-//        }
     }
 
 

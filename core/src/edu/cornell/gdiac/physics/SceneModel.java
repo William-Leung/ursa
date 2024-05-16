@@ -610,7 +610,12 @@ public class SceneModel extends WorldController implements ContactListener {
                         salmonDetectedIndex = (salmonDetectedIndex + 1) % 30;
                     }
                 } else if (i.isConfused() || i.isStunned() || i.earlyLooking()) {
-                    System.out.println("Enemy is confused or stunned");
+                    if(i.isConfused()) {
+                        System.out.println("Enemy is confused.");
+                    }
+                    if (i.isStunned()) {
+                        System.out.println("Enemy is stunned.");
+                    }
                     System.out.println("Salmon confused index: " + i.get_confused_anim_index());
                     System.out.println();
                     salmonConfusedFilm.setFrame(i.get_confused_anim_index());
@@ -747,7 +752,7 @@ public class SceneModel extends WorldController implements ContactListener {
         // Increment the current frame (used for animation slow downs)
         timer += 1;
         if((Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) && paused){
-            if(timer >=30){
+            if(timer >= 30){
                 paused = false;
                 System.out.println("unpause");
                 timer = 0;
@@ -761,7 +766,6 @@ public class SceneModel extends WorldController implements ContactListener {
                 System.out.println("paused situation");
                 timer = 0;
             }
-
         }
 
         if(paused){
@@ -773,163 +777,162 @@ public class SceneModel extends WorldController implements ContactListener {
             }
             ursa.setVX(0);
             ursa.setVY(0);
+            return;
         }
-        if(!paused) {
-            currentFrame++;
+        currentFrame++;
 
-            // If we've won, perform the rescue animations
-            if (hasWon) {
-                ursa.setVX(0);
-                ursa.setVY(0);
-                // Animate Ursa's rescue and then
-                if (playerRescueFilm.getFrame() < 50) {
-                    if (currentFrame % 2 == 0) {
-                        playerRescueFilm.setFrame(playerRescueFilm.getFrame() + 1);
-                    }
-                    ursa.setTexture(playerRescueFilm);
-                    ursaBeganIdlingFrame = currentFrame;
+        // If we've won, perform the rescue animations
+        if (hasWon) {
+            ursa.setVX(0);
+            ursa.setVY(0);
+            // Animate Ursa's rescue and then
+            if (playerRescueFilm.getFrame() < 50) {
+                if (currentFrame % 2 == 0) {
+                    playerRescueFilm.setFrame(playerRescueFilm.getFrame() + 1);
                 }
-
-                if (smolUrsaRescueFilm.getFrame() < 73) {
-                    if (currentFrame % 2 == 0) {
-                        smolUrsaRescueFilm.setFrame(smolUrsaRescueFilm.getFrame() + 1);
-                    }
-                    goal.setTexture(smolUrsaRescueFilm);
-                    return;
-                } else {
-                    setComplete(true);
-                }
+                ursa.setTexture(playerRescueFilm);
+                ursaBeganIdlingFrame = currentFrame;
             }
 
-            // Update the timeRatio then UI rotation + shadow tinting correspondingly
-            timeRatio = shadowController.getTimeRatio();
-            uiRotationAngle = -(timeRatio * 2) * (float) Math.PI + (float) Math.PI;
-            // If it's night, reset the tinting
-            if (timeRatio > 0.5) {
-                colorNextPointer = 1;
-                if (!isComplete()) {
-                    levelMusicNight.setVolume(Math.max(0, levelMusicNight.getVolume() + 0.01f));
+            if (smolUrsaRescueFilm.getFrame() < 73) {
+                if (currentFrame % 2 == 0) {
+                    smolUrsaRescueFilm.setFrame(smolUrsaRescueFilm.getFrame() + 1);
                 }
+                goal.setTexture(smolUrsaRescueFilm);
+                return;
             } else {
-                levelMusicNight.setVolume(Math.max(0, levelMusicNight.getVolume() - 0.01f));
-                // Update colorNextPointer to next interval
-                if (timeRatio > intervals[colorNextPointer]) {
-                    colorNextPointer++;
-                }
-                updateBackgroundColor(intervals[colorNextPointer - 1], timeRatio);
+                setComplete(true);
             }
-            shadowController.update(backgroundColor);
+        }
 
-            // Center the camera around Ursa
-            canvas.moveCam(ursa.getPosition().x, ursa.getPosition().y);
-            effect.getEmitters().first().setPosition(canvas.getWidth() / 2, canvas.getHeight());
-            effect.start();
+        // Update the timeRatio then UI rotation + shadow tinting correspondingly
+        timeRatio = shadowController.getTimeRatio();
+        uiRotationAngle = -(timeRatio * 2) * (float) Math.PI + (float) Math.PI;
+        // If it's night, reset the tinting
+        if (timeRatio > 0.5) {
+            colorNextPointer = 1;
+            if (!isComplete()) {
+                levelMusicNight.setVolume(Math.max(0, levelMusicNight.getVolume() + 0.01f));
+            }
+        } else {
+            levelMusicNight.setVolume(Math.max(0, levelMusicNight.getVolume() - 0.01f));
+            // Update colorNextPointer to next interval
+            if (timeRatio > intervals[colorNextPointer]) {
+                colorNextPointer++;
+            }
+            updateBackgroundColor(intervals[colorNextPointer - 1], timeRatio);
+        }
+        shadowController.update(backgroundColor);
 
-            // Play the music if it is not
-            if (!levelMusic.isPlaying()) {
-                levelMusicNight.play();
-                levelMusicTense.play();
-                levelMusic.play();
-                levelMusic.setLooping(true);
+        // Center the camera around Ursa
+        canvas.moveCam(ursa.getPosition().x, ursa.getPosition().y);
+        effect.getEmitters().first().setPosition(canvas.getWidth() / 2, canvas.getHeight());
+        effect.start();
+
+        // Play the music if it is not
+        if (!levelMusic.isPlaying()) {
+            levelMusicNight.play();
+            levelMusicTense.play();
+            levelMusic.play();
+            levelMusic.setLooping(true);
+        }
+
+        // Always animate the cave portals even if time is fast forwarding
+        animateCaves();
+        animatePlayerModel();
+        // If the time is fast forwarding
+        if (isTimeSkipping) {
+            for (Enemy e : enemies) {
+                if (e != null) {
+                    e.setVY(0);
+                    e.setVX(0);
+                }
             }
 
-            // Always animate the cave portals even if time is fast forwarding
-            animateCaves();
-            animatePlayerModel();
-            // If the time is fast forwarding
-            if (isTimeSkipping) {
-                for (Enemy e : enemies) {
-                    if (e != null) {
-                        e.setVY(0);
-                        e.setVX(0);
-                    }
-                }
-
-                // Ursa Walks to the Cave
-                if ((currentFrame - timeBeganSkippingFrame) < walkingDuration) {
-                    walkToPoint(interactedCave.getX(), interactedCave.getY());
-                    return;
-                }
-                ursa.stopDrawing();
-
-                // Rotate the shadows over fastForwardDuration update loops
-                int caveZZZAnimBuffer = 8;
-
-                int fastForwardDuration = (caveZZZAnimBuffer * 9) + walkingDuration;
-                if ((currentFrame - timeBeganSkippingFrame) % fastForwardDuration == 0) {
-                    isTimeSkipping = false;
-                    ursa.resumeDrawing();
-                    interactedCave.setPortalTexture(polarPortalTexture);
-                    caveZZZFilm.setFrame(0);
-                    interactableCaves.remove(interactedCave);
-                } else {
-                    shadowController.animateFastForward(
-                            currentFrame - timeBeganSkippingFrame - walkingDuration + 1,
-                            fastForwardDuration - walkingDuration);
-
-                    //if((currentFrame - timeBeganSkippingFrame - walkingDuration + 1) % caveZZZAnimBuffer == 0) {
-                    if (currentFrame % 2 == 0) {
-                        caveZZZFilm.setFrame(caveZZZFilm.getFrame() + 1);
-                        if (caveZZZFilm.getFrame() == 15) {
-                            caveZZZFilm.setFrame(0);
-                        }
-                    }
-                    interactedCave.setZZZTexture(caveZZZFilm);
-                }
+            // Ursa Walks to the Cave
+            if ((currentFrame - timeBeganSkippingFrame) < walkingDuration) {
+                walkToPoint(interactedCave.getX(), interactedCave.getY());
                 return;
             }
+            ursa.stopDrawing();
 
-            // Move Ursa
-            float xVal = InputController.getInstance().getHorizontal() * ursa.getForce();
-            float yVal = InputController.getInstance().getVertical() * ursa.getForce();
-            ursa.setMovement(xVal, yVal);
+            // Rotate the shadows over fastForwardDuration update loops
+            int caveZZZAnimBuffer = 8;
 
-            checkForInteraction();
+            int fastForwardDuration = (caveZZZAnimBuffer * 9) + walkingDuration;
+            if ((currentFrame - timeBeganSkippingFrame) % fastForwardDuration == 0) {
+                isTimeSkipping = false;
+                ursa.resumeDrawing();
+                interactedCave.setPortalTexture(polarPortalTexture);
+                caveZZZFilm.setFrame(0);
+                interactableCaves.remove(interactedCave);
+            } else {
+                shadowController.animateFastForward(
+                        currentFrame - timeBeganSkippingFrame - walkingDuration + 1,
+                        fastForwardDuration - walkingDuration);
 
-            // Animates the game objects
-            animateEnemies();
-            animateTree();
-            animateSmolUrsa();
-
-            boolean alerted = false;
-            for (AIController c : controls) {
-                c.getAction();
-                Enemy thisEnemy = c.getEnemy();
-                thisEnemy.setAlerted(thisEnemy.isPlayerInLineOfSight(world, ursa));
-                if (!alerted && thisEnemy.isAlerted()) {
-                    alerted = true;
-                }
-
-                if (c.isWon() && player_dive_anim >= ENEMY_DIVE_FRAMES)
-                    setFailure(true);
-            }
-
-            for (Enemy enemy : enemies) {
-                if (enemy != null) {
-
-                    if (enemy.isPlayerInLineOfSight(world, ursa)) {
-                        enemy.getPlayerPos(ursa.getPosition());
+                //if((currentFrame - timeBeganSkippingFrame - walkingDuration + 1) % caveZZZAnimBuffer == 0) {
+                if (currentFrame % 2 == 0) {
+                    caveZZZFilm.setFrame(caveZZZFilm.getFrame() + 1);
+                    if (caveZZZFilm.getFrame() == 15) {
+                        caveZZZFilm.setFrame(0);
                     }
-                    enemy.setInShadow(ursa.isInShadow());
-                    enemy.createSightCone(world);
                 }
+                interactedCave.setZZZTexture(caveZZZFilm);
+            }
+            return;
+        }
+
+        // Move Ursa
+        float xVal = InputController.getInstance().getHorizontal() * ursa.getForce();
+        float yVal = InputController.getInstance().getVertical() * ursa.getForce();
+        ursa.setMovement(xVal, yVal);
+
+        checkForInteraction();
+
+        // Animates the game objects
+        animateEnemies();
+        animateTree();
+        animateSmolUrsa();
+
+        boolean alerted = false;
+        for (AIController c : controls) {
+            c.getAction();
+            Enemy thisEnemy = c.getEnemy();
+            thisEnemy.setAlerted(thisEnemy.isPlayerInLineOfSight(world, ursa));
+            if (!alerted && thisEnemy.isAlerted()) {
+                alerted = true;
             }
 
-            if (alerted) {
-                levelMusicTense.setVolume(Math.min(levelMusicTense.getVolume() + 0.01f, 1f));
-            } else {
-                levelMusicTense.setVolume(Math.max(levelMusicTense.getVolume() - 0.01f, 0f));
-            }
+            if (c.isWon() && player_dive_anim >= ENEMY_DIVE_FRAMES)
+                setFailure(true);
+        }
 
-            canvas.clear();
+        for (Enemy enemy : enemies) {
+            if (enemy != null) {
 
-            // If the game is lost, stop the player
-            if (!isFailure() && player_dive_anim < 16) {
-                ursa.applyForce();
-            } else {
-                ursa.setVX(0);
-                ursa.setVY(0);
+                if (enemy.isPlayerInLineOfSight(world, ursa)) {
+                    enemy.getPlayerPos(ursa.getPosition());
+                }
+                enemy.setInShadow(ursa.isInShadow());
+                enemy.createSightCone(world);
             }
+        }
+
+        if (alerted) {
+            levelMusicTense.setVolume(Math.min(levelMusicTense.getVolume() + 0.01f, 1f));
+        } else {
+            levelMusicTense.setVolume(Math.max(levelMusicTense.getVolume() - 0.01f, 0f));
+        }
+
+        canvas.clear();
+
+        // If the game is lost, stop the player
+        if (!isFailure() && player_dive_anim < 16) {
+            ursa.applyForce();
+        } else {
+            ursa.setVX(0);
+            ursa.setVY(0);
         }
     }
 
