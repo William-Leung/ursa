@@ -167,5 +167,5 @@ behind: false
 premultipliedAlpha: false
 spriteMode: single
 - Image Paths -
-particle2.png
+particle.png
 
