@@ -385,7 +385,6 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
             enterPressed = Gdx.input.isKeyPressed(Input.Keys.ENTER) || Gdx.input.isKeyPressed(Input.Keys.SPACE);
         }
 
-
         if(enterPressed) {
             for(int i = 0; i < buttonPositions.length; i++) {
                 // If the click was within the button radius
@@ -399,9 +398,10 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
                 }
             }
         }
+
         if(enterPrevious && !enterPressed){
             for (int i = 0; i < buttonPositions.length; i++) {
-                float interactDistance = buttonRadius;
+                float interactDistance = 45f;
                 if(buttonsUnlocked[i] && Math.abs(buttonPositions[i].x-ursaPos.x) < interactDistance
                         && Math.abs(buttonPositions[i].y-ursaPos.y) < interactDistance){
                     listener.exitScreen(this,i+1);
