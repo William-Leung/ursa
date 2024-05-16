@@ -115,6 +115,10 @@ public class SceneModel extends WorldController implements ContactListener {
     private FilmStrip playerCaughtFilm;
     /** Filmstrip for player rescue animation */
     private FilmStrip playerRescueFilm;
+    /** Array of film strips for sun animations */
+    private FilmStrip[] sunAnimations = new FilmStrip[3];
+    /** Which of the 3 sun animations we will play */
+    private int sunIndex = 0;
 
     /* =========== Animation Variables =========== */
     /** Current frame number (used to slow down animations) */
@@ -133,8 +137,6 @@ public class SceneModel extends WorldController implements ContactListener {
     private int salmonDetectedIndex = 0;
     /** The frame at which the tree began shaking */
     private int beganShakingTreeFrame = 0;
-    /** Current index of the cave ZZZ animation */
-    private int caveZZZIndex = 0;
     /**
      * A default listing of cave rotations if none are provided.
      * Stores the starting rotation of shadows and subsequent rotations when caves are interacted
@@ -162,6 +164,8 @@ public class SceneModel extends WorldController implements ContactListener {
     private Vector2 ursaStartingPosition;
     /** How long Ursa will walk to the cave for */
     private int walkingDuration = 0;
+    /** How long the UI for cave transition will play */
+    private final int transitionDuration = 142;
 
 
     /* =========== Tiled Parsing Variables =========== */
@@ -274,8 +278,12 @@ public class SceneModel extends WorldController implements ContactListener {
     /* =========== UI Constants =========== */
     /** Time as a float where 0 represents sunrise, 0.5 is sunset. Always stays between 0 and 1. */
     private float timeRatio;
-    /** Rotation angle of UI element */
-    private float uiRotationAngle = 0f;
+    /** Y Offset of the horizontal black bars*/
+    private float barYOffset = 0f;
+    /** How long the bars will rise for */
+    private final int barRiseDuration = 20;
+    /** Height of the black bars */
+    private float barHeight = 100f;
 
 
     /* =========== Soundtrack Assets =========== */
@@ -300,6 +308,8 @@ public class SceneModel extends WorldController implements ContactListener {
     private FrameBuffer fb = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), false);
 
     private boolean hasWon = false;
+
+
 
     /**
      * Creates and initialize a new instance of the platformer game
@@ -336,7 +346,6 @@ public class SceneModel extends WorldController implements ContactListener {
 
         effect = new ParticleEffect();
         effect.load(Gdx.files.internal("particle.p"),Gdx.files.internal(""));
-
     }
     /**
      * Gather the assets for this controller.
@@ -383,45 +392,67 @@ public class SceneModel extends WorldController implements ContactListener {
      * Gathers all textures for animations and converts them into film strips.
      * @param directory AssetDirectory from assets.json
      */
-    public void gatherAnimations(AssetDirectory directory)
-    {
-        TextureRegion playerWalkTextureAnimation = new TextureRegion(directory.getEntry("player:ursaWalk", Texture.class));
-        playerWalkFilm = new FilmStrip(playerWalkTextureAnimation.getTexture(),2,16);
-        TextureRegion playerIdleTextureAnimation = new TextureRegion(directory.getEntry("player:ursaIdle", Texture.class));
-        playerIdleFilm = new FilmStrip(playerIdleTextureAnimation.getTexture(),4,16);
-        TextureRegion playerCaughtAnimation = new TextureRegion(directory.getEntry("player:ursaDown", Texture.class));
-        playerCaughtFilm = new FilmStrip(playerCaughtAnimation.getTexture(),2,16);
-        TextureRegion playerRescueAnimation = new TextureRegion(directory.getEntry("player:ursaRescue", Texture.class));
-        playerRescueFilm = new FilmStrip(playerRescueAnimation.getTexture(),4,16);
+    public void gatherAnimations(AssetDirectory directory) {
+        TextureRegion playerWalkTextureAnimation = new TextureRegion(
+                directory.getEntry("player:ursaWalk", Texture.class));
+        playerWalkFilm = new FilmStrip(playerWalkTextureAnimation.getTexture(), 2, 16);
+        TextureRegion playerIdleTextureAnimation = new TextureRegion(
+                directory.getEntry("player:ursaIdle", Texture.class));
+        playerIdleFilm = new FilmStrip(playerIdleTextureAnimation.getTexture(), 4, 16);
+        TextureRegion playerCaughtAnimation = new TextureRegion(
+                directory.getEntry("player:ursaDown", Texture.class));
+        playerCaughtFilm = new FilmStrip(playerCaughtAnimation.getTexture(), 2, 16);
+        TextureRegion playerRescueAnimation = new TextureRegion(
+                directory.getEntry("player:ursaRescue", Texture.class));
+        playerRescueFilm = new FilmStrip(playerRescueAnimation.getTexture(), 4, 16);
 
-        TextureRegion salmonUprightWalkAnimation = new TextureRegion(directory.getEntry("enemies:salmonUprightWalk", Texture.class));
-        salmonUprightWalkFilm = new FilmStrip(salmonUprightWalkAnimation.getTexture(),2,16);
-        TextureRegion salmonConfusedAnimation = new TextureRegion(directory.getEntry("enemies:salmonConfused", Texture.class));
-        salmonConfusedFilm = new FilmStrip(salmonConfusedAnimation.getTexture(),2,16);
-        TextureRegion salmonIdleAnimation = new TextureRegion(directory.getEntry("enemies:salmonIdle", Texture.class));
-        salmonIdleFilm = new FilmStrip(salmonIdleAnimation.getTexture(), 3,16);
-        TextureRegion salmonDetectedAnimation = new TextureRegion(directory.getEntry("enemies:salmonDetected", Texture.class));
-        salmonDetectedFilm = new FilmStrip(salmonDetectedAnimation.getTexture(), 2,16);
-        TextureRegion salmonDiveAnimation = new TextureRegion(directory.getEntry("enemies:salmonDive", Texture.class));
-        salmonDiveFilm = new FilmStrip(salmonDiveAnimation.getTexture(), 4,16);
+        TextureRegion salmonUprightWalkAnimation = new TextureRegion(
+                directory.getEntry("enemies:salmonUprightWalk", Texture.class));
+        salmonUprightWalkFilm = new FilmStrip(salmonUprightWalkAnimation.getTexture(), 2, 16);
+        TextureRegion salmonConfusedAnimation = new TextureRegion(
+                directory.getEntry("enemies:salmonConfused", Texture.class));
+        salmonConfusedFilm = new FilmStrip(salmonConfusedAnimation.getTexture(), 2, 16);
+        TextureRegion salmonIdleAnimation = new TextureRegion(
+                directory.getEntry("enemies:salmonIdle", Texture.class));
+        salmonIdleFilm = new FilmStrip(salmonIdleAnimation.getTexture(), 3, 16);
+        TextureRegion salmonDetectedAnimation = new TextureRegion(
+                directory.getEntry("enemies:salmonDetected", Texture.class));
+        salmonDetectedFilm = new FilmStrip(salmonDetectedAnimation.getTexture(), 2, 16);
+        TextureRegion salmonDiveAnimation = new TextureRegion(
+                directory.getEntry("enemies:salmonDive", Texture.class));
+        salmonDiveFilm = new FilmStrip(salmonDiveAnimation.getTexture(), 4, 16);
 
-        TextureRegion treeShakeAnimation = new TextureRegion(directory.getEntry("polar:tree_shake_animation", Texture.class));
+        TextureRegion treeShakeAnimation = new TextureRegion(
+                directory.getEntry("polar:tree_shake_animation", Texture.class));
         treeShakeFilm = new FilmStrip(treeShakeAnimation.getTexture(), 1, 16);
 
-        TextureRegion cavePortalAnimation = new TextureRegion(directory.getEntry("polar:cave_portal_animation", Texture.class));
+        TextureRegion cavePortalAnimation = new TextureRegion(
+                directory.getEntry("polar:cave_portal_animation", Texture.class));
         cavePortalFilm = new FilmStrip(cavePortalAnimation.getTexture(), 2, 8);
-        TextureRegion caveSleepAnimation = new TextureRegion(directory.getEntry("polar:cave_sleep_animation", Texture.class));
+        TextureRegion caveSleepAnimation = new TextureRegion(
+                directory.getEntry("polar:cave_sleep_animation", Texture.class));
         caveZZZFilm = new FilmStrip(caveSleepAnimation.getTexture(), 1, 16);
         caveZZZFilm.setFrame(0);
-        TextureRegion caveSleepLoopAnimation = new TextureRegion(directory.getEntry("polar:cave_sleep_loop_animation", Texture.class));
+        TextureRegion caveSleepLoopAnimation = new TextureRegion(
+                directory.getEntry("polar:cave_sleep_loop_animation", Texture.class));
         caveZZZLoopFilm = new FilmStrip(caveSleepLoopAnimation.getTexture(), 2, 16);
         caveZZZLoopFilm.setFrame(0);
 
-        TextureRegion smolUrsaIdleAnimation = new TextureRegion(directory.getEntry("smolursa:idle", Texture.class));
+        TextureRegion smolUrsaIdleAnimation = new TextureRegion(
+                directory.getEntry("smolursa:idle", Texture.class));
         smolUrsaIdleFilm = new FilmStrip(smolUrsaIdleAnimation.getTexture(), 3, 16);
-        TextureRegion smolUrsaRescueAnimation = new TextureRegion(directory.getEntry("smolursa:rescue", Texture.class));
+        TextureRegion smolUrsaRescueAnimation = new TextureRegion(
+                directory.getEntry("smolursa:rescue", Texture.class));
         smolUrsaRescueFilm = new FilmStrip(smolUrsaRescueAnimation.getTexture(), 5, 16);
+
+        for (int i = 0; i < 3; i++) {
+            TextureRegion sunAnimation = new TextureRegion(
+                    directory.getEntry("ui:Sun" + i, Texture.class));
+            sunAnimations[i] = new FilmStrip(sunAnimation.getTexture(), 5, 16);
+            sunAnimations[i].setFrame(0);
+        }
     }
+
     /**
      * Gathers all tile textures into a single array.
      * @param directory AssetDirectory from assets.json
@@ -484,7 +515,6 @@ public class SceneModel extends WorldController implements ContactListener {
      * This method disposes of the world and creates a new one.
      */
     public void reset() {
-        uiRotationAngle = 0;
         Vector2 gravity = new Vector2(0,0 );
 
         for(Obstacle obj : objects) {
@@ -512,7 +542,6 @@ public class SceneModel extends WorldController implements ContactListener {
         smolUrsaRescueFilm.setFrame(0);
 
         colorNextPointer = 1;
-        uiRotationAngle = 0;
         currentFrame = 0;
         shakingTree = null;
         isTimeSkipping = false;
@@ -520,6 +549,10 @@ public class SceneModel extends WorldController implements ContactListener {
         interactedCave = null;
         player_dive_anim = 0;
         hasWon = false;
+        barYOffset = 0;
+        for (int i = 0; i < 3; i++) {
+            sunAnimations[i].setFrame(0);
+        }
 
         controls.clear();
 
@@ -717,9 +750,14 @@ public class SceneModel extends WorldController implements ContactListener {
             if(cavePortalFilm.getFrame() == 15){
                 cavePortalFilm.setFrame(0);
             }
+            caveZZZLoopFilm.setFrame(caveZZZLoopFilm.getFrame() + 1);
+            if(caveZZZLoopFilm.getFrame() == 31){
+                caveZZZLoopFilm.setFrame(0);
+            }
         }
 
         for(Cave cave: interactableCaves) {
+            cave.setZZZTexture(caveZZZLoopFilm);
             cave.setPortalTexture(cavePortalFilm);
         }
     }
@@ -763,7 +801,6 @@ public class SceneModel extends WorldController implements ContactListener {
             if(timer >= 30){
                 paused = true;
                 setPaused(true);
-                System.out.println("paused situation");
                 timer = 0;
             }
         }
@@ -807,7 +844,6 @@ public class SceneModel extends WorldController implements ContactListener {
 
         // Update the timeRatio then UI rotation + shadow tinting correspondingly
         timeRatio = shadowController.getTimeRatio();
-        uiRotationAngle = -(timeRatio * 2) * (float) Math.PI + (float) Math.PI;
         // If it's night, reset the tinting
         if (timeRatio > 0.5) {
             colorNextPointer = 1;
@@ -857,9 +893,8 @@ public class SceneModel extends WorldController implements ContactListener {
             ursa.stopDrawing();
 
             // Rotate the shadows over fastForwardDuration update loops
-            int caveZZZAnimBuffer = 8;
+            int fastForwardDuration = transitionDuration + walkingDuration;
 
-            int fastForwardDuration = (caveZZZAnimBuffer * 9) + walkingDuration;
             if ((currentFrame - timeBeganSkippingFrame) % fastForwardDuration == 0) {
                 isTimeSkipping = false;
                 ursa.resumeDrawing();
@@ -867,18 +902,25 @@ public class SceneModel extends WorldController implements ContactListener {
                 caveZZZFilm.setFrame(0);
                 interactableCaves.remove(interactedCave);
             } else {
+                int framesIntoTransition = currentFrame - timeBeganSkippingFrame - walkingDuration;
+                // Move the shadows
                 shadowController.animateFastForward(
-                        currentFrame - timeBeganSkippingFrame - walkingDuration + 1,
+                        framesIntoTransition + 1,
                         fastForwardDuration - walkingDuration);
-
-                //if((currentFrame - timeBeganSkippingFrame - walkingDuration + 1) % caveZZZAnimBuffer == 0) {
-                if (currentFrame % 2 == 0) {
-                    caveZZZFilm.setFrame(caveZZZFilm.getFrame() + 1);
-                    if (caveZZZFilm.getFrame() == 15) {
-                        caveZZZFilm.setFrame(0);
+                // Animate bars
+                if(framesIntoTransition < barRiseDuration) {
+                    barYOffset = framesIntoTransition / (float) barRiseDuration * barHeight;
+                } else if(transitionDuration - framesIntoTransition - 1 < barRiseDuration) {
+                    barYOffset = (transitionDuration - framesIntoTransition - 1) / (float) barRiseDuration * barHeight;
+                }
+                // Animate the Day night UI
+                if(framesIntoTransition % 2 == 0) {
+                    sunAnimations[sunIndex].setFrame(sunAnimations[sunIndex].getFrame() + 1);
+                    System.out.println(sunAnimations[sunIndex].getFrame());
+                    if(sunAnimations[sunIndex].getFrame() == 71) {
+                        sunAnimations[sunIndex].setFrame(0);
                     }
                 }
-                interactedCave.setZZZTexture(caveZZZFilm);
             }
             return;
         }
@@ -1027,6 +1069,7 @@ public class SceneModel extends WorldController implements ContactListener {
         timeBeganSkippingFrame = currentFrame;
         interactedCave = cave;
         interactedCave.setZZZTexture(caveZZZFilm);
+        sunIndex = (int) (Math.random() * 3);
         // Record where Ursa started to smoothly walk her to cave
         ursaStartingPosition = new Vector2(ursa.getPosition());
         ursa.setIsFacingRight(cave.getX() > ursa.getX());
@@ -1194,10 +1237,7 @@ public class SceneModel extends WorldController implements ContactListener {
             cave.postDraw(canvas);
         }
         effect.draw(canvas.getSpriteBatch());
-        // Draws the day/night UI element
-        float uiDrawScale = 0.08f;
-        canvas.draw(dayNightUITexture, Color.WHITE, dayNightUITexture.getRegionWidth() / 2f, dayNightUITexture.getRegionHeight() / 2f, canvas.getCameraX(), canvas.getCameraY() + canvas.getHeight() / 2f, uiRotationAngle,
-                uiDrawScale, uiDrawScale);
+
         if(paused){
             Color color = new Color(255,255,255,.5f);
             canvas.draw(blackTexture,color, canvas.getCameraX() - canvas.getWidth() / 2f, canvas.getCameraY() - canvas.getHeight() / 2f, canvas.getWidth() ,canvas.getHeight());
@@ -1206,6 +1246,13 @@ public class SceneModel extends WorldController implements ContactListener {
             canvas.draw(pauseScreen[2],Color.WHITE,0,0,canvas.getCameraX() - canvas.getWidth() /11f, canvas.getCameraY() - canvas.getHeight() /7f,0,textureScale,textureScale );
         }
 
+        // Animates cave skip transition
+        barHeight = canvas.getHeight() / 8f;
+        canvas.draw(blackTexture, Color.WHITE, canvas.getCameraX() - canvas.getWidth() / 2f, canvas.getCameraY() + canvas.getHeight() /2f - barYOffset, canvas.getWidth(), barHeight);
+        canvas.draw(blackTexture, Color.WHITE, canvas.getCameraX() - canvas.getWidth() / 2f, canvas.getCameraY() - canvas.getHeight() /2f - barHeight + barYOffset, canvas.getWidth(), barHeight);
+
+        canvas.draw(sunAnimations[sunIndex], Color.WHITE, sunAnimations[sunIndex].getRegionWidth() / 2f,0, canvas.getCameraX() - canvas.getWidth() / 4f,
+                canvas.getCameraY() - canvas.getHeight() / 2f,0,textureScale, textureScale);
     }
 
 
@@ -1628,7 +1675,7 @@ public class SceneModel extends WorldController implements ContactListener {
             Vector2 caveBubblePos = new Vector2(drawToScreenCoordinates(caveConstants.get("bubbleX").asFloat()), drawToScreenCoordinates(caveConstants.get("bubbleY").asFloat()));
 
             Cave obj = new Cave(getVertices(caveConstants), x, y, yOffset,textureScale, caveBubblePos);
-            obj.setZZZTexture(polarZZZTexture);
+            obj.setZZZTexture(caveZZZLoopFilm);
             obj.setDrawScale(scale);
             obj.setTexture(polarCaveTexture);
             obj.setName("cave" + i);

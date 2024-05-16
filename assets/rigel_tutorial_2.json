@@ -1188,12 +1188,12 @@
                         {
                          "name":"rotation_delay",
                          "type":"int",
-                         "value":240
+                         "value":60
                         }, 
                         {
                          "name":"rotation_speed",
                          "type":"float",
-                         "value":1
+                         "value":0.5
                         }, 
                         {
                          "name":"rotations",

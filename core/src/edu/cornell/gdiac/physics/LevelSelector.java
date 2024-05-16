@@ -246,7 +246,6 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
             for(int i = 0; i < 4; i++) {
                 int effect = allowedInputs[currLevel - 1][i];
                 if((effect == 2) && checkKeyPress(i)) {
-                    System.out.println(i + " " + checkKeyPress(i));
                     // If it corresponds to moving backward
                     currentLevel--;
                     moveTarget = new Vector2(buttonPositions[currLevel - 1]);

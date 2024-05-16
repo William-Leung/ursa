@@ -111,7 +111,10 @@
         "tiles:polar_edge_5": "tiles/polar/Polar_Cliff_Edge_5.png",
         "tiles:polar_edge_6": "tiles/polar/Polar_Cliff_Edge_6.png",
 
-        "ui:dayNightUI": "ui/dayNightUI.png"
+        "ui:dayNightUI": "ui/dayNightUI.png",
+        "ui:Sun0": "ui/Sun_1.png",
+        "ui:Sun1": "ui/Sun_2.png",
+        "ui:Sun2": "ui/Sun_3.png"
     },
     "jsons": {
         "polar:constants": "polar/constants.json"
