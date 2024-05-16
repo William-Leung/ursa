@@ -40,9 +40,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
     /** The direction Ursa is facing (1 for right, -1 for left) */
     private float direction = 1;
     /** How far Ursa can move in one update loop */
-    private final float ursaMoveDist = 4f;
-    private Vector2 lastUrsaPos;
-
+    private final float ursaMoveDist = 4.5f;
 
     private ParticleEffect effect;
     private float levelsCompleted;
@@ -65,22 +63,17 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
 
     /** The drawing scale of the buttons */
     private final float buttonScale = 0.6f;
-
-    private int clickedLevel = -1;
     private float buttonRadius;
     private boolean enterPrevious = false;
     /** The index of the level Ursa is currently standing on.
      * If Ursa is between levels, currentLevel is the lower one */
     private int currentLevel;
     private boolean onCurrentLevel = true;
-    private boolean levelJustChanged = false;
 
     /** The coordinates of where Ursa is trying to go */
     private Vector2 moveTarget;
     /** The index of the button target */
     private int moveTargetIndex;
-    /** The coordinates of where Ursa is trying to go in the long run */
-    private int ultimateTargetIndex;
     private boolean wasMoving;
 
 
@@ -193,7 +186,6 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
 
         // Set Ursa's position to be on top of the level we just finished
         ursaPos = new Vector2(buttonPositions[currentLevel].x, buttonPositions[currentLevel].y + ursaWalkFilm.getRegionHeight() / 2f * scale);
-        lastUrsaPos = ursaPos;
         buttonRadius = 64 * buttonScale;
         moveTarget = ursaPos;
         moveTargetIndex = currentLevel;
@@ -219,6 +211,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
             wasMoving = checkForInput(currentLevel, false);
         }
 
+        Vector2 lastUrsaPos = new Vector2(ursaPos);
         // Stop moving if we're near the button
         if(ursaPos.dst(moveTarget) <= 2 * ursaMoveDist) {
             currentLevel = moveTargetIndex;
@@ -235,6 +228,10 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
 
         // Animate Ursa to be walking or idling
         animateUrsa(wasMoving);
+
+        if(lastUrsaPos.dst(ursaPos) < 2.5f) {
+            wasMoving = false;
+        }
     }
 
     /**
@@ -381,6 +378,8 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         effect.draw(canvas.getSpriteBatch());
 
         canvas.end();
+
+
         boolean enterPressed = false;
         if(time >= 30){
             enterPressed = Gdx.input.isKeyPressed(Input.Keys.ENTER) || Gdx.input.isKeyPressed(Input.Keys.SPACE);
@@ -397,17 +396,20 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
                     else {
                         buttonsFilms[i].setFrame(4);
                     }
-                    clickedLevel = i;
                 }
             }
         }
         if(enterPrevious && !enterPressed){
             for (int i = 0; i < buttonPositions.length; i++) {
-                float interactDistance = 45f;
+                float interactDistance = buttonRadius;
                 if(buttonsUnlocked[i] && Math.abs(buttonPositions[i].x-ursaPos.x) < interactDistance
                         && Math.abs(buttonPositions[i].y-ursaPos.y) < interactDistance){
                     listener.exitScreen(this,i+1);
                 }
+            }
+            buttonsFilms[0].setFrame(0);
+            for(int i = 1; i < numButtons; i++) {
+                buttonsFilms[i].setFrame(3);
             }
         }
         enterPrevious = enterPressed;
@@ -434,54 +436,54 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        if(active){
-            OrthographicCamera cam = canvas.getCamera();
-            Vector3 touch = new Vector3();
-            cam.unproject(touch.set(screenX, screenY, 0));
-
-            for(int i = 0; i < buttonPositions.length; i++) {
-                // If the click was within the button radius, set to clicked frame
-                if(buttonPositions[i].dst(touch.x,touch.y) < buttonRadius) {
-                    if(i == 0){
-                        buttonsFilms[i].setFrame(1);
-                    }
-                    else {
-                        buttonsFilms[i].setFrame(4);
-                    }
-                    clickedLevel = i;
-                }
-            }
-        }
+//        if(active){
+//            OrthographicCamera cam = canvas.getCamera();
+//            Vector3 touch = new Vector3();
+//            cam.unproject(touch.set(screenX, screenY, 0));
+//
+//            for(int i = 0; i < buttonPositions.length; i++) {
+//                // If the click was within the button radius, set to clicked frame
+//                if(buttonPositions[i].dst(touch.x,touch.y) < buttonRadius) {
+//                    if(i == 0){
+//                        buttonsFilms[i].setFrame(1);
+//                    }
+//                    else {
+//                        buttonsFilms[i].setFrame(4);
+//                    }
+//                    clickedLevel = i;
+//                }
+//            }
+//        }
 
         return false;
     }
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        if(active){
-            OrthographicCamera cam = canvas.getCamera();
-            Vector3 touch = new Vector3();
-            cam.unproject(touch.set(screenX, screenY, 0));
-
-            if(clickedLevel >= 0 && clickedLevel < numButtons) {
-                Vector2 buttonPos = buttonPositions[clickedLevel];
-
-                // If the click is still in the same button we pressed
-                if (buttonPos.dst(touch.x, touch.y) < buttonRadius) {
-                    // Move Ursa to that button
-                    ultimateTargetIndex = clickedLevel;
-                    moveTargetIndex = currentLevel + (int) Math.signum(clickedLevel - currentLevel);
-                    moveTarget = new Vector2(buttonPositions[moveTargetIndex]);
-                    moveTarget.y += ursaWalkFilm.getRegionHeight() / 2f * scale;
-                    direction = Math.signum(moveTarget.x - ursaPos.x);
-                }
-            }
-        }
-        // Set all buttons to the unclicked frame
-        buttonsFilms[0].setFrame(0);
-        for(int i = 1; i < numButtons; i++) {
-            buttonsFilms[i].setFrame(3);
-        }
+//        if(active){
+//            OrthographicCamera cam = canvas.getCamera();
+//            Vector3 touch = new Vector3();
+//            cam.unproject(touch.set(screenX, screenY, 0));
+//
+//            if(clickedLevel >= 0 && clickedLevel < numButtons) {
+//                Vector2 buttonPos = buttonPositions[clickedLevel];
+//
+//                // If the click is still in the same button we pressed
+//                if (buttonPos.dst(touch.x, touch.y) < buttonRadius) {
+//                    // Move Ursa to that button
+//                    ultimateTargetIndex = clickedLevel;
+//                    moveTargetIndex = currentLevel + (int) Math.signum(clickedLevel - currentLevel);
+//                    moveTarget = new Vector2(buttonPositions[moveTargetIndex]);
+//                    moveTarget.y += ursaWalkFilm.getRegionHeight() / 2f * scale;
+//                    direction = Math.signum(moveTarget.x - ursaPos.x);
+//                }
+//            }
+//        }
+//        // Set all buttons to the unclicked frame
+//        buttonsFilms[0].setFrame(0);
+//        for(int i = 1; i < numButtons; i++) {
+//            buttonsFilms[i].setFrame(3);
+//        }
 
         return false;
     }
