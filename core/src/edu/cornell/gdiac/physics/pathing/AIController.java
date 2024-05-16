@@ -264,9 +264,9 @@ public class AIController {
                     ticks_confused = 1;
                 }
                 // TODO: Fix this (endless LOOKING <-> WANDER state loop)
-//                else if (currRotations == null) {
-//                    state = FSMState.WANDER;
-//                }
+                else if (currRotations == null) {
+                    state = FSMState.WANDER;
+                }
 
                 break;
 
@@ -283,6 +283,8 @@ public class AIController {
                     ticks_confused++;
                     last_time_detected = ticks;
                     state = FSMState.CONFUSED;
+                } else if(isNearby()) {
+                    state = FSMState.CHASE;
                 } else {
                     ticks_confused--;
                     state = FSMState.CONFUSED;
@@ -366,9 +368,7 @@ public class AIController {
         //prevLoc.y = enemy.getY();
 
         // update stunned
-        if (state == FSMState.STUNNED) {
-            enemy.setStunned(true);
-        } else enemy.setStunned(false);
+        enemy.setStunned(state == FSMState.STUNNED);
 
         switch (state) {
             case SPAWN:
@@ -474,7 +474,7 @@ public class AIController {
                 enemy.setVY(0);
 
                 // TODO: Fix this (endless CONFUSED <-> LOOKING state loop)
-                if (--rotationDelay >= 0) {
+                if (is_stupid || --rotationDelay >= 0) {
                     break;
                 }
 
@@ -788,7 +788,11 @@ public class AIController {
     }
 
     private boolean isDetected() {
-        return checkRange(ENEMY_RADIUS) || enemy.isAlerted();
+        return enemy.isAlerted();
+    }
+
+    private boolean isNearby() {
+        return checkRange(ENEMY_RADIUS);
     }
 
     public boolean isConfused() {
