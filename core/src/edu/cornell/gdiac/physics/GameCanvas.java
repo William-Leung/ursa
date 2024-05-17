@@ -198,6 +198,13 @@ public class GameCanvas {
 	public int getHeight() {
 		return Gdx.graphics.getHeight();
 	}
+
+	public boolean inView(Vector2 pos) {
+		System.out.println("asdoijfaj;isdfjl;asdfj;lkasdf");
+		System.out.println(pos.x > getCameraX() - getWidth() /2f);
+		System.out.println(pos.x < getCameraX() + getWidth() /2f);
+		return pos.x > getCameraX() - getWidth() /2f && pos.x < getCameraX() + getWidth() /2f && pos.y > getCameraY() - getHeight() /2f && pos.y < getCameraY() + getHeight() /2f;
+	}
 	
 	/**
 	 * Changes the height of this canvas

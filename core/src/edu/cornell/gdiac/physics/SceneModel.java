@@ -63,6 +63,9 @@ public class SceneModel extends WorldController implements ContactListener {
     private TextureRegion ursaShadowTexture;
     /** Texture asset for smol ursa texture */
     private TextureRegion smolUrsaTexture;
+    private TextureRegion bearIndicator;
+    private TextureRegion arrowIndicator;
+
     /** Texture asset for trees in the polar map (first is snow, second is no snow) */
     private final TextureRegion[] treeTextures = new TextureRegion[2];
     /** Texture asset for objects in the polar map */
@@ -364,6 +367,9 @@ public class SceneModel extends WorldController implements ContactListener {
         ursaTexture = new TextureRegion(directory.getEntry("player:ursa", Texture.class));
         ursaShadowTexture = new TextureRegion(directory.getEntry("player:ursaShadow", Texture.class));
         smolUrsaTexture = new TextureRegion(directory.getEntry("smolursa:model", Texture.class));
+        bearIndicator = new TextureRegion(directory.getEntry("smolursa:bearIndicator", Texture.class));
+        arrowIndicator = new TextureRegion(directory.getEntry("smolursa:arrowIndicator", Texture.class));
+
         pauseScreen[0] = new TextureRegion(directory.getEntry("UI:pause1", Texture.class));
         pauseScreen[1] = new TextureRegion(directory.getEntry("UI:pause2", Texture.class));
         pauseScreen[2] = new TextureRegion(directory.getEntry("UI:pause3", Texture.class));
@@ -1241,6 +1247,8 @@ public class SceneModel extends WorldController implements ContactListener {
         }
         effect.draw(canvas.getSpriteBatch());
 
+        //drawGoalIndicator();
+
         if(paused){
             Color color = new Color(255,255,255,.5f);
             canvas.draw(blackTexture,color, canvas.getCameraX() - canvas.getWidth() / 2f, canvas.getCameraY() - canvas.getHeight() / 2f, canvas.getWidth() ,canvas.getHeight());
@@ -1268,6 +1276,33 @@ public class SceneModel extends WorldController implements ContactListener {
         // Then, convert to screen coordinates using the scale
         return drawCoord * textureScale / scale.x;
     }
+
+    private void drawGoalIndicator() {
+        // If small ursa on screen don't do anything
+
+//        if(canvas.inView(new Vector2(goal.getPosition().x * textureScale, goal.getPosition().y * textureScale))) {
+//            return;
+//        }
+        float deltaY = goal.getPosition().y - canvas.getCameraY();
+        float deltaX = goal.getPosition().x - canvas.getCameraX();
+        float angle = (float) Math.atan2(deltaY, deltaX);
+        float slope = deltaY / deltaX;
+        float intercept = canvas.getCameraY() - slope * canvas.getCameraX();
+
+        float indicatorX = canvas.getCameraX();
+        float indicatorY = canvas.getCameraY();
+        if(angle > Math.PI / 4f && angle < Math.PI * 3/4f) {
+            indicatorY = canvas.getCameraY() + canvas.getHeight() / 2f;
+            indicatorX = canvas.getCameraX() + (indicatorY - intercept) / slope;
+        } else if(angle >= Math.PI * 3/4f && angle < Math.PI * 5/4f) {
+            indicatorX = canvas.getCameraX() - canvas.getWidth() / 2f;
+            indicatorY = canvas.getCameraY() + slope * indicatorX + intercept;
+        }
+        System.out.println(indicatorX + " " + indicatorY);
+
+        canvas.draw(arrowIndicator, Color.WHITE, arrowIndicator.getRegionWidth(), arrowIndicator.getRegionHeight() /2f, indicatorX, indicatorY, angle, textureScale, textureScale);
+    }
+
 
 
     /**

@@ -171,14 +171,16 @@ public class GDXRoot extends Game implements ScreenListener {
 				loading = null;
 			}
 		} else if(screen == homeScreen) {
-			levelSelector = new LevelSelector(canvas,levelsCompleted, 0);
-			levelSelector.gatherAssets(directory);
-			levelSelector.setScreenListener(this);
-			setScreen(levelSelector);
-			levelSelector.setActive(true);
+			if(exitCode == 30) {
+				levelSelector = new LevelSelector(canvas,levelsCompleted, 0);
+				levelSelector.gatherAssets(directory);
+				levelSelector.setScreenListener(this);
+				setScreen(levelSelector);
+				levelSelector.setActive(true);
 
-			homeScreen.dispose();
-			homeScreen = null;
+				homeScreen.dispose();
+				homeScreen = null;
+			}
 		} else if (screen == levelSelector) {
 			if(exitCode == WorldController.EXIT_QUIT) {
 				Gdx.app.exit();

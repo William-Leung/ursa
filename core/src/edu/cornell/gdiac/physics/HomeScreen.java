@@ -1,6 +1,8 @@
 package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.controllers.Controller;
@@ -18,6 +20,11 @@ public class HomeScreen implements Screen, InputProcessor, ControllerListener {
     private TextureRegion startButton;
     private TextureRegion startButtonClicked;
     private TextureRegion startButtonTexture;
+    private TextureRegion aboutButton;
+    private TextureRegion aboutButtonClicked;
+    private TextureRegion aboutButtonTexture;
+    private TextureRegion aboutScreen;
+
 
     GameCanvas canvas;
     private boolean active;
@@ -29,9 +36,10 @@ public class HomeScreen implements Screen, InputProcessor, ControllerListener {
     private final int logoDuration = 240;
     private boolean isAnimatingHomeScreen;
     private final float logoScale = 0.04f;
-    /** Current state of the button (1 for pressed, 2 for unpressed) */
-    private int pressState = 0;
-    private int frameButtonClicked;
+    /** Current state of the button (0 for never interacted, 1 for pressed, 2 for unpressed) */
+    private int startPressState = 0;
+    private int aboutPressState = 0;
+    private boolean inAboutScreen = false;
 
     public HomeScreen(GameCanvas NewCanvas, boolean playAnimation) {
         time = 0;
@@ -43,8 +51,7 @@ public class HomeScreen implements Screen, InputProcessor, ControllerListener {
         isAnimatingHomeScreen = false;
 
         if(!playAnimation) {
-            time = logoDuration + 1;
-            isAnimatingHomeScreen = false;
+            time = logoDuration;
         }
     }
 
@@ -61,15 +68,36 @@ public class HomeScreen implements Screen, InputProcessor, ControllerListener {
         homeScreen = new TextureRegion(directory.getEntry("homeScreen:homeScreen", Texture.class));
         startButton = new TextureRegion(directory.getEntry("homeScreen:startButton", Texture.class));
         startButtonClicked = new TextureRegion(directory.getEntry("homeScreen:startButtonClicked", Texture.class));
+        aboutButton = new TextureRegion(directory.getEntry("homeScreen:aboutButton", Texture.class));
+        aboutButtonClicked = new TextureRegion(directory.getEntry("homeScreen:aboutButtonClicked", Texture.class));
+        aboutScreen = new TextureRegion(directory.getEntry("homeScreen:aboutScreen", Texture.class));
     }
 
     private void update(float delta){
         time++;
 
-        if(pressState == 1) {
+
+        if(inAboutScreen) {
+            if(Gdx.input.isKeyPressed(Keys.ESCAPE) || Gdx.input.isKeyPressed(Keys.Q)) {
+                homeScreenFilm.setFrame(0);
+                time = logoDuration;
+                isAnimatingHomeScreen = true;
+                inAboutScreen = false;
+            } else {
+                return;
+            }
+        }
+
+        if(startPressState == 1) {
             startButtonTexture = startButtonClicked;
         } else {
             startButtonTexture = startButton;
+        }
+
+        if(aboutPressState == 1) {
+            aboutButtonTexture = aboutButtonClicked;
+        } else {
+            aboutButtonTexture = aboutButton;
         }
 
         if(isAnimatingHomeScreen && time % 2 == 0) {
@@ -105,11 +133,14 @@ public class HomeScreen implements Screen, InputProcessor, ControllerListener {
                 // Draw the animated home screen
                 float scaleFactor = canvas.getHeight() / (float) homeScreenFilm.getRegionHeight();
                 canvas.draw(homeScreenFilm, Color.WHITE, homeScreenFilm.getRegionWidth() / 2f, homeScreenFilm.getRegionHeight() / 2f, canvas.getCameraX(), canvas.getCameraY(), 0,scaleFactor, scaleFactor);
+            } else if(inAboutScreen) {
+                canvas.draw(aboutScreen, Color.WHITE, 0, 0, canvas.getWidth(), canvas.getHeight());
             } else {
                 // Switch to the static home screen
                 float scaleFactor = canvas.getHeight() / (float) homeScreen.getRegionHeight();
                 canvas.draw(homeScreen, Color.WHITE, homeScreen.getRegionWidth() /2f, homeScreen.getRegionHeight() / 2f, canvas.getCameraX(), canvas.getCameraY(), 0, scaleFactor, scaleFactor);
                 canvas.draw(startButtonTexture, Color.WHITE, startButtonTexture.getRegionWidth() / 2f, startButtonTexture.getRegionHeight() / 2f, 1281.5f * scaleFactor, 489.5f * scaleFactor, 0,scaleFactor,scaleFactor);
+                canvas.draw(aboutButtonTexture, Color.WHITE, aboutButtonTexture.getRegionWidth() / 2f, aboutButtonTexture.getRegionHeight() / 2f, 1281.5f * scaleFactor, 350.5f * scaleFactor, 0,scaleFactor,scaleFactor);
             }
         }
 
@@ -140,25 +171,34 @@ public class HomeScreen implements Screen, InputProcessor, ControllerListener {
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         float touchY = canvas.getHeight() - screenY;
-        frameButtonClicked = time;
 
         if(screenX > 410.2 && screenX < 615 && touchY > 170.2 && touchY < 221.4) {
-            pressState = 1;
+            startPressState = 1;
+        } else if(screenX > 410.2 && screenX < 615 && touchY > 114.6 && touchY < 165.8) {
+            aboutPressState = 1;
         }
         return false;
     }
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        if (pressState == 1) {
+        if (startPressState == 1) {
             float touchY = canvas.getHeight() - screenY;
 
             if(screenX > 410.2 && screenX < 615 && touchY > 170.2 && touchY < 221.4) {
-                pressState = 2;
+                startPressState = 2;
             } else {
-                pressState = 0;
+                startPressState = 0;
             }
             return false;
+        } else if(aboutPressState == 1) {
+            float touchY = canvas.getHeight() - screenY;
+
+            if(screenX > 410.2 && screenX < 615 && touchY > 114.6 && touchY < 165.8) {
+                aboutPressState = 2;
+            } else {
+                aboutPressState = 0;
+            }
         }
         return true;
     }
@@ -193,8 +233,13 @@ public class HomeScreen implements Screen, InputProcessor, ControllerListener {
             update(delta);
             draw();
 
-            if(pressState == 2 && (time - frameButtonClicked) < 60 && time > logoDuration && !isAnimatingHomeScreen) {
-                listener.exitScreen(this, 100);
+            if(time > logoDuration && !isAnimatingHomeScreen) {
+                if(startPressState == 2) {
+                    listener.exitScreen(this, 30);
+                } else if(aboutPressState == 2) {
+                    aboutPressState = 0;
+                    inAboutScreen = true;
+                }
             }
         }
     }
