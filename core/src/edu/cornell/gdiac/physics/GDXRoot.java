@@ -147,25 +147,29 @@ public class GDXRoot extends Game implements ScreenListener {
 	 * @param exitCode The state of the screen upon exit
 	 */
 	public void exitScreen(Screen screen, int exitCode) {
+		boolean debug = true;
 		if (screen == loading) {
-			// Go into the level select
 			directory = loading.getAssets();
-			homeScreen = new HomeScreen(canvas, true);
-			homeScreen.gatherAssets(directory);
-			homeScreen.setScreenListener(this);
-			setScreen(homeScreen);
-			homeScreen.setActive(true);
+			if(debug) {
+				levelSelector = new LevelSelector(canvas,levelsCompleted, 0);
+				levelSelector.gatherAssets(directory);
+				levelSelector.setScreenListener(this);
+				setScreen(levelSelector);
+				levelSelector.setActive(true);
 
-			loading.dispose();
-			loading = null;
-//			levelSelector = new LevelSelector(canvas,levelsCompleted, 0);
-//			levelSelector.gatherAssets(directory);
-//			levelSelector.setScreenListener(this);
-//			setScreen(levelSelector);
-//			levelSelector.setActive(true);
-//
-//			loading.dispose();
-//			loading = null;
+				loading.dispose();
+				loading = null;
+			} else {
+				// Go into the level select
+				homeScreen = new HomeScreen(canvas, true);
+				homeScreen.gatherAssets(directory);
+				homeScreen.setScreenListener(this);
+				setScreen(homeScreen);
+				homeScreen.setActive(true);
+
+				loading.dispose();
+				loading = null;
+			}
 		} else if(screen == homeScreen) {
 			levelSelector = new LevelSelector(canvas,levelsCompleted, 0);
 			levelSelector.gatherAssets(directory);

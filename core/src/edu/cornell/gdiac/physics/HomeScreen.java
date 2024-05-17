@@ -36,6 +36,7 @@ public class HomeScreen implements Screen, InputProcessor, ControllerListener {
     public HomeScreen(GameCanvas NewCanvas, boolean playAnimation) {
         time = 0;
         canvas = NewCanvas;
+        canvas.setCam(canvas.getWidth() / 2f, canvas.getHeight() /2f);
         active = false;
         Gdx.input.setInputProcessor( this );
         tint = new Color(1,1,1,0);
