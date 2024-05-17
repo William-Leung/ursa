@@ -37,7 +37,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
     /** The current position of Ursa */
     private Vector2 ursaPos;
     /** The drawing scale of Ursa */
-    private final float ursaScale = 0.4f;
+    private final float ursaScale = 0.6f;
     /** The direction Ursa is facing (1 for right, -1 for left) */
     private float direction = 1;
     /** How far Ursa can move in one update loop */

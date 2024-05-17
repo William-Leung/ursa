@@ -73,7 +73,7 @@ public class HomeScreen implements Screen, InputProcessor, ControllerListener {
         }
 
         if(isAnimatingHomeScreen && time % 2 == 0) {
-            if(homeScreenFilm.getFrame() == 42) {
+            if(homeScreenFilm.getFrame() == 35) {
                 isAnimatingHomeScreen = false;
                 return;
             }
