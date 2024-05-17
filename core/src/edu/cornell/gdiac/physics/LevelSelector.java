@@ -22,7 +22,7 @@ import java.util.Arrays;
 
 
 public class LevelSelector implements Screen, InputProcessor, ControllerListener {
-    private boolean[] buttonsUnlocked = new boolean[14];
+    private boolean[] buttonsUnlocked = new boolean[15];
     private int[][] allowedInputs;
 
     /* ====== Ursa Variables ====== */
@@ -42,10 +42,11 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
     private float direction = 1;
     /** How far Ursa can move in one update loop */
     private final float ursaMoveDist = 4.5f;
-
+    /** The number of levels */
+    private final int numButtons = 15;
     private ParticleEffect effect;
     private float levelsCompleted;
-    private FilmStrip[] buttonsFilms = new FilmStrip[20];
+    private FilmStrip[] buttonsFilms = new FilmStrip[numButtons];
     private TextureRegion background;
     private ScreenListener listener;
     GameCanvas canvas;
@@ -56,8 +57,6 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
     private final Vector2[] buttonPositions;
     /** Scales between original image size and what we draw. */
     private float scale;
-    /** The number of currently active levels */
-    private final int numButtons = 14;
     private Music levelSelectMusic;
     /** The frame we are on */
     private int time;
@@ -81,8 +80,10 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
     public LevelSelector(GameCanvas NewCanvas, float completion, int currLevel){
         currentLevel = currLevel;
         levelsCompleted = completion;
-        canvas = NewCanvas;
         active = false;
+        canvas = NewCanvas;
+        canvas.setCam(canvas.getWidth() / 2f, canvas.getHeight() / 2f);
+
         Gdx.input.setInputProcessor( this );
         Arrays.fill(buttonsUnlocked, false);
         buttonsUnlocked[0] = true;
@@ -94,20 +95,21 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
 
         // I know this is bad but it works lol.
         buttonPositions = new Vector2[] {
-                new Vector2(304, 674),
-                new Vector2(770, 674),
-                new Vector2(769.5f, 1520),
-                new Vector2(1286, 1520),
-                new Vector2(1286, 955),
-                new Vector2(1860, 955),
-                new Vector2(1860, 387),
-                new Vector2(2442, 387),
-                new Vector2(2442, 1115),
-                new Vector2(2442, 1841),
-                new Vector2(3040, 1841),
-                new Vector2(3040, 1237),
-                new Vector2(3626.5f, 1237),
-                new Vector2(3626.5f, 676.6f)
+                new Vector2(298.8f, 210.9f),
+                new Vector2(755.9f, 210.9f),
+                new Vector2(755.9f, 843.8f),
+                new Vector2(1318.4f, 843.8f),
+                new Vector2(1318.4f, 421.9f),
+                new Vector2(1880.9f, 421.9f),
+                new Vector2(1880.9f, 843.8f),
+                new Vector2(1880.9f, 1265.6f),
+                new Vector2(2443.4f, 1265.6f),
+                new Vector2(2443.4f, 843.8f),
+                new Vector2(2970.7f, 843.8f),
+                new Vector2(3498, 843.8f),
+                new Vector2(3498, 421.9f),
+                new Vector2(4060.5f, 421.9f),
+                new Vector2(4060.5f, 1125)
         };
 
         // Up Down Left Right
@@ -118,14 +120,15 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
                 {0, 0, 2, 1},
                 {2, 1, 0, 0},
                 {0, 0, 2, 1},
-                {2, 1, 0, 0},
-                {0, 0, 2, 1},
                 {1, 2, 0, 0},
                 {1, 2, 0, 0},
                 {0, 0, 2, 1},
                 {2, 1, 0, 0},
                 {0, 0, 2, 1},
-                {2, 1, 0, 0}
+                {0, 0, 2, 1},
+                {2, 1, 0, 0},
+                {0, 0, 2, 1},
+                {1, 2, 0, 0}
         };
     }
     public void setActive(boolean b){
@@ -133,7 +136,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
     }
 
     public void gatherAssets(AssetDirectory directory) {
-        TextureRegion[] buttons = new TextureRegion[20];
+        TextureRegion[] buttons = new TextureRegion[numButtons];
         buttons[0] = new TextureRegion(directory.getEntry("levelSelect:Level1", Texture.class));
         buttons[1] = new TextureRegion(directory.getEntry("levelSelect:Level2", Texture.class));
         buttons[2] = new TextureRegion(directory.getEntry("levelSelect:Level3", Texture.class));
@@ -148,6 +151,8 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         buttons[11] = new TextureRegion(directory.getEntry("levelSelect:Level12", Texture.class));
         buttons[12] = new TextureRegion(directory.getEntry("levelSelect:Level13", Texture.class));
         buttons[13] = new TextureRegion(directory.getEntry("levelSelect:Level14", Texture.class));
+        buttons[14] = new TextureRegion(directory.getEntry("levelSelect:Level15", Texture.class));
+
 
         TextureRegion ursaWalk = new TextureRegion(directory.getEntry("player:ursaWalk",Texture.class));
         ursaWalkFilm = new FilmStrip(ursaWalk.getTexture(),2,16);
@@ -158,10 +163,9 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         ursaShadow = new TextureRegion(directory.getEntry("player:ursaShadow", Texture.class));
 
         // Set the first level to unlocked and every other level to locked
-        buttonsFilms[0] = new FilmStrip(buttons[0].getTexture(),1,2);
-        buttonsFilms[0].setFrame(0);
-        for(int i = 1; i < numButtons; i++) {
-            buttonsFilms[i] = new FilmStrip(buttons[i].getTexture(),1,5);
+        // TODO
+        for(int i = 0; i < numButtons; i++) {
+            buttonsFilms[i] = new FilmStrip(buttons[i].getTexture(),1,2);
             buttonsFilms[i].setFrame(0);
         }
 
@@ -173,7 +177,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
             if (levelsCompleted >= i) {
                 buttonsUnlocked[i] = true;
                 if (levelsCompleted >= i + 1) {
-                    buttonsFilms[i].setFrame(3);
+                    buttonsFilms[i].setFrame(0);
                 }
             }
         }
@@ -187,7 +191,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
 
         // Set Ursa's position to be on top of the level we just finished
         ursaPos = new Vector2(buttonPositions[currentLevel].x, buttonPositions[currentLevel].y + ursaWalkFilm.getRegionHeight() / 2f * scale);
-        buttonRadius = 64 * buttonScale;
+        buttonRadius = 180 * scale;
         moveTarget = ursaPos;
         moveTargetIndex = currentLevel;
     }
@@ -198,12 +202,14 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         // Update the snow
         effect.update(delta);
 
-        // Update if we're on the current level
-        if(buttonPositions[currentLevel].dst(ursaPos) < 2 * buttonRadius && !wasMoving) {
-            onCurrentLevel = true;
-        } else {
-            onCurrentLevel = false;
+        // Move the camera if we won't see outside the background
+        if(ursaPos.x > canvas.getWidth() / 2f && ursaPos.x < background.getRegionWidth() * scale - canvas.getWidth() / 2f) {
+            canvas.setCam(ursaPos.x, canvas.getHeight() / 2f);
         }
+
+        // Check if we're standing still on the current level
+        onCurrentLevel =
+                buttonPositions[currentLevel].dst(ursaPos) < 2 * buttonRadius && !wasMoving;
 
         // Updates move target based on input
         if(onCurrentLevel) {
@@ -366,10 +372,10 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         float buttonOX = buttonsFilms[0].getRegionWidth() / 2f;
         float buttonOY = buttonsFilms[0].getRegionHeight() / 2f;
         for(int i = 0; i < numButtons; i++) {
-            canvas.draw(buttonsFilms[i], Color.WHITE, buttonOX, buttonOY, buttonPositions[i].x, buttonPositions[i].y,0f,buttonScale,buttonScale);
+            canvas.draw(buttonsFilms[i], Color.WHITE, buttonOX, buttonOY, buttonPositions[i].x, buttonPositions[i].y,0f,scale,scale);
         }
-        canvas.draw(ursaShadow, Color.WHITE, ursaShadow.getRegionWidth() / 2f, 0, ursaPos.x, ursaPos.y - ursaScale * ursaWalkFilm.getRegionHeight() / 2f, 0, ursaScale, ursaScale);
-        canvas.draw(ursaTexture, Color.WHITE, ursaWalkFilm.getRegionWidth() / 2f, ursaWalkFilm.getRegionHeight() / 2f,ursaPos.x,ursaPos.y,0,direction * ursaScale,ursaScale);
+        canvas.draw(ursaShadow, Color.WHITE, ursaShadow.getRegionWidth() / 2f, 0, ursaPos.x, ursaPos.y - ursaScale * ursaWalkFilm.getRegionHeight() * 3/4f, 0, ursaScale, ursaScale);
+        canvas.draw(ursaTexture, Color.WHITE, ursaWalkFilm.getRegionWidth() / 2f, ursaWalkFilm.getRegionHeight() / 2f,ursaPos.x,ursaPos.y - ursaScale * ursaWalkFilm.getRegionHeight() / 4f,0,direction * ursaScale,ursaScale);
 
         effect.update(1/60f);
         if(effect.isComplete()){
@@ -496,27 +502,21 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
                 for(int i = 0; i < buttonPositions.length; i++) {
                     // If the click was within the button radius
                     if(buttonPositions[i].dst(ursaPos) < buttonRadius) {
-                        if(i == 0){
-                            buttonsFilms[i].setFrame(1);
-                        }
-                        else {
-                            buttonsFilms[i].setFrame(4);
-                        }
+                        buttonsFilms[i].setFrame(1);
                     }
                 }
             }
 
             if(enterPrevious && !enterPressed){
                 for (int i = 0; i < buttonPositions.length; i++) {
-                    float interactDistance = 45f;
+                    float interactDistance = buttonRadius;
                     if(buttonsUnlocked[i] && Math.abs(buttonPositions[i].x-ursaPos.x) < interactDistance
                             && Math.abs(buttonPositions[i].y-ursaPos.y) < interactDistance){
                         listener.exitScreen(this,i+1);
                     }
                 }
-                buttonsFilms[0].setFrame(0);
-                for(int i = 1; i < numButtons; i++) {
-                    buttonsFilms[i].setFrame(3);
+                for(int i = 0; i < numButtons; i++) {
+                    buttonsFilms[i].setFrame(0);
                 }
             }
             enterPrevious = enterPressed;
