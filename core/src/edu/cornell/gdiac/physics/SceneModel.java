@@ -946,6 +946,9 @@ public class SceneModel extends WorldController implements ContactListener {
                 alerted = true;
             }
 
+            // check aggro nearby
+            c.changeAggro(updateAggro(c));
+
             if (c.isWon() && player_dive_anim >= ENEMY_DIVE_FRAMES)
                 setFailure(true);
         }
@@ -1777,6 +1780,18 @@ public class SceneModel extends WorldController implements ContactListener {
 
         addObject(shadow);
         shadow.rotateDirection(shadowStartingRotation - 90);
+    }
+
+    public boolean updateAggro(AIController i) {
+
+        for (AIController c : controls) {
+            if (i.checkAggroNear(c)) {
+                System.out.println("Enemy is aggro nearby");
+                return true;
+            }
+        }
+
+        return false;
     }
 
 }
