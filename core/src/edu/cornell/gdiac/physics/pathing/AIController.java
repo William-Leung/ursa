@@ -931,7 +931,7 @@ public class AIController {
             return true;
         } else if (otherController.isAggro() && Math.sqrt(Math.pow(otherController.getEnemy().getX()
                 - enemy.getX(), 2) + Math.pow(otherController.getEnemy().getY() - enemy.getY(), 2))
-                <= AGGRO_RADIUS) {
+                <= AGGRO_RADIUS && otherController.ticks_attacked >= AGGRO_DELAY) {
             return true;
         }
 
@@ -940,7 +940,6 @@ public class AIController {
 
     public void changeAggro(boolean value) {
         isAggroNear = value;
-        System.out.println("Updating isAggroNear to: " + isAggroNear);
     }
 
 }

@@ -1786,7 +1786,6 @@ public class SceneModel extends WorldController implements ContactListener {
 
         for (AIController c : controls) {
             if (i.checkAggroNear(c)) {
-                System.out.println("Enemy is aggro nearby");
                 return true;
             }
         }
