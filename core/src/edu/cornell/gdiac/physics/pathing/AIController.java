@@ -512,13 +512,16 @@ public class AIController {
             case CHASE:
 
                 //System.out.println("CHASE");
-                action.x = locs_spotted.getLast().x - enemy.getX();
-                action.y = locs_spotted.getLast().y - enemy.getY();
-                action = action.nor();
+                if(!locs_spotted.isEmpty()){
+                    action.x = locs_spotted.getLast().x - enemy.getX();
+                    action.y = locs_spotted.getLast().y - enemy.getY();
+                    action = action.nor();
 
-                enemy.setVX(action.x * CHASE_SPEED);
-                enemy.setVY(action.y * CHASE_SPEED);
-                enemy.setLookDirection(action.x, action.y);
+                    enemy.setVX(action.x * CHASE_SPEED);
+                    enemy.setVY(action.y * CHASE_SPEED);
+                    enemy.setLookDirection(action.x, action.y);
+                }
+
 
                 break;
 
