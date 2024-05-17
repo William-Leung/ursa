@@ -28,7 +28,7 @@ public class HomeScreen implements Screen, InputProcessor, ControllerListener {
     private Color tint;
     private final int logoDuration = 240;
     private boolean isAnimatingHomeScreen;
-    private final float logoScale = 0.08f;
+    private final float logoScale = 0.04f;
     /** Current state of the button (1 for pressed, 2 for unpressed) */
     private int pressState = 0;
     private int frameButtonClicked;
@@ -151,7 +151,13 @@ public class HomeScreen implements Screen, InputProcessor, ControllerListener {
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         if (pressState == 1) {
-            pressState = 2;
+            float touchY = canvas.getHeight() - screenY;
+
+            if(screenX > 410.2 && screenX < 615 && touchY > 170.2 && touchY < 221.4) {
+                pressState = 2;
+            } else {
+                pressState = 0;
+            }
             return false;
         }
         return true;
@@ -187,7 +193,7 @@ public class HomeScreen implements Screen, InputProcessor, ControllerListener {
             update(delta);
             draw();
 
-            if(pressState == 2 && (time - frameButtonClicked) < 60) {
+            if(pressState == 2 && (time - frameButtonClicked) < 60 && time > logoDuration && !isAnimatingHomeScreen) {
                 listener.exitScreen(this, 100);
             }
         }
