@@ -118,7 +118,7 @@ public class SceneModel extends WorldController implements ContactListener {
     /** Array of film strips for sun animations */
     private FilmStrip[] sunAnimations = new FilmStrip[3];
     /** Which of the 3 sun animations we will play */
-    private int planetIndex = 0;
+    private int sunIndex = 0;
 
     /* =========== Animation Variables =========== */
     /** Current frame number (used to slow down animations) */
@@ -197,7 +197,7 @@ public class SceneModel extends WorldController implements ContactListener {
     /** The index of rock 2 in terms of all textures in json*/
     private int polarRock2Index;
     /** Scaling between textures and drawing (256x256 -> 192x192)
-     * Converts between 2560 x 1440 resolution assets were drawn for and 1920 x 1080 resolution we have
+     * Converts between 2560 x 1440 resolution assets were drawn for and 1024 x 576 resolution we have
      */
     private final float textureScale = 0.4f;
 
@@ -915,10 +915,10 @@ public class SceneModel extends WorldController implements ContactListener {
                 }
                 // Animate the Day night UI
                 if(framesIntoTransition % 2 == 0) {
-                    sunAnimations[planetIndex].setFrame(sunAnimations[planetIndex].getFrame() + 1);
-                    System.out.println(sunAnimations[planetIndex].getFrame());
-                    if(sunAnimations[planetIndex].getFrame() == 71) {
-                        sunAnimations[planetIndex].setFrame(0);
+                    sunAnimations[sunIndex].setFrame(sunAnimations[sunIndex].getFrame() + 1);
+                    System.out.println(sunAnimations[sunIndex].getFrame());
+                    if(sunAnimations[sunIndex].getFrame() == 71) {
+                        sunAnimations[sunIndex].setFrame(0);
                     }
                 }
             }
@@ -1069,7 +1069,7 @@ public class SceneModel extends WorldController implements ContactListener {
         timeBeganSkippingFrame = currentFrame;
         interactedCave = cave;
         interactedCave.setZZZTexture(caveZZZFilm);
-        planetIndex = (int) (Math.random() * 3);
+        sunIndex = (int) (Math.random() * 3);
         // Record where Ursa started to smoothly walk her to cave
         ursaStartingPosition = new Vector2(ursa.getPosition());
         ursa.setIsFacingRight(cave.getX() > ursa.getX());
@@ -1251,7 +1251,7 @@ public class SceneModel extends WorldController implements ContactListener {
         canvas.draw(blackTexture, Color.WHITE, canvas.getCameraX() - canvas.getWidth() / 2f, canvas.getCameraY() + canvas.getHeight() /2f - barYOffset, canvas.getWidth(), barHeight);
         canvas.draw(blackTexture, Color.WHITE, canvas.getCameraX() - canvas.getWidth() / 2f, canvas.getCameraY() - canvas.getHeight() /2f - barHeight + barYOffset, canvas.getWidth(), barHeight);
 
-        canvas.draw(sunAnimations[planetIndex], Color.WHITE, sunAnimations[planetIndex].getRegionWidth() / 2f,0, canvas.getCameraX() - canvas.getWidth() / 4f,
+        canvas.draw(sunAnimations[sunIndex], Color.WHITE, sunAnimations[sunIndex].getRegionWidth() / 2f,0, canvas.getCameraX() - canvas.getWidth() / 4f,
                 canvas.getCameraY() - canvas.getHeight() / 2f,0,textureScale, textureScale);
     }
 

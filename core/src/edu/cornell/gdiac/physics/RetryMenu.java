@@ -14,8 +14,6 @@ import edu.cornell.gdiac.util.ScreenListener;
 
 
 public class RetryMenu implements Screen, InputProcessor, ControllerListener {
-
-
     private TextureRegion backgroundWin = new TextureRegion();
     private  TextureRegion backgroundLose = new TextureRegion();
     private TextureRegion retryButton;
@@ -49,7 +47,6 @@ public class RetryMenu implements Screen, InputProcessor, ControllerListener {
         backgroundLose = new TextureRegion(directory.getEntry("levelSelect:lose", Texture.class));
         backgroundWin = new TextureRegion(directory.getEntry("levelSelect:win", Texture.class));
         levelRetryMusic = directory.getEntry("soundtracks:level_retry", Music.class);
-
     }
 
     private void update(float delta){

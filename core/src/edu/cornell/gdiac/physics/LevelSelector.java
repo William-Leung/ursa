@@ -2,6 +2,7 @@ package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
@@ -377,41 +378,6 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         effect.draw(canvas.getSpriteBatch());
 
         canvas.end();
-
-
-        boolean enterPressed = false;
-        if(time >= 30){
-            enterPressed = Gdx.input.isKeyPressed(Input.Keys.ENTER) || Gdx.input.isKeyPressed(Input.Keys.SPACE);
-        }
-
-        if(enterPressed) {
-            for(int i = 0; i < buttonPositions.length; i++) {
-                // If the click was within the button radius
-                if(buttonPositions[i].dst(ursaPos) < buttonRadius) {
-                    if(i == 0){
-                        buttonsFilms[i].setFrame(1);
-                    }
-                    else {
-                        buttonsFilms[i].setFrame(4);
-                    }
-                }
-            }
-        }
-
-        if(enterPrevious && !enterPressed){
-            for (int i = 0; i < buttonPositions.length; i++) {
-                float interactDistance = 45f;
-                if(buttonsUnlocked[i] && Math.abs(buttonPositions[i].x-ursaPos.x) < interactDistance
-                        && Math.abs(buttonPositions[i].y-ursaPos.y) < interactDistance){
-                    listener.exitScreen(this,i+1);
-                }
-            }
-            buttonsFilms[0].setFrame(0);
-            for(int i = 1; i < numButtons; i++) {
-                buttonsFilms[i].setFrame(3);
-            }
-        }
-        enterPrevious = enterPressed;
     }
 
 
@@ -519,6 +485,46 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         if(active){
             update(delta);
             draw();
+
+
+            boolean enterPressed = false;
+            if(time >= 30){
+                enterPressed = Gdx.input.isKeyPressed(Input.Keys.ENTER) || Gdx.input.isKeyPressed(Input.Keys.SPACE);
+            }
+
+            if(enterPressed) {
+                for(int i = 0; i < buttonPositions.length; i++) {
+                    // If the click was within the button radius
+                    if(buttonPositions[i].dst(ursaPos) < buttonRadius) {
+                        if(i == 0){
+                            buttonsFilms[i].setFrame(1);
+                        }
+                        else {
+                            buttonsFilms[i].setFrame(4);
+                        }
+                    }
+                }
+            }
+
+            if(enterPrevious && !enterPressed){
+                for (int i = 0; i < buttonPositions.length; i++) {
+                    float interactDistance = 45f;
+                    if(buttonsUnlocked[i] && Math.abs(buttonPositions[i].x-ursaPos.x) < interactDistance
+                            && Math.abs(buttonPositions[i].y-ursaPos.y) < interactDistance){
+                        listener.exitScreen(this,i+1);
+                    }
+                }
+                buttonsFilms[0].setFrame(0);
+                for(int i = 1; i < numButtons; i++) {
+                    buttonsFilms[i].setFrame(3);
+                }
+            }
+            enterPrevious = enterPressed;
+
+            if(Gdx.input.isKeyPressed(Keys.ESCAPE) && time > 30) {
+                System.out.println("hi");
+                listener.exitScreen(this,101);
+            }
         }
     }
 

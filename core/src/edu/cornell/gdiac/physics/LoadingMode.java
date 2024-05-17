@@ -57,8 +57,10 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	private Texture background;
 	/** Play button to display when done */
 	private Texture playButton;
+	private FilmStrip ursaLoadingFilm;
+	private TextureRegion blackTexture;
 	/** Texture atlas to support a progress bar */
-	private final Texture statusBar;
+	//private final Texture statusBar;
 	
 	// statusBar is a "texture atlas." Break it up into parts.
 	/** Left cap to the status background (grey region) */
@@ -113,6 +115,8 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 
 	/** Whether or not this player mode is still active */
 	private boolean active;
+	private int time;
+	private boolean doneLoading = false;
 
 	/**
 	 * Returns the budget for the asset loader.
@@ -187,6 +191,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 * @param millis The loading budget in milliseconds
 	 */
 	public LoadingMode(String file, GameCanvas canvas, int millis) {
+		time = 0;
 		this.canvas  = canvas;
 		budget = millis;
 		
@@ -202,16 +207,24 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		playButton = null;
 		background = internal.getEntry( "background", Texture.class );
 		background.setFilter( TextureFilter.Linear, TextureFilter.Linear );
-		statusBar = internal.getEntry( "progress", Texture.class );
 
-		// Break up the status bar texture into regions
-		statusBkgLeft = internal.getEntry( "progress.backleft", TextureRegion.class );
-		statusBkgRight = internal.getEntry( "progress.backright", TextureRegion.class );
-		statusBkgMiddle = internal.getEntry( "progress.background", TextureRegion.class );
+		blackTexture = new TextureRegion(internal.getEntry("black", Texture.class));
 
-		statusFrgLeft = internal.getEntry( "progress.foreleft", TextureRegion.class );
-		statusFrgRight = internal.getEntry( "progress.foreright", TextureRegion.class );
-		statusFrgMiddle = internal.getEntry( "progress.foreground", TextureRegion.class );
+		Texture ursaLoadingAnimation = internal.getEntry( "ursaLoading", Texture.class);
+		ursaLoadingFilm = new FilmStrip(ursaLoadingAnimation, 3, 16);
+		ursaLoadingFilm.setFrame(0);
+
+//		statusBar = internal.getEntry( "progress", Texture.class );
+//
+//		// Break up the status bar texture into regions
+//		statusBkgLeft = internal.getEntry( "progress.backleft", TextureRegion.class );
+//		statusBkgRight = internal.getEntry( "progress.backright", TextureRegion.class );
+//		statusBkgMiddle = internal.getEntry( "progress.background", TextureRegion.class );
+//
+//		statusFrgLeft = internal.getEntry( "progress.foreleft", TextureRegion.class );
+//		statusFrgRight = internal.getEntry( "progress.foreright", TextureRegion.class );
+//		statusFrgMiddle = internal.getEntry( "progress.foreground", TextureRegion.class );
+//
 
 		// No progress so far.
 		progress = 0;
@@ -248,15 +261,18 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 * @param delta Number of seconds since last animation frame
 	 */
 	private void update(float delta) {
-		if (playButton == null) {
+		time++;
+		if(time % 2 == 0) {
+			if(ursaLoadingFilm.getFrame() == 40) {
+				ursaLoadingFilm.setFrame(0);
+			}
+			ursaLoadingFilm.setFrame(ursaLoadingFilm.getFrame() + 1);
+		}
+		if (!doneLoading) {
 			assets.update(budget);
 			this.progress = assets.getProgress();
 			if (progress >= 1.0f) {
-				this.progress = 1.0f;
-				playButton = internal.getEntry("play",Texture.class);
-				startFilm = new FilmStrip(playButton,1,2);
-				startFilm.setFrame(0);
-
+				doneLoading = true;
 			}
 		}
 	}
@@ -271,14 +287,15 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	private void draw() {
 		canvas.begin();
 		float scaleFactor = canvas.getHeight() / (float) background.getHeight();
-		canvas.draw(background,Color.WHITE,0,0,0,0,0,scaleFactor,scaleFactor);
+		canvas.draw(blackTexture,Color.WHITE,0,0, canvas.getWidth(), canvas.getHeight());
 
 		if (playButton == null) {
-			drawProgress(canvas);
+			canvas.draw(ursaLoadingFilm, Color.WHITE, ursaLoadingFilm.getRegionWidth(), 0, canvas.getCameraX() + canvas.getWidth() / 2f, canvas.getCameraY() - canvas.getHeight() / 2f, 0, 3 * scaleFactor, 3 * scaleFactor);
+			//drawProgress(canvas);
 		} else {
 			Color tint = (pressState == 1 ? Color.GRAY: Color.WHITE);
-			canvas.draw(startFilm, tint, startFilm.getRegionWidth()/2f, startFilm.getRegionHeight()/2f,
-						centerX, centerY, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+			//canvas.draw(startFilm, tint, startFilm.getRegionWidth()/2f, startFilm.getRegionHeight()/2f,
+			//centerX, centerY, 0, 2 * scaleFactor, 2 * scaleFactor);
 		}
 		canvas.end();
 	}
@@ -330,7 +347,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 			draw();
 
 			// We are are ready, notify our listener
-			if (isReady() && listener != null) {
+			if (doneLoading && listener != null) {
 				listener.exitScreen(this, 0);
 			}
 		}

@@ -47,6 +47,12 @@
         "levelSelect:Level14": "levelSelect/level14.png",
         "levelSelect:retry": "levelSelect/retryMenu.png",
 
+        "homeScreen:homeScreenAnimation": "homeScreen/Home Screen_30fps.png",
+        "homeScreen:logo": "homeScreen/Logo_Black.png",
+        "homeScreen:homeScreen": "homeScreen/Home Screen.png",
+        "homeScreen:startButton": "homeScreen/UI_Button_Start.png",
+        "homeScreen:startButtonClicked": "homeScreen/UI_Button_Start_Click.png",
+
         "player:ursaWalk": "player/Walk.png",
         "player:ursaIdle": "player/Idle.png",
         "player:ursa": "player/Ursa.png",

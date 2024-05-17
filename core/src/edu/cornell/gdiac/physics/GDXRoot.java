@@ -39,6 +39,8 @@ public class GDXRoot extends Game implements ScreenListener {
 	private LoadingMode loading;
 	private LevelSelector levelSelector;
 	private RetryMenu retryMenu;
+
+	private HomeScreen homeScreen;
 	/** Player mode for the game proper (CONTROLLER CLASS) */
 	private int current;
 	/** List of all WorldControllers */
@@ -148,17 +150,44 @@ public class GDXRoot extends Game implements ScreenListener {
 		if (screen == loading) {
 			// Go into the level select
 			directory = loading.getAssets();
+			homeScreen = new HomeScreen(canvas, true);
+			homeScreen.gatherAssets(directory);
+			homeScreen.setScreenListener(this);
+			setScreen(homeScreen);
+			homeScreen.setActive(true);
+
+			loading.dispose();
+			loading = null;
+//			levelSelector = new LevelSelector(canvas,levelsCompleted, 0);
+//			levelSelector.gatherAssets(directory);
+//			levelSelector.setScreenListener(this);
+//			setScreen(levelSelector);
+//			levelSelector.setActive(true);
+//
+//			loading.dispose();
+//			loading = null;
+		} else if(screen == homeScreen) {
 			levelSelector = new LevelSelector(canvas,levelsCompleted, 0);
 			levelSelector.gatherAssets(directory);
 			levelSelector.setScreenListener(this);
 			setScreen(levelSelector);
 			levelSelector.setActive(true);
 
-			loading.dispose();
-			loading = null;
+			homeScreen.dispose();
+			homeScreen = null;
 		} else if (screen == levelSelector) {
 			if(exitCode == WorldController.EXIT_QUIT) {
 				Gdx.app.exit();
+				return;
+			} else if(exitCode == 101) {
+				homeScreen = new HomeScreen(canvas, false);
+				homeScreen.gatherAssets(directory);
+				homeScreen.setScreenListener(this);
+				setScreen(homeScreen);
+				homeScreen.setActive(true);
+
+				levelSelector.dispose();
+				levelSelector = null;
 				return;
 			}
 			// Enter the corresponding level from the level select
