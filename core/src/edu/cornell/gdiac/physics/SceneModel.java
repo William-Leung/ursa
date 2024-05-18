@@ -1379,7 +1379,7 @@ public class SceneModel extends WorldController implements ContactListener {
             }
         }
 
-        //drawGoalIndicator();
+        drawGoalIndicator();
 
 
         if(paused && !startWin && !startLose){
@@ -1410,28 +1410,45 @@ public class SceneModel extends WorldController implements ContactListener {
         return drawCoord * textureScale / scale.x;
     }
 
+    public float screenToDrawCoordinates(float screenCoord) {
+        return screenCoord * scale.x / textureScale;
+    }
+
     private void drawGoalIndicator() {
         // If small ursa on screen don't do anything
 
-//        if(canvas.inView(new Vector2(goal.getPosition().x * textureScale, goal.getPosition().y * textureScale))) {
-//            return;
-//        }
-        float deltaY = goal.getPosition().y - canvas.getCameraY();
-        float deltaX = goal.getPosition().x - canvas.getCameraX();
+        if(canvas.inView(new Vector2(screenToDrawCoordinates(goal.getPosition().x) * textureScale, screenToDrawCoordinates(goal.getPosition().y) * textureScale))) {
+            return;
+        }
+        float deltaY = screenToDrawCoordinates(goal.getPosition().y) * textureScale - canvas.getCameraY();
+        float deltaX = screenToDrawCoordinates(goal.getPosition().x) * textureScale - canvas.getCameraX();
         float angle = (float) Math.atan2(deltaY, deltaX);
         float slope = deltaY / deltaX;
         float intercept = canvas.getCameraY() - slope * canvas.getCameraX();
-
-        float indicatorX = canvas.getCameraX();
-        float indicatorY = canvas.getCameraY();
-        if(angle > Math.PI / 4f && angle < Math.PI * 3/4f) {
-            indicatorY = canvas.getCameraY() + canvas.getHeight() / 2f;
-            indicatorX = canvas.getCameraX() + (indicatorY - intercept) / slope;
-        } else if(angle >= Math.PI * 3/4f && angle < Math.PI * 5/4f) {
-            indicatorX = canvas.getCameraX() - canvas.getWidth() / 2f;
-            indicatorY = canvas.getCameraY() + slope * indicatorX + intercept;
+        if(angle < 0) {
+            angle += 2 * Math.PI;
         }
-        System.out.println(indicatorX + " " + indicatorY);
+
+        float indicatorX;
+        float indicatorY;
+        float topRight = (float) Math.atan(canvas.getHeight() / (float) canvas.getWidth());
+        float topLeft = (float) (Math.PI - Math.atan(canvas.getHeight()/(float) canvas.getWidth()));
+        float bottomLeft = (float) (Math.PI + Math.atan(canvas.getHeight()/(float) canvas.getWidth()));
+        float bottomRight = (float) (2 * Math.PI - Math.atan(canvas.getHeight()/(float) canvas.getWidth()));
+
+        if(angle > topRight && angle < topLeft) {
+            indicatorY = canvas.getCameraY() + canvas.getHeight() / 2f;
+            indicatorX = (indicatorY - intercept) / slope;
+        } else if(angle >= topLeft && angle < bottomLeft) {
+            indicatorX = canvas.getCameraX() - canvas.getWidth() / 2f;
+            indicatorY = slope * indicatorX + intercept;
+        } else if(angle >= bottomLeft && angle < bottomRight) {
+            indicatorY = canvas.getCameraY() - canvas.getHeight() / 2f;
+            indicatorX = (indicatorY - intercept) / slope;
+        } else {
+            indicatorX = canvas.getCameraX() + canvas.getWidth() / 2f;
+            indicatorY = slope * indicatorX + intercept;
+        }
 
         canvas.draw(arrowIndicator, Color.WHITE, arrowIndicator.getRegionWidth(), arrowIndicator.getRegionHeight() /2f, indicatorX, indicatorY, angle, textureScale, textureScale);
     }
