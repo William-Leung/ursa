@@ -1147,6 +1147,18 @@
                  "width":256,
                  "x":1752,
                  "y":1084
+                }, 
+                {
+                 "gid":34,
+                 "height":512,
+                 "id":635,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":256,
+                 "x":556.848484848485,
+                 "y":1152.9696969697
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -1458,7 +1470,19 @@
          "draworder":"topdown",
          "id":5,
          "name":"ice",
-         "objects":[],
+         "objects":[
+                {
+                 "gid":45,
+                 "height":256,
+                 "id":634,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":256,
+                 "x":893.212121212121,
+                 "y":824.969696969697
+                }],
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
@@ -1865,8 +1889,8 @@
                  "type":"",
                  "visible":true,
                  "width":256,
-                 "x":3720.04398319743,
-                 "y":4178.05611339488
+                 "x":1189.7409528944,
+                 "y":1032.60156794034
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -1875,7 +1899,7 @@
          "y":0
         }],
  "nextlayerid":16,
- "nextobjectid":634,
+ "nextobjectid":636,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.10.2",

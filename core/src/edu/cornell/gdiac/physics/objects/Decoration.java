@@ -31,6 +31,7 @@ public class Decoration {
      * Higher indexed decorations are drawn first and behind smaller indexed decorations
      */
     private final int index;
+    private TextureRegion dialogueTexture;
 
     public Decoration(TextureRegion texture, Vector2 scale, float x, float y, int index, float textureScale) {
         this.texture = texture;
@@ -41,11 +42,21 @@ public class Decoration {
         this.textureScale = textureScale;
     }
 
+    public void setDialogueTexture(TextureRegion t) {
+        dialogueTexture = t;
+    }
+
     public int getIndex() {
         return index;
     }
 
     public void draw(GameCanvas canvas) {
         canvas.draw(texture, Color.WHITE, 0, 0, x * drawScale.x, y * drawScale.y, 0, textureScale, textureScale);
+    }
+
+    public void postDraw(GameCanvas canvas) {
+        if(dialogueTexture != null) {
+            canvas.draw(dialogueTexture, Color.WHITE, 0, 0, x * drawScale.x, y * drawScale.y, 0, textureScale, textureScale);
+        }
     }
 }

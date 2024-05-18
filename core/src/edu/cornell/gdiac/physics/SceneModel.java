@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
@@ -18,6 +19,7 @@ import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectSet;
@@ -70,6 +72,7 @@ public class SceneModel extends WorldController implements ContactListener {
     private final TextureRegion[] treeTextures = new TextureRegion[2];
     /** Texture asset for objects in the polar map */
     private final TextureRegion[] objectTextures = new TextureRegion[9];
+    private final TextureRegion[] dialogueTextures = new TextureRegion[7];
     /** Texture asset for the cave in the polar map */
     private TextureRegion polarCaveTexture;
     /** Texture asset for the portal in the polar map */
@@ -85,6 +88,7 @@ public class SceneModel extends WorldController implements ContactListener {
     /** Texture asset for the ground */
     private TextureRegion groundTexture;
     private boolean paused;
+    private boolean doGriddy;
 
 
     /* =========== Film Strips =========== */
@@ -293,6 +297,7 @@ public class SceneModel extends WorldController implements ContactListener {
     private float blackTextureAlpha;
     private float caughtBarXOffset = 0;
     private float ursaCaughtXOffset = 0;
+
     private int beganStartLoseFrame = 0;
     private int caughtBarMoveDuration = 60;
     private int ursaCaughtMoveDuration = 10;
@@ -320,6 +325,8 @@ public class SceneModel extends WorldController implements ContactListener {
     private FrameBuffer fb = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), false);
 
     private boolean hasWon = false;
+    private float newTimer;
+    private boolean reverse;
 
 
 
@@ -329,6 +336,7 @@ public class SceneModel extends WorldController implements ContactListener {
      */
     public SceneModel(String levelJson) {
         super(DEFAULT_WIDTH,DEFAULT_HEIGHT,DEFAULT_GRAVITY);
+        doGriddy = false;
         setDebug(false);
         setComplete(false);
         setFailure(false);
@@ -342,7 +350,7 @@ public class SceneModel extends WorldController implements ContactListener {
         timer = 30;
         float tileSideLength = 256;
         maxY = numTilesY * tileSideLength;
-
+        newTimer = 0;
         colors = new Color[5];
         intervals = new float[5];
         colors[0] = new Color(1f,1f,1f,0f);
@@ -388,6 +396,16 @@ public class SceneModel extends WorldController implements ContactListener {
         retryTextures[1] =  new TextureRegion(directory.getEntry( "retry:lose2",Texture.class));
         retryTextures[2] =  new TextureRegion(directory.getEntry( "retry:victory1",Texture.class));
         retryTextures[3] =  new TextureRegion(directory.getEntry( "retry:victory2",Texture.class));
+
+        dialogueTextures[0] = new TextureRegion(directory.getEntry( "tutorial:avoidShadow1",Texture.class));
+        dialogueTextures[1] = new TextureRegion(directory.getEntry( "tutorial:avoidShadow2",Texture.class));
+        dialogueTextures[2] = new TextureRegion(directory.getEntry( "tutorial:goToCave1",Texture.class));
+        dialogueTextures[3] = new TextureRegion(directory.getEntry( "tutorial:goToCave2",Texture.class));
+        dialogueTextures[4] = new TextureRegion(directory.getEntry( "tutorial:shakeTree1",Texture.class));
+        dialogueTextures[5] = new TextureRegion(directory.getEntry( "tutorial:shakeTree2",Texture.class));
+        dialogueTextures[6] = new TextureRegion(directory.getEntry( "tutorial:shakeTree3",Texture.class));
+
+
         polarCaveTexture = new TextureRegion(directory.getEntry("polar:cave",Texture.class));
         polarPortalTexture = new TextureRegion(directory.getEntry("polar:portal",Texture.class));
         polarZZZTexture = new TextureRegion(directory.getEntry("polar:ZZZ",Texture.class));
@@ -550,7 +568,7 @@ public class SceneModel extends WorldController implements ContactListener {
         interactableTrees.clear();
         shadowController.reset();
         world.dispose();
-
+        reverse = false;
         // Rewind all film strips to the beginning
         cavePortalFilm.setFrame(0);
         caveZZZFilm.setFrame(0);
@@ -651,16 +669,12 @@ public class SceneModel extends WorldController implements ContactListener {
         for (AIController i : controls) {
             if (i != null) {
                 if (i.isWon()) {
-                    System.out.println("enemy won");
-                    System.out.println(player_dive_anim);
                     salmonDiveFilm.setFrame(player_dive_anim);
                     i.getEnemy().setTexture(salmonDiveFilm);
                     player_dive_anim = Math.min(player_dive_anim + 1, ENEMY_DIVE_FRAMES);
                     player_caught = true;
                 } else if (i.isSurprised()) {
-                    System.out.println("Enemy is surprised");
-                    System.out.println("Salmon detected index: " + salmonDetectedIndex);
-                    System.out.println();
+
                     salmonDetectedFilm.setFrame(salmonDetectedIndex);
                     i.getEnemy().setTexture(salmonDetectedFilm);
                     if (currentFrame % 2 == 0) {
@@ -673,8 +687,7 @@ public class SceneModel extends WorldController implements ContactListener {
                     if (i.isStunned()) {
                         System.out.println("Enemy is stunned.");
                     }
-                    System.out.println("Salmon confused index: " + i.get_confused_anim_index());
-                    System.out.println();
+
                     salmonConfusedFilm.setFrame(i.get_confused_anim_index());
                     i.getEnemy().setTexture(salmonConfusedFilm);
                     i.inc_anim_index();
@@ -707,7 +720,7 @@ public class SceneModel extends WorldController implements ContactListener {
     private void animatePlayerModel(){
         // If the player is moving
         if (player_caught && player_dive_anim - DIVE_ANIM_DIFF >= 0) {
-            System.out.println("Ursa caught");
+
             playerCaughtFilm.setFrame(Math.min(9, player_dive_anim - DIVE_ANIM_DIFF));
             ursa.setTexture(playerCaughtFilm);
         } else if(ursa.getXMovement() != 0 || ursa.getYMovement() != 0 || isTimeSkipping){
@@ -813,12 +826,15 @@ public class SceneModel extends WorldController implements ContactListener {
         //System.out.println("FPS: " + (1/dt));
         // Increment the current frame (used for animation slow downs)
         timer += 1;
+        newTimer +=1;
         currentFrame++;
-
+        if(Gdx.input.isKeyPressed(Input.Keys.Q)){
+            doGriddy = true;
+        }
         if((Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) && paused){
             if(timer >= 30){
                 paused = false;
-                System.out.println("unpause");
+                doGriddy = false;
                 timer = 0;
             }
 
@@ -828,12 +844,14 @@ public class SceneModel extends WorldController implements ContactListener {
                 paused = true;
                 setPaused(true);
                 timer = 0;
+
+                doGriddy = false;
             }
         }
 
         if(paused){
 
-            System.out.println(ursaCaughtXOffset + " ursa caught offset");
+
             for (Enemy enemy : enemies) {
                 if (enemy != null) {
                     enemy.setVX(0);
@@ -944,7 +962,7 @@ public class SceneModel extends WorldController implements ContactListener {
                 // Animate the Day night UI
                 if(framesIntoTransition % 2 == 0) {
                     sunAnimations[sunIndex].setFrame(sunAnimations[sunIndex].getFrame() + 1);
-                    System.out.println(sunAnimations[sunIndex].getFrame());
+
                     if(sunAnimations[sunIndex].getFrame() == 71) {
                         sunAnimations[sunIndex].setFrame(0);
                     }
@@ -956,6 +974,10 @@ public class SceneModel extends WorldController implements ContactListener {
         // Move Ursa
         float xVal = InputController.getInstance().getHorizontal() * ursa.getForce();
         float yVal = InputController.getInstance().getVertical() * ursa.getForce();
+        if(InputController.getInstance().getVertical() != 0 || InputController.getInstance().getHorizontal() !=0){
+            System.out.println("first");
+            doGriddy = false;
+        }
         ursa.setMovement(xVal, yVal);
 
         checkForInteraction();
@@ -1011,6 +1033,32 @@ public class SceneModel extends WorldController implements ContactListener {
             ursa.setVX(0);
             ursa.setVY(0);
         }
+
+        if(doGriddy){
+
+            ursa.setTexture(playerCaughtFilm);
+            if(playerCaughtFilm.getFrame() <1 ){
+
+                reverse = false;
+                playerCaughtFilm.setFrame(1);
+            }
+            if(playerCaughtFilm.getFrame() > 7){
+                playerCaughtFilm.setFrame(7);
+                reverse = true;
+            }
+
+            if(playerCaughtFilm.getFrame() >=1 && playerCaughtFilm.getFrame()<=7 && !reverse && timer % 3 == 0){
+
+                playerCaughtFilm.setFrame(playerCaughtFilm.getFrame()+1);
+            }
+            if(playerCaughtFilm.getFrame() >=1 && playerCaughtFilm.getFrame()<=7 && reverse && timer % 3 == 0){
+
+                playerCaughtFilm.setFrame(playerCaughtFilm.getFrame()-1);
+            }
+
+
+        }
+
     }
 
     @Override
@@ -1159,9 +1207,20 @@ public class SceneModel extends WorldController implements ContactListener {
                 levelMusicTense.stop();
                 levelMusicNight.stop();
             }
+            System.out.println("beginning");
+            if(((bd1.getName().contains("enemy")) && bd2.getName().contains("ice")) || ((bd1.getName().contains("ice")) && bd2.getName().contains("enemy"))){
+                System.out.println("touching ice");
+                bd1.setLinearDamping(10000);
+                bd2.setLinearDamping(10000);
+                bd2.setVX(0);
+                bd2.setVY(0);
+                bd1.setVY(0);
+                bd1.setVX(0);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
+
 
     }
 
@@ -1182,6 +1241,12 @@ public class SceneModel extends WorldController implements ContactListener {
 
         Obstacle bd1 = (Obstacle) body1.getUserData();
         Obstacle bd2 = (Obstacle) body2.getUserData();
+        if(bd1.getLinearDamping() > 100){
+            bd1.setLinearDamping(0);
+        }
+        if(bd2.getLinearDamping() > 100){
+            bd1.setLinearDamping(0);
+        }
 
         if ((ursa.getSensorName().equals(fd2) && bd1.getName().equals("shadow")) ||
                 (ursa.getSensorName().equals(fd1) && bd2.getName().equals("shadow"))) {
@@ -1271,6 +1336,10 @@ public class SceneModel extends WorldController implements ContactListener {
         for(Cave cave: interactableCaves) {
             cave.postDraw(canvas);
         }
+        for(Decoration d: decorations) {
+            d.postDraw(canvas);
+        }
+
         effect.draw(canvas.getSpriteBatch());
         float retryUIScale = 1.6f;
         if(startLose){
@@ -1347,6 +1416,7 @@ public class SceneModel extends WorldController implements ContactListener {
 
         canvas.draw(arrowIndicator, Color.WHITE, arrowIndicator.getRegionWidth(), arrowIndicator.getRegionHeight() /2f, indicatorX, indicatorY, angle, textureScale, textureScale);
     }
+
 
 
 
@@ -1543,6 +1613,10 @@ public class SceneModel extends WorldController implements ContactListener {
 
             Enemy enemy = new Enemy(drawToScreenCoordinates(x), drawToScreenCoordinates(y) + height / 2,20,20,constants.get("enemy"), width, height, textureScale);
             enemy.setDrawScale(scale);
+            enemy.setBodyType(BodyDef.BodyType.DynamicBody);
+            enemy.setDensity(.0f);
+            enemy.setMass(.01f);
+
             enemy.setLookDirection(1, 0);
             enemy.setTexture(salmonUprightWalkFilm);
             enemy.setShadowTexture(salmonShadowTexture);
@@ -1799,7 +1873,20 @@ public class SceneModel extends WorldController implements ContactListener {
                 System.out.println("Unidentified decoration.");
                 continue;
             }
+
             Decoration decoration = new Decoration(decorationTextures[textureIndex], scale, drawToScreenCoordinates(x),drawToScreenCoordinates(y), decorationIndex, textureScale);
+            JsonValue propertyData = decorationData.get(i).get("properties");
+            if(propertyData != null) {
+                for(int j = 0; j < propertyData.size; j++) {
+                    if(propertyData.get(j).get("name").asString().equals("dialogue_num")) {
+                        int dialogueIndex = propertyData.get(j).get("value").asInt();
+                        if(dialogueIndex >= 0 && dialogueIndex < dialogueTextures.length) {
+                                decoration.setDialogueTexture(dialogueTextures[dialogueIndex]);
+                        }
+                    }
+                }
+            }
+
 
             decorations.add(decoration);
         }

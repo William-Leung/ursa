@@ -71,7 +71,7 @@ public class GDXRoot extends Game implements ScreenListener {
 		camY = canvas.getCameraY();
 
 		controllers = new WorldController[25];
-		controllers[0] = new SceneModel("dannyworking.json");
+		controllers[0] = new SceneModel("rigel_tutorial_1.json");
 		controllers[1] = new SceneModel("dannyworking2.json");
 		controllers[2] = new SceneModel("dannyworking3.json");
 		controllers[3] = new SceneModel("rigel_level_4.json");
@@ -233,7 +233,13 @@ public class GDXRoot extends Game implements ScreenListener {
 				levelSelector.setActive(true);
 			}
 			else if(exitCode == 3){
-				current += current +1;
+				if(current > 1){
+					current = 1;
+				}
+				else{
+					current += current +1;
+				}
+
 				controllers[current].gatherAssets(directory);
 				controllers[current].setScreenListener(this);
 				controllers[current].setCanvas(canvas);
