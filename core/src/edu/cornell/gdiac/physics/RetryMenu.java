@@ -62,9 +62,7 @@ public class RetryMenu implements Screen, InputProcessor, ControllerListener {
 
     private void update(float delta){
         changeOffset  = Math.min(changeOffset + 50, 500);
-        System.out.println(win +" is win");
-        if(win ==false){
-            System.out.println("win - false");
+        if(!win){
             if(Gdx.input.isKeyPressed(Input.Keys.SPACE)){
                 listener.exitScreen(this,1);
             }
@@ -134,8 +132,6 @@ public class RetryMenu implements Screen, InputProcessor, ControllerListener {
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         if(active) {
-            System.out.println("Screen x toasted: " + screenX);
-            System.out.println("Screen y: " + (canvas.getHeight() - screenY));
             screenY = canvas.getHeight() - screenY;
             if(screenX >= 133 && screenX <=274 && screenY >= 330 && screenY <= 385){
                 retryFilm.setFrame(1);
@@ -194,7 +190,6 @@ public class RetryMenu implements Screen, InputProcessor, ControllerListener {
 
     @Override
     public void render(float delta) {
-        System.out.println(active + " is active");
         if(active){
 
             draw();
