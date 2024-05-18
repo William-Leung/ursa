@@ -14,7 +14,17 @@
         "decoration:ground_4": "polar/decorations/Polar_Ground_4.png",
         "decoration:ground_1": "polar/decorations/Polar_Ground_1.png",
         "decoration:ground_2": "polar/decorations/Polar_Ground_2.png",
-        "UI:pause1" : "ui/Paused_UI_1.png",
+        "decoration:ocean_1": "polar/decorations/Decorations_Ocean_1.PNG",
+        "decoration:ocean_2": "polar/decorations/Decorations_Ocean_2.PNG",
+        "decoration:ocean_3": "polar/decorations/Decorations_Ocean_3.PNG",
+        "decoration:ocean_4": "polar/decorations/Decorations_Ocean_4.PNG",
+        "decoration:ocean_5": "polar/decorations/Decorations_Ocean_5.PNG",
+        "decoration:ocean_6": "polar/decorations/Decorations_Ocean_6.PNG",
+        "decoration:ocean_7": "polar/decorations/Decorations_Ocean_7.PNG",
+        "decoration:ocean_8": "polar/decorations/Decorations_Ocean_8.PNG",
+
+
+            "UI:pause1" : "ui/Paused_UI_1.png",
         "UI:pause2" : "ui/Paused_UI_Resume.png",
         "UI:pause3" : "ui/Paused_UI_Quit.png",
         "retry:victory1" :  "levelSelect/Victory_UI_1.png",
