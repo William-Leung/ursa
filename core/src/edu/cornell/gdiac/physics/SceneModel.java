@@ -836,7 +836,7 @@ public class SceneModel extends WorldController implements ContactListener {
         timer += 1;
         newTimer +=1;
         currentFrame++;
-        if(Gdx.input.isKeyPressed(Input.Keys.Q)){
+        if(Gdx.input.isKeyPressed(Keys.NUM_0)){
             doGriddy = true;
         }
         if((Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) && paused){
