@@ -153,6 +153,8 @@ public class SceneModel extends WorldController implements ContactListener {
     /** The tree that is currently shaking. */
     private Tree shakingTree = null;
     private float timer;
+    private boolean startWin;
+    private boolean startLose;
 
 
     /* =========== Cave Interaction Variables =========== */
@@ -266,6 +268,7 @@ public class SceneModel extends WorldController implements ContactListener {
     private static final int ENEMY_DIVE_FRAMES = 49;
     int player_dive_anim = 0;
     boolean player_caught = false;
+    private TextureRegion[] retryTextures = new TextureRegion[4];
 
     static {
         Pixmap pixmap = new Pixmap(BLOB_SHADOW_RESOLUTION * 2, BLOB_SHADOW_RESOLUTION * 2, Pixmap.Format.RGBA8888);
@@ -287,6 +290,12 @@ public class SceneModel extends WorldController implements ContactListener {
     private final int barRiseDuration = 20;
     /** Height of the black bars */
     private float barHeight = 100f;
+    private float blackTextureAlpha;
+    private float caughtBarXOffset = 0;
+    private float ursaCaughtXOffset = 0;
+    private int beganStartLoseFrame = 0;
+    private int caughtBarMoveDuration = 60;
+    private int ursaCaughtMoveDuration = 10;
 
 
     /* =========== Soundtrack Assets =========== */
@@ -346,7 +355,7 @@ public class SceneModel extends WorldController implements ContactListener {
         intervals[3] = 0.9f;
         colors[4] = new Color(1f,1f,1f,0f);
         intervals[4] = 1.0f;
-
+        blackTextureAlpha = -0.2f;
         effect = new ParticleEffect();
         effect.load(Gdx.files.internal("particle.p"),Gdx.files.internal(""));
     }
@@ -375,7 +384,10 @@ public class SceneModel extends WorldController implements ContactListener {
         pauseScreen[2] = new TextureRegion(directory.getEntry("UI:pause3", Texture.class));
         treeTextures[0] = new TextureRegion(directory.getEntry("polar:tree_snow", Texture.class));
         treeTextures[1] = new TextureRegion(directory.getEntry("polar:tree_no_snow",Texture.class));
-
+        retryTextures[0] =  new TextureRegion(directory.getEntry( "retry:lose1",Texture.class));
+        retryTextures[1] =  new TextureRegion(directory.getEntry( "retry:lose2",Texture.class));
+        retryTextures[2] =  new TextureRegion(directory.getEntry( "retry:victory1",Texture.class));
+        retryTextures[3] =  new TextureRegion(directory.getEntry( "retry:victory2",Texture.class));
         polarCaveTexture = new TextureRegion(directory.getEntry("polar:cave",Texture.class));
         polarPortalTexture = new TextureRegion(directory.getEntry("polar:portal",Texture.class));
         polarZZZTexture = new TextureRegion(directory.getEntry("polar:ZZZ",Texture.class));
@@ -522,11 +534,13 @@ public class SceneModel extends WorldController implements ContactListener {
      */
     public void reset() {
         Vector2 gravity = new Vector2(0,0 );
-
+        blackTextureAlpha = -2f;
         for(Obstacle obj : objects) {
             obj.deactivatePhysics(world);
         }
         effect.reset();
+        startWin = false;
+        startLose = false;
         // Dispose and clear and references to objects
         objects.clear();
         addQueue.clear();
@@ -556,6 +570,10 @@ public class SceneModel extends WorldController implements ContactListener {
         player_dive_anim = 0;
         hasWon = false;
         barYOffset = 0;
+        caughtBarXOffset = 0;
+        ursaCaughtXOffset = 0;
+        beganStartLoseFrame = 0;
+        paused = false;
         for (int i = 0; i < 3; i++) {
             sunAnimations[i].setFrame(0);
         }
@@ -795,6 +813,8 @@ public class SceneModel extends WorldController implements ContactListener {
         //System.out.println("FPS: " + (1/dt));
         // Increment the current frame (used for animation slow downs)
         timer += 1;
+        currentFrame++;
+
         if((Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) && paused){
             if(timer >= 30){
                 paused = false;
@@ -803,7 +823,7 @@ public class SceneModel extends WorldController implements ContactListener {
             }
 
         }
-        if((Gdx.input.isKeyPressed(Input.Keys.P)) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) && !paused){
+        if((Gdx.input.isKeyPressed(Input.Keys.P)) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) && !paused && !startLose && !startWin){
             if(timer >= 30){
                 paused = true;
                 setPaused(true);
@@ -812,6 +832,8 @@ public class SceneModel extends WorldController implements ContactListener {
         }
 
         if(paused){
+
+            System.out.println(ursaCaughtXOffset + " ursa caught offset");
             for (Enemy enemy : enemies) {
                 if (enemy != null) {
                     enemy.setVX(0);
@@ -822,7 +844,6 @@ public class SceneModel extends WorldController implements ContactListener {
             ursa.setVY(0);
             return;
         }
-        currentFrame++;
 
         // If we've won, perform the rescue animations
         if (hasWon) {
@@ -845,6 +866,7 @@ public class SceneModel extends WorldController implements ContactListener {
                 return;
             } else {
                 setComplete(true);
+                return;
             }
         }
 
@@ -956,7 +978,11 @@ public class SceneModel extends WorldController implements ContactListener {
             c.changeAggro(updateAggro(c));
 
             if (c.isWon() && player_dive_anim >= ENEMY_DIVE_FRAMES)
-                setFailure(true);
+                if(!startLose) {
+                   setFailure(true);
+
+                }
+
         }
 
         for (Enemy enemy : enemies) {
@@ -1246,10 +1272,29 @@ public class SceneModel extends WorldController implements ContactListener {
             cave.postDraw(canvas);
         }
         effect.draw(canvas.getSpriteBatch());
+        float retryUIScale = 1.6f;
+        if(startLose){
+            if(blackTextureAlpha < 1 && blackTextureAlpha >= 0){
+                blackTextureAlpha += .1f;
+            }
+            else if(blackTextureAlpha<0){
+                blackTextureAlpha = 0;
+            }
+            System.out.println("start lose");
+            Color color = new Color(255,255,255,blackTextureAlpha);
+            canvas.draw(blackTexture,color, canvas.getCameraX() - canvas.getWidth() /2f, canvas.getCameraY() - canvas.getHeight() /2f, canvas.getWidth(), canvas.getHeight());
+            canvas.draw(retryTextures[0],Color.WHITE, 0,retryTextures[0].getRegionHeight() / 2f,canvas.getCameraX() - canvas.getWidth()/2 -925 + caughtBarXOffset, canvas.getCameraY(),0,textureScale* retryUIScale,textureScale*retryUIScale );
+            canvas.draw(retryTextures[1],Color.WHITE,retryTextures[1].getRegionWidth(),retryTextures[1].getRegionHeight() /2f,canvas.getCameraX() + canvas.getWidth() + 70f  - ursaCaughtXOffset, canvas.getCameraY(),0,retryUIScale * textureScale,retryUIScale * textureScale);
+            if(blackTextureAlpha >= 1){
+                System.out.println("setting complete");
+                setFailure(true);
+            }
+        }
 
         //drawGoalIndicator();
 
-        if(paused){
+
+        if(paused && !startWin && !startLose){
             Color color = new Color(255,255,255,.5f);
             canvas.draw(blackTexture,color, canvas.getCameraX() - canvas.getWidth() / 2f, canvas.getCameraY() - canvas.getHeight() / 2f, canvas.getWidth() ,canvas.getHeight());
             canvas.draw(pauseScreen[0],Color.WHITE,0,0,canvas.getCameraX() - canvas.getWidth()/2.5f , canvas.getCameraY() - canvas.getHeight() /5.5f,0,textureScale,textureScale );

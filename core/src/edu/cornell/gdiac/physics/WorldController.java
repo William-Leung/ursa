@@ -420,9 +420,7 @@ public abstract class WorldController implements Screen {
 		}else if (countdown > 0) {
 			countdown--;
 		} else if (countdown == 0) {
-			if (failed) {
-				reset();
-			} else if (complete) {
+			 if (complete) {
 				pause();
 				listener.exitScreen(this, EXIT_NEXT);
 				return false;

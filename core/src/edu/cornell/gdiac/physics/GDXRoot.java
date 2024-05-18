@@ -71,16 +71,16 @@ public class GDXRoot extends Game implements ScreenListener {
 		camY = canvas.getCameraY();
 
 		controllers = new WorldController[25];
-		controllers[0] = new SceneModel("rigel_tutorial_1.json");
-		controllers[1] = new SceneModel("rigel_tutorial_2.json");
-		controllers[2] = new SceneModel("rigel_tutorial_3.json");
+		controllers[0] = new SceneModel("dannyworking.json");
+		controllers[1] = new SceneModel("dannyworking2.json");
+		controllers[2] = new SceneModel("dannyworking3.json");
 		controllers[3] = new SceneModel("rigel_level_4.json");
 		controllers[4] = new SceneModel("rigel_level_5.json");
 		controllers[5] = new SceneModel("levelD2.json");
 		controllers[6] = new SceneModel("rigel_level_7.json");
 		controllers[7] = new SceneModel("levelD.json");
 		controllers[8] = new SceneModel("rigel_tutorial_1.json");
-		controllers[9] =new SceneModel("rigel_tutorial_1.json");
+		controllers[9] = new SceneModel("dannyworking.json");
 		controllers[10] = new SceneModel("rigel_tutorial_1.json");
 		controllers[11] =new SceneModel("rigel_tutorial_1.json");
 		controllers[12] = new SceneModel("rigel_tutorial_1.json");
@@ -147,7 +147,7 @@ public class GDXRoot extends Game implements ScreenListener {
 	 * @param exitCode The state of the screen upon exit
 	 */
 	public void exitScreen(Screen screen, int exitCode) {
-		boolean debug = false;
+		boolean debug = true;
 		if (screen == loading) {
 			directory = loading.getAssets();
 			if(debug) {
@@ -197,7 +197,7 @@ public class GDXRoot extends Game implements ScreenListener {
 				return;
 			}
 			// Enter the corresponding level from the level select
-			for(int i = 1; i < 14; i++) {
+			for(int i = 1; i < 15; i++) {
 				if(exitCode != i) {
 					continue;
 				}
@@ -232,8 +232,21 @@ public class GDXRoot extends Game implements ScreenListener {
 				setScreen(levelSelector);
 				levelSelector.setActive(true);
 			}
-			retryMenu.setActive(false);
+			else if(exitCode == 3){
+				current += current +1;
+				controllers[current].gatherAssets(directory);
+				controllers[current].setScreenListener(this);
+				controllers[current].setCanvas(canvas);
+				controllers[current].reset();
+				setScreen(controllers[current]);
+				controllers[current].active = true;
+
+
+
+			}
 			retryMenu.dispose();
+			retryMenu.setActive(false);
+
 			retryMenu = null;
 		} else if (exitCode == WorldController.LEVEL_COMPLETE) {
 			if(!controllers[current].wasCompleted()){
@@ -250,7 +263,7 @@ public class GDXRoot extends Game implements ScreenListener {
 			retryMenu.setScreenListener(this);
 			setScreen(retryMenu);
 			retryMenu.setActive(true);
-
+			controllers[0].setScreenListener(null);
 			canvas.setCam(camX,camY);
 			controllers[current].active = false;
 		} else if (exitCode == WorldController.LEVEL_FAILED) {
@@ -258,9 +271,9 @@ public class GDXRoot extends Game implements ScreenListener {
 			retryMenu = new RetryMenu(canvas,false);
 			retryMenu.gatherAssets(directory);
 			retryMenu.setScreenListener(this);
-			setScreen(retryMenu);
 			retryMenu.setActive(true);
-
+			setScreen(retryMenu);
+			controllers[0].setScreenListener(null);
 			canvas.setCam(camX,camY);
 			controllers[current].active = false;
 		} else if (exitCode == WorldController.EXIT_QUIT) {
