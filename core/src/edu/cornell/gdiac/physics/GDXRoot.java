@@ -80,7 +80,7 @@ public class GDXRoot extends Game implements ScreenListener {
 		controllers[1] = new SceneModel("rigel_tutorial_2_Ver_Z.json");
 		controllers[2] = new SceneModel("rigel_tutorial_3_Ver_Z.json");
 		controllers[3] = new SceneModel("rigel_tutorial_4_Ver_Z.json");
-		controllers[4] = new SceneModel("rigel_tutorial_5_Ver_Z.json");
+		controllers[4] = new SceneModel("rigel_tutorial_5_Ver_W.json");
 		controllers[5] = new SceneModel("rigel_tutorial_6_Ver_Z.json");
 		controllers[6] = new SceneModel("rigel_tutorial_7_Ver_Z.json");
 		controllers[7] = new SceneModel("levelD_Ver_A.json");
@@ -89,7 +89,7 @@ public class GDXRoot extends Game implements ScreenListener {
 		controllers[10] = new SceneModel("rigel_tutorial_1.json");
 		controllers[11] =new SceneModel("rigel_tutorial_1.json");
 		controllers[12] = new SceneModel("yklevel.json");
-		controllers[13] =new SceneModel("rigel_tutorial_1.json");
+		controllers[13] = new SceneModel("rigel_tutorial_1.json");
 		controllers[14] = new SceneModel("rigel_tutorial_1.json");
 
 		for(int i = 0; i < prefs.getFloat("completed");i++){
@@ -248,7 +248,7 @@ public class GDXRoot extends Game implements ScreenListener {
 				return;
 			}
 			// Enter the corresponding level from the level select
-			for(int i = 0; i < 15; i++) {
+			for(int i = 1; i < 16; i++) {
 				if(exitCode != i) {
 					continue;
 				}
@@ -284,7 +284,7 @@ public class GDXRoot extends Game implements ScreenListener {
 				levelSelector.setActive(true);
 			}
 			else if(exitCode == 3){
-				current += 1;
+				current = Math.min(current + 1, 14);
 
 				controllers[current].gatherAssets(directory);
 				controllers[current].setScreenListener(this);
