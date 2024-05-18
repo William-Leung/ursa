@@ -282,18 +282,6 @@
                  "y":1220
                 }, 
                 {
-                 "gid":7,
-                 "height":64,
-                 "id":421,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":64,
-                 "x":1392,
-                 "y":832
-                }, 
-                {
                  "gid":11,
                  "height":128,
                  "id":423,
@@ -352,8 +340,7 @@
                  "width":128,
                  "x":2204,
                  "y":1512
-                },
-            
+                }, 
                 {
                  "gid":40,
                  "height":512,
@@ -365,7 +352,8 @@
                  "width":512,
                  "x":992,
                  "y":1192
-                }, 
+                },
+            
                 {
                  "gid":40,
                  "height":512,
@@ -509,8 +497,7 @@
                  "width":64,
                  "x":1632,
                  "y":1628
-                },
-            
+                }, 
                 {
                  "gid":4,
                  "height":64,
@@ -522,7 +509,8 @@
                  "width":64,
                  "x":1932,
                  "y":1300
-                }, 
+                },
+            
                 {
                  "gid":4,
                  "height":64,
@@ -636,12 +624,18 @@
                  "height":128,
                  "id":455,
                  "name":"",
+                 "properties":[
+                        {
+                         "name":"dialogue_num",
+                         "type":"int",
+                         "value":0
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":128,
-                 "x":1876,
-                 "y":1940
+                 "x":1221.04563479143,
+                 "y":773.922261484099
                 }, 
                 {
                  "gid":11,
@@ -666,8 +660,7 @@
                  "width":64,
                  "x":1800,
                  "y":1956
-                },
-            
+                }, 
                 {
                  "gid":3,
                  "height":64,
@@ -679,7 +672,8 @@
                  "width":64,
                  "x":2024,
                  "y":1776
-                }, 
+                },
+            
                 {
                  "gid":11,
                  "height":128,
@@ -751,6 +745,24 @@
                  "width":64,
                  "x":2796,
                  "y":2132
+                }, 
+                {
+                 "gid":7,
+                 "height":64,
+                 "id":474,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"dialogue_num",
+                         "type":"int",
+                         "value":1
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":64,
+                 "x":1619.83550225689,
+                 "y":962.293413029993
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -795,8 +807,8 @@
                  "type":"",
                  "visible":true,
                  "width":256,
-                 "x":880,
-                 "y":1024
+                 "x":1042.54416961131,
+                 "y":1151.20848056537
                 }, 
                 {
                  "gid":35,
@@ -924,8 +936,8 @@
                  "type":"",
                  "visible":true,
                  "width":256,
-                 "x":1264.12658324892,
-                 "y":1153.16037694319
+                 "x":2582.14778466235,
+                 "y":1930.54553595379
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -981,7 +993,6 @@
         {
          "draworder":"topdown",
          "id":9,
-         "locked":true,
          "name":"player",
          "objects":[
                 {
@@ -993,8 +1004,8 @@
                  "type":"",
                  "visible":true,
                  "width":256,
-                 "x":1168.57625264542,
-                 "y":994.680547018784
+                 "x":882.357171373335,
+                 "y":757.93143041101
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -1003,7 +1014,7 @@
          "y":0
         }],
  "nextlayerid":16,
- "nextobjectid":473,
+ "nextobjectid":475,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.10.2",

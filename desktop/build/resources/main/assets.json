@@ -129,8 +129,8 @@
 
         "tutorial:avoidShadow1": "Tutorial/Avoid Shadow/Avoid Shadow_1.png",
         "tutorial:avoidShadow2": "Tutorial/Avoid Shadow/Avoid Shadow_2.png",
-        "tutorial:goToCave1": "Tutorial/Go To Cave/Go to Cave_1.png",
-        "tutorial:goToCave2": "Tutorial/Go To Cave/Go to Cave_2.png",
+        "tutorial:goToCave1": "Tutorial/Go to Cave/Go to Cave_1.png",
+        "tutorial:goToCave2": "Tutorial/Go to Cave/Go to Cave_2.png",
         "tutorial:shakeTree1": "Tutorial/Shake Tree/Shake_Tree_1.png",
         "tutorial:shakeTree2": "Tutorial/Shake Tree/Shake_Tree_2.png",
         "tutorial:shakeTree3": "Tutorial/Shake Tree/Shake_Tree_3.png",
