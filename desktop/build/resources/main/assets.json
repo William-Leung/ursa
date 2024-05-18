@@ -70,6 +70,9 @@
         "homeScreen:aboutButtonClicked": "homeScreen/UI_Button_About_Click.png",
         "homeScreen:aboutScreen": "homeScreen/About.png",
         "homeScreen:logoAnimation": "homeScreen/Logo_Animation.png",
+        "homeScreen:animationV1": "homeScreen/Home Screen_30fps_LowRes_1.png",
+        "homeScreen:animationV2": "homeScreen/Home Screen_30fps_LowRes_2.png",
+
 
         "player:ursaWalk": "player/Walk.png",
         "player:ursaIdle": "player/Idle.png",

@@ -248,7 +248,7 @@ public class GDXRoot extends Game implements ScreenListener {
 				return;
 			}
 			// Enter the corresponding level from the level select
-			for(int i = 1; i < 15; i++) {
+			for(int i = 1; i < 16; i++) {
 				if(exitCode != i) {
 					continue;
 				}
