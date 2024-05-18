@@ -37,7 +37,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
     /** The current position of Ursa */
     private Vector2 ursaPos;
     /** The drawing scale of Ursa */
-    private final float ursaScale = 0.6f;
+    private final float ursaScale = 0.5f;
     /** The direction Ursa is facing (1 for right, -1 for left) */
     private float direction = 1;
     /** How far Ursa can move in one update loop */
@@ -374,8 +374,8 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         for(int i = 0; i < numButtons; i++) {
             canvas.draw(buttonsFilms[i], Color.WHITE, buttonOX, buttonOY, buttonPositions[i].x, buttonPositions[i].y,0f,scale,scale);
         }
-        canvas.draw(ursaShadow, Color.WHITE, ursaShadow.getRegionWidth() / 2f, 0, ursaPos.x, ursaPos.y - ursaScale * ursaWalkFilm.getRegionHeight() * 3/4f, 0, ursaScale, ursaScale);
-        canvas.draw(ursaTexture, Color.WHITE, ursaWalkFilm.getRegionWidth() / 2f, ursaWalkFilm.getRegionHeight() / 2f,ursaPos.x,ursaPos.y - ursaScale * ursaWalkFilm.getRegionHeight() / 4f,0,direction * ursaScale,ursaScale);
+        canvas.draw(ursaShadow, Color.WHITE, ursaShadow.getRegionWidth() / 2f, 0, ursaPos.x, ursaPos.y - ursaScale * ursaWalkFilm.getRegionHeight() /2f, 0, ursaScale, ursaScale);
+        canvas.draw(ursaTexture, Color.WHITE, ursaWalkFilm.getRegionWidth() / 2f, ursaWalkFilm.getRegionHeight() / 2f,ursaPos.x,ursaPos.y,0,direction * ursaScale,ursaScale);
 
         effect.update(1/60f);
         if(effect.isComplete()){
@@ -522,7 +522,6 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
             enterPrevious = enterPressed;
 
             if(Gdx.input.isKeyPressed(Keys.ESCAPE) && time > 30) {
-                System.out.println("hi");
                 listener.exitScreen(this,101);
             }
         }
