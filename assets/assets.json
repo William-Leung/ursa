@@ -61,7 +61,6 @@
         "levelSelect:Level14": "levelSelect/selection_14.png",
         "levelSelect:Level15": "levelSelect/selection_15.png",
 
-        "homeScreen:homeScreenAnimation": "homeScreen/Home Screen_30fps.png",
         "homeScreen:logo": "homeScreen/Logo_Black.png",
         "homeScreen:homeScreen": "homeScreen/Home Screen.png",
         "homeScreen:startButton": "homeScreen/UI_Button_Start.png",
@@ -69,10 +68,10 @@
         "homeScreen:aboutButton": "homeScreen/UI_Button_About.png",
         "homeScreen:aboutButtonClicked": "homeScreen/UI_Button_About_Click.png",
         "homeScreen:aboutScreen": "homeScreen/About.png",
-        "homeScreen:logoAnimation": "homeScreen/Logo_Animation.png",
         "homeScreen:animationV1": "homeScreen/Home Screen_30fps_LowRes_1.png",
         "homeScreen:animationV2": "homeScreen/Home Screen_30fps_LowRes_2.png",
-
+        "homeScreen:logoAnimationV1": "homeScreen/Logo_Animation_LowRes_1.png",
+        "homeScreen:logoAnimationV2": "homeScreen/Logo_Animation_LowRes_2.png",
 
         "player:ursaWalk": "player/Walk.png",
         "player:ursaIdle": "player/Idle.png",

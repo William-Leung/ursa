@@ -19,7 +19,9 @@ public class HomeScreen implements Screen, InputProcessor, ControllerListener {
     private TextureRegion homeScreenTexture;
     private FilmStrip homeScreenV1Film;
     private FilmStrip homeScreenV2Film;
-    private FilmStrip logoFilm;
+    private TextureRegion logoTexture;
+    private FilmStrip logoV1Film;
+    private FilmStrip logoV2Film;
     private TextureRegion homeScreen;
     private TextureRegion startButton;
     private TextureRegion startButtonClicked;
@@ -70,11 +72,7 @@ public class HomeScreen implements Screen, InputProcessor, ControllerListener {
     }
 
     public void gatherAssets(AssetDirectory directory) {
-        homeMusic =directory.getEntry("soundtracks:home_track", Music.class);
-
-        TextureRegion logoAnimation = new TextureRegion(directory.getEntry("homeScreen:logoAnimation", Texture.class));
-        logoFilm = new FilmStrip(logoAnimation.getTexture(), 2, 16);
-        logoFilm.setFrame(0);
+        homeMusic = directory.getEntry("soundtracks:home_track", Music.class);
 
         TextureRegion homeScreenV1Animation = new TextureRegion(directory.getEntry("homeScreen:animationV1", Texture.class));
         homeScreenV1Film = new FilmStrip(homeScreenV1Animation.getTexture(), 2, 8);
@@ -84,6 +82,13 @@ public class HomeScreen implements Screen, InputProcessor, ControllerListener {
         homeScreenV2Film.setFrame(0);
         homeScreenTexture = homeScreenV1Film;
 
+        TextureRegion logoV1Animation = new TextureRegion(directory.getEntry("homeScreen:logoAnimationV1", Texture.class));
+        logoV1Film = new FilmStrip(logoV1Animation.getTexture(), 2, 8);
+        logoV1Film.setFrame(0);
+        TextureRegion logoV2Animation = new TextureRegion(directory.getEntry("homeScreen:logoAnimationV1", Texture.class));
+        logoV2Film = new FilmStrip(logoV2Animation.getTexture(), 2, 8);
+        logoV2Film.setFrame(0);
+        homeScreenTexture = logoV1Film;
 
         blackTexture = new TextureRegion(directory.getEntry("polar:black", Texture.class));
         logo = new TextureRegion(directory.getEntry("homeScreen:logo", Texture.class));
@@ -122,6 +127,7 @@ public class HomeScreen implements Screen, InputProcessor, ControllerListener {
             aboutButtonTexture = aboutButton;
         }
 
+        // Animate the home screen
         if(isAnimatingHomeScreen && currentFrame % 2 == 0) {
             if (homeScreenV1Film.getFrame() < 15) {
                 homeScreenV1Film.setFrame(homeScreenV1Film.getFrame() + 1);
@@ -134,6 +140,21 @@ public class HomeScreen implements Screen, InputProcessor, ControllerListener {
                 }
                 homeScreenV2Film.setFrame(homeScreenV2Film.getFrame() + 1);
                 homeScreenTexture = homeScreenV2Film;
+            }
+        }
+
+        // Animate the logo if the home screen is not animating
+        if(!isAnimatingHomeScreen && currentFrame % 2 == 0) {
+            if(logoV1Film.getFrame() < 15) {
+                logoV1Film.setFrame(logoV1Film.getFrame() + 1);
+                logoTexture = logoV1Film;
+            } else if(logoV2Film.getFrame() < 12) {
+                logoV2Film.setFrame(logoV2Film.getFrame() + 1);
+                logoTexture = logoV2Film;
+            } else if(logoV2Film.getFrame() == 12) {
+                logoV1Film.setFrame(0);
+                logoV2Film.setFrame(0);
+                logoTexture = logoV1Film;
             }
         }
     }
@@ -169,7 +190,7 @@ public class HomeScreen implements Screen, InputProcessor, ControllerListener {
                 // Switch to the static home screen
                 float scaleFactor = canvas.getHeight() / (float) homeScreen.getRegionHeight();
                 canvas.draw(homeScreen, Color.WHITE, homeScreen.getRegionWidth() /2f, homeScreen.getRegionHeight() / 2f, canvas.getCameraX(), canvas.getCameraY(), 0, scaleFactor, scaleFactor);
-                canvas.draw(logoFilm, Color.WHITE, logoFilm.getRegionWidth() / 2f, logoFilm.getRegionHeight() / 2f, 1281.5f * scaleFactor, 600f * scaleFactor, 0, scaleFactor, scaleFactor);
+                canvas.draw(logoTexture, Color.WHITE, 0, 0, 0, 0, 0, 1 / 1.25f, 1 / 1.25f);
                 canvas.draw(startButtonTexture, Color.WHITE, startButtonTexture.getRegionWidth() / 2f, startButtonTexture.getRegionHeight() / 2f, 1281.5f * scaleFactor, 489.5f * scaleFactor, 0,scaleFactor,scaleFactor);
                 canvas.draw(aboutButtonTexture, Color.WHITE, aboutButtonTexture.getRegionWidth() / 2f, aboutButtonTexture.getRegionHeight() / 2f, 1281.5f * scaleFactor, 350.5f * scaleFactor, 0,scaleFactor,scaleFactor);
             }
