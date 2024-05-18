@@ -1017,21 +1017,21 @@ public class SceneModel extends WorldController implements ContactListener {
         if(doGriddy){
 
             ursa.setTexture(playerCaughtFilm);
-            if(playerCaughtFilm.getFrame() <3 ){
+            if(playerCaughtFilm.getFrame() <1 ){
 
                 reverse = false;
-                playerCaughtFilm.setFrame(3);
+                playerCaughtFilm.setFrame(1);
             }
             if(playerCaughtFilm.getFrame() > 7){
                 playerCaughtFilm.setFrame(7);
                 reverse = true;
             }
 
-            if(playerCaughtFilm.getFrame() >=3 && playerCaughtFilm.getFrame()<=7 && !reverse && timer % 5 == 0){
+            if(playerCaughtFilm.getFrame() >=1 && playerCaughtFilm.getFrame()<=7 && !reverse && timer % 3 == 0){
 
                 playerCaughtFilm.setFrame(playerCaughtFilm.getFrame()+1);
             }
-            if(playerCaughtFilm.getFrame() >=3 && playerCaughtFilm.getFrame()<=7 && reverse && timer % 5 == 0){
+            if(playerCaughtFilm.getFrame() >=1 && playerCaughtFilm.getFrame()<=7 && reverse && timer % 3 == 0){
 
                 playerCaughtFilm.setFrame(playerCaughtFilm.getFrame()-1);
             }
