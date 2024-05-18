@@ -612,8 +612,8 @@
                  "type":"",
                  "visible":true,
                  "width":512,
-                 "x":1425.32967635765,
-                 "y":1536.89083927592
+                 "x":1432.05688792845,
+                 "y":1614.25377234016
                 }, 
                 {
                  "gid":16,
@@ -810,7 +810,7 @@
                         {
                          "name":"rotation_delay",
                          "type":"int",
-                         "value":210
+                         "value":150
                         }, 
                         {
                          "name":"rotation_speed",
