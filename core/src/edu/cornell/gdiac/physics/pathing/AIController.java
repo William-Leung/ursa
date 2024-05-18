@@ -215,7 +215,6 @@ public class AIController {
         ticks++;
 
         if (isDetected()) {
-            System.out.println("Detected rn " + ticks);
             ticks_detected++;
             last_time_detected = ticks;
         } else {

@@ -67,7 +67,6 @@ public class GDXRoot extends Game implements ScreenListener {
 	public void create() {
 		prefs = Gdx.app.getPreferences("Completed Data");
 		levelsCompleted = 20;
-		System.out.println("levels completed " + levelsCompleted);
 		canvas  = new GameCanvas();
 		loading = new LoadingMode("assets.json",canvas,1);
 
@@ -176,7 +175,6 @@ public class GDXRoot extends Game implements ScreenListener {
 	 * @param height The new height in pixels
 	 */
 	public void resize(int width, int height) {
-		System.out.println("Resizing");
 		canvas.resize();
 		super.resize(width,height);
 	}
@@ -193,7 +191,6 @@ public class GDXRoot extends Game implements ScreenListener {
 		boolean debug = false;
 		if (screen == loading) {
 			if(exitCode == 11) {
-				System.out.println("Shutting down");
 				dispose();
 				shutdownApplication();
 				Gdx.app.exit();
@@ -222,7 +219,6 @@ public class GDXRoot extends Game implements ScreenListener {
 			}
 		} else if(screen == homeScreen) {
 			if(exitCode == 11) {
-				System.out.println("Shutting down");
 				dispose();
 				shutdownApplication();
 				Gdx.app.exit();
@@ -306,7 +302,6 @@ public class GDXRoot extends Game implements ScreenListener {
 				levelsCompleted += 1;
 				controllers[current].setWasCompleted(true);
 				prefs.putFloat("completed", prefs.getFloat("completed")+1);
-				System.out.println(prefs.getFloat("completed"));
 				prefs.flush();
 			}
 			// Create the retry menu where we've won

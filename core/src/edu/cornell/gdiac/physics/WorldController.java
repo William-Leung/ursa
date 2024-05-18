@@ -409,7 +409,6 @@ public abstract class WorldController implements Screen {
 
 		// Now it is time to maybe switch screens.
 		if (input.didExit() && paused ) {
-			System.out.println("exit");
 			pause();
 			listener.exitScreen(this, EXIT_QUIT);
 			return false;
@@ -455,7 +454,6 @@ public abstract class WorldController implements Screen {
 	public void postUpdate(float dt) {
 		// Add any objects created by actions
 		while (!addQueue.isEmpty()) {
-			System.out.println("Creating objects...");
 			addObject(addQueue.poll());
 		}
 
