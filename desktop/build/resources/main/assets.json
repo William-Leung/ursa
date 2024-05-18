@@ -55,6 +55,7 @@
         "homeScreen:aboutButton": "homeScreen/UI_Button_About.png",
         "homeScreen:aboutButtonClicked": "homeScreen/UI_Button_About_Click.png",
         "homeScreen:aboutScreen": "homeScreen/About.png",
+        "homeScreen:logoAnimation": "homeScreen/Logo_Animation.png",
 
         "player:ursaWalk": "player/Walk.png",
         "player:ursaIdle": "player/Idle.png",

@@ -16,6 +16,7 @@ import edu.cornell.gdiac.util.ScreenListener;
 
 public class HomeScreen implements Screen, InputProcessor, ControllerListener {
     private FilmStrip homeScreenFilm;
+    private FilmStrip logoFilm;
     private TextureRegion homeScreen;
     private TextureRegion startButton;
     private TextureRegion startButtonClicked;
@@ -63,6 +64,9 @@ public class HomeScreen implements Screen, InputProcessor, ControllerListener {
         TextureRegion homeScreenAnimation = new TextureRegion(directory.getEntry("homeScreen:homeScreenAnimation", Texture.class));
         homeScreenFilm = new FilmStrip(homeScreenAnimation.getTexture(), 3, 16);
         homeScreenFilm.setFrame(0);
+        TextureRegion logoAnimation = new TextureRegion(directory.getEntry("homeScreen:logoAnimation", Texture.class));
+        logoFilm = new FilmStrip(logoAnimation.getTexture(), 2, 16);
+        logoFilm.setFrame(0);
         blackTexture = new TextureRegion(directory.getEntry("polar:black", Texture.class));
         logo = new TextureRegion(directory.getEntry("homeScreen:logo", Texture.class));
         homeScreen = new TextureRegion(directory.getEntry("homeScreen:homeScreen", Texture.class));
@@ -139,6 +143,7 @@ public class HomeScreen implements Screen, InputProcessor, ControllerListener {
                 // Switch to the static home screen
                 float scaleFactor = canvas.getHeight() / (float) homeScreen.getRegionHeight();
                 canvas.draw(homeScreen, Color.WHITE, homeScreen.getRegionWidth() /2f, homeScreen.getRegionHeight() / 2f, canvas.getCameraX(), canvas.getCameraY(), 0, scaleFactor, scaleFactor);
+                canvas.draw(logoFilm, Color.WHITE, logoFilm.getRegionWidth() / 2f, logoFilm.getRegionHeight() / 2f, 1281.5f * scaleFactor, 600f * scaleFactor, 0, scaleFactor, scaleFactor);
                 canvas.draw(startButtonTexture, Color.WHITE, startButtonTexture.getRegionWidth() / 2f, startButtonTexture.getRegionHeight() / 2f, 1281.5f * scaleFactor, 489.5f * scaleFactor, 0,scaleFactor,scaleFactor);
                 canvas.draw(aboutButtonTexture, Color.WHITE, aboutButtonTexture.getRegionWidth() / 2f, aboutButtonTexture.getRegionHeight() / 2f, 1281.5f * scaleFactor, 350.5f * scaleFactor, 0,scaleFactor,scaleFactor);
             }
