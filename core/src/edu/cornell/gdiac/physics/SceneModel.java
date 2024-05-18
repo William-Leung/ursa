@@ -978,7 +978,7 @@ public class SceneModel extends WorldController implements ContactListener {
         float xVal = InputController.getInstance().getHorizontal() * ursa.getForce();
         float yVal = InputController.getInstance().getVertical() * ursa.getForce();
         if(InputController.getInstance().getVertical() != 0 || InputController.getInstance().getHorizontal() !=0){
-            System.out.println("first");
+
             doGriddy = false;
         }
         ursa.setMovement(xVal, yVal);
@@ -1210,7 +1210,7 @@ public class SceneModel extends WorldController implements ContactListener {
                 levelMusicTense.stop();
                 levelMusicNight.stop();
             }
-            System.out.println("beginning");
+
             if(((bd1.getName().contains("enemy")) && bd2.getName().contains("ice")) || ((bd1.getName().contains("ice")) && bd2.getName().contains("enemy"))){
                 System.out.println("touching ice");
                 bd1.setLinearDamping(10000);

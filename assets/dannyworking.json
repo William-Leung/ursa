@@ -1587,12 +1587,6 @@
                  "height":256,
                  "id":606,
                  "name":"2",
-                 "properties":[
-                        {
-                         "name":"speed",
-                         "type":"float",
-                         "value":1
-                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,

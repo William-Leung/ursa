@@ -142,7 +142,7 @@ public class HomeScreen implements Screen, InputProcessor, ControllerListener {
             if(isAnimatingHomeScreen) {
                 // Draw the animated home screen
                 float scaleFactor = canvas.getHeight() / (float) homeScreenFilm.getRegionHeight();
-                System.out.println(scaleFactor);
+
                // canvas.draw(homeScreenFilm, Color.WHITE, homeScreenFilm.getRegionWidth() / 2f, homeScreenFilm.getRegionHeight() / 2f, canvas.getCameraX(), canvas.getCameraY(), 0,scaleFactor, scaleFactor);
             } else if(inAboutScreen) {
                 canvas.draw(aboutScreen, Color.WHITE, 0, 0, canvas.getWidth(), canvas.getHeight());

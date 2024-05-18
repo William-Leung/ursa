@@ -71,7 +71,7 @@ public class GDXRoot extends Game implements ScreenListener {
 		camY = canvas.getCameraY();
 
 		controllers = new WorldController[25];
-		controllers[0] = new SceneModel("dannyworking.json");
+		controllers[0] = new SceneModel("dannyworking4.json");
 		controllers[1] = new SceneModel("dannyworking2.json");
 		controllers[2] = new SceneModel("dannyworking3.json");
 		controllers[3] = new SceneModel("rigel_level_4.json");
@@ -147,7 +147,7 @@ public class GDXRoot extends Game implements ScreenListener {
 	 * @param exitCode The state of the screen upon exit
 	 */
 	public void exitScreen(Screen screen, int exitCode) {
-		boolean debug = false;
+		boolean debug = true;
 		if (screen == loading) {
 			directory = loading.getAssets();
 			if(debug) {
@@ -259,7 +259,7 @@ public class GDXRoot extends Game implements ScreenListener {
 				levelsCompleted += 1;
 				controllers[current].setWasCompleted(true);
 				prefs.putFloat("completed", prefs.getFloat("completed")+1);
-				System.out.println(prefs.getFloat("completed"));
+
 				prefs.flush();
 			}
 			// Create the retry menu where we've won
