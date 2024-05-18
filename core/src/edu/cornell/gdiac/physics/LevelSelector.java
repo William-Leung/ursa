@@ -85,7 +85,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         canvas.setCam(canvas.getWidth() / 2f, canvas.getHeight() / 2f);
 
         Gdx.input.setInputProcessor( this );
-        Arrays.fill(buttonsUnlocked, false);
+        Arrays.fill(buttonsUnlocked, true);
         buttonsUnlocked[0] = true;
 
         effect = new ParticleEffect();
@@ -520,6 +520,9 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
             if(enterPrevious && !enterPressed){
                 for (int i = 0; i < buttonPositions.length; i++) {
                     float interactDistance = buttonRadius;
+                    if(i == 14) {
+                        System.out.println(buttonsUnlocked[i] + " " +( Math.abs(buttonPositions[i].x-ursaPos.x) < interactDistance));
+                    }
                     if(buttonsUnlocked[i] && Math.abs(buttonPositions[i].x-ursaPos.x) < interactDistance
                             && Math.abs(buttonPositions[i].y-ursaPos.y) < interactDistance){
                         listener.exitScreen(this,i+1);
@@ -532,7 +535,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
             enterPrevious = enterPressed;
 
             if(Gdx.input.isKeyPressed(Keys.ESCAPE) && time > 30) {
-                listener.exitScreen(this,101);
+                listener.exitScreen(this,11);
             }
         }
     }
