@@ -194,8 +194,18 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
         buttonRadius = 180 * scale;
         moveTarget = ursaPos;
         moveTargetIndex = currentLevel;
+        resetCam();
     }
 
+    private void resetCam() {
+        if(ursaPos.x > canvas.getWidth() / 2f && ursaPos.x < background.getRegionWidth() * scale - canvas.getWidth() / 2f) {
+            canvas.setCam(ursaPos.x, canvas.getHeight() / 2f);
+        } else if(ursaPos.x <= canvas.getWidth() / 2f) {
+            canvas.setCam(canvas.getWidth() / 2f, canvas.getHeight() / 2f);
+        } else if(ursaPos.x >= background.getRegionWidth() * scale - canvas.getWidth() / 2f) {
+            canvas.setCam(background.getRegionWidth() * scale - canvas.getWidth() / 2f, canvas.getHeight() / 2f);
+        }
+    }
 
     private void update(float delta){
         time += 1;
