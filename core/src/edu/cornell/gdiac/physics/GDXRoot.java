@@ -78,19 +78,20 @@ public class GDXRoot extends Game implements ScreenListener {
 
 		controllers[0] = new SceneModel("rigel_tutorial_1_Ver_W.json");
 		controllers[1] = new SceneModel("rigel_tutorial_2_Ver_Z.json");
-		controllers[2] = new SceneModel("rigel_tutorial_3_Ver_Z.json");
-		controllers[3] = new SceneModel("rigel_tutorial_4_Ver_Z.json");
-		controllers[4] = new SceneModel("rigel_tutorial_5_Ver_W.json");
-		controllers[5] = new SceneModel("rigel_tutorial_6_Ver_Z.json");
-		controllers[6] = new SceneModel("rigel_tutorial_7_Ver_Z.json");
-		controllers[7] = new SceneModel("levelD_Ver_A.json");
-		controllers[8] = new SceneModel("level_athena_Ver_A.json");
-		controllers[9] = new SceneModel("dannyworking.json");
-		controllers[10] = new SceneModel("rigel_tutorial_1.json");
-		controllers[11] =new SceneModel("rigel_tutorial_1.json");
-		controllers[12] = new SceneModel("yklevel.json");
-		controllers[13] = new SceneModel("rigel_tutorial_1.json");
-		controllers[14] = new SceneModel("rigel_tutorial_1.json");
+		controllers[2] = new SceneModel("rigel_tutorial_2.5_Ver_Z.json");
+		controllers[3] = new SceneModel("rigel_tutorial_3_Ver_Z.json");
+		controllers[4] = new SceneModel("rigel_tutorial_4_Ver_Z.json");
+		controllers[5] = new SceneModel("rigel_tutorial_5_Ver_W.json");
+		controllers[6] = new SceneModel("rigel_tutorial_6_Ver_Z.json");
+		controllers[7] = new SceneModel("rigel_tutorial_7_Ver_Z.json");
+		controllers[8] = new SceneModel("athena_level_Ver_A.json");
+		controllers[9] = new SceneModel("dylan_level_1_Ver_A.json");
+		controllers[10] = new SceneModel("danny_level_Ver_Z.json");
+		controllers[11] = new SceneModel("dylan_level_2_Ver_Z.json");
+		controllers[12] = new SceneModel("zekai_level_complete.json");
+		controllers[13] = new SceneModel("rigel_level_hard_1_Ver_Z.json");
+		controllers[14] = new SceneModel("yusuf_level_Ver_Z.json");
+
 
 		for(int i = 0; i < prefs.getFloat("completed");i++){
 			controllers[i].setWasCompleted(true);
