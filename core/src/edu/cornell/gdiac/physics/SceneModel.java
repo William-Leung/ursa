@@ -1543,6 +1543,8 @@ public class SceneModel extends WorldController implements ContactListener {
 
             Enemy enemy = new Enemy(drawToScreenCoordinates(x), drawToScreenCoordinates(y) + height / 2,20,20,constants.get("enemy"), width, height, textureScale);
             enemy.setDrawScale(scale);
+            enemy.setDensity(.0f);
+            enemy.setMass(.01f);
             enemy.setLookDirection(1, 0);
             enemy.setTexture(salmonUprightWalkFilm);
             enemy.setShadowTexture(salmonShadowTexture);
