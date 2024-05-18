@@ -71,19 +71,20 @@ public class GDXRoot extends Game implements ScreenListener {
 		camY = canvas.getCameraY();
 
 		controllers = new WorldController[25];
-		controllers[0] = new SceneModel("dannyworking.json");
-		controllers[1] = new SceneModel("dannyworking2.json");
-		controllers[2] = new SceneModel("dannyworking3.json");
+
+		controllers[0] = new SceneModel("rigel_tutorial_1_Athena_modified.json");
+		controllers[1] = new SceneModel("rigel_tutorial_2_Athena_modified.json");
+		controllers[2] = new SceneModel("rigel_tutorial_3_Athena_modified.json");
 		controllers[3] = new SceneModel("rigel_level_4.json");
 		controllers[4] = new SceneModel("rigel_level_5.json");
 		controllers[5] = new SceneModel("levelD2.json");
 		controllers[6] = new SceneModel("rigel_level_7.json");
 		controllers[7] = new SceneModel("levelD.json");
-		controllers[8] = new SceneModel("rigel_tutorial_1.json");
+		controllers[8] = new SceneModel("level_athena.json");
 		controllers[9] = new SceneModel("dannyworking.json");
 		controllers[10] = new SceneModel("rigel_tutorial_1.json");
 		controllers[11] =new SceneModel("rigel_tutorial_1.json");
-		controllers[12] = new SceneModel("rigel_tutorial_1.json");
+		controllers[12] = new SceneModel("yklevel_Athena_Modified.json");
 		controllers[13] =new SceneModel("rigel_tutorial_1.json");
 		controllers[14] = new SceneModel("rigel_tutorial_1.json");
 
