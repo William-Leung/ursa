@@ -38,7 +38,7 @@ public class AIController {
     /** Time when enemy spawns where they cannot do anything */
     private static final int SPAWN_TICKS = 30;
     /** Time in range before changing confused to attack */
-    private static final int CONFUSE_TIME = 12;
+    private static final int CONFUSE_TIME = 30;
     /** ticks enemy will stay engaged in if chasing but not in cone */
     private static final int CHASE_MEMORY = 80;
     /** Amount of uninterrupted time player can spend in cone before losing */
@@ -795,10 +795,20 @@ public class AIController {
 
 
     public void rotateEnemy(float rotSpeed, float goalAngle) {
-        if (enemy.getLookAngle() < goalAngle) {
-            enemy.rotateLookDirection(rotSpeed);
-        } else if (enemy.getLookAngle() > goalAngle) {
-            enemy.rotateLookDirection(-rotSpeed);
+        float lookAngle = enemy.getLookAngle();
+        float change = goalAngle - lookAngle;
+        if (Math.abs(change) > 180) {
+            if (goalAngle < lookAngle) {
+                enemy.rotateLookDirection(rotSpeed);
+            } else {
+                enemy.rotateLookDirection(-rotSpeed);
+            }
+        } else {
+            if (goalAngle < lookAngle) {
+                enemy.rotateLookDirection(-rotSpeed);
+            } else {
+                enemy.rotateLookDirection(rotSpeed);
+            }
         }
     }
 

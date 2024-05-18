@@ -815,7 +815,7 @@
                         {
                          "name":"rotation_speed",
                          "type":"float",
-                         "value":3
+                         "value":0.75
                         }, 
                         {
                          "name":"rotations",
