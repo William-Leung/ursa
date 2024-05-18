@@ -173,19 +173,6 @@ public class Board {
         return Math.min((int) (y / tile_height), height - 1);
     }
 
-    public void printTiles() {
-        System.out.println("[");
-        for (int i = 0; i < width; i++) {
-            System.out.print("    [");
-            for (int j = 0; j < height; j++) {
-                if (!getBlocked(i, j)) System.out.print("O");
-                else System.out.print("X");
-            }
-            System.out.println("]");
-        }
-        System.out.println("]");
-    }
-
     public boolean inBounds(int x, int y) {
         return x >= 0 && x < width && y >= 0 && y < height;
     }

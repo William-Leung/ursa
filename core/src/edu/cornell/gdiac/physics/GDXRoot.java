@@ -67,7 +67,6 @@ public class GDXRoot extends Game implements ScreenListener {
 	public void create() {
 		prefs = Gdx.app.getPreferences("Completed Data");
 		levelsCompleted = 20;
-		System.out.println("levels completed " + levelsCompleted);
 		canvas  = new GameCanvas();
 		loading = new LoadingMode("assets.json",canvas,1);
 
@@ -78,19 +77,20 @@ public class GDXRoot extends Game implements ScreenListener {
 
 		controllers[0] = new SceneModel("rigel_tutorial_1_Ver_W.json");
 		controllers[1] = new SceneModel("rigel_tutorial_2_Ver_Z.json");
-		controllers[2] = new SceneModel("rigel_tutorial_3_Ver_Z.json");
-		controllers[3] = new SceneModel("rigel_tutorial_4_Ver_Z.json");
-		controllers[4] = new SceneModel("rigel_tutorial_5_Ver_Z.json");
-		controllers[5] = new SceneModel("rigel_tutorial_6_Ver_Z.json");
-		controllers[6] = new SceneModel("rigel_tutorial_7_Ver_Z.json");
-		controllers[7] = new SceneModel("levelD.json");
-		controllers[8] = new SceneModel("level_athena.json");
-		controllers[9] = new SceneModel("dannyworking.json");
-		controllers[10] = new SceneModel("rigel_tutorial_1.json");
-		controllers[11] =new SceneModel("rigel_tutorial_1.json");
-		controllers[12] = new SceneModel("yklevel.json");
-		controllers[13] =new SceneModel("rigel_tutorial_1.json");
-		controllers[14] = new SceneModel("rigel_tutorial_1.json");
+		controllers[2] = new SceneModel("rigel_tutorial_2.5_Ver_Z.json");
+		controllers[3] = new SceneModel("rigel_tutorial_3_Ver_Z.json");
+		controllers[4] = new SceneModel("rigel_tutorial_4_Ver_Z.json");
+		controllers[5] = new SceneModel("rigel_tutorial_5_Ver_W.json");
+		controllers[6] = new SceneModel("rigel_tutorial_6_Ver_Z.json");
+		controllers[7] = new SceneModel("rigel_tutorial_7_Ver_Z.json");
+		controllers[8] = new SceneModel("athena_level_Ver_A.json");
+		controllers[9] = new SceneModel("dylan_level_1_Ver_A.json");
+		controllers[10] = new SceneModel("danny_level_Ver_Z.json");
+		controllers[11] = new SceneModel("dylan_level_2_Ver_Z.json");
+		controllers[12] = new SceneModel("zekai_level_complete.json");
+		controllers[13] = new SceneModel("rigel_level_hard_1_Ver_Z.json");
+		controllers[14] = new SceneModel("yusuf_level_Ver_Z.json");
+
 
 		for(int i = 0; i < prefs.getFloat("completed");i++){
 			controllers[i].setWasCompleted(true);
@@ -175,7 +175,6 @@ public class GDXRoot extends Game implements ScreenListener {
 	 * @param height The new height in pixels
 	 */
 	public void resize(int width, int height) {
-		System.out.println("Resizing");
 		canvas.resize();
 		super.resize(width,height);
 	}
@@ -192,7 +191,6 @@ public class GDXRoot extends Game implements ScreenListener {
 		boolean debug = false;
 		if (screen == loading) {
 			if(exitCode == 11) {
-				System.out.println("Shutting down");
 				dispose();
 				shutdownApplication();
 				Gdx.app.exit();
@@ -221,7 +219,6 @@ public class GDXRoot extends Game implements ScreenListener {
 			}
 		} else if(screen == homeScreen) {
 			if(exitCode == 11) {
-				System.out.println("Shutting down");
 				dispose();
 				shutdownApplication();
 				Gdx.app.exit();
@@ -248,7 +245,7 @@ public class GDXRoot extends Game implements ScreenListener {
 				return;
 			}
 			// Enter the corresponding level from the level select
-			for(int i = 0; i < 15; i++) {
+			for(int i = 1; i < 16; i++) {
 				if(exitCode != i) {
 					continue;
 				}
@@ -284,7 +281,7 @@ public class GDXRoot extends Game implements ScreenListener {
 				levelSelector.setActive(true);
 			}
 			else if(exitCode == 3){
-				current += 1;
+				current = Math.min(current + 1, 14);
 
 				controllers[current].gatherAssets(directory);
 				controllers[current].setScreenListener(this);
@@ -305,7 +302,6 @@ public class GDXRoot extends Game implements ScreenListener {
 				levelsCompleted += 1;
 				controllers[current].setWasCompleted(true);
 				prefs.putFloat("completed", prefs.getFloat("completed")+1);
-				System.out.println(prefs.getFloat("completed"));
 				prefs.flush();
 			}
 			// Create the retry menu where we've won

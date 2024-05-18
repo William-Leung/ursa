@@ -169,7 +169,8 @@ public class InputController {
 	 * @return true if the reset button was pressed.
 	 */
 	public boolean didReset() {
-		return resetPressed && !resetPrevious;
+		return false;
+//		return resetPressed && !resetPrevious;
 	}
 
 	/**

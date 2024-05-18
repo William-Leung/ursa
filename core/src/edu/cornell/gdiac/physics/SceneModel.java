@@ -624,7 +624,6 @@ public class SceneModel extends WorldController implements ContactListener {
         levelMusicTense.setVolume(0);
         paused = false;
         populateLevel();
-        System.out.println(" ====== Reset ===== ");
     }
 
 
@@ -694,13 +693,6 @@ public class SceneModel extends WorldController implements ContactListener {
                         salmonDetectedIndex = (salmonDetectedIndex + 1) % 30;
                     }
                 } else if (i.isConfused() || i.isStunned() || i.earlyLooking()) {
-                    if(i.isConfused()) {
-                        System.out.println("Enemy is confused.");
-                    }
-                    if (i.isStunned()) {
-                        System.out.println("Enemy is stunned.");
-                    }
-
                     salmonConfusedFilm.setFrame(i.get_confused_anim_index());
                     i.getEnemy().setTexture(salmonConfusedFilm);
                     i.inc_anim_index();
@@ -991,7 +983,6 @@ public class SceneModel extends WorldController implements ContactListener {
         float xVal = InputController.getInstance().getHorizontal() * ursa.getForce();
         float yVal = InputController.getInstance().getVertical() * ursa.getForce();
         if(InputController.getInstance().getVertical() != 0 || InputController.getInstance().getHorizontal() !=0){
-
             doGriddy = false;
         }
         ursa.setMovement(xVal, yVal);
@@ -1223,9 +1214,7 @@ public class SceneModel extends WorldController implements ContactListener {
                 levelMusicTense.stop();
                 levelMusicNight.stop();
             }
-
             if(((bd1.getName().contains("enemy")) && bd2.getName().contains("ice")) || ((bd1.getName().contains("ice")) && bd2.getName().contains("enemy"))){
-                System.out.println("touching ice");
                 bd1.setLinearDamping(10000);
                 bd2.setLinearDamping(10000);
                 bd2.setVX(0);
@@ -1368,13 +1357,11 @@ public class SceneModel extends WorldController implements ContactListener {
             else if(blackTextureAlpha<0){
                 blackTextureAlpha = 0;
             }
-            System.out.println("start lose");
             Color color = new Color(255,255,255,blackTextureAlpha);
             canvas.draw(blackTexture,color, canvas.getCameraX() - canvas.getWidth() /2f, canvas.getCameraY() - canvas.getHeight() /2f, canvas.getWidth(), canvas.getHeight());
             canvas.draw(retryTextures[0],Color.WHITE, 0,retryTextures[0].getRegionHeight() / 2f,canvas.getCameraX() - canvas.getWidth()/2 -925 + caughtBarXOffset, canvas.getCameraY(),0,textureScale* retryUIScale,textureScale*retryUIScale );
             canvas.draw(retryTextures[1],Color.WHITE,retryTextures[1].getRegionWidth(),retryTextures[1].getRegionHeight() /2f,canvas.getCameraX() + canvas.getWidth() + 70f  - ursaCaughtXOffset, canvas.getCameraY(),0,retryUIScale * textureScale,retryUIScale * textureScale);
             if(blackTextureAlpha >= 1){
-                System.out.println("setting complete");
                 setFailure(true);
             }
         }
