@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="18" height="11" tilewidth="256" tileheight="256" infinite="0" nextlayerid="16" nextobjectid="380">
  <editorsettings>
-  <export target="../template.json" format="json"/>
+  <export target="danny working.json" format="json"/>
  </editorsettings>
  <tileset firstgid="1" source="64x64.tsx"/>
  <tileset firstgid="9" source="128x128.tsx"/>
