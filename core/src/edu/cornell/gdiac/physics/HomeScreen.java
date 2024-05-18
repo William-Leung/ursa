@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.graphics.Color;
@@ -25,13 +26,14 @@ public class HomeScreen implements Screen, InputProcessor, ControllerListener {
     private TextureRegion aboutButtonClicked;
     private TextureRegion aboutButtonTexture;
     private TextureRegion aboutScreen;
+    private Music homeMusic;
 
 
     GameCanvas canvas;
     private boolean active;
     private TextureRegion blackTexture;
     private TextureRegion logo;
-    private int time;
+    private int currentFrame;
     private ScreenListener listener;
     private Color tint;
     private final int logoDuration = 240;
@@ -41,9 +43,10 @@ public class HomeScreen implements Screen, InputProcessor, ControllerListener {
     private int startPressState = 0;
     private int aboutPressState = 0;
     private boolean inAboutScreen = false;
+    private int homeScreenStartedFrame = 0;
 
     public HomeScreen(GameCanvas NewCanvas, boolean playAnimation) {
-        time = 0;
+        currentFrame = 0;
         canvas = NewCanvas;
         canvas.setCam(canvas.getWidth() / 2f, canvas.getHeight() /2f);
         active = false;
@@ -52,17 +55,21 @@ public class HomeScreen implements Screen, InputProcessor, ControllerListener {
         isAnimatingHomeScreen = false;
 
         if(!playAnimation) {
-            time = logoDuration;
+            currentFrame = logoDuration;
         }
+        homeScreenStartedFrame = currentFrame;
     }
+    
 
     public void setActive(boolean b){
         active = b;
     }
 
     public void gatherAssets(AssetDirectory directory) {
+        homeMusic =directory.getEntry("soundtracks:home_track", Music.class);
+
         TextureRegion homeScreenAnimation = new TextureRegion(directory.getEntry("homeScreen:homeScreenAnimation", Texture.class));
-        homeScreenFilm = new FilmStrip(homeScreenAnimation.getTexture(), 3, 16);
+        homeScreenFilm = new FilmStrip(homeScreenAnimation.getTexture(), 5, 8);
         homeScreenFilm.setFrame(0);
         TextureRegion logoAnimation = new TextureRegion(directory.getEntry("homeScreen:logoAnimation", Texture.class));
         logoFilm = new FilmStrip(logoAnimation.getTexture(), 2, 16);
@@ -78,13 +85,12 @@ public class HomeScreen implements Screen, InputProcessor, ControllerListener {
     }
 
     private void update(float delta){
-        time++;
-
-
+        currentFrame++;
+        
         if(inAboutScreen) {
             if(Gdx.input.isKeyPressed(Keys.ESCAPE) || Gdx.input.isKeyPressed(Keys.Q)) {
                 homeScreenFilm.setFrame(0);
-                time = logoDuration;
+                currentFrame = logoDuration;
                 isAnimatingHomeScreen = true;
                 inAboutScreen = false;
             } else {
@@ -104,7 +110,7 @@ public class HomeScreen implements Screen, InputProcessor, ControllerListener {
             aboutButtonTexture = aboutButton;
         }
 
-        if(isAnimatingHomeScreen && time % 2 == 0) {
+        if(isAnimatingHomeScreen && currentFrame % 2 == 0) {
             if(homeScreenFilm.getFrame() == 35) {
                 homeScreenFilm.setFrame(0);
                 isAnimatingHomeScreen = false;
@@ -114,30 +120,30 @@ public class HomeScreen implements Screen, InputProcessor, ControllerListener {
         }
     }
 
+
     private void draw(){
         canvas.clear();
         canvas.begin();
 
         canvas.draw(blackTexture, Color.WHITE, canvas.getCameraX() - canvas.getWidth() /2f, canvas.getCameraY() - canvas.getHeight() / 2f, canvas.getWidth(), canvas.getHeight());
-        if(time < logoDuration / 2) {
+        if(currentFrame < logoDuration / 2) {
             // Fade the logo in
-            tint.a = (logoDuration / 2f - time) / (logoDuration / 2f);
+            tint.a = (logoDuration / 2f - currentFrame) / (logoDuration / 2f);
             canvas.draw(logo, Color.WHITE, logo.getRegionWidth() / 2f, logo.getRegionHeight() /2f, canvas.getCameraX(), canvas.getCameraY(), 0, logoScale,logoScale);
             canvas.draw(blackTexture, tint, 0, 0, canvas.getWidth(), canvas.getHeight());
-        } else if(time < logoDuration) {
+        } else if(currentFrame < logoDuration) {
             // Fade the logo out
-            tint.a = 1 - (logoDuration - time) / (logoDuration / 2f);
+            tint.a = 1 - (logoDuration - currentFrame) / (logoDuration / 2f);
             canvas.draw(logo, Color.WHITE, logo.getRegionWidth() / 2f, logo.getRegionHeight() /2f, canvas.getCameraX(), canvas.getCameraY(), 0, logoScale,logoScale);
             canvas.draw(blackTexture, tint, 0, 0, canvas.getWidth(), canvas.getHeight());
         } else {
             // If we're here for the first time, start rolling the home screen film strip
-            if(time == logoDuration) {
+            if(currentFrame == logoDuration) {
                 isAnimatingHomeScreen = true;
             }
             if(isAnimatingHomeScreen) {
                 // Draw the animated home screen
                 float scaleFactor = canvas.getHeight() / (float) homeScreenFilm.getRegionHeight();
-                System.out.println(scaleFactor);
                // canvas.draw(homeScreenFilm, Color.WHITE, homeScreenFilm.getRegionWidth() / 2f, homeScreenFilm.getRegionHeight() / 2f, canvas.getCameraX(), canvas.getCameraY(), 0,scaleFactor, scaleFactor);
             } else if(inAboutScreen) {
                 canvas.draw(aboutScreen, Color.WHITE, 0, 0, canvas.getWidth(), canvas.getHeight());
@@ -231,6 +237,8 @@ public class HomeScreen implements Screen, InputProcessor, ControllerListener {
 
     @Override
     public void show() {
+        homeMusic.setLooping(true);
+        homeMusic.play();
 
     }
 
@@ -240,13 +248,17 @@ public class HomeScreen implements Screen, InputProcessor, ControllerListener {
             update(delta);
             draw();
 
-            if(time > logoDuration && !isAnimatingHomeScreen) {
+            if(currentFrame > logoDuration && !isAnimatingHomeScreen) {
                 if(startPressState == 2) {
                     listener.exitScreen(this, 30);
                 } else if(aboutPressState == 2) {
                     aboutPressState = 0;
                     inAboutScreen = true;
                 }
+            }
+
+            if(Gdx.input.isKeyPressed(Keys.ESCAPE) && (currentFrame - homeScreenStartedFrame) > 30) {
+                listener.exitScreen(this,11);
             }
         }
     }
@@ -268,7 +280,7 @@ public class HomeScreen implements Screen, InputProcessor, ControllerListener {
 
     @Override
     public void hide() {
-
+        homeMusic.stop();
     }
 
     @Override

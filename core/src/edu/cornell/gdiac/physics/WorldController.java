@@ -299,7 +299,9 @@ public abstract class WorldController implements Screen {
 	 * Dispose of all (non-static) resources allocated to this mode.
 	 */
 	public void dispose() {
-
+		if(objects == null) {
+			return;
+		}
 		for(Obstacle obj : objects) {
 			obj.deactivatePhysics(world);
 		}

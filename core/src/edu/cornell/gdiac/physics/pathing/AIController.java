@@ -115,6 +115,7 @@ public class AIController {
 
     private int confused_anim_index = 0;
     private int dive_anim_index = 0;
+    private int idle_anim_index = 0;
 
     /* WANDER STATE DATA STRUCTURES */
     LinkedList<Coordinate> queue;
@@ -859,6 +860,12 @@ public class AIController {
     public int inc_dive_anim_index() { return dive_anim_index = (dive_anim_index + 1) % 50; }
 
     public void reset_dive_anim_index() { dive_anim_index = 0; }
+
+    public int get_idle_anim_index() { return idle_anim_index; }
+
+    public void reset_idle_anim_index() { idle_anim_index = 0; }
+
+    public void inc_idle_anim_index() { idle_anim_index = (idle_anim_index + 1) % 46; }
 
     public void lookAround() {
         rotateEnemy(Math.abs(goalAngle - enemy.getAngle()) / 20, goalAngle);

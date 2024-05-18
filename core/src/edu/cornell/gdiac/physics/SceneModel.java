@@ -12,6 +12,14 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.ContactListener;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.Manifold;
+import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectSet;
@@ -64,6 +72,7 @@ public class SceneModel extends WorldController implements ContactListener {
     private final TextureRegion[] treeTextures = new TextureRegion[2];
     /** Texture asset for objects in the polar map */
     private final TextureRegion[] objectTextures = new TextureRegion[9];
+    private final TextureRegion[] dialogueTextures = new TextureRegion[7];
     /** Texture asset for the cave in the polar map */
     private TextureRegion polarCaveTexture;
     /** Texture asset for the portal in the polar map */
@@ -288,6 +297,7 @@ public class SceneModel extends WorldController implements ContactListener {
     private float blackTextureAlpha;
     private float caughtBarXOffset = 0;
     private float ursaCaughtXOffset = 0;
+
     private int beganStartLoseFrame = 0;
     private int caughtBarMoveDuration = 60;
     private int ursaCaughtMoveDuration = 10;
@@ -386,6 +396,16 @@ public class SceneModel extends WorldController implements ContactListener {
         retryTextures[1] =  new TextureRegion(directory.getEntry( "retry:lose2",Texture.class));
         retryTextures[2] =  new TextureRegion(directory.getEntry( "retry:victory1",Texture.class));
         retryTextures[3] =  new TextureRegion(directory.getEntry( "retry:victory2",Texture.class));
+
+        dialogueTextures[0] = new TextureRegion(directory.getEntry( "tutorial:avoidShadow1",Texture.class));
+        dialogueTextures[1] = new TextureRegion(directory.getEntry( "tutorial:avoidShadow2",Texture.class));
+        dialogueTextures[2] = new TextureRegion(directory.getEntry( "tutorial:goToCave1",Texture.class));
+        dialogueTextures[3] = new TextureRegion(directory.getEntry( "tutorial:goToCave2",Texture.class));
+        dialogueTextures[4] = new TextureRegion(directory.getEntry( "tutorial:shakeTree1",Texture.class));
+        dialogueTextures[5] = new TextureRegion(directory.getEntry( "tutorial:shakeTree2",Texture.class));
+        dialogueTextures[6] = new TextureRegion(directory.getEntry( "tutorial:shakeTree3",Texture.class));
+
+
         polarCaveTexture = new TextureRegion(directory.getEntry("polar:cave",Texture.class));
         polarPortalTexture = new TextureRegion(directory.getEntry("polar:portal",Texture.class));
         polarZZZTexture = new TextureRegion(directory.getEntry("polar:ZZZ",Texture.class));
@@ -672,20 +692,23 @@ public class SceneModel extends WorldController implements ContactListener {
                     i.getEnemy().setTexture(salmonConfusedFilm);
                     i.inc_anim_index();
                 } else if (i.getEnemy().getVX() == 0 && i.getEnemy().getVY() == 0) {
-                    salmonIdleFilm.setFrame(salmonIdleAnimIndex);
+                    salmonIdleFilm.setFrame(i.get_idle_anim_index());
                     i.getEnemy().setTexture(salmonIdleFilm);
-                    if (currentFrame % 2 == 0) {
-                        salmonIdleAnimIndex = (salmonIdleAnimIndex + 1) % 46;
-                    }
+//                    if (currentFrame % 2 == 0) {
+//                        salmonIdleAnimIndex = (salmonIdleAnimIndex + 1) % 46;
+//                    }
+                    i.inc_idle_anim_index();
                 } else {
                     i.reset_anim_index();
                     salmonDetectedIndex = 0;
                     i.reset_dive_anim_index();
+                    i.reset_idle_anim_index();
                     salmonUprightWalkFilm.setFrame(salmonWalkAnimIndex);
                     i.getEnemy().setTexture(salmonUprightWalkFilm);
                 }
             }
         }
+
         if (currentFrame % 2 == 0) {
             salmonWalkAnimIndex = (salmonWalkAnimIndex + 1) % 24;
         }
@@ -1316,6 +1339,10 @@ public class SceneModel extends WorldController implements ContactListener {
         for(Cave cave: interactableCaves) {
             cave.postDraw(canvas);
         }
+        for(Decoration d: decorations) {
+            d.postDraw(canvas);
+        }
+
         effect.draw(canvas.getSpriteBatch());
         float retryUIScale = 1.6f;
         if(startLose){
@@ -1849,7 +1876,20 @@ public class SceneModel extends WorldController implements ContactListener {
                 System.out.println("Unidentified decoration.");
                 continue;
             }
+
             Decoration decoration = new Decoration(decorationTextures[textureIndex], scale, drawToScreenCoordinates(x),drawToScreenCoordinates(y), decorationIndex, textureScale);
+            JsonValue propertyData = decorationData.get(i).get("properties");
+            if(propertyData != null) {
+                for(int j = 0; j < propertyData.size; j++) {
+                    if(propertyData.get(j).get("name").asString().equals("dialogue_num")) {
+                        int dialogueIndex = propertyData.get(j).get("value").asInt();
+                        if(dialogueIndex >= 0 && dialogueIndex < dialogueTextures.length) {
+                                decoration.setDialogueTexture(dialogueTextures[dialogueIndex]);
+                        }
+                    }
+                }
+            }
+
 
             decorations.add(decoration);
         }
