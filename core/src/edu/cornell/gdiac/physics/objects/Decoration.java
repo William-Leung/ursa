@@ -56,7 +56,7 @@ public class Decoration {
 
     public void postDraw(GameCanvas canvas) {
         if(dialogueTexture != null) {
-            canvas.draw(dialogueTexture, Color.WHITE, 0, 0, x * drawScale.x, y * drawScale.y, 0, textureScale, textureScale);
+            canvas.draw(dialogueTexture, Color.WHITE, 0, 0, x * drawScale.x, y * drawScale.y, 0, 1.5f *  textureScale, 1.5f * textureScale);
         }
     }
 }

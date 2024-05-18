@@ -23,6 +23,7 @@
 package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.*;
@@ -349,6 +350,10 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 			// We are are ready, notify our listener
 			if (doneLoading && listener != null) {
 				listener.exitScreen(this, 0);
+			}
+
+			if(Gdx.input.isKeyPressed(Keys.ESCAPE) && time > 60) {
+				listener.exitScreen(this,11);
 			}
 		}
 	}

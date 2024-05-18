@@ -16,6 +16,8 @@ package edu.cornell.gdiac.physics;
 import com.badlogic.gdx.*;
 import edu.cornell.gdiac.util.*;
 import edu.cornell.gdiac.assets.*;
+import java.awt.EventQueue;
+import java.awt.Frame;
 
 /**
  * Root class for a LibGDX.  
@@ -45,6 +47,8 @@ public class GDXRoot extends Game implements ScreenListener {
 	private int current;
 	/** List of all WorldControllers */
 	private WorldController[] controllers;
+	private int threadNum = 0;
+
 
 	/**
 	 * Creates a new game from the configuration settings.
@@ -71,7 +75,7 @@ public class GDXRoot extends Game implements ScreenListener {
 		camY = canvas.getCameraY();
 
 		controllers = new WorldController[25];
-		controllers[0] = new SceneModel("rigel_tutorial_1.json");
+		controllers[0] = new SceneModel("dannyworking.json");
 		controllers[1] = new SceneModel("dannyworking2.json");
 		controllers[2] = new SceneModel("dannyworking3.json");
 		controllers[3] = new SceneModel("rigel_level_4.json");
@@ -96,6 +100,42 @@ public class GDXRoot extends Game implements ScreenListener {
 		setScreen(loading);
 	}
 
+	private void shutdownApplication() {
+		// Ensure all AWT components are disposed of
+		EventQueue.invokeLater(() -> {
+			// Close all frames
+			Frame[] frames = Frame.getFrames();
+			for (Frame frame : frames) {
+				frame.dispose();
+			}
+
+			// Force terminate non-daemon threads if still running
+			terminateNonDaemonThreads();
+
+			// Attempt to explicitly exit
+			System.exit(0);
+		});
+	}
+
+	private void terminateNonDaemonThreads() {
+		Thread.getAllStackTraces().keySet().forEach(thread -> {
+			if (!thread.isDaemon() && thread != Thread.currentThread()) {
+				threadNum++;
+				try {
+					thread.interrupt(); // Interrupt the thread
+					thread.join(1000); // Wait for the thread to die
+					if (thread.isAlive()) {
+						System.err.println(
+								"Thread " + thread.getName()
+										+ " did not terminate, forcing exit");
+					}
+				} catch (InterruptedException e) {
+					// Handle exception
+				}
+			}
+		});
+	}
+
 	/**
 	 * Called when the Application is destroyed.
 	 *
@@ -108,10 +148,11 @@ public class GDXRoot extends Game implements ScreenListener {
 			if(controllers[ii] != null){
 				controllers[ii].dispose();
 			}
-
 		}
 
-		canvas.dispose();
+		if(canvas != null) {
+			canvas.dispose();
+		}
 		canvas = null;
 
 		// Unload all of the resources
@@ -147,8 +188,15 @@ public class GDXRoot extends Game implements ScreenListener {
 	 * @param exitCode The state of the screen upon exit
 	 */
 	public void exitScreen(Screen screen, int exitCode) {
-		boolean debug = true;
+		boolean debug = false;
 		if (screen == loading) {
+			if(exitCode == 11) {
+				System.out.println("Shutting down");
+				dispose();
+				shutdownApplication();
+				Gdx.app.exit();
+				return;
+			}
 			directory = loading.getAssets();
 			if(debug) {
 				levelSelector = new LevelSelector(canvas,levelsCompleted, 0);
@@ -171,7 +219,12 @@ public class GDXRoot extends Game implements ScreenListener {
 				loading = null;
 			}
 		} else if(screen == homeScreen) {
-			if(exitCode == 30) {
+			if(exitCode == 11) {
+				System.out.println("Shutting down");
+				dispose();
+				shutdownApplication();
+				Gdx.app.exit();
+			} else if(exitCode == 30) {
 				levelSelector = new LevelSelector(canvas,levelsCompleted, 0);
 				levelSelector.gatherAssets(directory);
 				levelSelector.setScreenListener(this);
@@ -182,10 +235,7 @@ public class GDXRoot extends Game implements ScreenListener {
 				homeScreen = null;
 			}
 		} else if (screen == levelSelector) {
-			if(exitCode == WorldController.EXIT_QUIT) {
-				Gdx.app.exit();
-				return;
-			} else if(exitCode == 101) {
+			if(exitCode == 11) {
 				homeScreen = new HomeScreen(canvas, false);
 				homeScreen.gatherAssets(directory);
 				homeScreen.setScreenListener(this);

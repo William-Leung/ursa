@@ -192,6 +192,8 @@ public class SceneModel extends WorldController implements ContactListener {
     private int firstSmallDecorationIndex;
     /** The index of the first large decoration in the 512x512 decoration sprite sheet */
     private int firstLargeDecorationIndex;
+    /** The index of the first large decoration in the 1024x512 decoration sprite sheet */
+    private int firstLargeOceanDecorationIndex;
     /** The index of the first medium object in the 256x256 decoration sprite sheet */
     private int firstMediumObjectIndex;
     /** The index of the first medium rock in the 256x256 sprite sheet */
@@ -229,7 +231,7 @@ public class SceneModel extends WorldController implements ContactListener {
     /** An array of TextureRegions containing all tile textures */
     private final TextureRegion[] tileTextures = new TextureRegion[15];
     /** An array of TextureRegions containing all decoration textures */
-    private final TextureRegion[] decorationTextures = new TextureRegion[16];
+    private final TextureRegion[] decorationTextures = new TextureRegion[21];
     /** List of references to enemies */
     private Enemy[] enemies;
     /** List of references to all AIControllers */
@@ -240,6 +242,9 @@ public class SceneModel extends WorldController implements ContactListener {
     private final PooledList<Decoration> decorations= new PooledList<>();
     /** List of references to decorations on the ground */
     private final PooledList<Decoration> groundDecorations = new PooledList<>();
+    /** List of references to decorations in the ocean */
+    private final PooledList<Decoration> oceanDecorations = new PooledList<>();
+
     /** List of references to all interactable caves */
     private final PooledList<Cave> interactableCaves = new PooledList<>();
     /** List of references to dynamic objects (ursa + enemies) */
@@ -529,6 +534,13 @@ public class SceneModel extends WorldController implements ContactListener {
         decorationTextures[11] = new TextureRegion(directory.getEntry("decoration:ground_4",Texture.class));
         decorationTextures[12] = new TextureRegion(directory.getEntry("decoration:ground_1",Texture.class));
         decorationTextures[13] = new TextureRegion(directory.getEntry("decoration:ground_2",Texture.class));
+        decorationTextures[14] = new TextureRegion(directory.getEntry("decoration:ocean_1",Texture.class));
+        decorationTextures[15] = new TextureRegion(directory.getEntry("decoration:ocean_4",Texture.class));
+        decorationTextures[16] = new TextureRegion(directory.getEntry("decoration:ocean_8",Texture.class));
+        decorationTextures[17] = new TextureRegion(directory.getEntry("decoration:ocean_2",Texture.class));
+        decorationTextures[18] = new TextureRegion(directory.getEntry("decoration:ocean_3",Texture.class));
+        decorationTextures[19] = new TextureRegion(directory.getEntry("decoration:ocean_5",Texture.class));
+        decorationTextures[20] = new TextureRegion(directory.getEntry("decoration:ocean_6",Texture.class));
     }
     /**
      * Gathers all object textures and converts them into a single array.
@@ -567,6 +579,7 @@ public class SceneModel extends WorldController implements ContactListener {
         interactableCaves.clear();
         interactableTrees.clear();
         shadowController.reset();
+        oceanDecorations.clear();
         world.dispose();
         reverse = false;
         // Rewind all film strips to the beginning
@@ -692,20 +705,23 @@ public class SceneModel extends WorldController implements ContactListener {
                     i.getEnemy().setTexture(salmonConfusedFilm);
                     i.inc_anim_index();
                 } else if (i.getEnemy().getVX() == 0 && i.getEnemy().getVY() == 0) {
-                    salmonIdleFilm.setFrame(salmonIdleAnimIndex);
+                    salmonIdleFilm.setFrame(i.get_idle_anim_index());
                     i.getEnemy().setTexture(salmonIdleFilm);
-                    if (currentFrame % 2 == 0) {
-                        salmonIdleAnimIndex = (salmonIdleAnimIndex + 1) % 46;
-                    }
+//                    if (currentFrame % 2 == 0) {
+//                        salmonIdleAnimIndex = (salmonIdleAnimIndex + 1) % 46;
+//                    }
+                    i.inc_idle_anim_index();
                 } else {
                     i.reset_anim_index();
                     salmonDetectedIndex = 0;
                     i.reset_dive_anim_index();
+                    i.reset_idle_anim_index();
                     salmonUprightWalkFilm.setFrame(salmonWalkAnimIndex);
                     i.getEnemy().setTexture(salmonUprightWalkFilm);
                 }
             }
         }
+
         if (currentFrame % 2 == 0) {
             salmonWalkAnimIndex = (salmonWalkAnimIndex + 1) % 24;
         }
@@ -1307,6 +1323,9 @@ public class SceneModel extends WorldController implements ContactListener {
 
         drawTiles();
 
+        for(Decoration d: oceanDecorations) {
+            d.draw(canvas);
+        }
 
         // Draw a tinting over everything
         canvas.draw(whiteTexture,backgroundColor, canvas.getCameraX() - canvas.getWidth() / 2f, canvas.getCameraY() - canvas.getHeight() / 2f, canvas.getWidth(), canvas.getHeight());
@@ -1483,6 +1502,8 @@ public class SceneModel extends WorldController implements ContactListener {
                 case "maps/Polar_Trunk_2.tsx":
                     polarTrunk2Index = id;
                     break;
+                case "maps/1024x512.tsx":
+                    firstLargeOceanDecorationIndex = id;
             }
         }
     }
@@ -1864,15 +1885,26 @@ public class SceneModel extends WorldController implements ContactListener {
             int textureIndex;
             if(decorationIndex - firstSmallDecorationIndex < 12) {
                 textureIndex = decorationIndex - firstSmallDecorationIndex;
-            } else if(decorationIndex - firstLargeDecorationIndex < decorationTextures.length) {
+            } else if(decorationIndex - firstLargeDecorationIndex < 2) {
                 textureIndex = decorationIndex - firstLargeDecorationIndex + 12;
                 Decoration decoration = new Decoration(decorationTextures[textureIndex], scale, drawToScreenCoordinates(x),drawToScreenCoordinates(y), decorationIndex + 12, textureScale);
                 groundDecorations.add(decoration);
+                continue;
+            } else if((decorationIndex - firstLargeDecorationIndex - 2) < 5) {
+                textureIndex = decorationIndex - firstLargeDecorationIndex + 12;
+                Decoration decoration = new Decoration(decorationTextures[textureIndex], scale, drawToScreenCoordinates(x),drawToScreenCoordinates(y), decorationIndex + 12, textureScale);
+                oceanDecorations.add(decoration);
+                continue;
+            } else if(decorationIndex - firstLargeOceanDecorationIndex < 2){
+                textureIndex = decorationIndex - firstLargeOceanDecorationIndex + 19;
+                Decoration decoration = new Decoration(decorationTextures[textureIndex], scale, drawToScreenCoordinates(x),drawToScreenCoordinates(y), decorationIndex + 12, textureScale);
+                oceanDecorations.add(decoration);
                 continue;
             } else {
                 System.out.println("Unidentified decoration.");
                 continue;
             }
+
 
             Decoration decoration = new Decoration(decorationTextures[textureIndex], scale, drawToScreenCoordinates(x),drawToScreenCoordinates(y), decorationIndex, textureScale);
             JsonValue propertyData = decorationData.get(i).get("properties");
