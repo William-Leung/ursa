@@ -146,6 +146,7 @@
     },
     "music": {
         "soundtracks:level_track": "soundtracks/level_track.mp3",
+        "soundtracks:home_track": "soundtracks/home_track.mp3",
         "soundtracks:level_track_night": "soundtracks/level_track_night.mp3",
         "soundtracks:level_track_tense": "soundtracks/level_track_tense.mp3",
         "soundtracks:level_select": "soundtracks/level_select.mp3",

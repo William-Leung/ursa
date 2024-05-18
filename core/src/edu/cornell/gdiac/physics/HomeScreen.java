@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.graphics.Color;
@@ -25,6 +26,7 @@ public class HomeScreen implements Screen, InputProcessor, ControllerListener {
     private TextureRegion aboutButtonClicked;
     private TextureRegion aboutButtonTexture;
     private TextureRegion aboutScreen;
+    private Music homeMusic;
 
 
     GameCanvas canvas;
@@ -61,6 +63,8 @@ public class HomeScreen implements Screen, InputProcessor, ControllerListener {
     }
 
     public void gatherAssets(AssetDirectory directory) {
+        homeMusic =directory.getEntry("soundtracks:home_track", Music.class);
+
         TextureRegion homeScreenAnimation = new TextureRegion(directory.getEntry("homeScreen:homeScreenAnimation", Texture.class));
         homeScreenFilm = new FilmStrip(homeScreenAnimation.getTexture(), 3, 16);
         homeScreenFilm.setFrame(0);
@@ -78,6 +82,7 @@ public class HomeScreen implements Screen, InputProcessor, ControllerListener {
     }
 
     private void update(float delta){
+
         time++;
 
 
@@ -231,6 +236,8 @@ public class HomeScreen implements Screen, InputProcessor, ControllerListener {
 
     @Override
     public void show() {
+        homeMusic.setLooping(true);
+        homeMusic.play();
 
     }
 
@@ -268,7 +275,7 @@ public class HomeScreen implements Screen, InputProcessor, ControllerListener {
 
     @Override
     public void hide() {
-
+        homeMusic.stop();
     }
 
     @Override
