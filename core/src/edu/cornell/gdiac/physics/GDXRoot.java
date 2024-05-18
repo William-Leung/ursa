@@ -82,13 +82,13 @@ public class GDXRoot extends Game implements ScreenListener {
 		controllers[3] = new SceneModel("rigel_level_4_Athena_modified.json");
 		controllers[4] = new SceneModel("rigel_level_5_Athena_modified.json");
 		controllers[5] = new SceneModel("levelD2_Athena_Modified.json");
-		controllers[6] = new SceneModel("rigel_level_7.json");
+		controllers[6] = new SceneModel("rigel_level_7_Athena_Modified.json");
 		controllers[7] = new SceneModel("levelD.json");
 		controllers[8] = new SceneModel("level_athena.json");
 		controllers[9] = new SceneModel("dannyworking.json");
 		controllers[10] = new SceneModel("rigel_tutorial_1.json");
 		controllers[11] =new SceneModel("rigel_tutorial_1.json");
-		controllers[12] = new SceneModel("yklevel_Athena_Modified.json");
+		controllers[12] = new SceneModel("yklevel.json");
 		controllers[13] =new SceneModel("rigel_tutorial_1.json");
 		controllers[14] = new SceneModel("rigel_tutorial_1.json");
 
