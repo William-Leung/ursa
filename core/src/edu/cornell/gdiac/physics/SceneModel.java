@@ -692,20 +692,23 @@ public class SceneModel extends WorldController implements ContactListener {
                     i.getEnemy().setTexture(salmonConfusedFilm);
                     i.inc_anim_index();
                 } else if (i.getEnemy().getVX() == 0 && i.getEnemy().getVY() == 0) {
-                    salmonIdleFilm.setFrame(salmonIdleAnimIndex);
+                    salmonIdleFilm.setFrame(i.get_idle_anim_index());
                     i.getEnemy().setTexture(salmonIdleFilm);
-                    if (currentFrame % 2 == 0) {
-                        salmonIdleAnimIndex = (salmonIdleAnimIndex + 1) % 46;
-                    }
+//                    if (currentFrame % 2 == 0) {
+//                        salmonIdleAnimIndex = (salmonIdleAnimIndex + 1) % 46;
+//                    }
+                    i.inc_idle_anim_index();
                 } else {
                     i.reset_anim_index();
                     salmonDetectedIndex = 0;
                     i.reset_dive_anim_index();
+                    i.reset_idle_anim_index();
                     salmonUprightWalkFilm.setFrame(salmonWalkAnimIndex);
                     i.getEnemy().setTexture(salmonUprightWalkFilm);
                 }
             }
         }
+
         if (currentFrame % 2 == 0) {
             salmonWalkAnimIndex = (salmonWalkAnimIndex + 1) % 24;
         }
