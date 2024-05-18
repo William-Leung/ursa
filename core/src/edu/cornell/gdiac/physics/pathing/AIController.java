@@ -46,7 +46,12 @@ public class AIController {
     /** Maximum amount of time enemy can spend looking around in one time */
     private static final float MAX_LOOKING = 700;
     /** Ticks Ursa can be within range before being detected */
-    private static final int DETECTION_DELAY = 10;
+    private static final int DETECTION_DELAY = 4;
+    /** Distance between enemies where if one is aggressive, the others within this radius
+     * will be too */
+    private static final float AGGRO_RADIUS = 15f;
+    /** Ticks one enemy will attack ursa before others are notified */
+    private static final int AGGRO_DELAY = 10;
 
 
     /** Degrees enemy can rotate per tick */
@@ -143,6 +148,8 @@ public class AIController {
     private Vector2 directionCache = new Vector2();
     private boolean didEnemyMove = false;
 
+    private boolean isAggroNear = false;
+
     /**
      * Creates an AIController for the ship with the given id.
      */
@@ -206,6 +213,7 @@ public class AIController {
 
         if (isDetected()) {
             ticks_detected++;
+            last_time_detected = ticks;
         } else {
             ticks_detected = 0;
         }
@@ -245,6 +253,11 @@ public class AIController {
                     ticks_confused = 1;
                 }
 
+                if (isAggroNear) {
+                    state = FSMState.ATTACK;
+                    ticks_attacked = 1;
+                }
+
                 if (enemy.isStunned()) {
                     state = FSMState.STUNNED;
                     times_detected--;
@@ -256,7 +269,7 @@ public class AIController {
 
                 ticks_looking++;
 
-                if (checkSpotted()) {
+                if (checkSpotted() || isAggroNear) {
                     state = FSMState.CHASE;
                     ticks_looking = 0;
                 } else if (enemy.isAlerted() && ticks_spotted >= DETECTION_DELAY) {
@@ -274,7 +287,7 @@ public class AIController {
                 if (ticks_confused == 0) {
                     state = FSMState.LOOKING;
                 } else if (ticks_confused >= CONFUSE_TIME) {
-                    if (checkSpotted()) {
+                    if (checkSpotted() || isAggroNear) {
                         state = FSMState.CHASE;
                     } else {
                         state = FSMState.LOOKING;
@@ -283,7 +296,7 @@ public class AIController {
                     ticks_confused++;
                     last_time_detected = ticks;
                     state = FSMState.CONFUSED;
-                } else if(isNearby()) {
+                } else if(isNearby() || isAggroNear) {
                     state = FSMState.CHASE;
                 } else {
                     ticks_confused--;
@@ -299,7 +312,7 @@ public class AIController {
 
             case CHASE:
 
-                if (checkSpotted()) {
+                if (checkSpotted() || isAggroNear) {
                     state = FSMState.ATTACK;
                     ticks_attacked = 1;
                 } else if (checkRange(CHASE_RADIUS)){
@@ -324,7 +337,7 @@ public class AIController {
                     } else {
                         ticks_collided++;
                     }
-                } else if (checkSpotted()) {
+                } else if (checkSpotted() || isAggroNear) {
                     ticks_attacked++;
                     state = FSMState.ATTACK;
                 } else {
@@ -895,6 +908,38 @@ public class AIController {
             this.y = 0;
         }
 
+    }
+
+    public boolean isAggro() { return state == FSMState.CHASE || state == FSMState.ATTACK; }
+
+    public void aggroNear(boolean value, Vector2 otherLoc) {
+        if (!value || otherLoc == null) {
+            isAggroNear = false;
+            return;
+        }
+
+        if (Math.sqrt(Math.pow(otherLoc.x - enemy.getX(), 2)
+                + Math.pow(otherLoc.y - enemy.getY(), 2)) <= AGGRO_RADIUS) {
+            isAggroNear = value;
+        } else isAggroNear = false;
+    }
+
+    public boolean checkAggroNear(AIController otherController) {
+        //return true;
+
+        if (this.isAggro()) {
+            return true;
+        } else if (otherController.isAggro() && Math.sqrt(Math.pow(otherController.getEnemy().getX()
+                - enemy.getX(), 2) + Math.pow(otherController.getEnemy().getY() - enemy.getY(), 2))
+                <= AGGRO_RADIUS && otherController.ticks_attacked >= AGGRO_DELAY) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public void changeAggro(boolean value) {
+        isAggroNear = value;
     }
 
 }

@@ -46,13 +46,15 @@
         "levelSelect:Level13": "levelSelect/selection_13.png",
         "levelSelect:Level14": "levelSelect/selection_14.png",
         "levelSelect:Level15": "levelSelect/selection_15.png",
-        "levelSelect:retry": "levelSelect/retryMenu.png",
 
         "homeScreen:homeScreenAnimation": "homeScreen/Home Screen_30fps.png",
         "homeScreen:logo": "homeScreen/Logo_Black.png",
         "homeScreen:homeScreen": "homeScreen/Home Screen.png",
         "homeScreen:startButton": "homeScreen/UI_Button_Start.png",
         "homeScreen:startButtonClicked": "homeScreen/UI_Button_Start_Click.png",
+        "homeScreen:aboutButton": "homeScreen/UI_Button_About.png",
+        "homeScreen:aboutButtonClicked": "homeScreen/UI_Button_About_Click.png",
+        "homeScreen:aboutScreen": "homeScreen/About.png",
 
         "player:ursaWalk": "player/Walk.png",
         "player:ursaIdle": "player/Idle.png",
@@ -101,6 +103,8 @@
         "smolursa:model": "smolursa/Little Ursa.png",
         "smolursa:idle": "smolursa/Idle.png",
         "smolursa:rescue": "smolursa/Rescued.png",
+        "smolursa:bearIndicator": "smolursa/Little_Ursa_Indicator_1.PNG",
+        "smolursa:arrowIndicator": "smolursa/Little_Ursa_Indicator_2.PNG",
 
         "tiles:polar_cliff_center" : "tiles/polar/Polar_Cliff_Center.png",
         "tiles:polar_corner_1": "tiles/polar/Polar_Cliff_Corner_1.png",
