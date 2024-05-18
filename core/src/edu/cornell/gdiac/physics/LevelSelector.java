@@ -520,9 +520,6 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
             if(enterPrevious && !enterPressed){
                 for (int i = 0; i < buttonPositions.length; i++) {
                     float interactDistance = buttonRadius;
-                    if(i == 14) {
-                        System.out.println(buttonsUnlocked[i] + " " +( Math.abs(buttonPositions[i].x-ursaPos.x) < interactDistance));
-                    }
                     if(buttonsUnlocked[i] && Math.abs(buttonPositions[i].x-ursaPos.x) < interactDistance
                             && Math.abs(buttonPositions[i].y-ursaPos.y) < interactDistance){
                         listener.exitScreen(this,i+1);
@@ -535,7 +532,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
             enterPrevious = enterPressed;
 
             if((Gdx.input.isKeyPressed(Keys.ESCAPE) || Gdx.input.isKeyPressed(Keys.Q)) && time > 30) {
-                listener.exitScreen(this,11);
+                listener.exitScreen(this,111);
             }
         }
     }

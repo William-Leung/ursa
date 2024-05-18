@@ -81,8 +81,8 @@ public class GDXRoot extends Game implements ScreenListener {
 		controllers[2] = new SceneModel("rigel_tutorial_3_Athena_modified.json");
 		controllers[3] = new SceneModel("rigel_level_4_Athena_modified.json");
 		controllers[4] = new SceneModel("rigel_level_5_Athena_modified.json");
-		controllers[5] = new SceneModel("levelD2_Athena_Modified.json");
-		controllers[6] = new SceneModel("rigel_level_7_Athena_Modified.json");
+		controllers[5] = new SceneModel("levelD2_Athena_modified.json");
+		controllers[6] = new SceneModel("rigel_level_7_Athena_modified.json");
 		controllers[7] = new SceneModel("levelD.json");
 		controllers[8] = new SceneModel("level_athena.json");
 		controllers[9] = new SceneModel("dannyworking.json");
@@ -236,7 +236,7 @@ public class GDXRoot extends Game implements ScreenListener {
 				homeScreen = null;
 			}
 		} else if (screen == levelSelector) {
-			if(exitCode == 11) {
+			if(exitCode == 111) {
 				homeScreen = new HomeScreen(canvas, false);
 				homeScreen.gatherAssets(directory);
 				homeScreen.setScreenListener(this);
@@ -248,7 +248,7 @@ public class GDXRoot extends Game implements ScreenListener {
 				return;
 			}
 			// Enter the corresponding level from the level select
-			for(int i = 1; i < 16; i++) {
+			for(int i = 0; i < 15; i++) {
 				if(exitCode != i) {
 					continue;
 				}
