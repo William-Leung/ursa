@@ -190,6 +190,13 @@ public class GDXRoot extends Game implements ScreenListener {
 	public void exitScreen(Screen screen, int exitCode) {
 		boolean debug = false;
 		if (screen == loading) {
+			if(exitCode == 11) {
+				System.out.println("Shutting down");
+				dispose();
+				shutdownApplication();
+				Gdx.app.exit();
+				return;
+			}
 			directory = loading.getAssets();
 			if(debug) {
 				levelSelector = new LevelSelector(canvas,levelsCompleted, 0);

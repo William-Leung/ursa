@@ -351,6 +351,10 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 			if (doneLoading && listener != null) {
 				listener.exitScreen(this, 0);
 			}
+
+			if(Gdx.input.isKeyPressed(Keys.ESCAPE) && time > 60) {
+				listener.exitScreen(this,11);
+			}
 		}
 	}
 
