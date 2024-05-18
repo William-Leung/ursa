@@ -534,7 +534,7 @@ public class LevelSelector implements Screen, InputProcessor, ControllerListener
             }
             enterPrevious = enterPressed;
 
-            if(Gdx.input.isKeyPressed(Keys.ESCAPE) && time > 30) {
+            if((Gdx.input.isKeyPressed(Keys.ESCAPE) || Gdx.input.isKeyPressed(Keys.Q)) && time > 30) {
                 listener.exitScreen(this,11);
             }
         }

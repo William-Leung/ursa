@@ -88,7 +88,7 @@ public class HomeScreen implements Screen, InputProcessor, ControllerListener {
         TextureRegion logoV2Animation = new TextureRegion(directory.getEntry("homeScreen:logoAnimationV1", Texture.class));
         logoV2Film = new FilmStrip(logoV2Animation.getTexture(), 2, 8);
         logoV2Film.setFrame(0);
-        homeScreenTexture = logoV1Film;
+        logoTexture = logoV1Film;
 
         blackTexture = new TextureRegion(directory.getEntry("polar:black", Texture.class));
         logo = new TextureRegion(directory.getEntry("homeScreen:logo", Texture.class));
@@ -297,7 +297,7 @@ public class HomeScreen implements Screen, InputProcessor, ControllerListener {
                 }
             }
 
-            if(Gdx.input.isKeyPressed(Keys.ESCAPE) && (currentFrame - homeScreenStartedFrame) > 30 && (currentFrame - startedAboutFrame) > 30) {
+            if((Gdx.input.isKeyPressed(Keys.ESCAPE) || Gdx.input.isKeyPressed(Keys.Q)) && (currentFrame - homeScreenStartedFrame) > 30 && (currentFrame - startedAboutFrame) > 30) {
                 listener.exitScreen(this,11);
             }
         }
