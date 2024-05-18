@@ -233,7 +233,13 @@ public class GDXRoot extends Game implements ScreenListener {
 				levelSelector.setActive(true);
 			}
 			else if(exitCode == 3){
-				current += current +1;
+				if(current > 1){
+					current = 1;
+				}
+				else{
+					current += current +1;
+				}
+
 				controllers[current].gatherAssets(directory);
 				controllers[current].setScreenListener(this);
 				controllers[current].setCanvas(canvas);
