@@ -211,7 +211,10 @@ public class AIController {
 
     private void changeStateIfApplicable() {
 
+        ticks++;
+
         if (isDetected()) {
+            System.out.println("Detected rn " + ticks);
             ticks_detected++;
             last_time_detected = ticks;
         } else {
@@ -315,12 +318,8 @@ public class AIController {
                 if (checkSpotted() || isAggroNear) {
                     state = FSMState.ATTACK;
                     ticks_attacked = 1;
-                } else if (checkRange(CHASE_RADIUS)){
-                    state = FSMState.CHASE;
-                } else {
-                    if (ticks - last_time_detected >= CHASE_MEMORY) {
-                        state = FSMState.CONFUSED;
-                    } else state = FSMState.LOOKING;
+                } else if (ticks - last_time_detected >= CHASE_MEMORY) {
+                    state = FSMState.WANDER;
                 }
 
                 if (enemy.isStunned()) {
@@ -331,6 +330,7 @@ public class AIController {
                 break;
 
             case ATTACK:
+
                 if (checkRange(1f)) {
                     if (ticks_collided >= DETECTION_DELAY * 0.25) {
                         state = FSMState.WON;
@@ -340,9 +340,9 @@ public class AIController {
                 } else if (checkSpotted() || isAggroNear) {
                     ticks_attacked++;
                     state = FSMState.ATTACK;
-                } else {
+                } else if (ticks - last_time_detected >= CHASE_MEMORY){
                     ticks_attacked = 0;
-                    state = FSMState.CHASE;
+                    state = FSMState.WANDER;
                 }
 
                 if (enemy.isStunned()) {
@@ -373,7 +373,6 @@ public class AIController {
 
 
     public void getAction() {
-        ticks++;
 
         changeStateIfApplicable();
 
@@ -928,7 +927,7 @@ public class AIController {
         //return true;
 
         if (this.isAggro()) {
-            return true;
+            return false;
         } else if (otherController.isAggro() && Math.sqrt(Math.pow(otherController.getEnemy().getX()
                 - enemy.getX(), 2) + Math.pow(otherController.getEnemy().getY() - enemy.getY(), 2))
                 <= AGGRO_RADIUS && otherController.ticks_attacked >= AGGRO_DELAY) {

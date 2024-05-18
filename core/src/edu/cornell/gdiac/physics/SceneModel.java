@@ -1819,6 +1819,7 @@ public class SceneModel extends WorldController implements ContactListener {
 
     public boolean updateAggro(AIController i) {
 
+
         for (AIController c : controls) {
             if (i.checkAggroNear(c)) {
                 return true;
